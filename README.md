@@ -8,14 +8,16 @@ The project uses the European Alternative Fuels Observatory's [Identification Re
 
 ## Supported Sources
 
-| Source                            | Status      | Mechanism                                                | License |
-| --------------------------------- | ----------- | -------------------------------------------------------- | ------- |
-| Ladestellen.at (`at-ladestellen`) | Enabled     | Public JSON endpoint used by Ladestellen.at's admin UI   | Unknown |
-| AFIREV (`fr-afirev`)              | Enabled     | Public JSON endpoint used by AFIREV's embedded directory | Unknown |
-| Benelux IDRO (`benelux-idro`)     | Enabled     | Public CSV export from the ID register                   | Unknown |
-| Croatian IDRO (`hr-croidro`)      | Enabled     | Public CSV export from the ID register                   | Unknown |
-| BDEW (`de-bdew`)                  | Placeholder | Not implemented                                          | Unknown |
-| EV Roam (`gb-evroam`)             | Placeholder | Not implemented                                          | Unknown |
+| Source                                     | Status      | Mechanism                                                | License |
+| ------------------------------------------ | ----------- | -------------------------------------------------------- | ------- |
+| Ladestellen.at (`at-ladestellen`)          | Enabled     | Public JSON endpoint used by Ladestellen.at's admin UI   | Unknown |
+| AFIREV (`fr-afirev`)                       | Enabled     | Public JSON endpoint used by AFIREV's embedded directory | Unknown |
+| Benelux IDRO (`benelux-idro`)              | Enabled     | Public CSV export from the ID register                   | Unknown |
+| Croatian IDRO (`hr-croidro`)               | Enabled     | Public CSV export from the ID register                   | Unknown |
+| Cyprus EMS (`cy-ems`)                      | Placeholder | Temporary EMS page; no identifier list found yet         | Unknown |
+| Danish Road Traffic Authority (`dk-fstyr`) | Enabled     | Public HTML table from the IDRO registration page        | Unknown |
+| BDEW (`de-bdew`)                           | Placeholder | Not implemented                                          | Unknown |
+| EV Roam (`gb-evroam`)                      | Placeholder | Not implemented                                          | Unknown |
 
 ## EAFO IDRR Coverage Reference
 
@@ -26,8 +28,8 @@ The EAFO IDRR directory currently lists these national or regional IDRO entries.
 | Austria                  | Supported          |
 | Benelux                  | Supported          |
 | Croatia                  | Supported          |
-| Cyprus                   | Backlog            |
-| Denmark                  | Backlog            |
+| Cyprus                   | Placeholder source |
+| Denmark                  | Supported          |
 | Finland                  | Backlog            |
 | France                   | Supported          |
 | Germany                  | Placeholder source |
@@ -67,6 +69,7 @@ The EAFO IDRR directory currently lists these national or regional IDRO entries.
 bun install
 bun run registry update --source at-ladestellen
 bun run registry update --source benelux-idro
+bun run registry update --source dk-fstyr
 bun run registry update --source fr-afirev
 bun run registry update --source hr-croidro
 bun run check
@@ -78,6 +81,7 @@ bun run check
 bun run registry fetch
 bun run registry fetch --source at-ladestellen
 bun run registry fetch --source benelux-idro
+bun run registry fetch --source dk-fstyr
 bun run registry fetch --source fr-afirev
 bun run registry fetch --source hr-croidro
 bun run registry build

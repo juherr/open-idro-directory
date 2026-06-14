@@ -58,10 +58,11 @@ function stableRecord(record: NormalizedRegistryRecord) {
 function looksLikeFallback(body: string) {
   const sample = body.slice(0, 5000).toLowerCase();
   return (
-    sample.includes("<html") ||
     sample.includes("captcha") ||
     sample.includes("cloudflare") ||
     sample.includes("login") ||
+    sample.includes("access denied") ||
+    sample.includes("forbidden") ||
     sample.includes("se connecter")
   );
 }

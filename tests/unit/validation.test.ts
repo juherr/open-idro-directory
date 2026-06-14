@@ -21,23 +21,55 @@ describe("validation", () => {
 
     expect(issues.some((issue) => issue.code === "MASS_DELETION")).toBe(true);
   });
+
+  it("allows HTML source pages when they are the expected registry format", async () => {
+    const source = await loadSourceDefinition("dk-fstyr");
+    const current = [sampleRecord("ABC", "dk-fstyr", "DK")];
+    const issues = checkSafetyThresholds(
+      source,
+      [],
+      current,
+      0,
+      "<html><body><table><tr><td>DK-ABC</td></tr></table></body></html>",
+    );
+
+    expect(issues.some((issue) => issue.code === "SOURCE_FALLBACK_PAGE")).toBe(false);
+  });
+
+  it("rejects explicit access-control pages", async () => {
+    const source = await loadSourceDefinition("dk-fstyr");
+    const current = [sampleRecord("ABC", "dk-fstyr", "DK")];
+    const issues = checkSafetyThresholds(
+      source,
+      [],
+      current,
+      0,
+      "<html><body>Access denied</body></html>",
+    );
+
+    expect(issues.some((issue) => issue.code === "SOURCE_FALLBACK_PAGE")).toBe(true);
+  });
 });
 
-function sampleRecord(partyId = "ABC"): NormalizedRegistryRecord {
+function sampleRecord(
+  partyId = "ABC",
+  registryId = "fr-afirev",
+  countryCode = "FR",
+): NormalizedRegistryRecord {
   return {
-    key: `fr-afirev:FR:${partyId}:CPO`,
-    countryCode: "FR",
+    key: `${registryId}:${countryCode}:${partyId}:CPO`,
+    countryCode,
     partyId,
-    eMobilityId: `FR${partyId}`,
+    eMobilityId: `${countryCode}${partyId}`,
     role: "CPO",
     status: "ACTIVE",
     organization: { name: "Example", legalName: null, website: null },
     source: {
-      registryId: "fr-afirev",
+      registryId,
       official: true,
-      sourceRecordId: `FR${partyId}`,
+      sourceRecordId: `${countryCode}${partyId}`,
       sourceUrl: "https://afirev.fr/prefixes/consulter-l-annuaire/",
-      sourceValue: `FR${partyId}`,
+      sourceValue: `${countryCode}${partyId}`,
       firstSeenAt: "2026-06-14T00:00:00.000Z",
       lastSeenAt: "2026-06-14T00:00:00.000Z",
       retrievedAt: "2026-06-14T00:00:00.000Z",

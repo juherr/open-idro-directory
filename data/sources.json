@@ -39,9 +39,9 @@
       "LU"
     ],
     "official": true,
-    "enabled": false,
+    "enabled": true,
     "homepageUrl": "https://www.benelux-idro.eu/",
-    "registryUrl": "https://www.benelux-idro.eu/",
+    "registryUrl": "https://www.benelux-idro.eu/en/id-register/export",
     "connector": "benelux-idro",
     "supportedRoles": [
       "CPO",
@@ -53,12 +53,12 @@
       "url": null
     },
     "health": {
-      "stale": true,
-      "recordCount": 0,
-      "lastAttemptedRetrieval": null,
-      "lastSuccessfulRetrieval": null,
-      "checksum": null,
-      "freshness": "disabled",
+      "stale": false,
+      "recordCount": 947,
+      "lastAttemptedRetrieval": "2026-06-14T21:57:54.951Z",
+      "lastSuccessfulRetrieval": "2026-06-14T21:57:54.951Z",
+      "checksum": "7dac1c9416cc117ecdc6893e9b2d6ce41637af5c7aab553e6e93af4502baea18",
+      "freshness": "current",
       "latestErrorSummary": null
     }
   },

@@ -1,5 +1,5 @@
-import { NotImplementedError, type RegistryConnector } from "../connector.js";
+import { BeneluxIdroConnector } from "./benelux.connector.js";
 
-export function createBeneluxIdroConnector(): RegistryConnector {
-  throw new NotImplementedError("benelux-idro");
+export function createBeneluxIdroConnector() {
+  return new BeneluxIdroConnector();
 }

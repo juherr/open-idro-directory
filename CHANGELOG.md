@@ -11,8 +11,9 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 - Initial Global eMobility ID Registry MVP.
 - Ladestellen.at source descriptor, connector, parser, normalization, and fixture-based tests.
+- Benelux IDRO source descriptor, CSV export connector, parser, normalization, and fixture-based tests.
 - AFIREV source descriptor, connector, parser, normalization, and fixture-based tests.
-- Disabled placeholder descriptors and connectors for BDEW, Benelux IDRO, and EV Roam.
+- Disabled placeholder descriptors and connectors for BDEW and EV Roam.
 - Deterministic JSON, minified JSON, NDJSON, CSV, source summary, and stats generation.
 - Raw source snapshot preservation with checksum and retrieval metadata.
 - Registry validation, safety thresholds, and stale-source fallback behavior.

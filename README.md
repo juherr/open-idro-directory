@@ -12,8 +12,8 @@ The project uses the European Alternative Fuels Observatory's [Identification Re
 | --------------------------------- | ----------- | -------------------------------------------------------- | ------- |
 | Ladestellen.at (`at-ladestellen`) | Enabled     | Public JSON endpoint used by Ladestellen.at's admin UI   | Unknown |
 | AFIREV (`fr-afirev`)              | Enabled     | Public JSON endpoint used by AFIREV's embedded directory | Unknown |
+| Benelux IDRO (`benelux-idro`)     | Enabled     | Public CSV export from the ID register                   | Unknown |
 | BDEW (`de-bdew`)                  | Placeholder | Not implemented                                          | Unknown |
-| Benelux IDRO (`benelux-idro`)     | Placeholder | Not implemented                                          | Unknown |
 | EV Roam (`gb-evroam`)             | Placeholder | Not implemented                                          | Unknown |
 
 ## EAFO IDRR Coverage Reference
@@ -23,7 +23,7 @@ The EAFO IDRR directory currently lists these national or regional IDRO entries.
 | IDRR entry               | Project status     |
 | ------------------------ | ------------------ |
 | Austria                  | Supported          |
-| Benelux                  | Placeholder source |
+| Benelux                  | Supported          |
 | Croatia                  | Backlog            |
 | Cyprus                   | Backlog            |
 | Denmark                  | Backlog            |
@@ -65,6 +65,7 @@ The EAFO IDRR directory currently lists these national or regional IDRO entries.
 ```bash
 bun install
 bun run registry update --source at-ladestellen
+bun run registry update --source benelux-idro
 bun run registry update --source fr-afirev
 bun run check
 ```
@@ -74,6 +75,7 @@ bun run check
 ```bash
 bun run registry fetch
 bun run registry fetch --source at-ladestellen
+bun run registry fetch --source benelux-idro
 bun run registry fetch --source fr-afirev
 bun run registry build
 bun run registry validate
@@ -100,6 +102,6 @@ Read `docs/adding-a-source.md` before adding a connector. Use official APIs or d
 
 ## Roadmap
 
-- Milestone 2: BDEW XLSX, Benelux, EV Roam, conflict reporting, historical observations.
+- Milestone 2: BDEW XLSX, EV Roam, conflict reporting, historical observations.
 - Milestone 3: GitHub Pages search, country-specific static JSON, lookup pages, health dashboard.
 - Milestone 4: broader IDRO coverage guided by the EAFO IDRR, source owner workflow, signed releases, public change feed.

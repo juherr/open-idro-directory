@@ -7,9 +7,9 @@ jurisdictions:
   - LU
 official: true
 homepageUrl: https://www.benelux-idro.eu/
-registryUrl: https://www.benelux-idro.eu/
+registryUrl: https://www.benelux-idro.eu/en/id-register/export
 connector: benelux-idro
-enabled: false
+enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
@@ -19,4 +19,9 @@ license:
   name: null
   url: null
 notes: >
-  Placeholder descriptor. The connector is not implemented in the MVP.
+  Official Benelux registry of Mobility Service Provider and Charge Point
+  Operator identifiers. The public registry exposes a CSV export endpoint.
+safety:
+  maxDeletionRatio: 0.2
+  maxChangeRatio: 0.5
+  maxParseErrorRatio: 0.05

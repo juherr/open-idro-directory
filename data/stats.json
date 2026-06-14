@@ -1,23 +1,27 @@
 {
-  "totalRecords": 1833,
+  "totalRecords": 2780,
   "recordsByCountry": {
     "AT": 1107,
-    "FR": 726
+    "BE": 357,
+    "FR": 726,
+    "LU": 225,
+    "NL": 365
   },
   "recordsByRole": {
-    "CPO": 1687,
-    "EMSP": 146
+    "CPO": 2215,
+    "EMSP": 565
   },
   "recordsByStatus": {
-    "ACTIVE": 1340,
+    "ACTIVE": 2287,
     "INACTIVE": 214,
     "RESERVED": 143,
     "UNKNOWN": 136
   },
   "recordsByRegistry": {
     "at-ladestellen": 1107,
+    "benelux-idro": 947,
     "fr-afirev": 726
   },
   "staleSources": [],
-  "generatedAt": "2026-06-14T21:50:23.497Z"
+  "generatedAt": "2026-06-14T22:00:45.187Z"
 }

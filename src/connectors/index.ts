@@ -5,6 +5,7 @@ import type { SourceDefinition } from "../domain/source-definition.js";
 import { createDeBdewConnector } from "./de-bdew/index.js";
 import { createBeneluxIdroConnector } from "./benelux-idro/index.js";
 import { createGbEvroamConnector } from "./gb-evroam/index.js";
+import { createCroIdroConnector } from "./hr-croidro/index.js";
 
 export function createConnector(source: SourceDefinition): RegistryConnector {
   switch (source.connector) {
@@ -18,6 +19,8 @@ export function createConnector(source: SourceDefinition): RegistryConnector {
       return createBeneluxIdroConnector();
     case "gb-evroam":
       return createGbEvroamConnector();
+    case "hr-croidro":
+      return createCroIdroConnector();
     default:
       throw new Error(`No connector registered for ${source.connector}`);
   }

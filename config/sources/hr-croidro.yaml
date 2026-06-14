@@ -1,0 +1,25 @@
+id: hr-croidro
+name: Croatian IDRO
+authorityName: CRO IDRO
+jurisdictions:
+  - HR
+official: true
+homepageUrl: https://pametnamobilnost.hr/idro/Pretraga
+registryUrl: https://pametnamobilnost.hr/idro/Home/IspisiCSV
+connector: hr-croidro
+enabled: true
+refreshSchedule: weekly
+supportedRoles:
+  - CPO
+  - EMSP
+license:
+  status: unknown
+  name: null
+  url: null
+notes: >
+  Official Croatian registry of Charge Point Operator and Mobility Service
+  Provider identifiers. The public search page exposes a CSV export endpoint.
+safety:
+  maxDeletionRatio: 0.2
+  maxChangeRatio: 0.5
+  maxParseErrorRatio: 0.05

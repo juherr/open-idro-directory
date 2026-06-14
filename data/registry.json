@@ -63153,6 +63153,2085 @@
     }
   },
   {
+    "key": "hr-croidro:HR:000:CPO",
+    "countryCode": "HR",
+    "partyId": "000",
+    "eMobilityId": "HR000",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "POLIKLINIKA MEDIKADENT d.o.o.",
+      "legalName": "POLIKLINIKA MEDIKADENT d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HR000",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-000",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "POLIKLINIKA MEDIKADENT d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:000:EMSP",
+    "countryCode": "HR",
+    "partyId": "000",
+    "eMobilityId": "HR000",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "POLIKLINIKA MEDIKADENT d.o.o.",
+      "legalName": "POLIKLINIKA MEDIKADENT d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HR000",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-000",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "POLIKLINIKA MEDIKADENT d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:001:EMSP",
+    "countryCode": "HR",
+    "partyId": "001",
+    "eMobilityId": "HR001",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Sunčani auto park Zagreb d.o.o.",
+      "legalName": "Sunčani auto park Zagreb d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HR001",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-001",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Sunčani auto park Zagreb d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:005:CPO",
+    "countryCode": "HR",
+    "partyId": "005",
+    "eMobilityId": "HR005",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Hrvatski Telekom d.d.",
+      "legalName": "Hrvatski Telekom d.d.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HR005",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-005",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Hrvatski Telekom d.d.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:005:EMSP",
+    "countryCode": "HR",
+    "partyId": "005",
+    "eMobilityId": "HR005",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Hrvatski Telekom d.d.",
+      "legalName": "Hrvatski Telekom d.d.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HR005",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-005",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Hrvatski Telekom d.d.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:031:CPO",
+    "countryCode": "HR",
+    "partyId": "031",
+    "eMobilityId": "HR031",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Sparkshare d.o.o.",
+      "legalName": "Sparkshare d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HR031",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-031",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Sparkshare d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:100:CPO",
+    "countryCode": "HR",
+    "partyId": "100",
+    "eMobilityId": "HR100",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "ELEKTROTEHNIKA d.o.o.",
+      "legalName": "ELEKTROTEHNIKA d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HR100",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-100",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "ELEKTROTEHNIKA d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:100:EMSP",
+    "countryCode": "HR",
+    "partyId": "100",
+    "eMobilityId": "HR100",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "ELEKTROTEHNIKA d.o.o.",
+      "legalName": "ELEKTROTEHNIKA d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HR100",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-100",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "ELEKTROTEHNIKA d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:120:EMSP",
+    "countryCode": "HR",
+    "partyId": "120",
+    "eMobilityId": "HR120",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Open Way d.o.o.",
+      "legalName": "Open Way d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HR120",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-120",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Open Way d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:1AB:CPO",
+    "countryCode": "HR",
+    "partyId": "1AB",
+    "eMobilityId": "HR1AB",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "TIFON d.o.o.",
+      "legalName": "TIFON d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HR1AB",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-1AB",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "TIFON d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:1BC:EMSP",
+    "countryCode": "HR",
+    "partyId": "1BC",
+    "eMobilityId": "HR1BC",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "TIFON d.o.o.",
+      "legalName": "TIFON d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HR1BC",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-1BC",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "TIFON d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:777:EMSP",
+    "countryCode": "HR",
+    "partyId": "777",
+    "eMobilityId": "HR777",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "cee d.o.o.",
+      "legalName": "cee d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HR777",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-777",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "cee d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:888:CPO",
+    "countryCode": "HR",
+    "partyId": "888",
+    "eMobilityId": "HR888",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "cee d.o.o.",
+      "legalName": "cee d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HR888",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-888",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "cee d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:A99:CPO",
+    "countryCode": "HR",
+    "partyId": "A99",
+    "eMobilityId": "HRA99",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Damasalis consult d.o.o.",
+      "legalName": "Damasalis consult d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRA99",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-A99",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Damasalis consult d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:A99:EMSP",
+    "countryCode": "HR",
+    "partyId": "A99",
+    "eMobilityId": "HRA99",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Damasalis consult d.o.o.",
+      "legalName": "Damasalis consult d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRA99",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-A99",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Damasalis consult d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:APP:CPO",
+    "countryCode": "HR",
+    "partyId": "APP",
+    "eMobilityId": "HRAPP",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Primelink d.o.o.",
+      "legalName": "Primelink d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRAPP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-APP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Primelink d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:APP:EMSP",
+    "countryCode": "HR",
+    "partyId": "APP",
+    "eMobilityId": "HRAPP",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Primelink d.o.o.",
+      "legalName": "Primelink d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRAPP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-APP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Primelink d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:ARC:CPO",
+    "countryCode": "HR",
+    "partyId": "ARC",
+    "eMobilityId": "HRARC",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Acciona Recarga Croatia d.o.o.",
+      "legalName": "Acciona Recarga Croatia d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRARC",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-ARC",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Acciona Recarga Croatia d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:ARC:EMSP",
+    "countryCode": "HR",
+    "partyId": "ARC",
+    "eMobilityId": "HRARC",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Acciona Recarga Croatia d.o.o.",
+      "legalName": "Acciona Recarga Croatia d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRARC",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-ARC",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Acciona Recarga Croatia d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:BAT:EMSP",
+    "countryCode": "HR",
+    "partyId": "BAT",
+    "eMobilityId": "HRBAT",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Forte Solar d.o.o.",
+      "legalName": "Forte Solar d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRBAT",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-BAT",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Forte Solar d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:BIP:CPO",
+    "countryCode": "HR",
+    "partyId": "BIP",
+    "eMobilityId": "HRBIP",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Best in Parking",
+      "legalName": "Best in Parking",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRBIP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-BIP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Best in Parking",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:BIP:EMSP",
+    "countryCode": "HR",
+    "partyId": "BIP",
+    "eMobilityId": "HRBIP",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Best in Parking",
+      "legalName": "Best in Parking",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRBIP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-BIP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Best in Parking",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:CRO:CPO",
+    "countryCode": "HR",
+    "partyId": "CRO",
+    "eMobilityId": "HRCRO",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "epunionica d.o.o.",
+      "legalName": "epunionica d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRCRO",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-CRO",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "epunionica d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:CRO:EMSP",
+    "countryCode": "HR",
+    "partyId": "CRO",
+    "eMobilityId": "HRCRO",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "epunionica d.o.o.",
+      "legalName": "epunionica d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRCRO",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-CRO",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "epunionica d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:DBL:CPO",
+    "countryCode": "HR",
+    "partyId": "DBL",
+    "eMobilityId": "HRDBL",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Bačelić d.o.o",
+      "legalName": "Bačelić d.o.o",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRDBL",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-DBL",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Bačelić d.o.o",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:DBL:EMSP",
+    "countryCode": "HR",
+    "partyId": "DBL",
+    "eMobilityId": "HRDBL",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Bačelić d.o.o",
+      "legalName": "Bačelić d.o.o",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRDBL",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-DBL",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Bačelić d.o.o",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:ECC:CPO",
+    "countryCode": "HR",
+    "partyId": "ECC",
+    "eMobilityId": "HRECC",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "E.C. Charger d.o.o.",
+      "legalName": "E.C. Charger d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRECC",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-ECC",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "E.C. Charger d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:ECC:EMSP",
+    "countryCode": "HR",
+    "partyId": "ECC",
+    "eMobilityId": "HRECC",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "E.C. Charger d.o.o.",
+      "legalName": "E.C. Charger d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRECC",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-ECC",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "E.C. Charger d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:EDR:CPO",
+    "countryCode": "HR",
+    "partyId": "EDR",
+    "eMobilityId": "HREDR",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "E.ON Energija d.o.o.",
+      "legalName": "E.ON Energija d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HREDR",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-EDR",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "E.ON Energija d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:EDR:EMSP",
+    "countryCode": "HR",
+    "partyId": "EDR",
+    "eMobilityId": "HREDR",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "E.ON Energija d.o.o.",
+      "legalName": "E.ON Energija d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HREDR",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-EDR",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "E.ON Energija d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:EGP:CPO",
+    "countryCode": "HR",
+    "partyId": "EGP",
+    "eMobilityId": "HREGP",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "ZELI društvo s ograničenom odgovornošću za proizvodnju, trgovinu i usluge",
+      "legalName": "ZELI društvo s ograničenom odgovornošću za proizvodnju, trgovinu i usluge",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HREGP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-EGP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "ZELI društvo s ograničenom odgovornošću za proizvodnju, trgovinu i usluge",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:EGP:EMSP",
+    "countryCode": "HR",
+    "partyId": "EGP",
+    "eMobilityId": "HREGP",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "ZELI društvo s ograničenom odgovornošću za proizvodnju, trgovinu i usluge",
+      "legalName": "ZELI društvo s ograničenom odgovornošću za proizvodnju, trgovinu i usluge",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HREGP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-EGP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "ZELI društvo s ograničenom odgovornošću za proizvodnju, trgovinu i usluge",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:ELC:CPO",
+    "countryCode": "HR",
+    "partyId": "ELC",
+    "eMobilityId": "HRELC",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Electrip Mobility Service d.o.o.",
+      "legalName": "Electrip Mobility Service d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRELC",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-ELC",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Electrip Mobility Service d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:ELC:EMSP",
+    "countryCode": "HR",
+    "partyId": "ELC",
+    "eMobilityId": "HRELC",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Electrip Mobility Service d.o.o.",
+      "legalName": "Electrip Mobility Service d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRELC",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-ELC",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Electrip Mobility Service d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:ELP:CPO",
+    "countryCode": "HR",
+    "partyId": "ELP",
+    "eMobilityId": "HRELP",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Eleport Adria d.o.o.",
+      "legalName": "Eleport Adria d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRELP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-ELP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Eleport Adria d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:ELP:EMSP",
+    "countryCode": "HR",
+    "partyId": "ELP",
+    "eMobilityId": "HRELP",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Eleport Adria d.o.o.",
+      "legalName": "Eleport Adria d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRELP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-ELP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Eleport Adria d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:ENA:CPO",
+    "countryCode": "HR",
+    "partyId": "ENA",
+    "eMobilityId": "HRENA",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "ENNA Charge d.o.o.",
+      "legalName": "ENNA Charge d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRENA",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-ENA",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "ENNA Charge d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:FOS:CPO",
+    "countryCode": "HR",
+    "partyId": "FOS",
+    "eMobilityId": "HRFOS",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Forte Solar d.o.o.",
+      "legalName": "Forte Solar d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRFOS",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-FOS",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Forte Solar d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:GWN:CPO",
+    "countryCode": "HR",
+    "partyId": "GWN",
+    "eMobilityId": "HRGWN",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Greenway Hrvatska d.o.o.",
+      "legalName": "Greenway Hrvatska d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRGWN",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-GWN",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Greenway Hrvatska d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:GWN:EMSP",
+    "countryCode": "HR",
+    "partyId": "GWN",
+    "eMobilityId": "HRGWN",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Greenway Hrvatska d.o.o.",
+      "legalName": "Greenway Hrvatska d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRGWN",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-GWN",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Greenway Hrvatska d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:HEP:CPO",
+    "countryCode": "HR",
+    "partyId": "HEP",
+    "eMobilityId": "HRHEP",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Hrvatska elektroprivreda d.d.",
+      "legalName": "Hrvatska elektroprivreda d.d.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRHEP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-HEP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Hrvatska elektroprivreda d.d.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:HEP:EMSP",
+    "countryCode": "HR",
+    "partyId": "HEP",
+    "eMobilityId": "HRHEP",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Hrvatska elektroprivreda d.d.",
+      "legalName": "Hrvatska elektroprivreda d.d.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRHEP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-HEP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Hrvatska elektroprivreda d.d.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:HRV:CPO",
+    "countryCode": "HR",
+    "partyId": "HRV",
+    "eMobilityId": "HRHRV",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Connect Charge j.d.o.o.",
+      "legalName": "Connect Charge j.d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRHRV",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-HRV",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Connect Charge j.d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:HRV:EMSP",
+    "countryCode": "HR",
+    "partyId": "HRV",
+    "eMobilityId": "HRHRV",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Connect Charge j.d.o.o.",
+      "legalName": "Connect Charge j.d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRHRV",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-HRV",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Connect Charge j.d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:INT:CPO",
+    "countryCode": "HR",
+    "partyId": "INT",
+    "eMobilityId": "HRINT",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Intis engineering d.o.o.",
+      "legalName": "Intis engineering d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRINT",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-INT",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Intis engineering d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:IOY:CPO",
+    "countryCode": "HR",
+    "partyId": "IOY",
+    "eMobilityId": "HRIOY",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "IONITY GmbH",
+      "legalName": "IONITY GmbH",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRIOY",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-IOY",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "IONITY GmbH",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:IOY:EMSP",
+    "countryCode": "HR",
+    "partyId": "IOY",
+    "eMobilityId": "HRIOY",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "IONITY GmbH",
+      "legalName": "IONITY GmbH",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRIOY",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-IOY",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "IONITY GmbH",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:KDL:CPO",
+    "countryCode": "HR",
+    "partyId": "KDL",
+    "eMobilityId": "HRKDL",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Kaufland Hrvatska k.d.",
+      "legalName": "Kaufland Hrvatska k.d.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRKDL",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-KDL",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Kaufland Hrvatska k.d.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:KDL:EMSP",
+    "countryCode": "HR",
+    "partyId": "KDL",
+    "eMobilityId": "HRKDL",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Kaufland Hrvatska k.d.",
+      "legalName": "Kaufland Hrvatska k.d.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRKDL",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-KDL",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Kaufland Hrvatska k.d.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:KOM:CPO",
+    "countryCode": "HR",
+    "partyId": "KOM",
+    "eMobilityId": "HRKOM",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Best in Parking -KOM",
+      "legalName": "Best in Parking -KOM",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRKOM",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-KOM",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Best in Parking -KOM",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:KOM:EMSP",
+    "countryCode": "HR",
+    "partyId": "KOM",
+    "eMobilityId": "HRKOM",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Best in Parking -KOM",
+      "legalName": "Best in Parking -KOM",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRKOM",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-KOM",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Best in Parking -KOM",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:LDL:CPO",
+    "countryCode": "HR",
+    "partyId": "LDL",
+    "eMobilityId": "HRLDL",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Lidl Hrvatska d.o.o. k.d.",
+      "legalName": "Lidl Hrvatska d.o.o. k.d.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRLDL",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-LDL",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Lidl Hrvatska d.o.o. k.d.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:LDL:EMSP",
+    "countryCode": "HR",
+    "partyId": "LDL",
+    "eMobilityId": "HRLDL",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Lidl Hrvatska d.o.o. k.d.",
+      "legalName": "Lidl Hrvatska d.o.o. k.d.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRLDL",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-LDL",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Lidl Hrvatska d.o.o. k.d.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:MGT:CPO",
+    "countryCode": "HR",
+    "partyId": "MGT",
+    "eMobilityId": "HRMGT",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "MegaTel komunikacije d.o.o.",
+      "legalName": "MegaTel komunikacije d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRMGT",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-MGT",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "MegaTel komunikacije d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:MGT:EMSP",
+    "countryCode": "HR",
+    "partyId": "MGT",
+    "eMobilityId": "HRMGT",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "MegaTel komunikacije d.o.o.",
+      "legalName": "MegaTel komunikacije d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRMGT",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-MGT",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "MegaTel komunikacije d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:PEP:CPO",
+    "countryCode": "HR",
+    "partyId": "PEP",
+    "eMobilityId": "HRPEP",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Petrol d.o.o.",
+      "legalName": "Petrol d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRPEP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-PEP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Petrol d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:PEP:EMSP",
+    "countryCode": "HR",
+    "partyId": "PEP",
+    "eMobilityId": "HRPEP",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Petrol d.o.o.",
+      "legalName": "Petrol d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRPEP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-PEP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Petrol d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:PHR:CPO",
+    "countryCode": "HR",
+    "partyId": "PHR",
+    "eMobilityId": "HRPHR",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Porsche Croatia d.o.o.",
+      "legalName": "Porsche Croatia d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRPHR",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-PHR",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Porsche Croatia d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:PHR:EMSP",
+    "countryCode": "HR",
+    "partyId": "PHR",
+    "eMobilityId": "HRPHR",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Porsche Croatia d.o.o.",
+      "legalName": "Porsche Croatia d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRPHR",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-PHR",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Porsche Croatia d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:PUP:CPO",
+    "countryCode": "HR",
+    "partyId": "PUP",
+    "eMobilityId": "HRPUP",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Power Up-Mobility Solutions d.o.o.",
+      "legalName": "Power Up-Mobility Solutions d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRPUP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-PUP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Power Up-Mobility Solutions d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:PUP:EMSP",
+    "countryCode": "HR",
+    "partyId": "PUP",
+    "eMobilityId": "HRPUP",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Power Up-Mobility Solutions d.o.o.",
+      "legalName": "Power Up-Mobility Solutions d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRPUP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-PUP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Power Up-Mobility Solutions d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:QEL:CPO",
+    "countryCode": "HR",
+    "partyId": "QEL",
+    "eMobilityId": "HRQEL",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Qelo Imovina d.o.o.",
+      "legalName": "Qelo Imovina d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRQEL",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-QEL",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Qelo Imovina d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:QLO:CPO",
+    "countryCode": "HR",
+    "partyId": "QLO",
+    "eMobilityId": "HRQLO",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "enasolAuto d.o.o.",
+      "legalName": "enasolAuto d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRQLO",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-QLO",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "enasolAuto d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:QLO:EMSP",
+    "countryCode": "HR",
+    "partyId": "QLO",
+    "eMobilityId": "HRQLO",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "enasolAuto d.o.o.",
+      "legalName": "enasolAuto d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRQLO",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-QLO",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "enasolAuto d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:REN:CPO",
+    "countryCode": "HR",
+    "partyId": "REN",
+    "eMobilityId": "HRREN",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "RENERGIS d.o.o.",
+      "legalName": "RENERGIS d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRREN",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-REN",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "RENERGIS d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:REN:EMSP",
+    "countryCode": "HR",
+    "partyId": "REN",
+    "eMobilityId": "HRREN",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "RENERGIS d.o.o.",
+      "legalName": "RENERGIS d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRREN",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-REN",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "RENERGIS d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:SAP:CPO",
+    "countryCode": "HR",
+    "partyId": "SAP",
+    "eMobilityId": "HRSAP",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Sunčani auto park Zagreb d.o.o.",
+      "legalName": "Sunčani auto park Zagreb d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRSAP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-SAP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Sunčani auto park Zagreb d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:SOL:CPO",
+    "countryCode": "HR",
+    "partyId": "SOL",
+    "eMobilityId": "HRSOL",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "SOLARIS PONS D.O.O.",
+      "legalName": "SOLARIS PONS D.O.O.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRSOL",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-SOL",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "SOLARIS PONS D.O.O.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:SOL:EMSP",
+    "countryCode": "HR",
+    "partyId": "SOL",
+    "eMobilityId": "HRSOL",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "SOLARIS PONS D.O.O.",
+      "legalName": "SOLARIS PONS D.O.O.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRSOL",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-SOL",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "SOLARIS PONS D.O.O.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:TLC:CPO",
+    "countryCode": "HR",
+    "partyId": "TLC",
+    "eMobilityId": "HRTLC",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Tehnologik d.o.o.",
+      "legalName": "Tehnologik d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRTLC",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-TLC",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Tehnologik d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:TLC:EMSP",
+    "countryCode": "HR",
+    "partyId": "TLC",
+    "eMobilityId": "HRTLC",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Tehnologik d.o.o.",
+      "legalName": "Tehnologik d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRTLC",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-TLC",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Tehnologik d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:TSL:CPO",
+    "countryCode": "HR",
+    "partyId": "TSL",
+    "eMobilityId": "HRTSL",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Tesla Hrvatska d.o.o.",
+      "legalName": "Tesla Hrvatska d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRTSL",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-TSL",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Tesla Hrvatska d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:TSL:EMSP",
+    "countryCode": "HR",
+    "partyId": "TSL",
+    "eMobilityId": "HRTSL",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Tesla Hrvatska d.o.o.",
+      "legalName": "Tesla Hrvatska d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRTSL",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-TSL",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Tesla Hrvatska d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:TTK:CPO",
+    "countryCode": "HR",
+    "partyId": "TTK",
+    "eMobilityId": "HRTTK",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Tehnoline telekom d.o.o.",
+      "legalName": "Tehnoline telekom d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRTTK",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-TTK",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Tehnoline telekom d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:TTK:EMSP",
+    "countryCode": "HR",
+    "partyId": "TTK",
+    "eMobilityId": "HRTTK",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "Tehnoline telekom d.o.o.",
+      "legalName": "Tehnoline telekom d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRTTK",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-TTK",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "Tehnoline telekom d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:ZIP:CPO",
+    "countryCode": "HR",
+    "partyId": "ZIP",
+    "eMobilityId": "HRZIP",
+    "role": "CPO",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "ZIPER EV CHARGING d.o.o.",
+      "legalName": "ZIPER EV CHARGING d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRZIP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-ZIP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "ZIPER EV CHARGING d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
+    "key": "hr-croidro:HR:ZIP:EMSP",
+    "countryCode": "HR",
+    "partyId": "ZIP",
+    "eMobilityId": "HRZIP",
+    "role": "EMSP",
+    "status": "ACTIVE",
+    "organization": {
+      "name": "ZIPER EV CHARGING d.o.o.",
+      "legalName": "ZIPER EV CHARGING d.o.o.",
+      "website": null
+    },
+    "source": {
+      "registryId": "hr-croidro",
+      "official": true,
+      "sourceRecordId": "HRZIP",
+      "sourceUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "sourceValue": "HR-ZIP",
+      "firstSeenAt": "2026-06-14T22:10:14.574Z",
+      "lastSeenAt": "2026-06-14T22:10:14.574Z",
+      "retrievedAt": "2026-06-14T22:10:14.574Z"
+    },
+    "metadata": {
+      "croIdroCompanyName": "ZIPER EV CHARGING d.o.o.",
+      "croIdroSeparator": "-"
+    }
+  },
+  {
     "key": "benelux-idro:LU:505:CPO",
     "countryCode": "LU",
     "partyId": "505",

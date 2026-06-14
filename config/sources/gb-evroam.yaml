@@ -1,0 +1,20 @@
+id: gb-evroam
+name: EV Roam
+authorityName: EV Roam
+jurisdictions:
+  - GB
+official: true
+homepageUrl: https://www.evroam.org.uk/
+registryUrl: https://www.evroam.org.uk/
+connector: gb-evroam
+enabled: false
+refreshSchedule: weekly
+supportedRoles:
+  - CPO
+  - EMSP
+license:
+  status: unknown
+  name: null
+  url: null
+notes: >
+  Placeholder descriptor. The connector is not implemented in the MVP.

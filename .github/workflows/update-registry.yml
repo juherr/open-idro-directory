@@ -1,0 +1,52 @@
+name: Update Registry
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: registry-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # actions/checkout v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
+        with:
+          fetch-depth: 0
+      # voidzero-dev/setup-vp v1
+      - uses: voidzero-dev/setup-vp@2dec1e33f4ab2c6d5bce1b0c4607961bb1a3f7a1
+        with:
+          node-version: "24"
+          cache: true
+      - run: vp install --frozen-lockfile
+      - run: bun run registry update --source fr-afirev
+      - run: bun run check
+      - name: Open update pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet; then
+            echo "No registry changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C automation/update-registry
+          git add data schemas build/change-summary.md
+          git commit -m "chore: update registry data"
+          git push --force-with-lease origin automation/update-registry
+          gh pr create \
+            --title "chore: update registry data" \
+            --body-file build/change-summary.md \
+            --base "${{ github.event.repository.default_branch }}" \
+            --head automation/update-registry \
+            --draft || gh pr edit automation/update-registry --body-file build/change-summary.md

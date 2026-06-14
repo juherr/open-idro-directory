@@ -1,0 +1,22 @@
+id: benelux-idro
+name: Benelux IDRO
+authorityName: Benelux IDRO
+jurisdictions:
+  - BE
+  - NL
+  - LU
+official: true
+homepageUrl: https://www.benelux-idro.eu/
+registryUrl: https://www.benelux-idro.eu/
+connector: benelux-idro
+enabled: false
+refreshSchedule: weekly
+supportedRoles:
+  - CPO
+  - EMSP
+license:
+  status: unknown
+  name: null
+  url: null
+notes: >
+  Placeholder descriptor. The connector is not implemented in the MVP.

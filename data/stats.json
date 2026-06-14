@@ -1,0 +1,21 @@
+{
+  "totalRecords": 726,
+  "recordsByCountry": {
+    "FR": 726
+  },
+  "recordsByRole": {
+    "CPO": 580,
+    "EMSP": 146
+  },
+  "recordsByStatus": {
+    "ACTIVE": 233,
+    "INACTIVE": 214,
+    "RESERVED": 143,
+    "UNKNOWN": 136
+  },
+  "recordsByRegistry": {
+    "fr-afirev": 726
+  },
+  "staleSources": [],
+  "generatedAt": "2026-06-14T00:00:00.000Z"
+}

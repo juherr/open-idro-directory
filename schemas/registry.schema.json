@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RegistryDataset",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "key",
+      "countryCode",
+      "partyId",
+      "eMobilityId",
+      "role",
+      "status",
+      "organization",
+      "source",
+      "metadata"
+    ],
+    "properties": {
+      "key": {
+        "type": "string"
+      },
+      "countryCode": {
+        "type": "string",
+        "pattern": "^[A-Z]{2}$"
+      },
+      "partyId": {
+        "type": "string"
+      },
+      "eMobilityId": {
+        "type": "string"
+      },
+      "role": {
+        "enum": [
+          "CPO",
+          "CSO",
+          "EMSP",
+          "OTHER"
+        ]
+      },
+      "status": {
+        "enum": [
+          "ACTIVE",
+          "INACTIVE",
+          "RESERVED",
+          "REVOKED",
+          "UNKNOWN"
+        ]
+      },
+      "organization": {
+        "type": "object"
+      },
+      "source": {
+        "type": "object"
+      },
+      "metadata": {
+        "type": "object"
+      }
+    }
+  }
+}

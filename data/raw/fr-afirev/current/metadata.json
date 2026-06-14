@@ -1,0 +1,10 @@
+{
+  "sourceId": "fr-afirev",
+  "contentType": "application/json; charset=utf-8",
+  "finalUrl": "https://api.afirev.fr/public/prefixes",
+  "httpStatus": 200,
+  "retrievedAt": "2026-06-14T21:13:41.454Z",
+  "etag": "W/\"17d06-LBwlmtdCKmTfLuoX/58//qEchO8\"",
+  "lastModified": null,
+  "checksum": "f509938566b82e68866719053510d6bf1054fd6feaac6b8e237e151a688154dd"
+}

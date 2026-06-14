@@ -1,0 +1,128 @@
+[
+  {
+    "id": "benelux-idro",
+    "name": "Benelux IDRO",
+    "authorityName": "Benelux IDRO",
+    "jurisdictions": [
+      "BE",
+      "NL",
+      "LU"
+    ],
+    "official": true,
+    "enabled": false,
+    "homepageUrl": "https://www.benelux-idro.eu/",
+    "registryUrl": "https://www.benelux-idro.eu/",
+    "connector": "benelux-idro",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": true,
+      "recordCount": 0,
+      "lastAttemptedRetrieval": null,
+      "lastSuccessfulRetrieval": null,
+      "checksum": null,
+      "freshness": "disabled",
+      "latestErrorSummary": null
+    }
+  },
+  {
+    "id": "de-bdew",
+    "name": "BDEW",
+    "authorityName": "BDEW",
+    "jurisdictions": [
+      "DE"
+    ],
+    "official": true,
+    "enabled": false,
+    "homepageUrl": "https://bdew-codes.de/",
+    "registryUrl": "https://bdew-codes.de/",
+    "connector": "de-bdew",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": true,
+      "recordCount": 0,
+      "lastAttemptedRetrieval": null,
+      "lastSuccessfulRetrieval": null,
+      "checksum": null,
+      "freshness": "disabled",
+      "latestErrorSummary": null
+    }
+  },
+  {
+    "id": "fr-afirev",
+    "name": "AFIREV",
+    "authorityName": "AFIREV / Avere-France",
+    "jurisdictions": [
+      "FR"
+    ],
+    "official": true,
+    "enabled": true,
+    "homepageUrl": "https://afirev.fr/prefixes/consulter-l-annuaire/",
+    "registryUrl": "https://api.afirev.fr/public/prefixes",
+    "connector": "fr-afirev",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": false,
+      "recordCount": 726,
+      "lastAttemptedRetrieval": "2026-06-14T21:13:41.454Z",
+      "lastSuccessfulRetrieval": "2026-06-14T21:13:41.454Z",
+      "checksum": "f509938566b82e68866719053510d6bf1054fd6feaac6b8e237e151a688154dd",
+      "freshness": "current",
+      "latestErrorSummary": null
+    }
+  },
+  {
+    "id": "gb-evroam",
+    "name": "EV Roam",
+    "authorityName": "EV Roam",
+    "jurisdictions": [
+      "GB"
+    ],
+    "official": true,
+    "enabled": false,
+    "homepageUrl": "https://www.evroam.org.uk/",
+    "registryUrl": "https://www.evroam.org.uk/",
+    "connector": "gb-evroam",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": true,
+      "recordCount": 0,
+      "lastAttemptedRetrieval": null,
+      "lastSuccessfulRetrieval": null,
+      "checksum": null,
+      "freshness": "disabled",
+      "latestErrorSummary": null
+    }
+  }
+]

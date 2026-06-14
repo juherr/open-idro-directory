@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+.env
+data/raw/*/
+!data/raw/.gitkeep
+!data/raw/fr-afirev/
+!data/raw/fr-afirev/current/
+!data/raw/fr-afirev/current/body.json
+!data/raw/fr-afirev/current/metadata.json
+data/raw/*/previous/

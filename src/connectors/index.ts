@@ -1,0 +1,21 @@
+import { AfirevConnector } from "./fr-afirev/afirev.connector.js";
+import type { RegistryConnector } from "./connector.js";
+import type { SourceDefinition } from "../domain/source-definition.js";
+import { createDeBdewConnector } from "./de-bdew/index.js";
+import { createBeneluxIdroConnector } from "./benelux-idro/index.js";
+import { createGbEvroamConnector } from "./gb-evroam/index.js";
+
+export function createConnector(source: SourceDefinition): RegistryConnector {
+  switch (source.connector) {
+    case "fr-afirev":
+      return new AfirevConnector();
+    case "de-bdew":
+      return createDeBdewConnector();
+    case "benelux-idro":
+      return createBeneluxIdroConnector();
+    case "gb-evroam":
+      return createGbEvroamConnector();
+    default:
+      throw new Error(`No connector registered for ${source.connector}`);
+  }
+}

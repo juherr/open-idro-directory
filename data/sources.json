@@ -1,5 +1,35 @@
 [
   {
+    "id": "at-ladestellen",
+    "name": "Ladestellen.at",
+    "authorityName": "E-Control Austria",
+    "jurisdictions": [
+      "AT"
+    ],
+    "official": true,
+    "enabled": true,
+    "homepageUrl": "https://admin.ladestellen.at/#/registrierte-ids",
+    "registryUrl": "https://admin.ladestellen.at/api/countries/AT/operators/basic",
+    "connector": "at-ladestellen",
+    "supportedRoles": [
+      "CPO"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": false,
+      "recordCount": 1107,
+      "lastAttemptedRetrieval": "2026-06-14T21:48:22.792Z",
+      "lastSuccessfulRetrieval": "2026-06-14T21:48:22.792Z",
+      "checksum": "7a9d30dcfd7344adfb823245320171fe8f06a14c1a19892d87886d021f3f5c84",
+      "freshness": "current",
+      "latestErrorSummary": null
+    }
+  },
+  {
     "id": "benelux-idro",
     "name": "Benelux IDRO",
     "authorityName": "Benelux IDRO",

@@ -7,6 +7,7 @@ export interface HttpClientOptions {
   maxBytes: number;
   allowedHosts: string[];
   userAgent: string;
+  headers?: Record<string, string>;
 }
 
 export interface HttpResponse {
@@ -41,7 +42,10 @@ export async function getText(
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), options.timeoutMs);
-      const headers: Record<string, string> = { "User-Agent": options.userAgent };
+      const headers: Record<string, string> = {
+        "User-Agent": options.userAgent,
+        ...options.headers,
+      };
       if (conditionals.etag) headers["If-None-Match"] = conditionals.etag;
       if (conditionals.lastModified) headers["If-Modified-Since"] = conditionals.lastModified;
       const response = await fetch(url, {

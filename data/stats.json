@@ -1,21 +1,23 @@
 {
-  "totalRecords": 726,
+  "totalRecords": 1833,
   "recordsByCountry": {
+    "AT": 1107,
     "FR": 726
   },
   "recordsByRole": {
-    "CPO": 580,
+    "CPO": 1687,
     "EMSP": 146
   },
   "recordsByStatus": {
-    "ACTIVE": 233,
+    "ACTIVE": 1340,
     "INACTIVE": 214,
     "RESERVED": 143,
     "UNKNOWN": 136
   },
   "recordsByRegistry": {
+    "at-ladestellen": 1107,
     "fr-afirev": 726
   },
   "staleSources": [],
-  "generatedAt": "2026-06-14T00:00:00.000Z"
+  "generatedAt": "2026-06-14T21:50:23.497Z"
 }

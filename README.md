@@ -8,12 +8,13 @@ The project uses the European Alternative Fuels Observatory's [Identification Re
 
 ## Supported Sources
 
-| Source                        | Status      | Mechanism                                                | License |
-| ----------------------------- | ----------- | -------------------------------------------------------- | ------- |
-| AFIREV (`fr-afirev`)          | Enabled     | Public JSON endpoint used by AFIREV's embedded directory | Unknown |
-| BDEW (`de-bdew`)              | Placeholder | Not implemented                                          | Unknown |
-| Benelux IDRO (`benelux-idro`) | Placeholder | Not implemented                                          | Unknown |
-| EV Roam (`gb-evroam`)         | Placeholder | Not implemented                                          | Unknown |
+| Source                            | Status      | Mechanism                                                | License |
+| --------------------------------- | ----------- | -------------------------------------------------------- | ------- |
+| Ladestellen.at (`at-ladestellen`) | Enabled     | Public JSON endpoint used by Ladestellen.at's admin UI   | Unknown |
+| AFIREV (`fr-afirev`)              | Enabled     | Public JSON endpoint used by AFIREV's embedded directory | Unknown |
+| BDEW (`de-bdew`)                  | Placeholder | Not implemented                                          | Unknown |
+| Benelux IDRO (`benelux-idro`)     | Placeholder | Not implemented                                          | Unknown |
+| EV Roam (`gb-evroam`)             | Placeholder | Not implemented                                          | Unknown |
 
 ## EAFO IDRR Coverage Reference
 
@@ -21,7 +22,7 @@ The EAFO IDRR directory currently lists these national or regional IDRO entries.
 
 | IDRR entry               | Project status     |
 | ------------------------ | ------------------ |
-| Austria                  | Backlog            |
+| Austria                  | Supported          |
 | Benelux                  | Placeholder source |
 | Croatia                  | Backlog            |
 | Cyprus                   | Backlog            |
@@ -63,6 +64,7 @@ The EAFO IDRR directory currently lists these national or regional IDRO entries.
 
 ```bash
 bun install
+bun run registry update --source at-ladestellen
 bun run registry update --source fr-afirev
 bun run check
 ```
@@ -71,6 +73,7 @@ bun run check
 
 ```bash
 bun run registry fetch
+bun run registry fetch --source at-ladestellen
 bun run registry fetch --source fr-afirev
 bun run registry build
 bun run registry validate

@@ -1,0 +1,16 @@
+[
+  {
+    "operatorId": "SMA",
+    "type": "ORGANIZATION",
+    "organization": "SMATRICS GmbH und Co KG",
+    "firstName": null,
+    "lastName": null
+  },
+  {
+    "operatorId": "009",
+    "type": "PERSON",
+    "organization": null,
+    "firstName": "Manfred",
+    "lastName": "Unger"
+  }
+]

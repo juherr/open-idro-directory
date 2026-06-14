@@ -1,4 +1,5 @@
 import { AfirevConnector } from "./fr-afirev/afirev.connector.js";
+import { LadestellenConnector } from "./at-ladestellen/ladestellen.connector.js";
 import type { RegistryConnector } from "./connector.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
 import { createDeBdewConnector } from "./de-bdew/index.js";
@@ -7,6 +8,8 @@ import { createGbEvroamConnector } from "./gb-evroam/index.js";
 
 export function createConnector(source: SourceDefinition): RegistryConnector {
   switch (source.connector) {
+    case "at-ladestellen":
+      return new LadestellenConnector();
     case "fr-afirev":
       return new AfirevConnector();
     case "de-bdew":

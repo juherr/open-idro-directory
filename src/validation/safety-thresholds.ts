@@ -60,7 +60,9 @@ function looksLikeFallback(body: string) {
   return (
     sample.includes("captcha") ||
     sample.includes("cloudflare") ||
-    sample.includes("login") ||
+    sample.includes("please log in") ||
+    sample.includes("please sign in") ||
+    sample.includes("authentication required") ||
     sample.includes("access denied") ||
     sample.includes("forbidden") ||
     sample.includes("se connecter")

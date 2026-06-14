@@ -7,7 +7,7 @@ official: true
 homepageUrl: https://bdew-codes.de/
 registryUrl: https://bdew-codes.de/
 connector: de-bdew
-enabled: false
+enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
@@ -17,4 +17,5 @@ license:
   name: null
   url: null
 notes: >
-  Placeholder descriptor. The connector is not implemented in the MVP.
+  Uses BDEW's public paginated e-mobility ID JSON endpoint for active CPO and
+  EMSP codes.

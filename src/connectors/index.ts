@@ -6,6 +6,7 @@ import { createDeBdewConnector } from "./de-bdew/index.js";
 import { createBeneluxIdroConnector } from "./benelux-idro/index.js";
 import { createCyEmsConnector } from "./cy-ems/index.js";
 import { createFstyrConnector } from "./dk-fstyr/index.js";
+import { createTraficomConnector } from "./fi-traficom/index.js";
 import { createGbEvroamConnector } from "./gb-evroam/index.js";
 import { createCroIdroConnector } from "./hr-croidro/index.js";
 
@@ -23,6 +24,8 @@ export function createConnector(source: SourceDefinition): RegistryConnector {
       return createCyEmsConnector();
     case "dk-fstyr":
       return createFstyrConnector();
+    case "fi-traficom":
+      return createTraficomConnector();
     case "gb-evroam":
       return createGbEvroamConnector();
     case "hr-croidro":

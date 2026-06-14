@@ -14,8 +14,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Benelux IDRO source descriptor, CSV export connector, parser, normalization, and fixture-based tests.
 - Croatian IDRO source descriptor, CSV export connector, parser, normalization, and fixture-based tests.
 - Danish Road Traffic Authority source descriptor, HTML table connector, parser, normalization, and fixture-based tests.
+- BDEW source descriptor, paginated JSON API connector, parser, normalization, and fixture-based tests.
+- Traficom source descriptor, HTML table connector, parser, normalization, and fixture-based tests.
 - AFIREV source descriptor, connector, parser, normalization, and fixture-based tests.
-- Disabled placeholder descriptors and connectors for BDEW, Cyprus EMS, and EV Roam.
+- Disabled placeholder descriptors and connectors for Cyprus EMS and EV Roam.
 - Deterministic JSON, minified JSON, NDJSON, CSV, source summary, and stats generation.
 - Raw source snapshot preservation with checksum and retrieval metadata.
 - Registry validation, safety thresholds, and stale-source fallback behavior.

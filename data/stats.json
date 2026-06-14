@@ -1,20 +1,22 @@
 {
-  "totalRecords": 2938,
+  "totalRecords": 6054,
   "recordsByCountry": {
     "AT": 1107,
     "BE": 357,
+    "DE": 3076,
     "DK": 81,
+    "FI": 40,
     "FR": 726,
     "HR": 77,
     "LU": 225,
     "NL": 365
   },
   "recordsByRole": {
-    "CPO": 2311,
-    "EMSP": 627
+    "CPO": 3974,
+    "EMSP": 2080
   },
   "recordsByStatus": {
-    "ACTIVE": 2445,
+    "ACTIVE": 5561,
     "INACTIVE": 214,
     "RESERVED": 143,
     "UNKNOWN": 136
@@ -22,10 +24,12 @@
   "recordsByRegistry": {
     "at-ladestellen": 1107,
     "benelux-idro": 947,
+    "de-bdew": 3076,
     "dk-fstyr": 81,
+    "fi-traficom": 40,
     "fr-afirev": 726,
     "hr-croidro": 77
   },
   "staleSources": [],
-  "generatedAt": "2026-06-14T22:26:25.327Z"
+  "generatedAt": "2026-06-14T22:45:54.450Z"
 }

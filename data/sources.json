@@ -101,7 +101,7 @@
       "DE"
     ],
     "official": true,
-    "enabled": false,
+    "enabled": true,
     "homepageUrl": "https://bdew-codes.de/",
     "registryUrl": "https://bdew-codes.de/",
     "connector": "de-bdew",
@@ -115,12 +115,12 @@
       "url": null
     },
     "health": {
-      "stale": true,
-      "recordCount": 0,
-      "lastAttemptedRetrieval": null,
-      "lastSuccessfulRetrieval": null,
-      "checksum": null,
-      "freshness": "disabled",
+      "stale": false,
+      "recordCount": 3076,
+      "lastAttemptedRetrieval": "2026-06-14T22:39:33.866Z",
+      "lastSuccessfulRetrieval": "2026-06-14T22:39:33.866Z",
+      "checksum": "b7728640dda7542663b7c80a7197e22afac6c100ca0a5812540b492060b97464",
+      "freshness": "current",
       "latestErrorSummary": null
     }
   },
@@ -151,6 +151,37 @@
       "lastAttemptedRetrieval": "2026-06-14T22:25:57.679Z",
       "lastSuccessfulRetrieval": "2026-06-14T22:25:57.679Z",
       "checksum": "3b8eaf77a8c643031a4cce42675d887004723dd2583a85cf2f4b9342f99b86e6",
+      "freshness": "current",
+      "latestErrorSummary": null
+    }
+  },
+  {
+    "id": "fi-traficom",
+    "name": "Traficom AFIR ID registry",
+    "authorityName": "Finnish Transport and Communications Agency Traficom",
+    "jurisdictions": [
+      "FI"
+    ],
+    "official": true,
+    "enabled": true,
+    "homepageUrl": "https://www.traficom.fi/en/transport-system/sustainable-transport/apply-afir-id-charging-point-operator-andor-mobility-service-provider",
+    "registryUrl": "https://www.traficom.fi/en/transport-system/sustainable-transport/apply-afir-id-charging-point-operator-andor-mobility-service-provider",
+    "connector": "fi-traficom",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": false,
+      "recordCount": 40,
+      "lastAttemptedRetrieval": "2026-06-14T22:39:33.865Z",
+      "lastSuccessfulRetrieval": "2026-06-14T22:39:33.865Z",
+      "checksum": "961d12f36049a72ee555ef853cd92227d9ce981064d5979871e42af041237bc3",
       "freshness": "current",
       "latestErrorSummary": null
     }

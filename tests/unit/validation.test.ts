@@ -36,6 +36,20 @@ describe("validation", () => {
     expect(issues.some((issue) => issue.code === "SOURCE_FALLBACK_PAGE")).toBe(false);
   });
 
+  it("allows public pages with login markup in navigation", async () => {
+    const source = await loadSourceDefinition("fi-traficom");
+    const current = [sampleRecord("ABC", "fi-traficom", "FI")];
+    const issues = checkSafetyThresholds(
+      source,
+      [],
+      current,
+      0,
+      '<html><body><header id="login-header"></header><table><th>Issued CPO ID</th></table></body></html>',
+    );
+
+    expect(issues.some((issue) => issue.code === "SOURCE_FALLBACK_PAGE")).toBe(false);
+  });
+
   it("rejects explicit access-control pages", async () => {
     const source = await loadSourceDefinition("dk-fstyr");
     const current = [sampleRecord("ABC", "dk-fstyr", "DK")];

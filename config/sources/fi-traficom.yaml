@@ -1,0 +1,22 @@
+id: fi-traficom
+name: Traficom AFIR ID registry
+authorityName: Finnish Transport and Communications Agency Traficom
+jurisdictions:
+  - FI
+official: true
+homepageUrl: https://www.traficom.fi/en/transport-system/sustainable-transport/apply-afir-id-charging-point-operator-andor-mobility-service-provider
+registryUrl: https://www.traficom.fi/en/transport-system/sustainable-transport/apply-afir-id-charging-point-operator-andor-mobility-service-provider
+connector: fi-traficom
+enabled: true
+refreshSchedule: weekly
+supportedRoles:
+  - CPO
+  - EMSP
+license:
+  status: unknown
+  name: null
+  url: null
+notes: >
+  Parses the public Traficom HTML table of issued AFIR IDs. The page also lists
+  other observed IDs, but those are not normalized because their roles are not
+  explicit.

@@ -1,0 +1,18 @@
+{
+  "cpo": [
+    { "Id": 36164, "Code": "DE NOM", "Company": "\tNortheimer Sport und Freizeit GmbH" },
+    {
+      "Id": 52392,
+      "Code": "DE EPS",
+      "Company": "\"ISATT innovatives Steuerungs- und Automatisierungstechnik Team GmbH\""
+    }
+  ],
+  "emsp": [
+    { "Id": 36163, "Code": "DE NOM", "Company": "\tNortheimer Sport und Freizeit GmbH" },
+    {
+      "Id": 52391,
+      "Code": "DE EPS",
+      "Company": "\"ISATT innovatives Steuerungs- und Automatisierungstechnik Team GmbH\""
+    }
+  ]
+}

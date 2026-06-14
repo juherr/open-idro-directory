@@ -16,7 +16,8 @@ The project uses the European Alternative Fuels Observatory's [Identification Re
 | Croatian IDRO (`hr-croidro`)               | Enabled     | Public CSV export from the ID register                   | Unknown |
 | Cyprus EMS (`cy-ems`)                      | Placeholder | Temporary EMS page; no identifier list found yet         | Unknown |
 | Danish Road Traffic Authority (`dk-fstyr`) | Enabled     | Public HTML table from the IDRO registration page        | Unknown |
-| BDEW (`de-bdew`)                           | Placeholder | Not implemented                                          | Unknown |
+| BDEW (`de-bdew`)                           | Enabled     | Public paginated JSON endpoint                           | Unknown |
+| Traficom (`fi-traficom`)                   | Enabled     | Public HTML table from the AFIR ID page                  | Unknown |
 | EV Roam (`gb-evroam`)                      | Placeholder | Not implemented                                          | Unknown |
 
 ## EAFO IDRR Coverage Reference
@@ -30,9 +31,9 @@ The EAFO IDRR directory currently lists these national or regional IDRO entries.
 | Croatia                  | Supported          |
 | Cyprus                   | Placeholder source |
 | Denmark                  | Supported          |
-| Finland                  | Backlog            |
+| Finland                  | Supported          |
 | France                   | Supported          |
-| Germany                  | Placeholder source |
+| Germany                  | Supported          |
 | Greece                   | Backlog            |
 | Hungary                  | Backlog            |
 | Ireland                  | Backlog            |
@@ -70,6 +71,8 @@ bun install
 bun run registry update --source at-ladestellen
 bun run registry update --source benelux-idro
 bun run registry update --source dk-fstyr
+bun run registry update --source de-bdew
+bun run registry update --source fi-traficom
 bun run registry update --source fr-afirev
 bun run registry update --source hr-croidro
 bun run check
@@ -82,6 +85,8 @@ bun run registry fetch
 bun run registry fetch --source at-ladestellen
 bun run registry fetch --source benelux-idro
 bun run registry fetch --source dk-fstyr
+bun run registry fetch --source de-bdew
+bun run registry fetch --source fi-traficom
 bun run registry fetch --source fr-afirev
 bun run registry fetch --source hr-croidro
 bun run registry build
@@ -109,6 +114,6 @@ Read `docs/adding-a-source.md` before adding a connector. Use official APIs or d
 
 ## Roadmap
 
-- Milestone 2: BDEW XLSX, EV Roam, conflict reporting, historical observations.
+- Milestone 2: EV Roam, conflict reporting, historical observations.
 - Milestone 3: GitHub Pages search, country-specific static JSON, lookup pages, health dashboard.
 - Milestone 4: broader IDRO coverage guided by the EAFO IDRR, source owner workflow, signed releases, public change feed.

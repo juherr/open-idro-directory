@@ -1,0 +1,48 @@
+{
+  "data": {
+    "providers": {
+      "nodes": [
+        {
+          "node_locale": "it",
+          "digitId": "CH MOV",
+          "CPO": true,
+          "EMP": false,
+          "organization": {
+            "companyName": "MOVE Mobility SA",
+            "website": "https://move.ch/"
+          }
+        },
+        {
+          "node_locale": "fr",
+          "digitId": "CH MOV",
+          "CPO": true,
+          "EMP": false,
+          "organization": {
+            "companyName": "MOVE Mobility SA",
+            "website": "https://move.ch/"
+          }
+        },
+        {
+          "node_locale": "fr",
+          "digitId": "CH ERI",
+          "CPO": true,
+          "EMP": true,
+          "organization": {
+            "companyName": "Scania DCS AB",
+            "website": "https://erinioncharge.com/"
+          }
+        },
+        {
+          "node_locale": "fr",
+          "digitId": "CH BFE",
+          "CPO": false,
+          "EMP": false,
+          "organization": {
+            "companyName": "Bundesamt fur Energie (BFE)",
+            "website": "https://www.energieschweiz.ch/"
+          }
+        }
+      ]
+    }
+  }
+}

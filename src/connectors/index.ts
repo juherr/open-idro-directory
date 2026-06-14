@@ -4,6 +4,7 @@ import type { RegistryConnector } from "./connector.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
 import { createDeBdewConnector } from "./de-bdew/index.js";
 import { createBeneluxIdroConnector } from "./benelux-idro/index.js";
+import { createSuisseEnergieConnector } from "./ch-suisseenergie/index.js";
 import { createCyEmsConnector } from "./cy-ems/index.js";
 import { createFstyrConnector } from "./dk-fstyr/index.js";
 import { createTraficomConnector } from "./fi-traficom/index.js";
@@ -20,6 +21,8 @@ export function createConnector(source: SourceDefinition): RegistryConnector {
       return createDeBdewConnector();
     case "benelux-idro":
       return createBeneluxIdroConnector();
+    case "ch-suisseenergie":
+      return createSuisseEnergieConnector();
     case "cy-ems":
       return createCyEmsConnector();
     case "dk-fstyr":

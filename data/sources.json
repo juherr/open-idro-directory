@@ -63,6 +63,37 @@
     }
   },
   {
+    "id": "ch-suisseenergie",
+    "name": "SuisseEnergie Swiss ID register",
+    "authorityName": "Swiss Federal Office of Energy",
+    "jurisdictions": [
+      "CH"
+    ],
+    "official": true,
+    "enabled": true,
+    "homepageUrl": "https://www.suisseenergie.ch/programmes/infrastructure-de-recharge/outils/identifiant-pour-les-cpo-et-les-emp/registre-suisse-des-identifiants/",
+    "registryUrl": "https://www.suisseenergie.ch/page-data/sq/d/3887988665.json",
+    "connector": "ch-suisseenergie",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": false,
+      "recordCount": 160,
+      "lastAttemptedRetrieval": "2026-06-14T22:55:48.714Z",
+      "lastSuccessfulRetrieval": "2026-06-14T22:55:48.714Z",
+      "checksum": "ecd41ca9da35e207c51730daece852c3511ec40e886ca7402b9f138cf4456cc7",
+      "freshness": "current",
+      "latestErrorSummary": null
+    }
+  },
+  {
     "id": "cy-ems",
     "name": "Cyprus EMS",
     "authorityName": "Department of Electrical and Mechanical Services",

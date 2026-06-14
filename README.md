@@ -18,6 +18,7 @@ The project uses the European Alternative Fuels Observatory's [Identification Re
 | Danish Road Traffic Authority (`dk-fstyr`) | Enabled     | Public HTML table from the IDRO registration page        | Unknown |
 | BDEW (`de-bdew`)                           | Enabled     | Public paginated JSON endpoint                           | Unknown |
 | Traficom (`fi-traficom`)                   | Enabled     | Public HTML table from the AFIR ID page                  | Unknown |
+| SuisseEnergie (`ch-suisseenergie`)         | Enabled     | Public Gatsby page-data JSON endpoint                    | Unknown |
 | EV Roam (`gb-evroam`)                      | Placeholder | Not implemented                                          | Unknown |
 
 ## EAFO IDRR Coverage Reference
@@ -44,7 +45,7 @@ The EAFO IDRR directory currently lists these national or regional IDRO entries.
 | Slovenia                 | Backlog            |
 | Spain                    | Backlog            |
 | Sweden                   | Backlog            |
-| Switzerland (Non-EU)     | Backlog            |
+| Switzerland (Non-EU)     | Supported          |
 | United Kingdom (Non-EU)  | Placeholder source |
 | Bulgaria (coming soon)   | Awaiting IDRR data |
 | Czechia (coming soon)    | Awaiting IDRR data |
@@ -75,6 +76,7 @@ bun run registry update --source de-bdew
 bun run registry update --source fi-traficom
 bun run registry update --source fr-afirev
 bun run registry update --source hr-croidro
+bun run registry update --source ch-suisseenergie
 bun run check
 ```
 
@@ -89,6 +91,7 @@ bun run registry fetch --source de-bdew
 bun run registry fetch --source fi-traficom
 bun run registry fetch --source fr-afirev
 bun run registry fetch --source hr-croidro
+bun run registry fetch --source ch-suisseenergie
 bun run registry build
 bun run registry validate
 bun run registry update

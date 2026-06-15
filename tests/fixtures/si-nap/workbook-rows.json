@@ -1,0 +1,50 @@
+[
+  ["Stanje nacionalnega registra na dan: 15.06.2026 01:14"],
+  [],
+  [],
+  [
+    "Naziv",
+    "MSP ID koda",
+    "CPO ID koda",
+    "Naslov",
+    "Hišna št.",
+    "Pošta",
+    "Kraj",
+    "Država",
+    "Davčna št.",
+    "Matična št.",
+    "Spletna stran",
+    "E-naslov splošni",
+    "Telefon splošni"
+  ],
+  [
+    "Allego, električne polnilnice, d.o.o.",
+    "",
+    "SI*ALL",
+    "Bleiweisova cesta",
+    "30",
+    "1000",
+    "Ljubljana",
+    "SI",
+    "SI61181846",
+    "9976400000",
+    "https://allego.eu",
+    "roaming@allego.eu",
+    "+31 88 03 33 033"
+  ],
+  [
+    "MARJETICA KOPER d.o.o.",
+    "SI*011",
+    "SI*010",
+    "Ulica 15. maja",
+    "4",
+    "6000",
+    "Koper",
+    "SI",
+    "SI32375204",
+    "5072255000",
+    "www.marjeticakoper.si",
+    "info@marjeticakoper.si",
+    "05 6633 700"
+  ]
+]

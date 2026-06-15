@@ -23,6 +23,10 @@ The project uses the European Alternative Fuels Observatory's [Identification Re
 | TII IDRO Public Register (`ie-tii`)            | Enabled     | Public PDF register                                      | Unknown            |
 | LVC IDRO Register (`lv-lvceli`)                | Enabled     | Public Drupal JSON page with embedded HTML table         | Unknown            |
 | Via Lietuva (`lt-vialietuva`)                  | Enabled     | Public OCPI locations endpoint for CPO identifiers       | CC BY 4.0 / ODC-BY |
+| EIPA (`pl-eipa`)                               | Enabled     | Public CSV export from the registered entities list      | Unknown            |
+| MOBI.E IDACS (`pt-mobie`)                      | Enabled     | Public PDF register                                      | Unknown            |
+| RIPREE (`es-ripree`)                           | Placeholder | Public export pages found, no IDRO party list identified | Unknown            |
+| Slovenian NAP IDRO (`si-nap`)                  | Enabled     | Public XLSX national repository from NAP                 | Unknown            |
 | SuisseEnergie (`ch-suisseenergie`)             | Enabled     | Public Gatsby page-data JSON endpoint                    | Unknown            |
 | Swedish Energy Agency (`se-energimyndigheten`) | Enabled     | Public XLSX registers for CPO and EMSP identifiers       | Unknown            |
 | EV Roam (`gb-evroam`)                          | Placeholder | Not implemented                                          | Unknown            |
@@ -46,10 +50,10 @@ The EAFO IDRR directory currently lists these national or regional IDRO entries.
 | Ireland                  | Supported          |
 | Latvia                   | Supported          |
 | Lithuania                | Supported          |
-| Poland                   | Backlog            |
-| Portugal                 | Backlog            |
-| Slovenia                 | Backlog            |
-| Spain                    | Backlog            |
+| Poland                   | Supported          |
+| Portugal                 | Supported          |
+| Slovenia                 | Supported          |
+| Spain                    | Placeholder source |
 | Sweden                   | Supported          |
 | Switzerland (Non-EU)     | Supported          |
 | United Kingdom (Non-EU)  | Placeholder source |
@@ -87,6 +91,9 @@ bun run registry update --source hr-croidro
 bun run registry update --source ie-tii
 bun run registry update --source lv-lvceli
 bun run registry update --source lt-vialietuva
+bun run registry update --source pl-eipa
+bun run registry update --source pt-mobie
+bun run registry update --source si-nap
 bun run registry update --source ch-suisseenergie
 bun run registry update --source se-energimyndigheten
 bun run check
@@ -105,6 +112,12 @@ bun run registry fetch --source fr-afirev
 bun run registry fetch --source gr-electrokinisi
 bun run registry fetch --source hu-idro
 bun run registry fetch --source hr-croidro
+bun run registry fetch --source ie-tii
+bun run registry fetch --source lv-lvceli
+bun run registry fetch --source lt-vialietuva
+bun run registry fetch --source pl-eipa
+bun run registry fetch --source pt-mobie
+bun run registry fetch --source si-nap
 bun run registry fetch --source ch-suisseenergie
 bun run registry fetch --source se-energimyndigheten
 bun run registry build

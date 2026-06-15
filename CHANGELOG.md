@@ -21,10 +21,13 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - TII IDRO Public Register source descriptor, PDF register connector, parser, normalization, and fixture-based tests.
 - LVC IDRO Register source descriptor, Drupal JSON connector, parser, normalization, and fixture-based tests.
 - Via Lietuva source descriptor, OCPI locations connector, CPO normalization, and fixture-based tests.
+- EIPA source descriptor, CSV export connector, parser, normalization, and fixture-based tests.
+- MOBI.E IDACS source descriptor, PDF register connector, parser, normalization, and fixture-based tests.
+- Slovenian NAP IDRO source descriptor, XLSX connector, parser, normalization, and fixture-based tests.
 - SuisseEnergie source descriptor, Gatsby page-data JSON connector, parser, normalization, and fixture-based tests.
 - Swedish Energy Agency source descriptor, XLSX connectors, parser, normalization, and tests.
 - AFIREV source descriptor, connector, parser, normalization, and fixture-based tests.
-- Disabled placeholder descriptors and connectors for Cyprus EMS and EV Roam.
+- Disabled placeholder descriptors and connectors for Cyprus EMS, RIPREE, and EV Roam.
 - Deterministic JSON, minified JSON, NDJSON, CSV, source summary, and stats generation.
 - Raw source snapshot preservation with checksum and retrieval metadata.
 - Registry validation, safety thresholds, and stale-source fallback behavior.

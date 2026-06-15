@@ -1,0 +1,25 @@
+id: pt-mobie
+name: MOBI.E IDACS
+authorityName: MOBI.E
+jurisdictions:
+  - PT
+official: true
+homepageUrl: https://www.mobie.pt/en/who-we-are/idacs
+registryUrl: https://www.mobie.pt/documents/42032/223588/PartyID_MOBIE.pdf
+connector: pt-mobie
+enabled: true
+refreshSchedule: weekly
+supportedRoles:
+  - CPO
+  - EMSP
+license:
+  status: unknown
+  name: null
+  url: null
+notes: >
+  Official Portuguese national IDRO page links to a public PDF with current
+  registered party IDs. The connector extracts the table text from the PDF.
+safety:
+  maxDeletionRatio: 0.3
+  maxChangeRatio: 0.8
+  maxParseErrorRatio: 0.1

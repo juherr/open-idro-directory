@@ -16,6 +16,10 @@ import { createEnergimyndighetenConnector } from "./se-energimyndigheten/index.j
 import { createTiiConnector } from "./ie-tii/index.js";
 import { createLvceliConnector } from "./lv-lvceli/index.js";
 import { createVialietuvaConnector } from "./lt-vialietuva/index.js";
+import { createEipaConnector } from "./pl-eipa/index.js";
+import { createMobieConnector } from "./pt-mobie/index.js";
+import { createNapConnector } from "./si-nap/index.js";
+import { createRipreeConnector } from "./es-ripree/index.js";
 
 export function createConnector(source: SourceDefinition): RegistryConnector {
   switch (source.connector) {
@@ -51,6 +55,14 @@ export function createConnector(source: SourceDefinition): RegistryConnector {
       return createLvceliConnector();
     case "lt-vialietuva":
       return createVialietuvaConnector();
+    case "pl-eipa":
+      return createEipaConnector();
+    case "pt-mobie":
+      return createMobieConnector();
+    case "si-nap":
+      return createNapConnector();
+    case "es-ripree":
+      return createRipreeConnector();
     default:
       throw new Error(`No connector registered for ${source.connector}`);
   }

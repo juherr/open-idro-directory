@@ -179,10 +179,41 @@
     "health": {
       "stale": false,
       "recordCount": 81,
-      "lastAttemptedRetrieval": "2026-06-14T22:25:57.679Z",
-      "lastSuccessfulRetrieval": "2026-06-14T22:25:57.679Z",
-      "checksum": "3b8eaf77a8c643031a4cce42675d887004723dd2583a85cf2f4b9342f99b86e6",
+      "lastAttemptedRetrieval": "2026-06-15T06:39:33.984Z",
+      "lastSuccessfulRetrieval": "2026-06-15T06:39:33.984Z",
+      "checksum": "24a06f8a59530752327f76ca1e20172f18f98ae3663dfdf03c7e496a0325ff0b",
       "freshness": "current",
+      "latestErrorSummary": null
+    }
+  },
+  {
+    "id": "es-ripree",
+    "name": "RIPREE",
+    "authorityName": "Ministerio para la Transición Ecológica y el Reto Demográfico",
+    "jurisdictions": [
+      "ES"
+    ],
+    "official": true,
+    "enabled": false,
+    "homepageUrl": "https://energia.serviciosmin.gob.es/RIPREE",
+    "registryUrl": "https://energia.serviciosmin.gob.es/RIPREE",
+    "connector": "es-ripree",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": true,
+      "recordCount": 0,
+      "lastAttemptedRetrieval": null,
+      "lastSuccessfulRetrieval": null,
+      "checksum": null,
+      "freshness": "disabled",
       "latestErrorSummary": null
     }
   },
@@ -333,10 +364,10 @@
     },
     "health": {
       "stale": false,
-      "recordCount": 77,
-      "lastAttemptedRetrieval": "2026-06-14T22:10:14.574Z",
-      "lastSuccessfulRetrieval": "2026-06-14T22:10:14.574Z",
-      "checksum": "204141c0ba1e37051f15077935a74bae741a6e0873d24a27d1e79cc48e6afdd1",
+      "recordCount": 0,
+      "lastAttemptedRetrieval": "2026-06-15T06:39:33.984Z",
+      "lastSuccessfulRetrieval": "2026-06-15T06:39:33.984Z",
+      "checksum": "d67225dd0ee5afcefad488d2f0b51ea62bf059d84a0cde585943c764d8f15822",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -365,9 +396,9 @@
     "health": {
       "stale": false,
       "recordCount": 1,
-      "lastAttemptedRetrieval": "2026-06-15T05:02:03.380Z",
-      "lastSuccessfulRetrieval": "2026-06-15T05:02:03.380Z",
-      "checksum": "ba67356d62246134f4d9c8ab815c9adc3e084e987d666af657a9ceecb74cbfab",
+      "lastAttemptedRetrieval": "2026-06-15T06:39:33.984Z",
+      "lastSuccessfulRetrieval": "2026-06-15T06:39:33.984Z",
+      "checksum": "2784d27e1a362c60177566e0030b1a9f0f497786bd6ff11e9c0331722305bbe6",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -426,9 +457,9 @@
     "health": {
       "stale": false,
       "recordCount": 8,
-      "lastAttemptedRetrieval": "2026-06-15T05:25:21.890Z",
-      "lastSuccessfulRetrieval": "2026-06-15T05:25:21.890Z",
-      "checksum": "8c67ed6d6c547bd838468980d9db9b051c9683b8d15861a3e2402cc4de2630ea",
+      "lastAttemptedRetrieval": "2026-06-15T06:39:33.984Z",
+      "lastSuccessfulRetrieval": "2026-06-15T06:39:33.984Z",
+      "checksum": "06382609b48d21c685e01a8e004a09bcffadb0a30530dd0ceabec4f1e55845dd",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -465,6 +496,68 @@
     }
   },
   {
+    "id": "pl-eipa",
+    "name": "EIPA",
+    "authorityName": "Urząd Dozoru Technicznego",
+    "jurisdictions": [
+      "PL"
+    ],
+    "official": true,
+    "enabled": true,
+    "homepageUrl": "https://eipa.udt.gov.pl/list",
+    "registryUrl": "https://eipa.udt.gov.pl/list/csv",
+    "connector": "pl-eipa",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": false,
+      "recordCount": 838,
+      "lastAttemptedRetrieval": "2026-06-15T06:38:44.386Z",
+      "lastSuccessfulRetrieval": "2026-06-15T06:38:44.386Z",
+      "checksum": "35f1ecdd0092758d3f91cab9edbda94efb8736380f6917b238666c0243820420",
+      "freshness": "current",
+      "latestErrorSummary": null
+    }
+  },
+  {
+    "id": "pt-mobie",
+    "name": "MOBI.E IDACS",
+    "authorityName": "MOBI.E",
+    "jurisdictions": [
+      "PT"
+    ],
+    "official": true,
+    "enabled": true,
+    "homepageUrl": "https://www.mobie.pt/en/who-we-are/idacs",
+    "registryUrl": "https://www.mobie.pt/documents/42032/223588/PartyID_MOBIE.pdf",
+    "connector": "pt-mobie",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": false,
+      "recordCount": 98,
+      "lastAttemptedRetrieval": "2026-06-15T06:39:06.721Z",
+      "lastSuccessfulRetrieval": "2026-06-15T06:39:06.721Z",
+      "checksum": "5609896209afce912b5d42024a774ae0f36b37bc881404faaf420c637f9b29ab",
+      "freshness": "current",
+      "latestErrorSummary": null
+    }
+  },
+  {
     "id": "se-energimyndigheten",
     "name": "Swedish Energy Agency IDRO",
     "authorityName": "Swedish Energy Agency",
@@ -491,6 +584,37 @@
       "lastAttemptedRetrieval": "2026-06-14T23:03:33.137Z",
       "lastSuccessfulRetrieval": "2026-06-14T23:03:33.137Z",
       "checksum": "bb96bdb986a258cd309d83dc31705dd021cc2e6285e32539033c8964fd582bc7",
+      "freshness": "current",
+      "latestErrorSummary": null
+    }
+  },
+  {
+    "id": "si-nap",
+    "name": "Slovenian NAP IDRO",
+    "authorityName": "Ministry of the Environment, Climate and Energy",
+    "jurisdictions": [
+      "SI"
+    ],
+    "official": true,
+    "enabled": true,
+    "homepageUrl": "https://www.nap.si/en/id-codes",
+    "registryUrl": "https://www.ncup.si/dc/prometej.register-cpo-msp",
+    "connector": "si-nap",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": false,
+      "recordCount": 56,
+      "lastAttemptedRetrieval": "2026-06-15T06:39:12.076Z",
+      "lastSuccessfulRetrieval": "2026-06-15T06:39:12.076Z",
+      "checksum": "17784dba3db12654829035b92358afc40e22178d6d81ea80d8319432c05d612e",
       "freshness": "current",
       "latestErrorSummary": null
     }

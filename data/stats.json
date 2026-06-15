@@ -1,5 +1,5 @@
 {
-  "totalRecords": 6447,
+  "totalRecords": 7362,
   "recordsByCountry": {
     "AT": 1107,
     "BE": 357,
@@ -9,21 +9,23 @@
     "FI": 40,
     "FR": 726,
     "GR": 131,
-    "HR": 77,
     "HU": 1,
     "IE": 26,
     "LT": 8,
     "LU": 225,
     "LV": 15,
     "NL": 365,
-    "SE": 52
+    "PL": 838,
+    "PT": 98,
+    "SE": 52,
+    "SI": 56
   },
   "recordsByRole": {
-    "CPO": 4228,
-    "EMSP": 2219
+    "CPO": 5002,
+    "EMSP": 2360
   },
   "recordsByStatus": {
-    "ACTIVE": 5954,
+    "ACTIVE": 6869,
     "INACTIVE": 214,
     "RESERVED": 143,
     "UNKNOWN": 136
@@ -37,13 +39,15 @@
     "fi-traficom": 40,
     "fr-afirev": 726,
     "gr-electrokinisi": 131,
-    "hr-croidro": 77,
     "hu-idro": 1,
     "ie-tii": 26,
     "lt-vialietuva": 8,
     "lv-lvceli": 15,
-    "se-energimyndigheten": 52
+    "pl-eipa": 838,
+    "pt-mobie": 98,
+    "se-energimyndigheten": 52,
+    "si-nap": 56
   },
   "staleSources": [],
-  "generatedAt": "2026-06-15T05:32:48.170Z"
+  "generatedAt": "2026-06-15T06:39:47.501Z"
 }

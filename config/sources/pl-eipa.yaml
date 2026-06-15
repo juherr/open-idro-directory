@@ -1,0 +1,25 @@
+id: pl-eipa
+name: EIPA
+authorityName: Urząd Dozoru Technicznego
+jurisdictions:
+  - PL
+official: true
+homepageUrl: https://eipa.udt.gov.pl/list
+registryUrl: https://eipa.udt.gov.pl/list/csv
+connector: pl-eipa
+enabled: true
+refreshSchedule: weekly
+supportedRoles:
+  - CPO
+  - EMSP
+license:
+  status: unknown
+  name: null
+  url: null
+notes: >
+  Official Polish EIPA registered entities list published as a public
+  semicolon-delimited CSV export.
+safety:
+  maxDeletionRatio: 0.3
+  maxChangeRatio: 0.8
+  maxParseErrorRatio: 0.1

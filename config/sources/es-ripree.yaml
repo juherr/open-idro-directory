@@ -1,0 +1,22 @@
+id: es-ripree
+name: RIPREE
+authorityName: Ministerio para la Transición Ecológica y el Reto Demográfico
+jurisdictions:
+  - ES
+official: true
+homepageUrl: https://energia.serviciosmin.gob.es/RIPREE
+registryUrl: https://energia.serviciosmin.gob.es/RIPREE
+connector: es-ripree
+enabled: false
+refreshSchedule: weekly
+supportedRoles:
+  - CPO
+  - EMSP
+license:
+  status: unknown
+  name: null
+  url: null
+notes: >
+  Placeholder descriptor for Spain. RIPREE exposes public export pages for
+  companies and installations, but no CPO/MSP party identifier list or stable
+  machine-readable IDRO export has been identified yet.

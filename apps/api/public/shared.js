@@ -75,12 +75,17 @@ const FALLBACK_COUNTRIES = [
 ];
 
 function getLanguage() {
-  return localStorage.getItem("oid-lang") || "fr";
+  return localStorage.getItem("oid-lang") || preferredBrowserLanguage();
 }
 
 function setLanguage(lang) {
   localStorage.setItem("oid-lang", lang);
   document.documentElement.lang = lang;
+}
+
+function preferredBrowserLanguage() {
+  const languages = navigator.languages?.length ? navigator.languages : [navigator.language];
+  return languages.some((language) => language?.toLowerCase().startsWith("fr")) ? "fr" : "en";
 }
 
 function countryName(code, lang = getLanguage()) {

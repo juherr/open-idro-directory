@@ -20,6 +20,16 @@ export interface HttpResponse {
   lastModified: string | null;
 }
 
+export interface BinaryHttpResponse {
+  body: Buffer;
+  contentType: string | null;
+  finalUrl: string;
+  status: number;
+  checksum: string;
+  etag: string | null;
+  lastModified: string | null;
+}
+
 export class HttpError extends Error {
   constructor(
     message: string,
@@ -53,29 +63,98 @@ export async function getText(
         signal: controller.signal,
         headers,
       });
-      clearTimeout(timeout);
-      validateUrl(response.url, options.allowedHosts);
-      if (!response.ok && response.status !== 304) {
-        if (isRetryableStatus(response.status) && attempt < options.retries) {
-          await sleep(200 * 2 ** attempt);
-          continue;
+      try {
+        validateUrl(response.url, options.allowedHosts);
+        if (!response.ok && response.status !== 304) {
+          if (isRetryableStatus(response.status) && attempt < options.retries) {
+            await sleep(200 * 2 ** attempt);
+            continue;
+          }
+          throw new HttpError(
+            `HTTP ${response.status} while fetching ${url}`,
+            "http",
+            response.status,
+          );
         }
-        throw new HttpError(
-          `HTTP ${response.status} while fetching ${url}`,
-          "http",
-          response.status,
-        );
+        const body = response.status === 304 ? "" : await boundedRead(response, options.maxBytes);
+        return {
+          body,
+          contentType: response.headers.get("content-type"),
+          finalUrl: response.url,
+          status: response.status,
+          checksum: sha256(body),
+          etag: response.headers.get("etag"),
+          lastModified: response.headers.get("last-modified"),
+        };
+      } finally {
+        clearTimeout(timeout);
       }
-      const body = response.status === 304 ? "" : await boundedRead(response, options.maxBytes);
-      return {
-        body,
-        contentType: response.headers.get("content-type"),
-        finalUrl: response.url,
-        status: response.status,
-        checksum: sha256(body),
-        etag: response.headers.get("etag"),
-        lastModified: response.headers.get("last-modified"),
+    } catch (error) {
+      lastError = error;
+      if (error instanceof HttpError && error.category !== "network") throw error;
+      if (attempt < options.retries) {
+        await sleep(200 * 2 ** attempt);
+        continue;
+      }
+    }
+  }
+  if (lastError instanceof Error && lastError.name === "AbortError") {
+    throw new HttpError(`Timeout while fetching ${url}`, "timeout");
+  }
+  throw new HttpError(`Network error while fetching ${url}`, "network");
+}
+
+export async function getBinary(
+  url: string,
+  options: HttpClientOptions,
+  conditionals: { etag?: string; lastModified?: string } = {},
+): Promise<BinaryHttpResponse> {
+  validateUrl(url, options.allowedHosts);
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= options.retries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), options.timeoutMs);
+      const headers: Record<string, string> = {
+        "User-Agent": options.userAgent,
+        ...options.headers,
       };
+      if (conditionals.etag) headers["If-None-Match"] = conditionals.etag;
+      if (conditionals.lastModified) headers["If-Modified-Since"] = conditionals.lastModified;
+      const response = await fetch(url, {
+        redirect: "follow",
+        signal: controller.signal,
+        headers,
+      });
+      try {
+        validateUrl(response.url, options.allowedHosts);
+        if (!response.ok && response.status !== 304) {
+          if (isRetryableStatus(response.status) && attempt < options.retries) {
+            await sleep(200 * 2 ** attempt);
+            continue;
+          }
+          throw new HttpError(
+            `HTTP ${response.status} while fetching ${url}`,
+            "http",
+            response.status,
+          );
+        }
+        const body =
+          response.status === 304
+            ? Buffer.alloc(0)
+            : await boundedReadBinary(response, options.maxBytes);
+        return {
+          body,
+          contentType: response.headers.get("content-type"),
+          finalUrl: response.url,
+          status: response.status,
+          checksum: sha256(body),
+          etag: response.headers.get("etag"),
+          lastModified: response.headers.get("last-modified"),
+        };
+      } finally {
+        clearTimeout(timeout);
+      }
     } catch (error) {
       lastError = error;
       if (error instanceof HttpError && error.category !== "network") throw error;
@@ -105,8 +184,17 @@ function isRetryableStatus(status: number) {
 }
 
 async function boundedRead(response: Response, maxBytes: number) {
+  return new TextDecoder().decode(await boundedReadBinary(response, maxBytes));
+}
+
+async function boundedReadBinary(response: Response, maxBytes: number) {
   const reader = response.body?.getReader();
-  if (!reader) return response.text();
+  if (!reader) {
+    const buffer = Buffer.from(await response.arrayBuffer());
+    if (buffer.byteLength > maxBytes)
+      throw new HttpError(`Response exceeded ${maxBytes} bytes`, "size");
+    return buffer;
+  }
   const chunks: Uint8Array[] = [];
   let total = 0;
   for (;;) {
@@ -116,9 +204,9 @@ async function boundedRead(response: Response, maxBytes: number) {
     if (total > maxBytes) throw new HttpError(`Response exceeded ${maxBytes} bytes`, "size");
     chunks.push(value);
   }
-  return new TextDecoder().decode(Buffer.concat(chunks));
+  return Buffer.concat(chunks);
 }
 
-export function sha256(value: string) {
+export function sha256(value: string | Buffer) {
   return createHash("sha256").update(value).digest("hex");
 }

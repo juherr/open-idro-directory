@@ -1,0 +1,21 @@
+id: se-energimyndigheten
+name: Swedish Energy Agency IDRO
+authorityName: Swedish Energy Agency
+jurisdictions:
+  - SE
+official: true
+homepageUrl: https://www.energimyndigheten.se/klimat/transporter/laddinfrastruktur/identification-registration-organisation-idro/
+registryUrl: https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx
+connector: se-energimyndigheten
+enabled: true
+refreshSchedule: weekly
+supportedRoles:
+  - CPO
+  - EMSP
+license:
+  status: unknown
+  name: null
+  url: null
+notes: >
+  Uses the Swedish Energy Agency's public XLSX registers: one workbook for CPO
+  identifiers and one workbook for EMSP identifiers.

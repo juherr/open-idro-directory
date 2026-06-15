@@ -1,0 +1,11 @@
+{
+  "cpo": [
+    ["ESVEid", "Operator"],
+    ["SE*AIM", "Aimo Charge"],
+    ["SEALLE", "Allego"]
+  ],
+  "emsp": [
+    ["ID", "Operator"],
+    ["SE*ESP", "EasyPark"]
+  ]
+}

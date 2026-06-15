@@ -7,9 +7,12 @@ import { createBeneluxIdroConnector } from "./benelux-idro/index.js";
 import { createSuisseEnergieConnector } from "./ch-suisseenergie/index.js";
 import { createCyEmsConnector } from "./cy-ems/index.js";
 import { createFstyrConnector } from "./dk-fstyr/index.js";
+import { createElectrokinisiConnector } from "./gr-electrokinisi/index.js";
 import { createTraficomConnector } from "./fi-traficom/index.js";
 import { createGbEvroamConnector } from "./gb-evroam/index.js";
+import { createHuIdroConnector } from "./hu-idro/index.js";
 import { createCroIdroConnector } from "./hr-croidro/index.js";
+import { createEnergimyndighetenConnector } from "./se-energimyndigheten/index.js";
 
 export function createConnector(source: SourceDefinition): RegistryConnector {
   switch (source.connector) {
@@ -27,12 +30,18 @@ export function createConnector(source: SourceDefinition): RegistryConnector {
       return createCyEmsConnector();
     case "dk-fstyr":
       return createFstyrConnector();
+    case "gr-electrokinisi":
+      return createElectrokinisiConnector();
     case "fi-traficom":
       return createTraficomConnector();
     case "gb-evroam":
       return createGbEvroamConnector();
+    case "hu-idro":
+      return createHuIdroConnector();
     case "hr-croidro":
       return createCroIdroConnector();
+    case "se-energimyndigheten":
+      return createEnergimyndighetenConnector();
     default:
       throw new Error(`No connector registered for ${source.connector}`);
   }

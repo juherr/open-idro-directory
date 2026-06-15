@@ -8,18 +8,21 @@ The project uses the European Alternative Fuels Observatory's [Identification Re
 
 ## Supported Sources
 
-| Source                                     | Status      | Mechanism                                                | License |
-| ------------------------------------------ | ----------- | -------------------------------------------------------- | ------- |
-| Ladestellen.at (`at-ladestellen`)          | Enabled     | Public JSON endpoint used by Ladestellen.at's admin UI   | Unknown |
-| AFIREV (`fr-afirev`)                       | Enabled     | Public JSON endpoint used by AFIREV's embedded directory | Unknown |
-| Benelux IDRO (`benelux-idro`)              | Enabled     | Public CSV export from the ID register                   | Unknown |
-| Croatian IDRO (`hr-croidro`)               | Enabled     | Public CSV export from the ID register                   | Unknown |
-| Cyprus EMS (`cy-ems`)                      | Placeholder | Temporary EMS page; no identifier list found yet         | Unknown |
-| Danish Road Traffic Authority (`dk-fstyr`) | Enabled     | Public HTML table from the IDRO registration page        | Unknown |
-| BDEW (`de-bdew`)                           | Enabled     | Public paginated JSON endpoint                           | Unknown |
-| Traficom (`fi-traficom`)                   | Enabled     | Public HTML table from the AFIR ID page                  | Unknown |
-| SuisseEnergie (`ch-suisseenergie`)         | Enabled     | Public Gatsby page-data JSON endpoint                    | Unknown |
-| EV Roam (`gb-evroam`)                      | Placeholder | Not implemented                                          | Unknown |
+| Source                                         | Status      | Mechanism                                                | License |
+| ---------------------------------------------- | ----------- | -------------------------------------------------------- | ------- |
+| Ladestellen.at (`at-ladestellen`)              | Enabled     | Public JSON endpoint used by Ladestellen.at's admin UI   | Unknown |
+| AFIREV (`fr-afirev`)                           | Enabled     | Public JSON endpoint used by AFIREV's embedded directory | Unknown |
+| Benelux IDRO (`benelux-idro`)                  | Enabled     | Public CSV export from the ID register                   | Unknown |
+| Croatian IDRO (`hr-croidro`)                   | Enabled     | Public CSV export from the ID register                   | Unknown |
+| Cyprus EMS (`cy-ems`)                          | Placeholder | Temporary EMS page; no identifier list found yet         | Unknown |
+| Danish Road Traffic Authority (`dk-fstyr`)     | Enabled     | Public HTML table from the IDRO registration page        | Unknown |
+| BDEW (`de-bdew`)                               | Enabled     | Public paginated JSON endpoint                           | Unknown |
+| Traficom (`fi-traficom`)                       | Enabled     | Public HTML table from the AFIR ID page                  | Unknown |
+| Hellenic IDRO (`gr-electrokinisi`)             | Enabled     | Public HTML table from the ID-register page              | Unknown |
+| Hungarian IDRO (`hu-idro`)                     | Enabled     | Public HTML list from the members page                   | Unknown |
+| SuisseEnergie (`ch-suisseenergie`)             | Enabled     | Public Gatsby page-data JSON endpoint                    | Unknown |
+| Swedish Energy Agency (`se-energimyndigheten`) | Enabled     | Public XLSX registers for CPO and EMSP identifiers       | Unknown |
+| EV Roam (`gb-evroam`)                          | Placeholder | Not implemented                                          | Unknown |
 
 ## EAFO IDRR Coverage Reference
 
@@ -35,8 +38,8 @@ The EAFO IDRR directory currently lists these national or regional IDRO entries.
 | Finland                  | Supported          |
 | France                   | Supported          |
 | Germany                  | Supported          |
-| Greece                   | Backlog            |
-| Hungary                  | Backlog            |
+| Greece                   | Supported          |
+| Hungary                  | Supported          |
 | Ireland                  | Backlog            |
 | Latvia                   | Backlog            |
 | Lithuania                | Backlog            |
@@ -44,7 +47,7 @@ The EAFO IDRR directory currently lists these national or regional IDRO entries.
 | Portugal                 | Backlog            |
 | Slovenia                 | Backlog            |
 | Spain                    | Backlog            |
-| Sweden                   | Backlog            |
+| Sweden                   | Supported          |
 | Switzerland (Non-EU)     | Supported          |
 | United Kingdom (Non-EU)  | Placeholder source |
 | Bulgaria (coming soon)   | Awaiting IDRR data |
@@ -75,8 +78,11 @@ bun run registry update --source dk-fstyr
 bun run registry update --source de-bdew
 bun run registry update --source fi-traficom
 bun run registry update --source fr-afirev
+bun run registry update --source gr-electrokinisi
+bun run registry update --source hu-idro
 bun run registry update --source hr-croidro
 bun run registry update --source ch-suisseenergie
+bun run registry update --source se-energimyndigheten
 bun run check
 ```
 
@@ -90,8 +96,11 @@ bun run registry fetch --source dk-fstyr
 bun run registry fetch --source de-bdew
 bun run registry fetch --source fi-traficom
 bun run registry fetch --source fr-afirev
+bun run registry fetch --source gr-electrokinisi
+bun run registry fetch --source hu-idro
 bun run registry fetch --source hr-croidro
 bun run registry fetch --source ch-suisseenergie
+bun run registry fetch --source se-energimyndigheten
 bun run registry build
 bun run registry validate
 bun run registry update

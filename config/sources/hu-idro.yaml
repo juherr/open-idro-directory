@@ -1,0 +1,26 @@
+id: hu-idro
+name: Hungarian IDRO
+authorityName: Hungarian ID Registration Office
+jurisdictions:
+  - HU
+official: true
+homepageUrl: https://idro.hu/en/page/members
+registryUrl: https://idro.hu/en/page/members
+connector: hu-idro
+enabled: true
+refreshSchedule: weekly
+supportedRoles:
+  - CPO
+  - EMSP
+license:
+  status: unknown
+  name: null
+  url: null
+notes: >
+  Official Hungarian IDRO members page. The download page exposes guidance PDFs,
+  but no machine-readable ID export was identified; the connector parses the
+  public server-rendered HTML list.
+safety:
+  maxDeletionRatio: 0.5
+  maxChangeRatio: 0.8
+  maxParseErrorRatio: 0.05

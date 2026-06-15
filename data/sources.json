@@ -280,6 +280,37 @@
     }
   },
   {
+    "id": "gr-electrokinisi",
+    "name": "Hellenic IDRO",
+    "authorityName": "Hellenic Ministry of Infrastructure and Transport",
+    "jurisdictions": [
+      "GR"
+    ],
+    "official": true,
+    "enabled": true,
+    "homepageUrl": "https://electrokinisi.yme.gov.gr/public/IDRO/?mlang=en",
+    "registryUrl": "https://electrokinisi.yme.gov.gr/public/IDRO/?mlang=en",
+    "connector": "gr-electrokinisi",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": false,
+      "recordCount": 131,
+      "lastAttemptedRetrieval": "2026-06-15T05:02:03.380Z",
+      "lastSuccessfulRetrieval": "2026-06-15T05:02:03.380Z",
+      "checksum": "1906ba680730ea6518a7ea9c2858e19d60c354091e3ae75739439e6d077849e3",
+      "freshness": "current",
+      "latestErrorSummary": null
+    }
+  },
+  {
     "id": "hr-croidro",
     "name": "Croatian IDRO",
     "authorityName": "CRO IDRO",
@@ -306,6 +337,68 @@
       "lastAttemptedRetrieval": "2026-06-14T22:10:14.574Z",
       "lastSuccessfulRetrieval": "2026-06-14T22:10:14.574Z",
       "checksum": "204141c0ba1e37051f15077935a74bae741a6e0873d24a27d1e79cc48e6afdd1",
+      "freshness": "current",
+      "latestErrorSummary": null
+    }
+  },
+  {
+    "id": "hu-idro",
+    "name": "Hungarian IDRO",
+    "authorityName": "Hungarian ID Registration Office",
+    "jurisdictions": [
+      "HU"
+    ],
+    "official": true,
+    "enabled": true,
+    "homepageUrl": "https://idro.hu/en/page/members",
+    "registryUrl": "https://idro.hu/en/page/members",
+    "connector": "hu-idro",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": false,
+      "recordCount": 1,
+      "lastAttemptedRetrieval": "2026-06-15T05:02:03.380Z",
+      "lastSuccessfulRetrieval": "2026-06-15T05:02:03.380Z",
+      "checksum": "ba67356d62246134f4d9c8ab815c9adc3e084e987d666af657a9ceecb74cbfab",
+      "freshness": "current",
+      "latestErrorSummary": null
+    }
+  },
+  {
+    "id": "se-energimyndigheten",
+    "name": "Swedish Energy Agency IDRO",
+    "authorityName": "Swedish Energy Agency",
+    "jurisdictions": [
+      "SE"
+    ],
+    "official": true,
+    "enabled": true,
+    "homepageUrl": "https://www.energimyndigheten.se/klimat/transporter/laddinfrastruktur/identification-registration-organisation-idro/",
+    "registryUrl": "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
+    "connector": "se-energimyndigheten",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": false,
+      "recordCount": 52,
+      "lastAttemptedRetrieval": "2026-06-14T23:03:33.137Z",
+      "lastSuccessfulRetrieval": "2026-06-14T23:03:33.137Z",
+      "checksum": "bb96bdb986a258cd309d83dc31705dd021cc2e6285e32539033c8964fd582bc7",
       "freshness": "current",
       "latestErrorSummary": null
     }

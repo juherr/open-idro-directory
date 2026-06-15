@@ -1,5 +1,5 @@
 {
-  "totalRecords": 6214,
+  "totalRecords": 6398,
   "recordsByCountry": {
     "AT": 1107,
     "BE": 357,
@@ -8,16 +8,19 @@
     "DK": 81,
     "FI": 40,
     "FR": 726,
+    "GR": 131,
     "HR": 77,
+    "HU": 1,
     "LU": 225,
-    "NL": 365
+    "NL": 365,
+    "SE": 52
   },
   "recordsByRole": {
-    "CPO": 4065,
-    "EMSP": 2149
+    "CPO": 4195,
+    "EMSP": 2203
   },
   "recordsByStatus": {
-    "ACTIVE": 5721,
+    "ACTIVE": 5905,
     "INACTIVE": 214,
     "RESERVED": 143,
     "UNKNOWN": 136
@@ -30,8 +33,11 @@
     "dk-fstyr": 81,
     "fi-traficom": 40,
     "fr-afirev": 726,
-    "hr-croidro": 77
+    "gr-electrokinisi": 131,
+    "hr-croidro": 77,
+    "hu-idro": 1,
+    "se-energimyndigheten": 52
   },
   "staleSources": [],
-  "generatedAt": "2026-06-14T22:55:53.969Z"
+  "generatedAt": "2026-06-15T05:05:53.919Z"
 }

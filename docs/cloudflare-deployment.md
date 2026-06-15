@@ -9,9 +9,12 @@ Required secrets:
 
 Required environment variable:
 
-- `API_BASE_URL`: deployed Worker URL used by smoke tests.
+- `API_BASE_URL`: deployed Worker URL used by smoke tests. Production uses
+  `https://idro.ocpi.fyi`.
 
-Before production, replace the placeholder `database_id` in `apps/api/wrangler.jsonc` with the real D1 database ID.
+The Worker is configured as a Cloudflare Custom Domain for `idro.ocpi.fyi`.
+Cloudflare manages the DNS target and certificate for this hostname during
+deployment.
 
 Local setup:
 

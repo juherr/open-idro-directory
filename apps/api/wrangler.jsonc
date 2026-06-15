@@ -7,8 +7,14 @@
     {
       "binding": "REGISTRY_DB",
       "database_name": "open-idro-directory",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "cdff8c80-e244-4c55-8f31-ef6a12014cd2",
       "migrations_dir": "migrations",
+    },
+  ],
+  "routes": [
+    {
+      "pattern": "idro.ocpi.fyi",
+      "custom_domain": true,
     },
   ],
   "observability": {

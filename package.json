@@ -35,8 +35,8 @@
     "audit": "bun audit"
   },
   "dependencies": {
-    "@commander-js/extra-typings": "^14.0.0",
-    "commander": "^14.0.2",
+    "@commander-js/extra-typings": "^15.0.0",
+    "commander": "^15.0.0",
     "fflate": "^0.8.3",
     "hono": "^4.10.7",
     "read-excel-file": "^9.2.0",
@@ -47,9 +47,9 @@
     "@cloudflare/workers-types": "^4.20251214.0",
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
-    "@types/node": "^24.10.1",
+    "@types/node": "^25.9.3",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "vite-plus": "^0.1.24",
     "vitest": "^4.0.14",
     "wrangler": "^4.55.0"

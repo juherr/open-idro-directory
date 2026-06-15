@@ -4,6 +4,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    groups:
+      commander:
+        patterns:
+          - commander
+          - "@commander-js/extra-typings"
   - package-ecosystem: github-actions
     directory: /
     schedule:

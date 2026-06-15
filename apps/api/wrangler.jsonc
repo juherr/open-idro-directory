@@ -3,6 +3,11 @@
   "name": "open-idro-directory-api",
   "main": "src/index.ts",
   "compatibility_date": "2026-06-15",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+  },
   "d1_databases": [
     {
       "binding": "REGISTRY_DB",

@@ -1,6 +1,13 @@
 const baseUrl = process.env.API_BASE_URL ?? "http://127.0.0.1:8787";
 
-const checks = ["/api/v1/health", "/api/v1/sources", "/api/v1/parties?limit=1", "/openapi.json"];
+const checks = [
+  "/",
+  "/explore/",
+  "/api/v1/health",
+  "/api/v1/sources",
+  "/api/v1/parties?limit=1",
+  "/openapi.json",
+];
 
 for (const path of checks) {
   const response = await fetch(`${baseUrl}${path}`);

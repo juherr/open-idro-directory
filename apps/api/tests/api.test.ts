@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createApp, type Env } from "../src/http/app.js";
+import worker from "../src/index.js";
 import type {
   ConflictRow,
   DatasetRelease,
@@ -160,11 +161,62 @@ describe("Cloudflare API", () => {
     expect((await request("/api/v1/stats")).status).toBe(200);
     expect((await request("/openapi.json")).status).toBe(200);
   });
+
+  it("routes web pages to static assets without intercepting the API", async () => {
+    const root = await workerRequest("/");
+    expect(root.status).toBe(200);
+    expect(root.headers.get("content-type")).toContain("text/html");
+    await expect(root.text()).resolves.toContain("Open IDRO Directory");
+
+    const explore = await workerRequest("/explore/");
+    expect(explore.status).toBe(200);
+    await expect(explore.text()).resolves.toContain("Explorateur de données");
+
+    const stats = await workerRequest("/api/v1/stats");
+    expect(stats.status).toBe(200);
+    const statsBody = (await stats.json()) as { data: { totalParties: number } };
+    expect(statsBody.data.totalParties).toBe(1);
+  });
+
+  it("returns the asset-layer 404 for unknown non-API routes", async () => {
+    const response = await workerRequest("/does-not-exist");
+    expect(response.status).toBe(404);
+    await expect(response.text()).resolves.toBe("Asset not found.");
+  });
 });
 
 function request(path: string, init?: RequestInit) {
   const app = createApp();
   return app.request(path, init, { REGISTRY_DB: fakeD1() } satisfies Env);
+}
+
+function workerRequest(path: string, init?: RequestInit) {
+  return worker.fetch(
+    new Request(`https://example.test${path}`, init) as Parameters<
+      NonNullable<typeof worker.fetch>
+    >[0],
+    { REGISTRY_DB: fakeD1(), ASSETS: fakeAssets() },
+    {} as ExecutionContext,
+  );
+}
+
+function fakeAssets(): Fetcher {
+  return {
+    fetch: async (request: Request) => {
+      const path = new URL(request.url).pathname;
+      if (path === "/" || path === "/index.html") {
+        return new Response("<!doctype html><title>Open IDRO Directory</title>", {
+          headers: { "content-type": "text/html; charset=utf-8" },
+        });
+      }
+      if (path === "/explore" || path === "/explore/" || path === "/explore/index.html") {
+        return new Response("<!doctype html><title>Explorateur de données</title>", {
+          headers: { "content-type": "text/html; charset=utf-8" },
+        });
+      }
+      return new Response("Asset not found.", { status: 404 });
+    },
+  } as Fetcher;
 }
 
 function fakeD1(): D1Database {

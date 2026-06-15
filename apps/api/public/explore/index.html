@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Explorer - Open IDRO Directory</title>
+    <meta
+      name="description"
+      content="Search, filter and trace e-mobility identifiers back to official IDRO sources."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="icon" type="image/png" href="/assets/favicon.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <nav class="topbar">
+        <div class="topbar-inner wide">
+          <a class="brand" href="/" aria-label="Open IDRO Directory">
+            <svg
+              class="brand-mark"
+              width="34"
+              height="34"
+              viewBox="0 0 64 64"
+              fill="none"
+              aria-hidden="true"
+            >
+              <rect width="64" height="64" rx="20" fill="#01355c"></rect>
+              <rect x="16" y="19" width="32" height="7" rx="3.5" fill="#fe7216"></rect>
+              <rect x="16" y="30.5" width="32" height="7" rx="3.5" fill="#5fb0e6"></rect>
+              <rect
+                x="16"
+                y="42"
+                width="21"
+                height="7"
+                rx="3.5"
+                fill="#5fb0e6"
+                opacity="0.7"
+              ></rect>
+            </svg>
+            <span class="brand-name">Open IDRO Directory</span>
+          </a>
+          <div class="nav-links">
+            <a href="/" data-i18n="home">Accueil</a>
+            <span class="nav-current" data-i18n="explore">Explorer</span>
+            <a class="nav-muted" href="/docs" target="_blank" rel="noreferrer">API</a>
+            <div class="lang-switch" aria-label="Language">
+              <button type="button" data-lang="fr">FR</button>
+              <button type="button" data-lang="en">EN</button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main class="content wide">
+        <header class="page-header">
+          <h1 class="page-title" data-i18n="title">Explorateur de données</h1>
+          <p class="page-subtitle" data-i18n="subtitle">
+            Recherchez, filtrez et remontez chaque identifiant jusqu'à sa source officielle.
+          </p>
+        </header>
+
+        <section class="filter-panel" aria-label="Search filters">
+          <form class="filter-form" id="explore-form">
+            <label class="filter-search">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#5a6b7b"
+                stroke-width="2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+              </svg>
+              <input id="query" type="text" autocomplete="off" />
+            </label>
+            <select id="country"></select>
+            <select id="role"></select>
+            <select id="status"></select>
+            <button class="primary-button" type="submit" data-i18n="searchBtn">Rechercher</button>
+          </form>
+          <div class="api-line" id="api-line" hidden>
+            <span class="api-label" data-i18n="request">Requête API</span>
+            <code id="request-path">GET /api/v1/parties?limit=25</code>
+            <button class="ghost-button" type="button" id="copy-request" data-i18n="copy">
+              Copier
+            </button>
+            <a
+              class="open-json"
+              id="open-json"
+              href="/api/v1/parties?limit=25"
+              target="_blank"
+              rel="noreferrer"
+              ><span data-i18n="openJson">Ouvrir le JSON</span> ↗</a
+            >
+          </div>
+          <div class="api-toggle-wrap">
+            <button class="link-button" type="button" id="toggle-api">
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+              <span data-i18n="showApiLabel">Voir la requête API</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="resolve-banner" id="resolve-banner" hidden>
+          <div>
+            <div class="resolve-eyebrow">
+              <span data-i18n="resolved">Identifiant résolu</span> ·
+              <span id="resolve-input"></span>
+            </div>
+            <div class="resolve-main">
+              <span class="resolve-name" id="resolve-name"></span>
+              <span class="mono-id" id="resolve-emid"></span>
+              <span id="resolve-status"></span>
+            </div>
+            <div class="resolve-sub" id="resolve-sub"></div>
+          </div>
+          <button class="secondary-button" type="button" id="open-resolved">
+            <span data-i18n="viewProvenance">Voir la provenance</span> →
+          </button>
+        </section>
+
+        <div class="results-meta">
+          <div class="result-label" id="result-label"></div>
+          <div class="context-label" data-i18n="context">Annuaire IDRO · 18 pays</div>
+        </div>
+
+        <section class="table-shell" aria-label="Search results">
+          <div class="table-head">
+            <span data-i18n="colId">Identifiant</span>
+            <span data-i18n="colName">Opérateur</span>
+            <span data-i18n="colCountry">Pays</span>
+            <span data-i18n="colStatus">Statut</span>
+            <span data-i18n="colRoles">Rôles</span>
+            <span></span>
+          </div>
+          <div id="results"></div>
+          <div class="state-box" id="loading" hidden>
+            <span class="spinner" aria-hidden="true"></span>
+            <span data-i18n="loading">Chargement...</span>
+          </div>
+          <div class="empty-state" id="empty" hidden>
+            <strong data-i18n="emptyTitle">Aucun résultat</strong>
+            <span data-i18n="emptyBody">Ajustez votre recherche ou vos filtres.</span>
+          </div>
+        </section>
+
+        <div class="load-more-wrap" id="load-more-wrap" hidden>
+          <button class="load-more" type="button" id="load-more" data-i18n="more">
+            Charger plus
+          </button>
+        </div>
+
+        <footer class="site-footer inset">
+          <div class="footer-inner">
+            <div class="footer-about">
+              <div class="footer-brand">
+                <svg width="26" height="26" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                  <rect width="64" height="64" rx="20" fill="#01355c"></rect>
+                  <rect x="16" y="19" width="32" height="7" rx="3.5" fill="#fe7216"></rect>
+                  <rect x="16" y="30.5" width="32" height="7" rx="3.5" fill="#5fb0e6"></rect>
+                  <rect
+                    x="16"
+                    y="42"
+                    width="21"
+                    height="7"
+                    rx="3.5"
+                    fill="#5fb0e6"
+                    opacity="0.7"
+                  ></rect>
+                </svg>
+                Open IDRO Directory
+              </div>
+              <p data-i18n="disclaimer">
+                Projet d'agrégation indépendant. Open IDRO Directory n'émet pas d'identifiants et ne
+                fait pas autorité.
+              </p>
+              <a class="author-link" href="https://juherr.dev" target="_blank" rel="noreferrer">
+                <img src="/assets/logo.png" alt="juherr" />
+                <span
+                  ><span data-i18n="byAuthor">Un projet de</span>
+                  <strong>juherr.dev</strong> ↗</span
+                >
+              </a>
+            </div>
+            <div class="footer-links">
+              <div>
+                <a href="/" data-i18n="home">Accueil</a>
+                <a href="/#pays" data-i18n="navCountries">Pays</a>
+                <a href="/#sources" data-i18n="navTrust">Confiance</a>
+              </div>
+              <div>
+                <a
+                  href="https://github.com/juherr/open-idro-directory"
+                  target="_blank"
+                  rel="noreferrer"
+                  >GitHub</a
+                >
+                <a href="/docs" target="_blank" rel="noreferrer">API · /api/v1</a>
+                <span>Apache-2.0</span>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </main>
+
+      <div class="detail-backdrop" id="detail-backdrop" hidden></div>
+      <aside class="detail-panel" id="detail-panel" aria-label="Party details" hidden>
+        <div class="detail-header">
+          <div class="detail-topline">
+            <span class="mono-id" id="detail-emid"></span>
+            <button class="close-button" type="button" id="close-detail" aria-label="Close">
+              ×
+            </button>
+          </div>
+          <h2 class="detail-title" id="detail-name"></h2>
+          <div class="detail-meta-line">
+            <span id="detail-status"></span>
+            <span class="detail-country" id="detail-country"></span>
+            <span class="conflict-badge" id="detail-conflict" data-i18n="conflict" hidden
+              >Conflit</span
+            >
+          </div>
+        </div>
+        <div class="state-box" id="detail-loading" hidden>
+          <span class="spinner" aria-hidden="true"></span>
+          <span data-i18n="loading">Chargement...</span>
+        </div>
+        <div class="detail-body" id="detail-body" hidden>
+          <div class="meta-grid">
+            <div>
+              <div class="meta-label" data-i18n="legalName">Raison sociale</div>
+              <div class="meta-value" id="detail-legal-name"></div>
+            </div>
+            <div>
+              <div class="meta-label" data-i18n="authority">Niveau d'autorité</div>
+              <div class="meta-value" id="detail-authority"></div>
+            </div>
+            <div>
+              <div class="meta-label" data-i18n="roles">Rôles</div>
+              <div class="meta-value" id="detail-roles"></div>
+            </div>
+            <div>
+              <div class="meta-label" data-i18n="lastSeen">Vu pour la dernière fois</div>
+              <div class="meta-value" id="detail-last-seen"></div>
+            </div>
+            <div class="meta-item full" id="detail-website-wrap" hidden>
+              <div class="meta-label" data-i18n="website">Site web</div>
+              <div class="meta-value">
+                <a id="detail-website" href="#" target="_blank" rel="noreferrer"></a>
+              </div>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="panel-title" data-i18n="provenance">Provenance</div>
+            <p class="panel-subtitle" data-i18n="provenanceSub">
+              D'où provient cet identifiant, et chez quelle autorité le vérifier.
+            </p>
+            <div id="observations"></div>
+          </div>
+          <div class="detail-api">
+            <code id="detail-path"></code>
+            <a id="detail-open-json" href="#" target="_blank" rel="noreferrer"
+              ><span data-i18n="openJson">Ouvrir le JSON</span> ↗</a
+            >
+          </div>
+        </div>
+      </aside>
+    </div>
+    <script src="/shared.js"></script>
+    <script src="/explorer.js"></script>
+  </body>
+</html>

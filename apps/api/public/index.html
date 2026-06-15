@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Open IDRO Directory</title>
+    <meta
+      name="description"
+      content="Open directory for European e-mobility identifiers aggregated from official IDRO registries."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="icon" type="image/png" href="/assets/favicon.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <nav class="topbar">
+        <div class="topbar-inner">
+          <a class="brand" href="/" aria-label="Open IDRO Directory">
+            <svg
+              class="brand-mark"
+              width="34"
+              height="34"
+              viewBox="0 0 64 64"
+              fill="none"
+              aria-hidden="true"
+            >
+              <rect width="64" height="64" rx="20" fill="#01355c"></rect>
+              <rect x="16" y="19" width="32" height="7" rx="3.5" fill="#fe7216"></rect>
+              <rect x="16" y="30.5" width="32" height="7" rx="3.5" fill="#5fb0e6"></rect>
+              <rect
+                x="16"
+                y="42"
+                width="21"
+                height="7"
+                rx="3.5"
+                fill="#5fb0e6"
+                opacity="0.7"
+              ></rect>
+            </svg>
+            <span class="brand-name">Open IDRO Directory</span>
+          </a>
+          <div class="nav-links">
+            <a href="/explore/" data-i18n="navExplore">Explorer</a>
+            <a href="#pays" data-i18n="navCountries">Pays</a>
+            <a href="#sources" data-i18n="navSources">Confiance</a>
+            <a class="nav-muted" href="/docs" target="_blank" rel="noreferrer">API</a>
+            <div class="lang-switch" aria-label="Language">
+              <button type="button" data-lang="fr">FR</button>
+              <button type="button" data-lang="en">EN</button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <header class="hero">
+        <div class="live-pill">
+          <span class="pulse" aria-hidden="true"></span>
+          <span data-i18n="kicker">Données interrogées en direct via l'API</span>
+        </div>
+        <h1 class="hero-title" data-i18n="heroTitle">
+          Tous les identifiants e-mobilité d'Europe, au même endroit.
+        </h1>
+        <p class="hero-subtitle" data-i18n="heroSub">
+          Recherchez un opérateur, un identifiant ou un pays. Open IDRO Directory rassemble les
+          registres IDRO officiels et vous laisse naviguer librement dans la donnée.
+        </p>
+        <form class="search-form" id="landing-search">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#5a6b7b"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+          </svg>
+          <input id="landing-query" type="text" autocomplete="off" />
+          <button class="primary-button" type="submit" data-i18n="searchBtn">Rechercher</button>
+        </form>
+        <div class="chips">
+          <span class="chips-label" data-i18n="chipsLabel">Recherches fréquentes :</span>
+          <span id="popular-chips"></span>
+        </div>
+      </header>
+
+      <main>
+        <section class="content" aria-labelledby="stats-title">
+          <h2 id="stats-title" hidden>Live statistics</h2>
+          <div class="stats-card">
+            <div class="stats-top">
+              <div class="live-line">
+                <span class="pulse orange" aria-hidden="true"></span>
+                <span class="live-label" data-i18n="live">En direct</span>
+                <span class="updated-label"
+                  >· <span data-i18n="updated">mis à jour</span>
+                  <span id="updated-at">—</span></span
+                >
+              </div>
+              <span class="source-label"
+                ><span data-i18n="source">source :</span> idro.juherr.dev/api/v1</span
+              >
+            </div>
+            <div class="stats-grid">
+              <div>
+                <div class="metric-value" id="metric-identifiers">0</div>
+                <div class="metric-label" data-i18n="mIdentifiers">Identifiants e-mobilité</div>
+              </div>
+              <div>
+                <div class="metric-value" id="metric-parties">0</div>
+                <div class="metric-label" data-i18n="mParties">Opérateurs & organisations</div>
+              </div>
+              <div>
+                <div class="metric-value" id="metric-countries">0</div>
+                <div class="metric-label" data-i18n="mCountries">Pays couverts</div>
+              </div>
+              <div>
+                <div class="metric-value" id="metric-sources">0</div>
+                <div class="metric-label" data-i18n="mSources">Registres sources</div>
+              </div>
+            </div>
+            <div class="role-split">
+              <div class="role-labels">
+                <span><strong id="metric-cpo">0</strong> <span data-i18n="cpo">CPO</span></span>
+                <span data-i18n="roleSplit">Répartition par rôle</span>
+                <span><strong id="metric-emsp">0</strong> <span data-i18n="emsp">EMSP</span></span>
+              </div>
+              <div class="split-bar" aria-hidden="true">
+                <div class="split-cpo" id="split-cpo" style="width: 50%"></div>
+                <div class="split-emsp" id="split-emsp" style="width: 50%"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content section" id="pays">
+          <div class="section-heading">
+            <div>
+              <h2 data-i18n="countriesTitle">Parcourir par pays</h2>
+              <p data-i18n="countriesSub">
+                Sélectionnez un pays pour explorer ses identifiants et leurs sources officielles.
+              </p>
+            </div>
+            <a class="text-link" href="/explore/" data-i18n="seeAll">Tout explorer →</a>
+          </div>
+          <div class="country-grid" id="country-grid"></div>
+        </section>
+
+        <section class="content section" id="sources">
+          <div class="trust-grid">
+            <article class="trust-card">
+              <div class="trust-icon">
+                <svg
+                  width="21"
+                  height="21"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"></path>
+                  <path d="M9 12l2 2 4-4"></path>
+                </svg>
+              </div>
+              <h3 data-i18n="trust1Title">Provenance vérifiable</h3>
+              <p data-i18n="trust1Body">
+                Chaque valeur conserve son registre d'origine, l'URL source et l'horodatage de
+                collecte.
+              </p>
+            </article>
+            <article class="trust-card">
+              <div class="trust-icon">
+                <svg
+                  width="21"
+                  height="21"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M12 7v5l3 2"></path>
+                </svg>
+              </div>
+              <h3 data-i18n="trust2Title">Toujours à jour</h3>
+              <p data-i18n="trust2Body">
+                Les sources sont rafraîchies en continu ; une source en échec est signalée, jamais
+                effacée.
+              </p>
+            </article>
+            <article class="trust-card">
+              <div class="trust-icon orange">
+                <svg
+                  width="21"
+                  height="21"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                  <path d="M7 11V8a5 5 0 0 1 9.5-2"></path>
+                </svg>
+              </div>
+              <h3 data-i18n="trust3Title">Accès libre</h3>
+              <p data-i18n="trust3Body">
+                Consultation gratuite, sans compte ni clé. Données ouvertes en lecture seule pour
+                tous.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="content section">
+          <div class="cta-band">
+            <h2 data-i18n="ctaTitle">Explorez l'annuaire complet</h2>
+            <p data-i18n="ctaSub">
+              Filtrez par pays, rôle (CPO / EMSP) et statut. Recherchez un identifiant et remontez
+              jusqu'à sa source.
+            </p>
+            <a class="primary-button" href="/explore/"
+              ><span data-i18n="ctaBtn">Explorer les données</span> <span>→</span></a
+            >
+            <div class="dev-note">
+              <span data-i18n="devNote">Développeur ? Tout est aussi disponible via l'API</span>
+              <a href="/docs" target="_blank" rel="noreferrer">/api/v1 →</a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="footer-inner">
+          <div class="footer-about">
+            <div class="footer-brand">
+              <svg width="26" height="26" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <rect width="64" height="64" rx="20" fill="#01355c"></rect>
+                <rect x="16" y="19" width="32" height="7" rx="3.5" fill="#fe7216"></rect>
+                <rect x="16" y="30.5" width="32" height="7" rx="3.5" fill="#5fb0e6"></rect>
+                <rect
+                  x="16"
+                  y="42"
+                  width="21"
+                  height="7"
+                  rx="3.5"
+                  fill="#5fb0e6"
+                  opacity="0.7"
+                ></rect>
+              </svg>
+              Open IDRO Directory
+            </div>
+            <p data-i18n="disclaimer">
+              Projet d'agrégation indépendant. Open IDRO Directory n'émet pas d'identifiants et ne
+              fait pas autorité.
+            </p>
+            <a class="author-link" href="https://juherr.dev" target="_blank" rel="noreferrer">
+              <img src="/assets/logo.png" alt="juherr" />
+              <span
+                ><span data-i18n="byAuthor">Un projet de</span> <strong>juherr.dev</strong> ↗</span
+              >
+            </a>
+          </div>
+          <div class="footer-links">
+            <div>
+              <a href="/explore/" data-i18n="navExplore">Explorer</a>
+              <a href="#pays" data-i18n="navCountries">Pays</a>
+              <a href="#sources" data-i18n="navSources">Confiance</a>
+            </div>
+            <div>
+              <a
+                href="https://github.com/juherr/open-idro-directory"
+                target="_blank"
+                rel="noreferrer"
+                >GitHub</a
+              >
+              <a href="/docs" target="_blank" rel="noreferrer">API · /api/v1</a>
+              <span>Apache-2.0</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/shared.js"></script>
+    <script src="/landing.js"></script>
+  </body>
+</html>

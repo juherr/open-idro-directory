@@ -158,7 +158,16 @@ describe("Cloudflare API", () => {
     expect((await request("/api/v1/sources/fr-afirev/health")).status).toBe(200);
     expect((await request("/api/v1/parties/FR/ABC/observations")).status).toBe(200);
     expect((await request("/api/v1/parties/FR/ABC/conflicts")).status).toBe(200);
-    expect((await request("/api/v1/stats")).status).toBe(200);
+    const stats = await request("/api/v1/stats");
+    expect(stats.status).toBe(200);
+    const statsBody = (await stats.json()) as {
+      data: {
+        countsByCountry: Record<string, number>;
+        countsByIdentifierCountry: Record<string, number>;
+      };
+    };
+    expect(statsBody.data.countsByCountry.FR).toBe(1);
+    expect(statsBody.data.countsByIdentifierCountry.FR).toBe(2);
     expect((await request("/openapi.json")).status).toBe(200);
   });
 
@@ -174,8 +183,11 @@ describe("Cloudflare API", () => {
 
     const stats = await workerRequest("/api/v1/stats");
     expect(stats.status).toBe(200);
-    const statsBody = (await stats.json()) as { data: { totalParties: number } };
+    const statsBody = (await stats.json()) as {
+      data: { totalParties: number; countsByIdentifierCountry: Record<string, number> };
+    };
     expect(statsBody.data.totalParties).toBe(1);
+    expect(statsBody.data.countsByIdentifierCountry.FR).toBe(2);
   });
 
   it("returns the asset-layer 404 for unknown non-API routes", async () => {
@@ -245,7 +257,7 @@ function first<T>(sql: string, params: unknown[]): T | null {
     return party as T;
   if (sql.includes("FROM sources") && sql.includes("id = ?")) return source as T;
   if (sql.includes("SELECT") && sql.includes("AS parties")) {
-    return { parties: 1, observations: 1, conflicts: 1 } as T;
+    return { parties: 1, observations: 2, conflicts: 1 } as T;
   }
   return null;
 }
@@ -253,6 +265,8 @@ function first<T>(sql: string, params: unknown[]): T | null {
 function all<T>(sql: string, _params: unknown[]): T[] {
   if (sql.includes("FROM parties p")) return [party] as T[];
   if (sql.includes("FROM party_roles")) return [role] as T[];
+  if (sql.includes("FROM observations") && sql.includes("GROUP BY country_code"))
+    return [{ key: "FR", count: 2 }] as T[];
   if (sql.includes("FROM observations")) return [observation] as T[];
   if (sql.includes("FROM conflicts")) return [conflict] as T[];
   if (sql.includes("FROM sources") && !sql.includes("id = ?")) return [source] as T[];

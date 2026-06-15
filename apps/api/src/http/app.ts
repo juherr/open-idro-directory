@@ -222,6 +222,7 @@ export function createApp() {
         totalObservations: stats.totals?.observations ?? 0,
         totalConflicts: stats.totals?.conflicts ?? 0,
         countsByCountry: countMap(stats.countries),
+        countsByIdentifierCountry: countMap(stats.identifierCountries),
         countsByRole: countMap(stats.roles),
         countsByStatus: countMap(stats.statuses),
         countsByAuthorityLevel: countMap(stats.authorityLevels),

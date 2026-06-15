@@ -22,6 +22,26 @@ const LANDING_FALLBACK_STATS = {
     SE: 52,
     SI: 30,
   },
+  countsByIdentifierCountry: {
+    AT: 1107,
+    BE: 357,
+    CH: 160,
+    DE: 3076,
+    DK: 81,
+    FI: 40,
+    FR: 726,
+    GR: 131,
+    HU: 1,
+    IE: 26,
+    LT: 8,
+    LU: 225,
+    LV: 15,
+    NL: 365,
+    PL: 838,
+    PT: 98,
+    SE: 52,
+    SI: 56,
+  },
   countsByRole: { CPO: 5002, EMSP: 2360 },
   datasetTimestamp: "2026-06-15T06:39:47.501Z",
 };
@@ -151,7 +171,7 @@ function renderStats() {
   const lang = getLanguage();
   const stats = landingState.stats || LANDING_FALLBACK_STATS;
   const root = landingState.root || LANDING_FALLBACK_ROOT;
-  const countries = stats.countsByCountry || {};
+  const countries = stats.countsByIdentifierCountry || stats.countsByCountry || {};
   const cpo = stats.countsByRole?.CPO || 0;
   const emsp = stats.countsByRole?.EMSP || 0;
   const roleTotal = cpo + emsp || 1;
@@ -172,7 +192,7 @@ function renderStats() {
 function renderCountries() {
   const lang = getLanguage();
   const stats = landingState.stats || LANDING_FALLBACK_STATS;
-  const countries = stats.countsByCountry || {};
+  const countries = stats.countsByIdentifierCountry || stats.countsByCountry || {};
   const html = Object.keys(countries)
     .sort((left, right) => countries[right] - countries[left])
     .map(

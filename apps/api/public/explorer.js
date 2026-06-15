@@ -482,7 +482,8 @@ function submitSearch() {
 async function loadContext() {
   try {
     const stats = await apiGet("/api/v1/stats");
-    state.countsByCountry = stats.data?.countsByCountry || {};
+    state.countsByCountry =
+      stats.data?.countsByIdentifierCountry || stats.data?.countsByCountry || {};
     renderOptions();
   } catch {
     state.countsByCountry = {};

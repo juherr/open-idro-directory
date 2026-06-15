@@ -212,41 +212,62 @@ export class RegistryRepository {
   }
 
   async stats(releaseId: string) {
-    const [countries, roles, statuses, authorityLevels, sources, conflicts, totals] =
-      await Promise.all([
-        this.all<{ key: string; count: number }>(
-          "SELECT country_code AS key, COUNT(*) AS count FROM parties WHERE dataset_release_id = ? GROUP BY country_code ORDER BY country_code",
-          [releaseId],
-        ),
-        this.all<{ key: string; count: number }>(
-          "SELECT role AS key, COUNT(*) AS count FROM party_roles WHERE dataset_release_id = ? GROUP BY role ORDER BY role",
-          [releaseId],
-        ),
-        this.all<{ key: string; count: number }>(
-          "SELECT consolidated_status AS key, COUNT(*) AS count FROM parties WHERE dataset_release_id = ? GROUP BY consolidated_status ORDER BY consolidated_status",
-          [releaseId],
-        ),
-        this.all<{ key: string; count: number }>(
-          "SELECT highest_authority_level AS key, COUNT(*) AS count FROM parties WHERE dataset_release_id = ? GROUP BY highest_authority_level ORDER BY highest_authority_level",
-          [releaseId],
-        ),
-        this.all<{ key: string; count: number }>(
-          "SELECT id AS key, record_count AS count FROM sources WHERE dataset_release_id = ? ORDER BY id",
-          [releaseId],
-        ),
-        this.all<{ key: string; count: number }>(
-          "SELECT severity AS key, COUNT(*) AS count FROM conflicts WHERE dataset_release_id = ? GROUP BY severity ORDER BY severity",
-          [releaseId],
-        ),
-        this.first<{ parties: number; observations: number; conflicts: number }>(
-          `SELECT
+    const [
+      countries,
+      identifierCountries,
+      roles,
+      statuses,
+      authorityLevels,
+      sources,
+      conflicts,
+      totals,
+    ] = await Promise.all([
+      this.all<{ key: string; count: number }>(
+        "SELECT country_code AS key, COUNT(*) AS count FROM parties WHERE dataset_release_id = ? GROUP BY country_code ORDER BY country_code",
+        [releaseId],
+      ),
+      this.all<{ key: string; count: number }>(
+        "SELECT country_code AS key, COUNT(*) AS count FROM observations WHERE dataset_release_id = ? GROUP BY country_code ORDER BY country_code",
+        [releaseId],
+      ),
+      this.all<{ key: string; count: number }>(
+        "SELECT role AS key, COUNT(*) AS count FROM party_roles WHERE dataset_release_id = ? GROUP BY role ORDER BY role",
+        [releaseId],
+      ),
+      this.all<{ key: string; count: number }>(
+        "SELECT consolidated_status AS key, COUNT(*) AS count FROM parties WHERE dataset_release_id = ? GROUP BY consolidated_status ORDER BY consolidated_status",
+        [releaseId],
+      ),
+      this.all<{ key: string; count: number }>(
+        "SELECT highest_authority_level AS key, COUNT(*) AS count FROM parties WHERE dataset_release_id = ? GROUP BY highest_authority_level ORDER BY highest_authority_level",
+        [releaseId],
+      ),
+      this.all<{ key: string; count: number }>(
+        "SELECT id AS key, record_count AS count FROM sources WHERE dataset_release_id = ? ORDER BY id",
+        [releaseId],
+      ),
+      this.all<{ key: string; count: number }>(
+        "SELECT severity AS key, COUNT(*) AS count FROM conflicts WHERE dataset_release_id = ? GROUP BY severity ORDER BY severity",
+        [releaseId],
+      ),
+      this.first<{ parties: number; observations: number; conflicts: number }>(
+        `SELECT
           (SELECT COUNT(*) FROM parties WHERE dataset_release_id = ?) AS parties,
           (SELECT COUNT(*) FROM observations WHERE dataset_release_id = ?) AS observations,
           (SELECT COUNT(*) FROM conflicts WHERE dataset_release_id = ?) AS conflicts`,
-          [releaseId, releaseId, releaseId],
-        ),
-      ]);
-    return { countries, roles, statuses, authorityLevels, sources, conflicts, totals };
+        [releaseId, releaseId, releaseId],
+      ),
+    ]);
+    return {
+      countries,
+      identifierCountries,
+      roles,
+      statuses,
+      authorityLevels,
+      sources,
+      conflicts,
+      totals,
+    };
   }
 
   async first<T>(sql: string, params: unknown[] = []) {

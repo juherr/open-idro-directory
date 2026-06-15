@@ -52,6 +52,7 @@ CREATE TABLE parties (
   first_seen_at TEXT NOT NULL,
   last_seen_at TEXT NOT NULL,
   normalized_name TEXT NOT NULL,
+  normalized_legal_name TEXT NOT NULL,
   dataset_release_id TEXT NOT NULL,
   UNIQUE(dataset_release_id, country_code, party_id),
   FOREIGN KEY(dataset_release_id) REFERENCES dataset_releases(id)
@@ -122,6 +123,7 @@ CREATE TABLE active_dataset (
 CREATE INDEX idx_parties_emobility_id ON parties(dataset_release_id, emobility_id);
 CREATE INDEX idx_parties_country_party ON parties(dataset_release_id, country_code, party_id);
 CREATE INDEX idx_parties_name ON parties(dataset_release_id, normalized_name);
+CREATE INDEX idx_parties_legal_name ON parties(dataset_release_id, normalized_legal_name);
 CREATE INDEX idx_parties_status ON parties(dataset_release_id, consolidated_status);
 CREATE INDEX idx_parties_authority ON parties(dataset_release_id, highest_authority_level);
 CREATE INDEX idx_parties_cursor ON parties(dataset_release_id, country_code, party_id);

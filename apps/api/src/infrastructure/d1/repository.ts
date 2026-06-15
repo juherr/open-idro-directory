@@ -76,11 +76,11 @@ export class RegistryRepository {
     }
     if (filters.q) {
       clauses.push(
-        "(p.normalized_name LIKE ? ESCAPE '\\' OR p.emobility_id LIKE ? OR p.party_id LIKE ?)",
+        "(p.normalized_name LIKE ? ESCAPE '\\' OR p.normalized_legal_name LIKE ? ESCAPE '\\' OR p.emobility_id LIKE ? OR p.party_id LIKE ?)",
       );
       const pattern = `%${filters.q.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_")}%`;
       const prefix = `${filters.q.toUpperCase()}%`;
-      params.push(pattern, prefix, prefix);
+      params.push(pattern, pattern, prefix, prefix);
     }
     if (filters.role) {
       clauses.push(

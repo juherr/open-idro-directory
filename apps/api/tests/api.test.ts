@@ -29,7 +29,7 @@ const party: PartyRow = {
   party_id: "ABC",
   emobility_id: "FRABC",
   preferred_name: "Example Mobility",
-  legal_name: null,
+  legal_name: "Example Legal Group",
   website: "https://example.com",
   consolidated_status: "ACTIVE",
   highest_authority_level: "AUTHORITATIVE",
@@ -39,6 +39,7 @@ const party: PartyRow = {
   first_seen_at: "2026-01-01T00:00:00.000Z",
   last_seen_at: "2026-01-01T00:00:00.000Z",
   normalized_name: "example mobility",
+  normalized_legal_name: "example legal group",
   dataset_release_id: release.id,
 };
 
@@ -138,6 +139,13 @@ describe("Cloudflare API", () => {
     expect(list.status).toBe(200);
     const listBody = (await list.json()) as { data: { items: Array<{ eMobilityId: string }> } };
     expect(listBody.data.items[0]?.eMobilityId).toBe("FRABC");
+
+    const legalNameSearch = await request("/api/v1/parties?q=legal%20group&limit=1");
+    expect(legalNameSearch.status).toBe(200);
+    const legalNameSearchBody = (await legalNameSearch.json()) as {
+      data: { items: Array<{ eMobilityId: string }> };
+    };
+    expect(legalNameSearchBody.data.items[0]?.eMobilityId).toBe("FRABC");
 
     const resolved = await request("/api/v1/resolve/FRABC");
     const resolvedBody = (await resolved.json()) as { data: { party: { partyId: string } } };
@@ -264,8 +272,13 @@ function first<T>(sql: string, params: unknown[]): T | null {
   return null;
 }
 
-function all<T>(sql: string, _params: unknown[]): T[] {
-  if (sql.includes("FROM parties p")) return [party] as T[];
+function all<T>(sql: string, params: unknown[]): T[] {
+  if (sql.includes("FROM parties p")) {
+    if (params.some((param) => String(param).includes("legal group"))) {
+      return sql.includes("p.normalized_legal_name") ? ([party] as T[]) : [];
+    }
+    return [party] as T[];
+  }
   if (sql.includes("FROM party_roles")) return [role] as T[];
   if (sql.includes("FROM observations") && sql.includes("GROUP BY country_code"))
     return [{ key: "FR", count: 2 }] as T[];

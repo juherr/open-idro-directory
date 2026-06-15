@@ -51,6 +51,7 @@ export interface PartyRow {
   first_seen_at: string;
   last_seen_at: string;
   normalized_name: string;
+  normalized_legal_name: string;
   dataset_release_id: string;
 }
 

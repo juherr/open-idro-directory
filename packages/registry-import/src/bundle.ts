@@ -234,6 +234,7 @@ function toParties(
         first_seen_at: minIso(partyRecords.map((record) => record.source.firstSeenAt)),
         last_seen_at: maxIso(partyRecords.map((record) => record.source.lastSeenAt)),
         normalized_name: normalizeSearchText(selected.organization.name),
+        normalized_legal_name: normalizeSearchText(selected.organization.legalName),
         dataset_release_id: datasetReleaseId,
       };
     })

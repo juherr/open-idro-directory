@@ -12,6 +12,7 @@ import { checkSafetyThresholds } from "../validation/safety-thresholds.js";
 export interface BuildOptions {
   sourceId?: string;
   generatedAt?: string;
+  outputDir?: string;
 }
 
 export async function buildRegistry(sources: SourceDefinition[], options: BuildOptions = {}) {
@@ -80,7 +81,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     }
   }
   const registryIssues = validateRegistry(records, sources);
-  await writeDatasets(records, sources, results, generatedAt);
+  await writeDatasets(records, sources, results, generatedAt, options.outputDir);
   if (registryIssues.some((issue) => issue.severity === "error")) {
     throw new Error(
       `Registry validation failed: ${registryIssues.map((issue) => issue.message).join("; ")}`,

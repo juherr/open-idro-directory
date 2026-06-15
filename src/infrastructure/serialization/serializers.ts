@@ -19,22 +19,23 @@ export async function writeDatasets(
   sources: SourceDefinition[],
   results: SourceBuildResult[],
   generatedAt: string,
+  outputDir = fromRoot("data"),
 ) {
-  await mkdir(fromRoot("data"), { recursive: true });
+  await mkdir(outputDir, { recursive: true });
   const sorted = sortRecords(records);
-  await writeFile(fromRoot("data", "registry.json"), `${JSON.stringify(sorted, null, 2)}\n`);
-  await writeFile(fromRoot("data", "registry.min.json"), JSON.stringify(sorted));
+  await writeFile(`${outputDir}/registry.json`, `${JSON.stringify(sorted, null, 2)}\n`);
+  await writeFile(`${outputDir}/registry.min.json`, JSON.stringify(sorted));
   await writeFile(
-    fromRoot("data", "registry.ndjson"),
+    `${outputDir}/registry.ndjson`,
     sorted.map((record) => JSON.stringify(record)).join("\n") + "\n",
   );
-  await writeFile(fromRoot("data", "registry.csv"), toCsv(sorted));
+  await writeFile(`${outputDir}/registry.csv`, toCsv(sorted));
   await writeFile(
-    fromRoot("data", "sources.json"),
+    `${outputDir}/sources.json`,
     `${JSON.stringify(toSourcesSummary(sources, results), null, 2)}\n`,
   );
   await writeFile(
-    fromRoot("data", "stats.json"),
+    `${outputDir}/stats.json`,
     `${JSON.stringify(toStats(sorted, results, generatedAt), null, 2)}\n`,
   );
 }

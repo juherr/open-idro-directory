@@ -1,4 +1,5 @@
-const baseUrl = process.env.API_BASE_URL ?? "http://127.0.0.1:8787";
+const configuredBaseUrl = process.env.API_BASE_URL ?? "http://127.0.0.1:8787";
+const siteOrigin = new URL(configuredBaseUrl).origin;
 
 const checks = [
   "/",
@@ -10,17 +11,17 @@ const checks = [
 ];
 
 for (const path of checks) {
-  const response = await fetch(`${baseUrl}${path}`);
+  const response = await fetch(`${siteOrigin}${path}`);
   if (!response.ok) {
     throw new Error(`Smoke check failed for ${path}: ${response.status}`);
   }
 }
 
-const methodCheck = await fetch(`${baseUrl}/api/v1/parties`, { method: "POST" });
+const methodCheck = await fetch(`${siteOrigin}/api/v1/parties`, { method: "POST" });
 if (methodCheck.status !== 404 && methodCheck.status !== 405) {
   throw new Error(`Unexpected write endpoint response: ${methodCheck.status}`);
 }
 
-console.log(`Local API smoke checks passed against ${baseUrl}.`);
+console.log(`Local API smoke checks passed against ${siteOrigin}.`);
 
 export {};

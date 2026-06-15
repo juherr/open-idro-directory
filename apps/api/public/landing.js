@@ -239,7 +239,10 @@ function renderChips(lang) {
 
 async function loadLandingData() {
   try {
-    const [stats, root] = await Promise.all([apiGet("/api/v1/stats"), apiGet("/api/v1")]);
+    const [stats, root] = await Promise.all([
+      apiGet("/api/v1/stats?view=landing"),
+      apiGet("/api/v1"),
+    ]);
     landingState.stats = stats.data;
     landingState.root = root.data;
   } catch {

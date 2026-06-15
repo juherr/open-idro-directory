@@ -164,10 +164,12 @@ describe("Cloudflare API", () => {
       data: {
         countsByCountry: Record<string, number>;
         countsByIdentifierCountry: Record<string, number>;
+        countsByPartyCountry: Record<string, number>;
       };
     };
-    expect(statsBody.data.countsByCountry.FR).toBe(1);
+    expect(statsBody.data.countsByCountry.FR).toBe(2);
     expect(statsBody.data.countsByIdentifierCountry.FR).toBe(2);
+    expect(statsBody.data.countsByPartyCountry.FR).toBe(1);
     expect((await request("/openapi.json")).status).toBe(200);
   });
 

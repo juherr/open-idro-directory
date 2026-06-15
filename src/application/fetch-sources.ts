@@ -13,7 +13,7 @@ export async function fetchSources(
   const selected = sources.filter(
     (source) => source.enabled && (!options.sourceId || source.id === options.sourceId),
   );
-  const userAgent = `global-emobility-id-registry/0.1 (+https://github.com/${options.owner ?? "OWNER"}/global-emobility-id-registry)`;
+  const userAgent = `open-idro-directory/0.1 (+https://github.com/${options.owner ?? "OWNER"}/open-idro-directory)`;
   const results = [];
   for (const source of selected) {
     const connector = createConnector(source);

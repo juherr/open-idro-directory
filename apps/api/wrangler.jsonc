@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "open-idro-directory-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-06-15",
+  "d1_databases": [
+    {
+      "binding": "REGISTRY_DB",
+      "database_name": "open-idro-directory",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "observability": {
+    "enabled": true,
+  },
+}

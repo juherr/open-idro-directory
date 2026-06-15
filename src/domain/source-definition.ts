@@ -14,7 +14,7 @@ export const sourceDefinitionSchema = z.object({
   connector: z.string().min(1),
   enabled: z.boolean(),
   refreshSchedule: z.string().min(1),
-  supportedRoles: z.array(z.enum(["CPO", "CSO", "EMSP", "OTHER"])).min(1),
+  supportedRoles: z.array(z.enum(["CPO", "CSO", "EMSP", "NSP", "HUB", "OTHER"])).min(1),
   license: z.object({
     status: licenseStatusSchema,
     name: z.string().nullable(),

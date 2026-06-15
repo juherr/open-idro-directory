@@ -13,7 +13,7 @@ const program = new Command();
 
 program
   .name("registry")
-  .description("Global eMobility ID Registry pipeline")
+  .description("Open IDRO Directory pipeline")
   .option("--verbose", "print verbose logs");
 
 program

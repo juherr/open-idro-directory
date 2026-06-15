@@ -11,7 +11,7 @@ maybe("AFIREV live connector", () => {
     const result = await connector.fetch({
       source,
       retrievedAt: new Date().toISOString(),
-      userAgent: "global-emobility-id-registry-test/0.1",
+      userAgent: "open-idro-directory-test/0.1",
     });
 
     expect(result.httpStatus).toBe(200);

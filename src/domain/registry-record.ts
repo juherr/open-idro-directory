@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const registryRoleSchema = z.enum(["CPO", "CSO", "EMSP", "OTHER"]);
+export const registryRoleSchema = z.enum(["CPO", "CSO", "EMSP", "NSP", "HUB", "OTHER"]);
 export type RegistryRole = z.infer<typeof registryRoleSchema>;
 
 export const registryStatusSchema = z.enum([

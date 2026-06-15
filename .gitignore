@@ -1,6 +1,8 @@
 node_modules/
 dist/
 coverage/
+.wrangler/
+build/cloudflare/
 .env
 data/raw/*/
 !data/raw/.gitkeep

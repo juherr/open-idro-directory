@@ -1,15 +1,19 @@
 {
-  "name": "global-emobility-id-registry",
+  "name": "open-idro-directory",
   "version": "0.1.0",
   "private": true,
   "description": "Independent aggregation pipeline for e-mobility identifiers from official IDRO registries.",
   "bin": {
     "registry": "./dist/cli.js"
   },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "check": "vp check && bun run test && bun run registry:validate",
+    "check": "vp check && bun run test && bun run api:typecheck && bun run api:test && bun run registry:validate && bun run api:build-import",
     "format": "vp fmt --write",
     "format:check": "vp fmt --check",
     "lint": "vp lint",
@@ -20,24 +24,35 @@
     "registry:update": "node --import tsx src/cli.ts update",
     "registry:non-idrr": "node --import tsx src/cli.ts non-idrr:reports",
     "registry:validate": "node --import tsx src/cli.ts validate",
+    "api:dev": "bun run --cwd apps/api dev",
+    "api:test": "bun run --cwd apps/api test",
+    "api:typecheck": "bun run --cwd apps/api typecheck",
+    "api:lint": "bun run --cwd apps/api lint",
+    "api:migrate:local": "bun run --cwd apps/api migrate:local",
+    "api:import:local": "bun run --cwd apps/api import:local",
+    "api:smoke:local": "bun run --cwd apps/api smoke:local",
+    "api:build-import": "bun run --cwd packages/registry-import build-bundle",
     "audit": "bun audit"
   },
   "dependencies": {
     "@commander-js/extra-typings": "^14.0.0",
     "commander": "^14.0.2",
     "fflate": "^0.8.3",
+    "hono": "^4.10.7",
     "read-excel-file": "^9.2.0",
     "yaml": "^2.8.1",
     "zod": "^4.1.13"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251214.0",
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
     "@types/node": "^24.10.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vite-plus": "^0.1.24",
-    "vitest": "^4.0.14"
+    "vitest": "^4.0.14",
+    "wrangler": "^4.55.0"
   },
   "engines": {
     "node": ">=24"

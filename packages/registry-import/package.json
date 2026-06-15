@@ -1,0 +1,13 @@
+{
+  "name": "@open-idro-directory/registry-import",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build-bundle": "node --import tsx src/cli.ts build",
+    "verify": "node --import tsx src/cli.ts verify"
+  },
+  "dependencies": {
+    "@open-idro-directory/registry-model": "workspace:*"
+  }
+}

@@ -9,7 +9,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
-- Initial Global eMobility ID Registry MVP.
+- Initial Open IDRO Directory MVP.
 - Ladestellen.at source descriptor, connector, parser, normalization, and fixture-based tests.
 - Benelux IDRO source descriptor, CSV export connector, parser, normalization, and fixture-based tests.
 - Croatian IDRO source descriptor, CSV export connector, parser, normalization, and fixture-based tests.
@@ -38,4 +38,4 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Local VitePlus Git hooks for pre-commit, commit-message, and pre-push checks.
 - Bun, mise, and VitePlus project configuration.
 
-[unreleased]: https://github.com/OWNER/global-emobility-id-registry/commits/HEAD
+[unreleased]: https://github.com/OWNER/open-idro-directory/commits/HEAD

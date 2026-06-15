@@ -1,0 +1,23 @@
+{
+  "name": "@open-idro-directory/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "vitest run -c vitest.config.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "vp lint",
+    "migrate:local": "wrangler d1 migrations apply open-idro-directory --local",
+    "migrate:remote": "wrangler d1 migrations apply open-idro-directory --remote",
+    "import:local": "node --import tsx ../../packages/registry-import/src/cli.ts build && wrangler d1 execute open-idro-directory --local --file ../../build/cloudflare/import.sql",
+    "import:remote": "wrangler d1 execute open-idro-directory --remote --file ../../build/cloudflare/import.sql",
+    "smoke:local": "node --import tsx tests/smoke-local.ts"
+  },
+  "dependencies": {
+    "@open-idro-directory/registry-model": "workspace:*",
+    "hono": "^4.12.25",
+    "zod": "^4.4.3"
+  }
+}

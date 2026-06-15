@@ -49,7 +49,7 @@
     "@commitlint/config-conventional": "^21.0.2",
     "@types/node": "^24.10.1",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "vite-plus": "^0.1.24",
     "vitest": "^4.0.14",
     "wrangler": "^4.55.0"

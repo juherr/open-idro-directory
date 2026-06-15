@@ -9,10 +9,10 @@ Required secrets:
 
 Required environment variable:
 
-- `API_BASE_URL`: deployed Worker URL used by smoke tests. Production uses
-  `https://idro.ocpi.fyi`.
+- `API_BASE_URL`: deployed Worker URL used by smoke tests. Temporary production
+  testing uses `https://idro.juherr.dev`.
 
-The Worker is configured as a Cloudflare Custom Domain for `idro.ocpi.fyi`.
+The Worker is configured as a Cloudflare Custom Domain for `idro.juherr.dev`.
 Cloudflare manages the DNS target and certificate for this hostname during
 deployment.
 

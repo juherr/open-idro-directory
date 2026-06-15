@@ -330,6 +330,13 @@ function toConflicts(
 
 function toImportSql(bundle: ImportBundle) {
   const statements = [
+    "DELETE FROM active_dataset;",
+    "DELETE FROM conflicts;",
+    "DELETE FROM observations;",
+    "DELETE FROM party_roles;",
+    "DELETE FROM parties;",
+    "DELETE FROM sources;",
+    "DELETE FROM dataset_releases;",
     ...insertMany("dataset_releases", [bundle.release]),
     ...insertMany("sources", bundle.sources),
     ...insertMany("parties", bundle.parties),

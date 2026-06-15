@@ -18,6 +18,19 @@ describe("Cloudflare import bundle", () => {
     expect(sql).not.toMatch(/\bBEGIN\s+TRANSACTION\b/i);
     expect(sql).not.toMatch(/\bSAVEPOINT\b/i);
     expect(sql).not.toMatch(/\bCOMMIT\b/i);
+    expect(
+      sql.startsWith(
+        [
+          "DELETE FROM active_dataset;",
+          "DELETE FROM conflicts;",
+          "DELETE FROM observations;",
+          "DELETE FROM party_roles;",
+          "DELETE FROM parties;",
+          "DELETE FROM sources;",
+          "DELETE FROM dataset_releases;",
+        ].join("\n"),
+      ),
+    ).toBe(true);
     expect(sql).toContain("INSERT INTO active_dataset");
   });
 });

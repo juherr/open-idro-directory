@@ -1,4 +1,5 @@
 import type { SourceDefinition } from "../domain/source-definition.js";
+import type { IdentifierObservation, SourceAssessment } from "../domain/identifier-observation.js";
 import type { NormalizedRegistryRecord } from "../domain/registry-record.js";
 import type { ValidationIssue } from "../domain/validation-issue.js";
 
@@ -52,6 +53,44 @@ export interface RegistryConnector<TRecord = unknown> {
   fetch(context: FetchContext): Promise<FetchResult>;
   parse(input: ParseInput): Promise<ParseOutput<TRecord>>;
   normalize(input: NormalizeInput<TRecord>): Promise<NormalizeOutput>;
+}
+
+export interface DiscoveredResource {
+  sourceId: string;
+  url: string;
+  kind: string;
+  notes: string | null;
+}
+
+export interface DiscoveryContext {
+  userAgent: string;
+}
+
+export interface SourceObservation {
+  sourceRecordId: string | null;
+  sourceValue: string;
+  raw: unknown;
+}
+
+export interface ObservationParseOutput<TRecord> {
+  records: TRecord[];
+  warnings: ValidationIssue[];
+  errors: ValidationIssue[];
+}
+
+export interface ObservationNormalizeOutput {
+  observations: IdentifierObservation[];
+  warnings: ValidationIssue[];
+  errors: ValidationIssue[];
+}
+
+export interface ObservationSourceConnector<TRecord extends SourceObservation = SourceObservation> {
+  readonly sourceId: string;
+  discover?(context: DiscoveryContext): Promise<DiscoveredResource[]>;
+  fetch(context: FetchContext): Promise<FetchResult[]>;
+  parse(input: ParseInput): Promise<ObservationParseOutput<TRecord>>;
+  normalize(input: NormalizeInput<TRecord>): Promise<ObservationNormalizeOutput>;
+  assess(observations: IdentifierObservation[]): Promise<SourceAssessment>;
 }
 
 export class NotImplementedError extends Error {

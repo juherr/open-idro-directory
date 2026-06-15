@@ -74,6 +74,16 @@ The EAFO IDRR directory currently lists these national or regional IDRO entries.
 - `data/registry.csv`: stable tabular export.
 - `data/sources.json`: source configuration and health.
 - `data/stats.json`: aggregate counts.
+- `data/reports/non-idrr-additions.json`: complementary observations absent from the
+  official dataset.
+- `data/reports/non-idrr-conflicts.json`: conflicts between complementary
+  observations and official records.
+- `data/reports/non-idrr-overlap.json`: complementary observations already present
+  in official records.
+- `data/reports/source-health.json`: source health summary for official and
+  complementary pipelines.
+- `data/reports/rejected-sources.json`: rejected, deferred, or spike-only
+  complementary sources.
 
 ## Quick Start
 
@@ -96,6 +106,7 @@ bun run registry update --source pt-mobie
 bun run registry update --source si-nap
 bun run registry update --source ch-suisseenergie
 bun run registry update --source se-energimyndigheten
+bun run registry:non-idrr
 bun run check
 ```
 
@@ -123,6 +134,7 @@ bun run registry fetch --source se-energimyndigheten
 bun run registry build
 bun run registry validate
 bun run registry update
+bun run registry non-idrr:reports
 bun run registry diff
 bun run registry stats
 ```
@@ -130,6 +142,12 @@ bun run registry stats
 ## Data Model
 
 Each record contains a stable key, normalized `countryCode`, `partyId`, `eMobilityId`, role, status, organization data, source provenance, and source-specific metadata. Roles are kept as separate records when a source publishes a combined type.
+
+Complementary non-IDRR data uses `IdentifierObservation` records instead of
+official registry records. Observations explicitly preserve identifier scheme,
+authority level, observation type, evidence URL, confidence score, and reasons.
+OCPI party IDs, EVSE prefixes, hub IDs, national IDs, and eMI3 IDs are not merged
+without explicit alias evidence.
 
 ## Provenance And Freshness
 
@@ -145,6 +163,7 @@ Read `docs/adding-a-source.md` before adding a connector. Use official APIs or d
 
 ## Roadmap
 
-- Milestone 2: EV Roam, conflict reporting, historical observations.
+- Milestone 2: non-IDRR source investigation, EVSEID.eu portal matrix, public
+  infrastructure observations, conflict reporting, historical observations.
 - Milestone 3: GitHub Pages search, country-specific static JSON, lookup pages, health dashboard.
 - Milestone 4: broader IDRO coverage guided by the EAFO IDRR, source owner workflow, signed releases, public change feed.

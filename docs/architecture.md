@@ -19,3 +19,15 @@ AFIREV implementation plan:
 Raw retention keeps the current successful snapshot and the previous successful snapshot. Fixture snapshots used by tests are committed separately under `tests/fixtures`.
 
 Vite+ note: this repository uses the `vp` CLI and local `vite-plus` package. `vp check` replaces separate ESLint and Prettier commands for format, lint, and type-check validation.
+
+## Non-IDRR Extension Pipeline
+
+Complementary sources use a parallel observation model. Official source
+connectors continue to produce `NormalizedRegistryRecord` values for
+`data/registry.*`. Observation connectors produce `IdentifierObservation` values
+and diagnostics under `data/reports/*`.
+
+The separation prevents secondary observations, public infrastructure evidence,
+OCPI endpoint metadata, and roaming-network memberships from overwriting official
+IDRO assignments. The CLI command `bun run registry:non-idrr` generates the
+current non-IDRR reports without fetching or mutating official source snapshots.

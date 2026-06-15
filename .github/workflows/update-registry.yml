@@ -30,7 +30,8 @@ jobs:
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends poppler-utils
       - run: vp install --frozen-lockfile
-      - run: bun run registry update --source fr-afirev
+      - run: bun run registry update
+      - run: bun run registry:non-idrr
       - run: bun run check
       - name: Open update pull request
         env:
@@ -43,7 +44,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -C automation/update-registry
-          git add data schemas build/change-summary.md
+          git add data schemas build/change-summary.md docs
           git commit -m "chore: update registry data"
           git push --force-with-lease origin automation/update-registry
           gh pr create \

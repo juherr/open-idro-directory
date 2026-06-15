@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-06-15T12:11:10.982Z",
+  "sources": [
+    {
+      "sourceId": "ocn-registry",
+      "category": "ocn",
+      "url": "https://github.com/energywebfoundation/ocn-registry",
+      "recommendation": "spike",
+      "reason": "No current public production registry has been verified in this repository yet.",
+      "nextStep": "Complete docs/spikes/ocn-registry-assessment.md before enabling any connector."
+    },
+    {
+      "sourceId": "authenticated-roaming-hubs",
+      "category": "roaming-network",
+      "url": "https://www.hubject.com/",
+      "recommendation": "defer",
+      "reason": "Partner portals and authenticated directories are out of scope without explicit access and redistribution rights.",
+      "nextStep": "Use docs/partnership-source-opportunities.md to request an explicit export."
+    }
+  ]
+}

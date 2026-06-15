@@ -5,6 +5,7 @@ import { buildRegistry } from "./application/build-registry.js";
 import { fetchSources } from "./application/fetch-sources.js";
 import { validateGeneratedRegistry } from "./application/validate-registry.js";
 import { diffAgainstGit, writeChangeReport } from "./application/change-report.js";
+import { buildNonIdrrReports } from "./application/non-idrr-reports.js";
 import { loadSourceDefinitions } from "./infrastructure/filesystem/source-loader.js";
 import { fromRoot } from "./infrastructure/filesystem/paths.js";
 
@@ -96,6 +97,16 @@ program.command("stats").action(async () =>
   run(async () => {
     const stats = await readFile(fromRoot("data", "stats.json"), "utf8");
     console.log(stats.trim());
+  }),
+);
+
+program.command("non-idrr:reports").action(async () =>
+  run(async () => {
+    const sources = await loadSourceDefinitions();
+    const reports = await buildNonIdrrReports(sources);
+    console.log(
+      `Generated non-IDRR reports with ${reports.additions.length} addition(s), ${reports.conflicts.length} conflict(s), and ${reports.overlap.length} overlap record(s).`,
+    );
   }),
 );
 

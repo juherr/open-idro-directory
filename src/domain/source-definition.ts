@@ -19,6 +19,9 @@ export const sourceDefinitionSchema = z.object({
     status: licenseStatusSchema,
     name: z.string().nullable(),
     url: z.string().url().nullable(),
+    attributionRequired: z.boolean().default(false),
+    redistributionAllowed: z.boolean().nullable().default(null),
+    notes: z.string().nullable().default(null),
   }),
   notes: z.string().optional(),
   safety: z

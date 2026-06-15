@@ -1,0 +1,185 @@
+{
+  "generatedAt": "2026-06-15T12:11:10.982Z",
+  "sources": [
+    {
+      "sourceId": "at-ladestellen",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "benelux-idro",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "ch-suisseenergie",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "cy-ems",
+      "enabled": false,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "disabled"
+    },
+    {
+      "sourceId": "de-bdew",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "dk-fstyr",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "es-ripree",
+      "enabled": false,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "disabled"
+    },
+    {
+      "sourceId": "fi-traficom",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "fr-afirev",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "gb-evroam",
+      "enabled": false,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "disabled"
+    },
+    {
+      "sourceId": "gr-electrokinisi",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "hr-croidro",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "hu-idro",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "ie-tii",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "lt-vialietuva",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "lv-lvceli",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "pl-eipa",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "pt-mobie",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "se-energimyndigheten",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    },
+    {
+      "sourceId": "si-nap",
+      "enabled": true,
+      "authorityLevel": "AUTHORITATIVE",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "assessment": null,
+      "observationCount": 0,
+      "status": "current"
+    }
+  ]
+}

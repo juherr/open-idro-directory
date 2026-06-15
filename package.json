@@ -18,6 +18,7 @@
     "commit:check": "commitlint",
     "registry": "node --import tsx src/cli.ts",
     "registry:update": "node --import tsx src/cli.ts update",
+    "registry:non-idrr": "node --import tsx src/cli.ts non-idrr:reports",
     "registry:validate": "node --import tsx src/cli.ts validate",
     "audit": "bun audit"
   },

@@ -330,7 +330,6 @@ function toConflicts(
 
 function toImportSql(bundle: ImportBundle) {
   const statements = [
-    "BEGIN TRANSACTION;",
     ...insertMany("dataset_releases", [bundle.release]),
     ...insertMany("sources", bundle.sources),
     ...insertMany("parties", bundle.parties),
@@ -340,7 +339,6 @@ function toImportSql(bundle: ImportBundle) {
     "INSERT INTO active_dataset (singleton, dataset_release_id) VALUES (1, " +
       sqlValue(bundle.release.id) +
       ") ON CONFLICT(singleton) DO UPDATE SET dataset_release_id = excluded.dataset_release_id;",
-    "COMMIT;",
   ];
   return `${statements.join("\n")}\n`;
 }

@@ -1,0 +1,26 @@
+id: ie-tii
+name: TII IDRO Public Register
+authorityName: Transport Infrastructure Ireland
+jurisdictions:
+  - IE
+official: true
+homepageUrl: https://www.tii.ie/en/roads-tolling/alt-fuel-projects-unit/alt-fuels-data-office/register-idro/
+registryUrl: https://www.tii.ie/media/pqigaadi/idro-public-register-19-march-2026.pdf
+connector: ie-tii
+enabled: true
+refreshSchedule: weekly
+supportedRoles:
+  - CPO
+  - EMSP
+license:
+  status: unknown
+  name: null
+  url: null
+notes: >
+  Official Irish IDRO public register published as a PDF by Transport
+  Infrastructure Ireland. The connector extracts text from the PDF and
+  normalizes the IDRO-issued party ID for CPO and eMSP rows.
+safety:
+  maxDeletionRatio: 0.3
+  maxChangeRatio: 1
+  maxParseErrorRatio: 0.1

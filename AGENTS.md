@@ -26,6 +26,10 @@ Use Bun as the package manager.
 - `bun run registry update --source <id>`: fetch, build, validate, and write a change report.
 - `bun run registry validate`: validate generated registry data.
 
+The Irish `ie-tii` connector parses a PDF register and requires `pdftotext`
+from Poppler (`brew install poppler` on macOS, `apt-get install poppler-utils`
+on Ubuntu).
+
 ## Coding Style & Naming Conventions
 
 The project uses TypeScript ESM and VitePlus for formatting, linting, and type checks. Keep code ASCII unless an upstream fixture or organization name requires Unicode. Prefer small connector-specific modules: `<name>.connector.ts`, `<name>.parser.ts`, and `<name>.types.ts`. Source IDs use lowercase kebab-case, for example `dk-fstyr`.

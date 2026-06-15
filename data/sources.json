@@ -373,6 +373,98 @@
     }
   },
   {
+    "id": "ie-tii",
+    "name": "TII IDRO Public Register",
+    "authorityName": "Transport Infrastructure Ireland",
+    "jurisdictions": [
+      "IE"
+    ],
+    "official": true,
+    "enabled": true,
+    "homepageUrl": "https://www.tii.ie/en/roads-tolling/alt-fuel-projects-unit/alt-fuels-data-office/register-idro/",
+    "registryUrl": "https://www.tii.ie/media/pqigaadi/idro-public-register-19-march-2026.pdf",
+    "connector": "ie-tii",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": false,
+      "recordCount": 26,
+      "lastAttemptedRetrieval": "2026-06-15T05:25:21.853Z",
+      "lastSuccessfulRetrieval": "2026-06-15T05:25:21.853Z",
+      "checksum": "a1163cec0de0f12bc18c6669b7c5889997c8e90ffeaa91e37dde6bf57ef1e74b",
+      "freshness": "current",
+      "latestErrorSummary": null
+    }
+  },
+  {
+    "id": "lt-vialietuva",
+    "name": "Via Lietuva public charging data",
+    "authorityName": "Via Lietuva",
+    "jurisdictions": [
+      "LT"
+    ],
+    "official": true,
+    "enabled": true,
+    "homepageUrl": "https://lakd.lt/viesuju-elektromobiliu-ikrovimo-prieigu-registravimas",
+    "registryUrl": "https://ev.vialietuva.lt/ocpi/2.3.0/locations",
+    "connector": "lt-vialietuva",
+    "supportedRoles": [
+      "CPO"
+    ],
+    "license": {
+      "status": "open",
+      "name": "CC BY 4.0 / ODC-BY",
+      "url": "https://ev.vialietuva.lt/atviri-duomenys-1"
+    },
+    "health": {
+      "stale": false,
+      "recordCount": 8,
+      "lastAttemptedRetrieval": "2026-06-15T05:25:21.890Z",
+      "lastSuccessfulRetrieval": "2026-06-15T05:25:21.890Z",
+      "checksum": "8c67ed6d6c547bd838468980d9db9b051c9683b8d15861a3e2402cc4de2630ea",
+      "freshness": "current",
+      "latestErrorSummary": null
+    }
+  },
+  {
+    "id": "lv-lvceli",
+    "name": "LVC IDRO Register",
+    "authorityName": "SLLC Latvijas Valsts ceļi",
+    "jurisdictions": [
+      "LV"
+    ],
+    "official": true,
+    "enabled": true,
+    "homepageUrl": "https://www.transportdata.gov.lv/en/idro",
+    "registryUrl": "https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json",
+    "connector": "lv-lvceli",
+    "supportedRoles": [
+      "CPO",
+      "EMSP"
+    ],
+    "license": {
+      "status": "unknown",
+      "name": null,
+      "url": null
+    },
+    "health": {
+      "stale": false,
+      "recordCount": 15,
+      "lastAttemptedRetrieval": "2026-06-15T05:25:21.856Z",
+      "lastSuccessfulRetrieval": "2026-06-15T05:25:21.856Z",
+      "checksum": "7e849895a1937ad0e0fa6ca498161055b5c7c4a971914c1884380f7f9d0b81e2",
+      "freshness": "current",
+      "latestErrorSummary": null
+    }
+  },
+  {
     "id": "se-energimyndigheten",
     "name": "Swedish Energy Agency IDRO",
     "authorityName": "Swedish Energy Agency",

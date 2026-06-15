@@ -18,6 +18,9 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Traficom source descriptor, HTML table connector, parser, normalization, and fixture-based tests.
 - Hellenic IDRO source descriptor, HTML table connector, parser, normalization, and fixture-based tests.
 - Hungarian IDRO source descriptor, HTML list connector, parser, normalization, and fixture-based tests.
+- TII IDRO Public Register source descriptor, PDF register connector, parser, normalization, and fixture-based tests.
+- LVC IDRO Register source descriptor, Drupal JSON connector, parser, normalization, and fixture-based tests.
+- Via Lietuva source descriptor, OCPI locations connector, CPO normalization, and fixture-based tests.
 - SuisseEnergie source descriptor, Gatsby page-data JSON connector, parser, normalization, and fixture-based tests.
 - Swedish Energy Agency source descriptor, XLSX connectors, parser, normalization, and tests.
 - AFIREV source descriptor, connector, parser, normalization, and fixture-based tests.

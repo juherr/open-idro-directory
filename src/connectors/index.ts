@@ -13,6 +13,9 @@ import { createGbEvroamConnector } from "./gb-evroam/index.js";
 import { createHuIdroConnector } from "./hu-idro/index.js";
 import { createCroIdroConnector } from "./hr-croidro/index.js";
 import { createEnergimyndighetenConnector } from "./se-energimyndigheten/index.js";
+import { createTiiConnector } from "./ie-tii/index.js";
+import { createLvceliConnector } from "./lv-lvceli/index.js";
+import { createVialietuvaConnector } from "./lt-vialietuva/index.js";
 
 export function createConnector(source: SourceDefinition): RegistryConnector {
   switch (source.connector) {
@@ -42,6 +45,12 @@ export function createConnector(source: SourceDefinition): RegistryConnector {
       return createCroIdroConnector();
     case "se-energimyndigheten":
       return createEnergimyndighetenConnector();
+    case "ie-tii":
+      return createTiiConnector();
+    case "lv-lvceli":
+      return createLvceliConnector();
+    case "lt-vialietuva":
+      return createVialietuvaConnector();
     default:
       throw new Error(`No connector registered for ${source.connector}`);
   }

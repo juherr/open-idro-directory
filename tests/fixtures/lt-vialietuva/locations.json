@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-06-15T05:16:32Z",
+  "status_code": 1000,
+  "status_message": "Success",
+  "data": [
+    {
+      "country_code": "LT",
+      "party_id": "IBG",
+      "operator": {
+        "name": "In Balance grid, UAB",
+        "website": "www.inbalancegrid.lt"
+      },
+      "owner": {
+        "name": "In Balance grid, UAB",
+        "website": "www.inbalancegrid.lt"
+      }
+    },
+    {
+      "country_code": "LT",
+      "party_id": "IBG",
+      "operator": {
+        "name": "In Balance grid, UAB",
+        "website": "www.inbalancegrid.lt"
+      }
+    },
+    {
+      "country_code": "LT",
+      "party_id": "ION",
+      "operator": {
+        "name": "IONITY GmbH",
+        "website": "www.ionity.eu"
+      }
+    }
+  ]
+}

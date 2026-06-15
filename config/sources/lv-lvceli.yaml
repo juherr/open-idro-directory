@@ -1,0 +1,26 @@
+id: lv-lvceli
+name: LVC IDRO Register
+authorityName: SLLC Latvijas Valsts ceļi
+jurisdictions:
+  - LV
+official: true
+homepageUrl: https://www.transportdata.gov.lv/en/idro
+registryUrl: https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json
+connector: lv-lvceli
+enabled: true
+refreshSchedule: weekly
+supportedRoles:
+  - CPO
+  - EMSP
+license:
+  status: unknown
+  name: null
+  url: null
+notes: >
+  Official Latvian IDRO page managed through the transportdata.gov.lv Drupal
+  content API. The connector parses the public HTML table embedded in the JSON
+  page body.
+safety:
+  maxDeletionRatio: 0.3
+  maxChangeRatio: 0.6
+  maxParseErrorRatio: 0.1

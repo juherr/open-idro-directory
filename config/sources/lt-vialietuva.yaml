@@ -1,0 +1,25 @@
+id: lt-vialietuva
+name: Via Lietuva public charging data
+authorityName: Via Lietuva
+jurisdictions:
+  - LT
+official: true
+homepageUrl: https://lakd.lt/viesuju-elektromobiliu-ikrovimo-prieigu-registravimas
+registryUrl: https://ev.vialietuva.lt/ocpi/2.3.0/locations
+connector: lt-vialietuva
+enabled: true
+refreshSchedule: weekly
+supportedRoles:
+  - CPO
+license:
+  status: open
+  name: CC BY 4.0 / ODC-BY
+  url: https://ev.vialietuva.lt/atviri-duomenys-1
+notes: >
+  Via Lietuva publishes public charging infrastructure as DATEX II and OCPI.
+  The OCPI locations endpoint exposes CPO country_code and party_id values,
+  which are normalized as Lithuanian CPO identifiers. No eMSP list was found.
+safety:
+  maxDeletionRatio: 0.4
+  maxChangeRatio: 0.8
+  maxParseErrorRatio: 0.1

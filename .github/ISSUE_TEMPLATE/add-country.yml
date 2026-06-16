@@ -1,0 +1,66 @@
+name: Add country coverage
+description: Share an official IDRO source or contact for a country not covered yet.
+title: "Add country: <country>"
+labels:
+  - source
+  - country-coverage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Open IDRO Directory coverage. Please provide official, attributable information whenever possible.
+  - type: input
+    id: country
+    attributes:
+      label: Country
+      description: Country name and ISO 3166-1 alpha-2 code if known.
+      placeholder: "Example: Cyprus (CY)"
+    validations:
+      required: true
+  - type: input
+    id: authority
+    attributes:
+      label: Official IDRO authority
+      description: Name of the ministry, agency, association, or registry operator.
+      placeholder: "Example: Department of Electrical and Mechanical Services"
+    validations:
+      required: true
+  - type: input
+    id: registry-url
+    attributes:
+      label: Registry or list URL
+      description: Public URL for the identifier registry, download, or official information page.
+      placeholder: "https://example.gov/register"
+    validations:
+      required: true
+  - type: dropdown
+    id: data-format
+    attributes:
+      label: Data format
+      description: Select the closest format if known.
+      options:
+        - Unknown
+        - API
+        - CSV
+        - XLSX
+        - PDF
+        - HTML table
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: licensing
+    attributes:
+      label: Licensing or redistribution notes
+      description: Include any open data license, terms of use, or redistribution caveat you found.
+      placeholder: "Example: CC BY 4.0, unknown, permission required..."
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Contact or source evidence
+      description: Add public contacts, source owner references, archive links, or notes that help verify provenance.
+      placeholder: "Official contact page, public announcement, documentation link..."
+    validations:
+      required: false

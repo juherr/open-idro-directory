@@ -483,6 +483,7 @@ button {
 
 .country-card {
   display: block;
+  min-height: 150px;
   padding: 15px;
   border: 1px solid rgba(1, 53, 92, 0.09);
   border-radius: 14px;
@@ -501,10 +502,56 @@ button {
   transform: translateY(-2px);
 }
 
+.country-card-coming-soon {
+  background: linear-gradient(180deg, #fffaf5 0%, #fff 100%);
+  color: var(--muted);
+}
+
+.country-card-known-unpublished {
+  background: linear-gradient(180deg, #fff7f7 0%, #fff 100%);
+}
+
+.country-card-coming-soon:hover,
+.country-card-known-unpublished:hover {
+  transform: none;
+}
+
+.country-card-cta {
+  border-color: rgba(14, 118, 192, 0.22);
+  background: #eef7fd;
+}
+
+.country-card-cta:hover {
+  border-color: rgba(14, 118, 192, 0.52);
+}
+
 .country-card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.country-flag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 26px;
+  border-radius: 8px;
+  background: rgba(1, 53, 92, 0.06);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.country-card-cta .country-flag {
+  background: var(--brand);
+  color: #fff;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.country-code-row {
+  margin-top: 12px;
 }
 
 .country-code {
@@ -529,6 +576,18 @@ button {
   background: #1f9d55;
 }
 
+.status-dot.supported {
+  background: #1f9d55;
+}
+
+.status-dot.known-unpublished {
+  background: #d12f2f;
+}
+
+.status-dot.coming-soon {
+  background: var(--accent);
+}
+
 .country-name {
   margin-top: 13px;
   color: var(--brand);
@@ -548,6 +607,20 @@ button {
 .country-caption {
   color: var(--subtle);
   font-size: 12px;
+  line-height: 1.3;
+}
+
+.country-card-known-unpublished .country-caption {
+  color: #a23b3b;
+}
+
+.country-card-coming-soon .country-caption {
+  color: #9a5a12;
+}
+
+.country-card-cta .country-caption {
+  margin-top: 7px;
+  color: var(--muted);
 }
 
 .trust-grid {

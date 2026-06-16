@@ -8,28 +8,28 @@ The project uses the European Alternative Fuels Observatory's [Identification Re
 
 ## Supported Sources
 
-| Source                                         | Status      | Mechanism                                                | License            |
-| ---------------------------------------------- | ----------- | -------------------------------------------------------- | ------------------ |
-| Ladestellen.at (`at-ladestellen`)              | Enabled     | Public JSON endpoint used by Ladestellen.at's admin UI   | Unknown            |
-| AFIREV (`fr-afirev`)                           | Enabled     | Public JSON endpoint used by AFIREV's embedded directory | Unknown            |
-| Benelux IDRO (`benelux-idro`)                  | Enabled     | Public CSV export from the ID register                   | Unknown            |
-| Croatian IDRO (`hr-croidro`)                   | Enabled     | Public CSV export from the ID register                   | Unknown            |
-| Cyprus EMS (`cy-ems`)                          | Placeholder | Temporary EMS page; no identifier list found yet         | Unknown            |
-| Danish Road Traffic Authority (`dk-fstyr`)     | Enabled     | Public HTML table from the IDRO registration page        | Unknown            |
-| BDEW (`de-bdew`)                               | Enabled     | Public paginated JSON endpoint                           | Unknown            |
-| Traficom (`fi-traficom`)                       | Enabled     | Public HTML table from the AFIR ID page                  | Unknown            |
-| Hellenic IDRO (`gr-electrokinisi`)             | Enabled     | Public HTML table from the ID-register page              | Unknown            |
-| Hungarian IDRO (`hu-idro`)                     | Enabled     | Public HTML list from the members page                   | Unknown            |
-| TII IDRO Public Register (`ie-tii`)            | Enabled     | Public PDF register                                      | Unknown            |
-| LVC IDRO Register (`lv-lvceli`)                | Enabled     | Public Drupal JSON page with embedded HTML table         | Unknown            |
-| Via Lietuva (`lt-vialietuva`)                  | Enabled     | Public OCPI locations endpoint for CPO identifiers       | CC BY 4.0 / ODC-BY |
-| EIPA (`pl-eipa`)                               | Enabled     | Public CSV export from the registered entities list      | Unknown            |
-| MOBI.E IDACS (`pt-mobie`)                      | Enabled     | Public PDF register                                      | Unknown            |
-| RIPREE (`es-ripree`)                           | Placeholder | Public export pages found, no IDRO party list identified | Unknown            |
-| Slovenian NAP IDRO (`si-nap`)                  | Enabled     | Public XLSX national repository from NAP                 | Unknown            |
-| SuisseEnergie (`ch-suisseenergie`)             | Enabled     | Public Gatsby page-data JSON endpoint                    | Unknown            |
-| Swedish Energy Agency (`se-energimyndigheten`) | Enabled     | Public XLSX registers for CPO and EMSP identifiers       | Unknown            |
-| EV Roam (`gb-evroam`)                          | Placeholder | Not implemented                                          | Unknown            |
+| Source                                         | Status      | Mechanism                                                          | License            |
+| ---------------------------------------------- | ----------- | ------------------------------------------------------------------ | ------------------ |
+| Ladestellen.at (`at-ladestellen`)              | Enabled     | Public JSON endpoint used by Ladestellen.at's admin UI             | Unknown            |
+| AFIREV (`fr-afirev`)                           | Enabled     | Public JSON endpoint used by AFIREV's embedded directory           | Unknown            |
+| Benelux IDRO (`benelux-idro`)                  | Enabled     | Public CSV export from the ID register                             | Unknown            |
+| Croatian IDRO (`hr-croidro`)                   | Enabled     | Public CSV export from the ID register                             | Unknown            |
+| Cyprus EMS (`cy-ems`)                          | Placeholder | Temporary EMS page; no identifier list found yet                   | Unknown            |
+| Danish Road Traffic Authority (`dk-fstyr`)     | Enabled     | Public HTML table from the IDRO registration page                  | Unknown            |
+| BDEW (`de-bdew`)                               | Enabled     | Public paginated JSON endpoint                                     | Unknown            |
+| Traficom (`fi-traficom`)                       | Enabled     | Public HTML table from the AFIR ID page                            | Unknown            |
+| Hellenic IDRO (`gr-electrokinisi`)             | Enabled     | Public HTML table from the ID-register page                        | Unknown            |
+| Hungarian IDRO (`hu-idro`)                     | Enabled     | Public HTML list from the members page                             | Unknown            |
+| TII IDRO Public Register (`ie-tii`)            | Enabled     | Public PDF register                                                | Unknown            |
+| LVC IDRO Register (`lv-lvceli`)                | Enabled     | Public Drupal JSON page with embedded HTML table                   | Unknown            |
+| Via Lietuva (`lt-vialietuva`)                  | Enabled     | Public OCPI locations endpoint for CPO identifiers                 | CC BY 4.0 / ODC-BY |
+| EIPA (`pl-eipa`)                               | Enabled     | Public CSV export from the registered entities list                | Unknown            |
+| MOBI.E IDACS (`pt-mobie`)                      | Enabled     | Public PDF register                                                | Unknown            |
+| RIPREE (`es-ripree`)                           | Placeholder | Public export pages found, no IDRO party list identified           | Unknown            |
+| Slovenian NAP IDRO (`si-nap`)                  | Enabled     | Public XLSX national repository from NAP                           | Unknown            |
+| SuisseEnergie (`ch-suisseenergie`)             | Enabled     | Public Gatsby page-data JSON endpoint                              | Unknown            |
+| Swedish Energy Agency (`se-energimyndigheten`) | Enabled     | Public XLSX registers for CPO and EMSP identifiers                 | Unknown            |
+| EV Roam (`gb-evroam`)                          | Enabled     | Public JSON API with official GB and cross-register IE identifiers | Unknown            |
 
 ## EAFO IDRR Coverage Reference
 
@@ -56,7 +56,7 @@ The EAFO IDRR directory currently lists these national or regional IDRO entries.
 | Spain                    | Placeholder source |
 | Sweden                   | Supported          |
 | Switzerland (Non-EU)     | Supported          |
-| United Kingdom (Non-EU)  | Placeholder source |
+| United Kingdom (Non-EU)  | Supported          |
 | Bulgaria (coming soon)   | Awaiting IDRR data |
 | Czechia (coming soon)    | Awaiting IDRR data |
 | Estonia (coming soon)    | Awaiting IDRR data |
@@ -118,6 +118,7 @@ bun run registry update --source dk-fstyr
 bun run registry update --source de-bdew
 bun run registry update --source fi-traficom
 bun run registry update --source fr-afirev
+bun run registry update --source gb-evroam
 bun run registry update --source gr-electrokinisi
 bun run registry update --source hu-idro
 bun run registry update --source hr-croidro
@@ -143,6 +144,7 @@ bun run registry fetch --source dk-fstyr
 bun run registry fetch --source de-bdew
 bun run registry fetch --source fi-traficom
 bun run registry fetch --source fr-afirev
+bun run registry fetch --source gb-evroam
 bun run registry fetch --source gr-electrokinisi
 bun run registry fetch --source hu-idro
 bun run registry fetch --source hr-croidro
@@ -167,7 +169,7 @@ bun run api:typecheck
 
 ## Data Model
 
-Each record contains a stable key, normalized `countryCode`, `partyId`, `eMobilityId`, role, status, organization data, source provenance, and source-specific metadata. Roles are kept as separate records when a source publishes a combined type.
+Each record contains a stable key, normalized `countryCode`, `partyId`, `eMobilityId`, role, status, organization data, source provenance, and source-specific metadata. Roles are kept as separate records when a source publishes a combined type. The stable key includes the originating `registryId`, so overlapping claims from different sources, such as Irish identifiers published by both TII and EV Roam, remain separate records with separate provenance instead of overwriting each other. For EV Roam, GB records are marked official and IE cross-register records are retained as non-official observations because TII is the Irish registrar.
 
 Complementary non-IDRR data uses `IdentifierObservation` records instead of
 official registry records. Observations explicitly preserve identifier scheme,

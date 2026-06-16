@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "title": "50FIVE CHARGING SOLUTIONS UK LTD",
+      "operatorId": "GB*505",
+      "serviceProviderId": "GB-505",
+      "operatorIdIE": "IE*505",
+      "serviceProviderIdIE": "IE-505",
+      "website": "https://www.50five.com"
+    },
+    {
+      "title": "Arval UK Limited",
+      "serviceProviderId": "GB-AVL",
+      "website": "https://www.arval.co.uk"
+    },
+    {
+      "title": "Malformed Limited",
+      "operatorId": "GB*TOO-LONG",
+      "website": "not a url"
+    }
+  ]
+}

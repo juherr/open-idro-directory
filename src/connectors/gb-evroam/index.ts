@@ -1,5 +1,5 @@
-import { NotImplementedError, type RegistryConnector } from "../connector.js";
+import { EvroamConnector } from "./evroam.connector.js";
 
-export function createGbEvroamConnector(): RegistryConnector {
-  throw new NotImplementedError("gb-evroam");
+export function createGbEvroamConnector() {
+  return new EvroamConnector();
 }

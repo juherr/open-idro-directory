@@ -17,7 +17,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -50,7 +53,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -81,7 +87,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -112,7 +121,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": true,
@@ -143,7 +155,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -174,7 +189,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -205,7 +223,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": true,
@@ -236,7 +257,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -267,7 +291,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -284,12 +311,13 @@
     "name": "EV Roam",
     "authorityName": "EV Roam",
     "jurisdictions": [
-      "GB"
+      "GB",
+      "IE"
     ],
     "official": true,
-    "enabled": false,
+    "enabled": true,
     "homepageUrl": "https://www.evroam.org.uk/",
-    "registryUrl": "https://www.evroam.org.uk/",
+    "registryUrl": "https://evroam.org.uk/_functions/getRegister",
     "connector": "gb-evroam",
     "supportedRoles": [
       "CPO",
@@ -298,15 +326,18 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
-      "stale": true,
-      "recordCount": 0,
-      "lastAttemptedRetrieval": null,
-      "lastSuccessfulRetrieval": null,
-      "checksum": null,
-      "freshness": "disabled",
+      "stale": false,
+      "recordCount": 257,
+      "lastAttemptedRetrieval": "2026-06-15T21:52:22.947Z",
+      "lastSuccessfulRetrieval": "2026-06-15T21:52:22.947Z",
+      "checksum": "dc2506b2bcadb0ba31cd92608b8ec0e1e840979a786f0f9dfa2ad442c3123912",
+      "freshness": "current",
       "latestErrorSummary": null
     }
   },
@@ -329,7 +360,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -360,7 +394,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -391,7 +428,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -422,7 +462,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -452,7 +495,10 @@
     "license": {
       "status": "open",
       "name": "CC BY 4.0 / ODC-BY",
-      "url": "https://ev.vialietuva.lt/atviri-duomenys-1"
+      "url": "https://ev.vialietuva.lt/atviri-duomenys-1",
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -483,7 +529,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -514,7 +563,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -545,7 +597,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -576,7 +631,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,
@@ -607,7 +665,10 @@
     "license": {
       "status": "unknown",
       "name": null,
-      "url": null
+      "url": null,
+      "attributionRequired": false,
+      "redistributionAllowed": null,
+      "notes": null
     },
     "health": {
       "stale": false,

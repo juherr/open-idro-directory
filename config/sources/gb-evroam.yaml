@@ -3,11 +3,12 @@ name: EV Roam
 authorityName: EV Roam
 jurisdictions:
   - GB
+  - IE
 official: true
 homepageUrl: https://www.evroam.org.uk/
-registryUrl: https://www.evroam.org.uk/
+registryUrl: https://evroam.org.uk/_functions/getRegister
 connector: gb-evroam
-enabled: false
+enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
@@ -17,4 +18,7 @@ license:
   name: null
   url: null
 notes: >
-  Placeholder descriptor. The connector is not implemented in the MVP.
+  EV Roam public register API. The response contains GB identifiers and IE
+  identifiers for organizations that also hold Irish CPO and/or EMSP codes. GB
+  records are treated as EV Roam official assignments; IE records are preserved
+  as cross-register observations because TII is the Irish registrar.

@@ -4,7 +4,7 @@
   "private": true,
   "description": "Independent aggregation pipeline for e-mobility identifiers from official IDRO registries.",
   "bin": {
-    "registry": "./dist/cli.js"
+    "directory": "./dist/cli.js"
   },
   "workspaces": [
     "apps/*",
@@ -13,17 +13,17 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "check": "vp check && bun run test && bun run api:typecheck && bun run api:test && bun run registry:validate && bun run api:build-import",
+    "check": "vp check && bun run test && bun run api:typecheck && bun run api:test && bun run directory:validate && bun run api:build-import",
     "format": "vp fmt --write",
     "format:check": "vp fmt --check",
     "lint": "vp lint",
     "test": "vitest run",
     "test:watch": "vitest",
     "commit:check": "commitlint",
-    "registry": "node --import tsx src/cli.ts",
-    "registry:update": "node --import tsx src/cli.ts update",
-    "registry:non-idrr": "node --import tsx src/cli.ts non-idrr:reports",
-    "registry:validate": "node --import tsx src/cli.ts validate",
+    "directory": "node --import tsx src/cli.ts",
+    "directory:update": "node --import tsx src/cli.ts update",
+    "directory:non-idrr": "node --import tsx src/cli.ts non-idrr:reports",
+    "directory:validate": "node --import tsx src/cli.ts validate",
     "api:dev": "bun run --cwd apps/api dev",
     "api:test": "bun run --cwd apps/api test",
     "api:typecheck": "bun run --cwd apps/api typecheck",

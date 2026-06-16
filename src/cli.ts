@@ -12,7 +12,7 @@ import { fromRoot } from "./infrastructure/filesystem/paths.js";
 const program = new Command();
 
 program
-  .name("registry")
+  .name("directory")
   .description("Open IDRO Directory pipeline")
   .option("--verbose", "print verbose logs");
 

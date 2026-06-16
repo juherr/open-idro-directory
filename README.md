@@ -112,56 +112,56 @@ See `docs/api-architecture.md`, `docs/api-reference.md`,
 
 ```bash
 bun install
-bun run registry update --source at-ladestellen
-bun run registry update --source benelux-idro
-bun run registry update --source dk-fstyr
-bun run registry update --source de-bdew
-bun run registry update --source fi-traficom
-bun run registry update --source fr-afirev
-bun run registry update --source gb-evroam
-bun run registry update --source gr-electrokinisi
-bun run registry update --source hu-idro
-bun run registry update --source hr-croidro
-bun run registry update --source ie-tii
-bun run registry update --source lv-lvceli
-bun run registry update --source lt-vialietuva
-bun run registry update --source pl-eipa
-bun run registry update --source pt-mobie
-bun run registry update --source si-nap
-bun run registry update --source ch-suisseenergie
-bun run registry update --source se-energimyndigheten
-bun run registry:non-idrr
+bun run directory update --source at-ladestellen
+bun run directory update --source benelux-idro
+bun run directory update --source dk-fstyr
+bun run directory update --source de-bdew
+bun run directory update --source fi-traficom
+bun run directory update --source fr-afirev
+bun run directory update --source gb-evroam
+bun run directory update --source gr-electrokinisi
+bun run directory update --source hu-idro
+bun run directory update --source hr-croidro
+bun run directory update --source ie-tii
+bun run directory update --source lv-lvceli
+bun run directory update --source lt-vialietuva
+bun run directory update --source pl-eipa
+bun run directory update --source pt-mobie
+bun run directory update --source si-nap
+bun run directory update --source ch-suisseenergie
+bun run directory update --source se-energimyndigheten
+bun run directory:non-idrr
 bun run check
 ```
 
 ## CLI
 
 ```bash
-bun run registry fetch
-bun run registry fetch --source at-ladestellen
-bun run registry fetch --source benelux-idro
-bun run registry fetch --source dk-fstyr
-bun run registry fetch --source de-bdew
-bun run registry fetch --source fi-traficom
-bun run registry fetch --source fr-afirev
-bun run registry fetch --source gb-evroam
-bun run registry fetch --source gr-electrokinisi
-bun run registry fetch --source hu-idro
-bun run registry fetch --source hr-croidro
-bun run registry fetch --source ie-tii
-bun run registry fetch --source lv-lvceli
-bun run registry fetch --source lt-vialietuva
-bun run registry fetch --source pl-eipa
-bun run registry fetch --source pt-mobie
-bun run registry fetch --source si-nap
-bun run registry fetch --source ch-suisseenergie
-bun run registry fetch --source se-energimyndigheten
-bun run registry build
-bun run registry validate
-bun run registry update
-bun run registry non-idrr:reports
-bun run registry diff
-bun run registry stats
+bun run directory fetch
+bun run directory fetch --source at-ladestellen
+bun run directory fetch --source benelux-idro
+bun run directory fetch --source dk-fstyr
+bun run directory fetch --source de-bdew
+bun run directory fetch --source fi-traficom
+bun run directory fetch --source fr-afirev
+bun run directory fetch --source gb-evroam
+bun run directory fetch --source gr-electrokinisi
+bun run directory fetch --source hu-idro
+bun run directory fetch --source hr-croidro
+bun run directory fetch --source ie-tii
+bun run directory fetch --source lv-lvceli
+bun run directory fetch --source lt-vialietuva
+bun run directory fetch --source pl-eipa
+bun run directory fetch --source pt-mobie
+bun run directory fetch --source si-nap
+bun run directory fetch --source ch-suisseenergie
+bun run directory fetch --source se-energimyndigheten
+bun run directory build
+bun run directory validate
+bun run directory update
+bun run directory non-idrr:reports
+bun run directory diff
+bun run directory stats
 bun run api:build-import
 bun run api:test
 bun run api:typecheck

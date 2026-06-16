@@ -29,5 +29,5 @@ and diagnostics under `data/reports/*`.
 
 The separation prevents secondary observations, public infrastructure evidence,
 OCPI endpoint metadata, and roaming-network memberships from overwriting official
-IDRO assignments. The CLI command `bun run registry:non-idrr` generates the
+IDRO assignments. The CLI command `bun run directory:non-idrr` generates the
 current non-IDRR reports without fetching or mutating official source snapshots.

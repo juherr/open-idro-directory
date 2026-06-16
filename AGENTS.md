@@ -21,10 +21,10 @@ Use Bun as the package manager.
 - `bun run build`: run TypeScript compilation.
 - `bun run test`: run Vitest once.
 - `bun run check`: run VitePlus format/lint/type checks, tests, and registry validation.
-- `bun run registry fetch --source <id>`: fetch one source snapshot.
-- `bun run registry build`: normalize enabled sources and write `data/`.
-- `bun run registry update --source <id>`: fetch, build, validate, and write a change report.
-- `bun run registry validate`: validate generated registry data.
+- `bun run directory fetch --source <id>`: fetch one source snapshot.
+- `bun run directory build`: normalize enabled sources and write `data/`.
+- `bun run directory update --source <id>`: fetch, build, validate, and write a change report.
+- `bun run directory validate`: validate generated registry data.
 
 The Irish `ie-tii` connector parses a PDF register and requires `pdftotext`
 from Poppler (`brew install poppler` on macOS, `apt-get install poppler-utils`

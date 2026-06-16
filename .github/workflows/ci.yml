@@ -36,5 +36,5 @@ jobs:
             bun run commit:check -- --last --verbose
           fi
       - run: bun run check
-      - run: bun run registry build --source fr-afirev
-      - run: bun run registry validate
+      - run: bun run directory build --source fr-afirev
+      - run: bun run directory validate

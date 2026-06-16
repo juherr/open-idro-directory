@@ -31,8 +31,8 @@ jobs:
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends poppler-utils
       - run: vp install --frozen-lockfile
-      - run: bun run registry update
-      - run: bun run registry:non-idrr
+      - run: bun run directory update
+      - run: bun run directory:non-idrr
       - run: bun run check
       - name: Open update pull request
         env:

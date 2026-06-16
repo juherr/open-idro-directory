@@ -8,6 +8,7 @@ import { fromRoot } from "../infrastructure/filesystem/paths.js";
 import { writeDatasets } from "../infrastructure/serialization/serializers.js";
 import { validateRegistry } from "../validation/registry-validator.js";
 import { checkSafetyThresholds } from "../validation/safety-thresholds.js";
+import { mergeGeneratedRecords } from "./generated-record-merge.js";
 import { applyOfficialStatusPolicy } from "./official-status-policy.js";
 
 export interface BuildOptions {
@@ -38,9 +39,10 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
         retrievedAt: snapshot.metadata.retrievedAt,
       });
       const previous = await readPreviousGeneratedRecords(source.id);
+      const safetyPrevious = filterSourcePresentRecords(previous);
       const safety = checkSafetyThresholds(
         source,
-        previous,
+        safetyPrevious,
         normalized.records,
         parsed.errors.length,
         snapshot.body,
@@ -48,7 +50,12 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
       const errors = [...parsed.errors, ...normalized.errors, ...safety];
       const resultRecords = errors.some((issue) => issue.severity === "error")
         ? previous
-        : normalized.records;
+        : mergeGeneratedRecords(
+            source,
+            previous,
+            normalized.records,
+            snapshot.metadata.retrievedAt,
+          );
       records.push(...resultRecords);
       results.push({
         sourceId: source.id,
@@ -113,4 +120,8 @@ async function readPreviousGeneratedRecords(sourceId: string): Promise<Normalize
   } catch {
     return [];
   }
+}
+
+export function filterSourcePresentRecords(records: NormalizedRegistryRecord[]) {
+  return records.filter((record) => record.source.lastSeenAt === record.source.retrievedAt);
 }

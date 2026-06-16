@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { filterSourcePresentRecords } from "../../src/application/build-registry.js";
 import { checkSafetyThresholds } from "../../src/validation/safety-thresholds.js";
 import { validateRegistry } from "../../src/validation/registry-validator.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
@@ -20,6 +21,33 @@ describe("validation", () => {
     const issues = checkSafetyThresholds(source, previous, current, 0, '{"data":[]}');
 
     expect(issues.some((issue) => issue.code === "MASS_DELETION")).toBe(true);
+  });
+
+  it("excludes retained tombstones from deletion safety comparisons", async () => {
+    const source = await loadSourceDefinition("fr-afirev");
+    const previous = [
+      sampleRecord("A"),
+      sampleRecord("B", "fr-afirev", "FR", {
+        status: "INACTIVE",
+        lastSeenAt: "2026-06-13T00:00:00.000Z",
+        retrievedAt: "2026-06-14T00:00:00.000Z",
+        metadata: {
+          inactiveSince: "2026-06-14T00:00:00.000Z",
+          inactiveReason: "missing-from-official-source",
+        },
+      }),
+    ];
+    const current = [sampleRecord("A")];
+
+    const issues = checkSafetyThresholds(
+      source,
+      filterSourcePresentRecords(previous),
+      current,
+      0,
+      '{"data":[]}',
+    );
+
+    expect(issues.some((issue) => issue.code === "MASS_DELETION")).toBe(false);
   });
 
   it("allows HTML source pages when they are the expected registry format", async () => {
@@ -69,6 +97,11 @@ function sampleRecord(
   partyId = "ABC",
   registryId = "fr-afirev",
   countryCode = "FR",
+  overrides: Partial<NormalizedRegistryRecord> & {
+    firstSeenAt?: string;
+    lastSeenAt?: string;
+    retrievedAt?: string;
+  } = {},
 ): NormalizedRegistryRecord {
   return {
     key: `${registryId}:${countryCode}:${partyId}:CPO`,
@@ -76,7 +109,7 @@ function sampleRecord(
     partyId,
     eMobilityId: `${countryCode}${partyId}`,
     role: "CPO",
-    status: "ACTIVE",
+    status: overrides.status ?? "ACTIVE",
     organization: { name: "Example", legalName: null, website: null },
     source: {
       registryId,
@@ -84,10 +117,10 @@ function sampleRecord(
       sourceRecordId: `${countryCode}${partyId}`,
       sourceUrl: "https://afirev.fr/prefixes/consulter-l-annuaire/",
       sourceValue: `${countryCode}${partyId}`,
-      firstSeenAt: "2026-06-14T00:00:00.000Z",
-      lastSeenAt: "2026-06-14T00:00:00.000Z",
-      retrievedAt: "2026-06-14T00:00:00.000Z",
+      firstSeenAt: overrides.firstSeenAt ?? "2026-06-14T00:00:00.000Z",
+      lastSeenAt: overrides.lastSeenAt ?? "2026-06-14T00:00:00.000Z",
+      retrievedAt: overrides.retrievedAt ?? "2026-06-14T00:00:00.000Z",
     },
-    metadata: {},
+    metadata: overrides.metadata ?? {},
   };
 }

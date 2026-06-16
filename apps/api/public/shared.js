@@ -55,6 +55,7 @@ const COUNTRY_NAMES = {
 
 const FALLBACK_COUNTRIES = [
   "DE",
+  "ES",
   "AT",
   "PL",
   "FR",

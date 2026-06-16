@@ -1,6 +1,6 @@
 const LANDING_FALLBACK_STATS = {
-  totalParties: 5402,
-  totalObservations: 7362,
+  totalParties: 5817,
+  totalObservations: 7932,
   totalConflicts: 0,
   countsByCountry: {
     AT: 1107,
@@ -8,6 +8,7 @@ const LANDING_FALLBACK_STATS = {
     CH: 98,
     DE: 1784,
     DK: 61,
+    ES: 257,
     FI: 23,
     FR: 671,
     GR: 131,
@@ -28,6 +29,7 @@ const LANDING_FALLBACK_STATS = {
     CH: 160,
     DE: 3076,
     DK: 81,
+    ES: 314,
     FI: 40,
     FR: 726,
     GR: 131,
@@ -37,20 +39,20 @@ const LANDING_FALLBACK_STATS = {
     LU: 225,
     LV: 15,
     NL: 365,
-    PL: 838,
+    PL: 836,
     PT: 98,
     SE: 52,
     SI: 56,
   },
-  countsByRole: { CPO: 5002, EMSP: 2360 },
-  datasetTimestamp: "2026-06-15T06:39:47.501Z",
+  countsByRole: { CPO: 5373, EMSP: 2559 },
+  datasetTimestamp: "2026-06-16T06:34:16.059Z",
 };
 
 const LANDING_FALLBACK_ROOT = {
   dataset: {
-    recordCount: 7362,
+    recordCount: 7932,
     sourceCount: 20,
-    generatedAt: "2026-06-15T06:39:47.501Z",
+    generatedAt: "2026-06-16T06:34:16.059Z",
   },
 };
 

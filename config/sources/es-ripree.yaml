@@ -5,9 +5,9 @@ jurisdictions:
   - ES
 official: true
 homepageUrl: https://energia.serviciosmin.gob.es/RIPREE
-registryUrl: https://energia.serviciosmin.gob.es/RIPREE
+registryUrl: https://energia.serviciosmin.gob.es/Ripree/ExportarEmpresas/Export
 connector: es-ripree
-enabled: false
+enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
@@ -17,6 +17,10 @@ license:
   name: null
   url: null
 notes: >
-  Placeholder descriptor for Spain. RIPREE exposes public export pages for
-  companies and installations, but no CPO/MSP party identifier list or stable
-  machine-readable IDRO export has been identified yet.
+  Official Spanish RIPREE public company export page. The page exposes CSV and
+  XML export actions; the connector posts to the public XML export endpoint and
+  normalizes CPO/EMSP CodigoId values.
+safety:
+  maxDeletionRatio: 0.3
+  maxChangeRatio: 0.8
+  maxParseErrorRatio: 0.1

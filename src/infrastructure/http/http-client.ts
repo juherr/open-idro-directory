@@ -170,6 +170,68 @@ export async function getBinary(
   throw new HttpError(`Network error while fetching ${url}`, "network");
 }
 
+export async function postText(
+  url: string,
+  body: string,
+  options: HttpClientOptions,
+): Promise<HttpResponse> {
+  validateUrl(url, options.allowedHosts);
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= options.retries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), options.timeoutMs);
+      const response = await fetch(url, {
+        method: "POST",
+        redirect: "follow",
+        signal: controller.signal,
+        headers: {
+          "User-Agent": options.userAgent,
+          ...options.headers,
+        },
+        body,
+      });
+      try {
+        validateUrl(response.url, options.allowedHosts);
+        if (!response.ok) {
+          if (isRetryableStatus(response.status) && attempt < options.retries) {
+            await sleep(200 * 2 ** attempt);
+            continue;
+          }
+          throw new HttpError(
+            `HTTP ${response.status} while posting to ${url}`,
+            "http",
+            response.status,
+          );
+        }
+        const responseBody = await boundedRead(response, options.maxBytes);
+        return {
+          body: responseBody,
+          contentType: response.headers.get("content-type"),
+          finalUrl: response.url,
+          status: response.status,
+          checksum: sha256(responseBody),
+          etag: response.headers.get("etag"),
+          lastModified: response.headers.get("last-modified"),
+        };
+      } finally {
+        clearTimeout(timeout);
+      }
+    } catch (error) {
+      lastError = error;
+      if (error instanceof HttpError && error.category !== "network") throw error;
+      if (attempt < options.retries) {
+        await sleep(200 * 2 ** attempt);
+        continue;
+      }
+    }
+  }
+  if (lastError instanceof Error && lastError.name === "AbortError") {
+    throw new HttpError(`Timeout while posting to ${url}`, "timeout");
+  }
+  throw new HttpError(`Network error while posting to ${url}`, "network");
+}
+
 function validateUrl(rawUrl: string, allowedHosts: string[]) {
   const url = new URL(rawUrl);
   if (url.protocol !== "https:")

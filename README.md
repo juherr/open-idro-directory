@@ -25,7 +25,7 @@ The project uses the European Alternative Fuels Observatory's [Identification Re
 | Via Lietuva (`lt-vialietuva`)                  | Enabled     | Public OCPI locations endpoint for CPO identifiers                 | CC BY 4.0 / ODC-BY |
 | EIPA (`pl-eipa`)                               | Enabled     | Public CSV export from the registered entities list                | Unknown            |
 | MOBI.E IDACS (`pt-mobie`)                      | Enabled     | Public PDF register                                                | Unknown            |
-| RIPREE (`es-ripree`)                           | Placeholder | Public export pages found, no IDRO party list identified           | Unknown            |
+| RIPREE (`es-ripree`)                           | Enabled     | Public XML export from the company register export page            | Unknown            |
 | Slovenian NAP IDRO (`si-nap`)                  | Enabled     | Public XLSX national repository from NAP                           | Unknown            |
 | SuisseEnergie (`ch-suisseenergie`)             | Enabled     | Public Gatsby page-data JSON endpoint                              | Unknown            |
 | Swedish Energy Agency (`se-energimyndigheten`) | Enabled     | Public XLSX registers for CPO and EMSP identifiers                 | Unknown            |
@@ -53,7 +53,7 @@ The EAFO IDRR directory currently lists these national or regional IDRO entries.
 | Poland                   | Supported          |
 | Portugal                 | Supported          |
 | Slovenia                 | Supported          |
-| Spain                    | Placeholder source |
+| Spain                    | Supported          |
 | Sweden                   | Supported          |
 | Switzerland (Non-EU)     | Supported          |
 | United Kingdom (Non-EU)  | Supported          |
@@ -116,6 +116,7 @@ bun run directory update --source at-ladestellen
 bun run directory update --source benelux-idro
 bun run directory update --source dk-fstyr
 bun run directory update --source de-bdew
+bun run directory update --source es-ripree
 bun run directory update --source fi-traficom
 bun run directory update --source fr-afirev
 bun run directory update --source gb-evroam
@@ -142,6 +143,7 @@ bun run directory fetch --source at-ladestellen
 bun run directory fetch --source benelux-idro
 bun run directory fetch --source dk-fstyr
 bun run directory fetch --source de-bdew
+bun run directory fetch --source es-ripree
 bun run directory fetch --source fi-traficom
 bun run directory fetch --source fr-afirev
 bun run directory fetch --source gb-evroam

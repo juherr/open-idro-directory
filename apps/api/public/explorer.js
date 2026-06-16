@@ -40,7 +40,7 @@ const EXPLORER_COPY = {
     more: "Charger plus",
     copy: "Copier",
     copied: "Copié",
-    context: "Annuaire IDRO · 18 pays",
+    context: "Annuaire IDRO",
     navCountries: "Pays",
     navTrust: "Confiance",
     byAuthor: "Un projet de",
@@ -88,7 +88,7 @@ const EXPLORER_COPY = {
     more: "Load more",
     copy: "Copy",
     copied: "Copied",
-    context: "IDRO directory · 18 countries",
+    context: "IDRO directory",
     navCountries: "Countries",
     navTrust: "Trust",
     byAuthor: "A project by",
@@ -143,6 +143,7 @@ function translateExplorer() {
   document.querySelector("#copy-request").textContent = state.copied
     ? EXPLORER_COPY[lang].copied
     : EXPLORER_COPY[lang].copy;
+  renderContextLabel();
 }
 
 function renderExplorer() {
@@ -156,8 +157,7 @@ function renderExplorer() {
 function renderOptions() {
   const lang = getLanguage();
   const copy = EXPLORER_COPY[lang];
-  const countedCodes = Object.keys(state.countsByCountry || {});
-  const codes = (countedCodes.length ? countedCodes : FALLBACK_COUNTRIES).sort((left, right) =>
+  const codes = availableCountryCodes().sort((left, right) =>
     countryName(left, lang).localeCompare(countryName(right, lang), lang),
   );
   setHtml(
@@ -189,6 +189,19 @@ function renderOptions() {
       ),
     ].join(""),
   );
+}
+
+function renderContextLabel() {
+  const lang = getLanguage();
+  const count = availableCountryCodes().length;
+  const suffix =
+    lang === "fr" ? `${count} pays` : `${count} ${count === 1 ? "country" : "countries"}`;
+  setText("[data-i18n='context']", `${EXPLORER_COPY[lang].context} · ${suffix}`);
+}
+
+function availableCountryCodes() {
+  const countedCodes = Object.keys(state.countsByCountry || {});
+  return countedCodes.length ? countedCodes : FALLBACK_COUNTRIES;
 }
 
 function buildPath(append = false) {
@@ -488,8 +501,10 @@ async function loadContext() {
     state.countsByCountry =
       stats.data?.countsByIdentifierCountry || stats.data?.countsByCountry || {};
     renderOptions();
+    renderContextLabel();
   } catch {
     state.countsByCountry = {};
+    renderContextLabel();
   }
   try {
     const sources = await apiGet("/api/v1/sources");

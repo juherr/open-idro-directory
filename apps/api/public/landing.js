@@ -259,9 +259,6 @@ function countryCardHtml(country, lang) {
       <span class="country-flag" aria-hidden="true">${escapeHtml(countryFlag(country.code))}</span>
       <span class="status-dot ${country.status}"></span>
     </div>
-    <div class="country-code-row">
-      <span class="country-code">${escapeHtml(country.code)}</span>
-    </div>
     <div class="country-name">${escapeHtml(countryName(country.code, lang))}</div>
     ${country.count > 0 ? `<div class="country-count">${escapeHtml(formatNumber(country.count, lang))}</div>` : ""}
     <div class="country-caption">${escapeHtml(countryStatusCaption(country, lang))}</div>

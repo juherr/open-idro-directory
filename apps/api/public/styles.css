@@ -409,7 +409,7 @@ button {
 }
 
 .role-labels strong:last-child {
-  color: #5fb0e6;
+  color: var(--brand-2);
 }
 
 .split-bar {
@@ -548,10 +548,6 @@ button {
   color: #fff;
   font-size: 21px;
   font-weight: 700;
-}
-
-.country-code-row {
-  margin-top: 12px;
 }
 
 .country-code {
@@ -1496,10 +1492,13 @@ button {
 
   .stats-grid,
   .trust-grid,
-  .country-grid,
   .meta-grid,
   .observation-grid {
     grid-template-columns: 1fr;
+  }
+
+  .country-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .role-labels {

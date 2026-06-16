@@ -196,7 +196,9 @@ function buildPath(append = false) {
   if (state.country) params.set("country", state.country);
   if (state.role) params.set("role", state.role);
   if (state.status) params.set("status", state.status);
-  if (state.q && !isIdentifierLike(state.q)) params.set("q", state.q.trim());
+  const identifier = state.q ? normalizeIdentifierInput(state.q) : null;
+  if (identifier) params.set("emobilityId", identifier.emobilityId);
+  else if (state.q) params.set("q", state.q.trim());
   params.set("limit", "25");
   if (append && state.cursor) params.set("cursor", state.cursor);
   return `/api/v1/parties?${params.toString()}`;
@@ -258,8 +260,9 @@ async function resolveIdentifier(value) {
     return;
   }
   try {
-    const clean = value.trim().replaceAll("-", "");
-    const json = await apiGet(`/api/v1/resolve/${encodeURIComponent(clean)}`);
+    const identifier = normalizeIdentifierInput(value);
+    if (!identifier) return;
+    const json = await apiGet(`/api/v1/resolve/${encodeURIComponent(identifier.emobilityId)}`);
     state.resolve = json.data?.party ? { input: json.data.input, party: json.data.party } : null;
   } catch {
     state.resolve = null;

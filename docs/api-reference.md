@@ -25,7 +25,7 @@ Endpoints:
 - `GET /api/v1/sources`, `/sources/{sourceId}`, `/sources/{sourceId}/parties`, `/sources/{sourceId}/health`.
 - `GET /api/v1/conflicts`: global conflict list.
 - `GET /api/v1/stats`: aggregate counts.
-- `GET /api/v1/resolve/{emobilityId}`: resolves normalized five-character party prefixes only.
+- `GET /api/v1/resolve/{emobilityId}`: resolves five-character party prefixes, accepting compact or separator forms such as `FR026`, `FR-026`, and `FR*026`.
 - `GET /openapi.json` and `GET /docs`.
 
 Pagination uses cursors only. Default `limit` is 50; maximum is 200.

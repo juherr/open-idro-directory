@@ -19,6 +19,7 @@ import {
 } from "../domain/constants.js";
 import { decodeCursor } from "../domain/cursor.js";
 import { makeEtag } from "../domain/etag.js";
+import { parseEmobilityIdentifierInput } from "../domain/identifier.js";
 import { RegistryRepository } from "../infrastructure/d1/repository.js";
 import { openApiDocument } from "../openapi/document.js";
 import { docsHtml } from "./docs.js";
@@ -236,18 +237,17 @@ export function createApp() {
 
   app.get(`${API_PREFIX}/resolve/:emobilityId`, async (c) =>
     withDataset(c, CACHE_CONTROL.default, async ({ repo, release }) => {
-      const raw = c.req.param("emobilityId").toUpperCase();
-      const match = /^([A-Z]{2})([A-Z0-9*]{3})$/.exec(raw);
-      if (!match) {
+      const parsed = parseEmobilityIdentifierInput(c.req.param("emobilityId"));
+      if (!parsed) {
         throw new ApiError(
           422,
           "UNSUPPORTED_IDENTIFIER",
-          "Only normalized five-character party identifiers are supported.",
+          "Only five-character party identifiers are supported.",
         );
       }
-      const party = await repo.getParty(release.id, match[1] as string, match[2] as string);
+      const party = await repo.getParty(release.id, parsed.countryCode, parsed.partyId);
       return {
-        input: raw,
+        input: parsed.emobilityId,
         warnings: [],
         ambiguous: false,
         party: party ? partyPayload(party, await repo.getPartyRoles(release.id, party.key)) : null,

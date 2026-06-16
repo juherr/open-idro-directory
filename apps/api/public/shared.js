@@ -119,8 +119,19 @@ async function apiGet(path) {
 }
 
 function isIdentifierLike(value) {
-  const clean = value.trim();
-  return /^[A-Za-z]{2}-?[A-Za-z0-9*]{1,10}$/.test(clean) && /[0-9*]/.test(clean);
+  return normalizeIdentifierInput(value) !== null;
+}
+
+function normalizeIdentifierInput(value) {
+  const input = value.trim().toUpperCase();
+  const separated = /^([A-Z]{2})[-*]([A-Z0-9]{3})$/.exec(input);
+  const compact = separated || /^([A-Z]{2})([A-Z0-9*]{3})$/.exec(input);
+  if (!compact) return null;
+  return {
+    countryCode: compact[1],
+    partyId: compact[2],
+    emobilityId: `${compact[1]}${compact[2]}`,
+  };
 }
 
 function formatIdentifier(countryCode, partyId) {

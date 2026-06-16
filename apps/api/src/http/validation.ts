@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { parseEmobilityIdentifierInput } from "../domain/identifier.js";
 import { ApiError } from "./errors.js";
 
 const roleSchema = z.enum(["CPO", "CSO", "EMSP", "NSP", "HUB", "OTHER"]);
@@ -21,7 +22,22 @@ export const partyListQuerySchema = paginationSchema
   .extend({
     country: z.string().length(2).transform(uppercase).optional(),
     partyId: z.string().min(1).max(10).transform(uppercase).optional(),
-    emobilityId: z.string().min(3).max(20).transform(uppercase).optional(),
+    emobilityId: z
+      .string()
+      .min(3)
+      .max(20)
+      .transform((value, context) => {
+        const parsed = parseEmobilityIdentifierInput(value);
+        if (!parsed) {
+          context.addIssue({
+            code: "custom",
+            message: "Unsupported e-mobility identifier.",
+          });
+          return z.NEVER;
+        }
+        return parsed.emobilityId;
+      })
+      .optional(),
     role: roleSchema.optional(),
     status: statusSchema.optional(),
     authority: authoritySchema.optional(),

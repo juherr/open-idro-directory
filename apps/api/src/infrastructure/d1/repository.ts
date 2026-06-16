@@ -6,6 +6,7 @@ import type {
   PartyRow,
   SourceRow,
 } from "./types.js";
+import { parseEmobilityIdentifierInput } from "../../domain/identifier.js";
 
 export interface ListResult<T> {
   items: T[];
@@ -75,12 +76,16 @@ export class RegistryRepository {
       params.push(filters.cursor.countryCode, filters.cursor.countryCode, filters.cursor.partyId);
     }
     if (filters.q) {
+      const identifier = parseEmobilityIdentifierInput(filters.q);
       clauses.push(
-        "(p.normalized_name LIKE ? ESCAPE '\\' OR p.normalized_legal_name LIKE ? ESCAPE '\\' OR p.emobility_id LIKE ? OR p.party_id LIKE ?)",
+        identifier
+          ? "(p.normalized_name LIKE ? ESCAPE '\\' OR p.normalized_legal_name LIKE ? ESCAPE '\\' OR p.emobility_id LIKE ? OR p.party_id LIKE ? OR p.emobility_id = ? OR p.party_id = ?)"
+          : "(p.normalized_name LIKE ? ESCAPE '\\' OR p.normalized_legal_name LIKE ? ESCAPE '\\' OR p.emobility_id LIKE ? OR p.party_id LIKE ?)",
       );
       const pattern = `%${filters.q.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_")}%`;
       const prefix = `${filters.q.toUpperCase()}%`;
       params.push(pattern, pattern, prefix, prefix);
+      if (identifier) params.push(identifier.emobilityId, identifier.partyId);
     }
     if (filters.role) {
       clauses.push(

@@ -255,12 +255,13 @@ export class RegistryRepository {
         "SELECT severity AS key, COUNT(*) AS count FROM conflicts WHERE dataset_release_id = ? GROUP BY severity ORDER BY severity",
         [releaseId],
       ),
-      this.first<{ parties: number; observations: number; conflicts: number }>(
+      this.first<{ parties: number; partyRoles: number; observations: number; conflicts: number }>(
         `SELECT
           (SELECT COUNT(*) FROM parties WHERE dataset_release_id = ?) AS parties,
+          (SELECT COUNT(*) FROM party_roles WHERE dataset_release_id = ?) AS partyRoles,
           (SELECT COUNT(*) FROM observations WHERE dataset_release_id = ?) AS observations,
           (SELECT COUNT(*) FROM conflicts WHERE dataset_release_id = ?) AS conflicts`,
-        [releaseId, releaseId, releaseId],
+        [releaseId, releaseId, releaseId, releaseId],
       ),
     ]);
     return {

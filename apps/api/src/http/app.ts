@@ -220,6 +220,7 @@ export function createApp() {
       const stats = await repo.stats(release.id);
       return {
         totalParties: stats.totals?.parties ?? 0,
+        totalPartyRoles: stats.totals?.partyRoles ?? 0,
         totalObservations: stats.totals?.observations ?? 0,
         totalConflicts: stats.totals?.conflicts ?? 0,
         countsByCountry: countMap(stats.identifierCountries),

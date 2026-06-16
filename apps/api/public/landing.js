@@ -1,5 +1,6 @@
 const LANDING_FALLBACK_STATS = {
   totalParties: 5817,
+  totalPartyRoles: 7929,
   totalObservations: 7932,
   totalConflicts: 0,
   countsByCountry: {
@@ -201,7 +202,10 @@ function renderStats() {
   const roleTotal = cpo + emsp || 1;
   const timestamp = stats.datasetTimestamp || root.dataset?.generatedAt;
 
-  setText("#metric-identifiers", formatNumber(stats.totalObservations, lang));
+  setText(
+    "#metric-identifiers",
+    formatNumber(stats.totalPartyRoles ?? stats.totalObservations, lang),
+  );
   setText("#metric-parties", formatNumber(stats.totalParties, lang));
   setText("#metric-countries", formatNumber(Object.keys(countries).length, lang));
   setText("#metric-sources", formatNumber(root.dataset?.sourceCount || 0, lang));

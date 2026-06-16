@@ -404,11 +404,11 @@ button {
   font-size: 13px;
 }
 
-.role-labels strong:first-child {
+.role-labels span:first-child strong {
   color: #fe9a52;
 }
 
-.role-labels strong:last-child {
+.role-labels span:last-child strong {
   color: var(--brand-2);
 }
 

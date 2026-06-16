@@ -1,5 +1,5 @@
 {
-  "totalRecords": 7932,
+  "totalRecords": 7935,
   "recordsByCountry": {
     "AT": 1108,
     "BE": 357,
@@ -17,18 +17,18 @@
     "LU": 225,
     "LV": 15,
     "NL": 365,
-    "PL": 836,
+    "PL": 839,
     "PT": 98,
     "SE": 52,
     "SI": 56
   },
   "recordsByRole": {
-    "CPO": 5373,
+    "CPO": 5376,
     "EMSP": 2559
   },
   "recordsByStatus": {
     "ACTIVE": 7376,
-    "INACTIVE": 214,
+    "INACTIVE": 217,
     "RESERVED": 143,
     "UNKNOWN": 199
   },
@@ -47,7 +47,7 @@
     "ie-tii": 26,
     "lt-vialietuva": 8,
     "lv-lvceli": 15,
-    "pl-eipa": 836,
+    "pl-eipa": 839,
     "pt-mobie": 98,
     "se-energimyndigheten": 52,
     "si-nap": 56

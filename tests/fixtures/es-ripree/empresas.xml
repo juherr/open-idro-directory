@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Empresas>
+  <Empresa>
+    <Documento>A85908036</Documento>
+    <CodigoId>ES*FEN</CodigoId>
+    <TipoEmpresa>CPO</TipoEmpresa>
+    <RazonSocial>FENIE ENERGIA, SA</RazonSocial>
+    <Domicilio>ALSASUA, 20</Domicilio>
+    <Pais>España</Pais>
+    <cAutonoma>Madrid, Comunidad de</cAutonoma>
+    <Provincia>Madrid</Provincia>
+    <Municipio>Madrid</Municipio>
+    <CodigoPostal>28025</CodigoPostal>
+    <Web>recarga.fenieenergia.es</Web>
+  </Empresa>
+  <Empresa>
+    <Documento>B27805423</Documento>
+    <CodigoId>ES*EFI</CodigoId>
+    <TipoEmpresa>EMSP</TipoEmpresa>
+    <RazonSocial>EFIMOB EFFICIENT SOLUTIONS, S.L.</RazonSocial>
+    <Domicilio>PI PORTO DO MOLLE, RUA DAS PONTES, VIAL A, 4, 2.38</Domicilio>
+    <Pais>España</Pais>
+    <cAutonoma>Galicia</cAutonoma>
+    <Provincia>Pontevedra</Provincia>
+    <Municipio>Nigrán</Municipio>
+    <CodigoPostal>36350</CodigoPostal>
+    <Web>www.efimob.com</Web>
+  </Empresa>
+  <Empresa>
+    <Documento>B27805423</Documento>
+    <CodigoId>ES*EFI</CodigoId>
+    <TipoEmpresa>CPO</TipoEmpresa>
+    <RazonSocial>EFIMOB EFFICIENT SOLUTIONS, S.L.</RazonSocial>
+    <Domicilio>PI PORTO DO MOLLE, RUA DAS PONTES - VIAL A, 4, 2.38</Domicilio>
+    <Pais>España</Pais>
+    <cAutonoma>Galicia</cAutonoma>
+    <Provincia>Pontevedra</Provincia>
+    <Municipio>Nigrán</Municipio>
+    <CodigoPostal>36350</CodigoPostal>
+    <Web>www.efimob.com</Web>
+  </Empresa>
+  <Empresa>
+    <Documento>W0096400G</Documento>
+    <CodigoId>ES*911</CodigoId>
+    <TipoEmpresa>EMSP</TipoEmpresa>
+    <RazonSocial>Porsche Sales &amp; Marketplace GmbH</RazonSocial>
+    <Domicilio>Avenida de Burgos 87</Domicilio>
+    <Pais>España</Pais>
+    <cAutonoma>Madrid, Comunidad de</cAutonoma>
+    <Provincia>Madrid</Provincia>
+    <Municipio>Madrid</Municipio>
+    <CodigoPostal>28050</CodigoPostal>
+    <Web>connect-store.porsche.com/es/es/p/taycan_charging_EU_v1?model=taycan_2022</Web>
+  </Empresa>
+  <Empresa>
+    <Documento>A17014846</Documento>
+    <CodigoId>ES*HSS</CodigoId>
+    <TipoEmpresa>CPO</TipoEmpresa>
+    <RazonSocial>HOTELES SOL DEL SUR, SA</RazonSocial>
+    <Domicilio>PASEO GENERAL MENDOZA, 1</Domicilio>
+    <Pais>España</Pais>
+    <cAutonoma>Cataluña</cAutonoma>
+    <Provincia>Girona</Provincia>
+    <Municipio>Girona</Municipio>
+    <CodigoPostal>17002</CodigoPostal>
+    <Web>tramits@auditenergia.com</Web>
+  </Empresa>
+</Empresas>

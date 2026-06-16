@@ -21,4 +21,5 @@ notes: >
   EV Roam public register API. The response contains GB identifiers and IE
   identifiers for organizations that also hold Irish CPO and/or EMSP codes. GB
   records are treated as EV Roam official assignments; IE records are preserved
-  as cross-register observations because TII is the Irish registrar.
+  as unknown-status cross-register observations because TII is the Irish
+  registrar.

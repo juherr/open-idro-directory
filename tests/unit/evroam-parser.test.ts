@@ -60,6 +60,13 @@ describe("EV Roam parser", () => {
       false,
       true,
     ]);
+    expect(result.records.map((record) => record.status)).toEqual([
+      "ACTIVE",
+      "ACTIVE",
+      "UNKNOWN",
+      "UNKNOWN",
+      "ACTIVE",
+    ]);
     expect(result.records[0]).toMatchObject({
       countryCode: "GB",
       partyId: "505",
@@ -134,6 +141,12 @@ describe("EV Roam parser", () => {
       "gb-evroam",
     ]);
     expect(records.map((record) => record.source.official)).toEqual([true, true, false, false]);
+    expect(records.map((record) => record.status)).toEqual([
+      "ACTIVE",
+      "ACTIVE",
+      "UNKNOWN",
+      "UNKNOWN",
+    ]);
     expect(validateRegistry(records, [tiiSource, evroamSource])).toHaveLength(0);
   });
 });

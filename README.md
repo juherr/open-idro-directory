@@ -169,7 +169,7 @@ bun run api:typecheck
 
 ## Data Model
 
-Each record contains a stable key, normalized `countryCode`, `partyId`, `eMobilityId`, role, status, organization data, source provenance, and source-specific metadata. Roles are kept as separate records when a source publishes a combined type. The stable key includes the originating `registryId`, so overlapping claims from different sources, such as Irish identifiers published by both TII and EV Roam, remain separate records with separate provenance instead of overwriting each other. For EV Roam, GB records are marked official and IE cross-register records are retained as non-official observations because TII is the Irish registrar.
+Each record contains a stable key, normalized `countryCode`, `partyId`, `eMobilityId`, role, status, organization data, source provenance, and source-specific metadata. Roles are kept as separate records when a source publishes a combined type. The stable key includes the originating `registryId`, so overlapping claims from different sources, such as Irish identifiers published by both TII and EV Roam, remain separate records with separate provenance instead of overwriting each other. When a country has official IDRO records in the dataset, non-official active claims for that country are retained with unknown status; the official IDRO decides whether the identifier is active. For EV Roam, GB records are marked official and active; IE cross-register records are retained as non-official unknown-status observations because TII is the Irish registrar.
 
 Complementary non-IDRR data uses `IdentifierObservation` records instead of
 official registry records. Observations explicitly preserve identifier scheme,

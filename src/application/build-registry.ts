@@ -8,6 +8,7 @@ import { fromRoot } from "../infrastructure/filesystem/paths.js";
 import { writeDatasets } from "../infrastructure/serialization/serializers.js";
 import { validateRegistry } from "../validation/registry-validator.js";
 import { checkSafetyThresholds } from "../validation/safety-thresholds.js";
+import { applyOfficialStatusPolicy } from "./official-status-policy.js";
 
 export interface BuildOptions {
   sourceId?: string;
@@ -80,8 +81,14 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
       });
     }
   }
-  const registryIssues = validateRegistry(records, sources);
-  await writeDatasets(records, sources, results, generatedAt, options.outputDir);
+  const policyRecords = applyOfficialStatusPolicy(records);
+  const policyRecordByKey = new Map(policyRecords.map((record) => [record.key, record]));
+  const policyResults = results.map((result) => ({
+    ...result,
+    records: result.records.map((record) => policyRecordByKey.get(record.key) ?? record),
+  }));
+  const registryIssues = validateRegistry(policyRecords, sources);
+  await writeDatasets(policyRecords, sources, policyResults, generatedAt, options.outputDir);
   if (registryIssues.some((issue) => issue.severity === "error")) {
     throw new Error(
       `Registry validation failed: ${registryIssues.map((issue) => issue.message).join("; ")}`,
@@ -95,7 +102,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
         .join("; ")}`,
     );
   }
-  return { records, results, issues: registryIssues };
+  return { records: policyRecords, results: policyResults, issues: registryIssues };
 }
 
 async function readPreviousGeneratedRecords(sourceId: string): Promise<NormalizedRegistryRecord[]> {

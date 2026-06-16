@@ -96,7 +96,7 @@ export class EvroamConnector implements RegistryConnector<EvroamRegisterItem> {
           partyId: parsed.partyId,
           eMobilityId: `${parsed.countryCode}${parsed.partyId}`,
           role: identifier.role,
-          status: "ACTIVE",
+          status: parsed.countryCode === "GB" ? "ACTIVE" : "UNKNOWN",
           organization: {
             name:
               clean(sourceRecord.title) ??

@@ -56,6 +56,18 @@ const LANDING_FALLBACK_ROOT = {
   },
 };
 
+const ADD_COUNTRY_ISSUE_URL =
+  "https://github.com/juherr/open-idro-directory/issues/new?template=add-country.yml";
+
+const KNOWN_UNPUBLISHED_COUNTRIES = [
+  {
+    code: "CY",
+    url: "https://www.mcw.gov.cy/mcw/ems/ems.nsf/All/D764FAE19922743BC2258DAA002FA4BC?OpenDocument",
+  },
+];
+
+const COMING_SOON_COUNTRIES = ["BG", "CZ", "EE", "IT", "LU", "MT", "RO", "SK"];
+
 const LANDING_COPY = {
   fr: {
     navExplore: "Explorer",
@@ -80,6 +92,11 @@ const LANDING_COPY = {
     emsp: "EMSP",
     roleSplit: "Répartition par rôle",
     identifiersShort: "identifiants",
+    idroKnownUnavailable: "IDRO connu, liste non diffusée",
+    comingSoon: "à venir",
+    pendingOfficialIdroSource: "identifiants via une autre source",
+    addCountryTitle: "Ajouter votre pays",
+    addCountryBody: "Partagez une page IDRO officielle, une URL de registre ou un contact public.",
     countriesTitle: "Parcourir par pays",
     countriesSub:
       "Sélectionnez un pays pour explorer ses identifiants et leurs sources officielles.",
@@ -124,6 +141,11 @@ const LANDING_COPY = {
     emsp: "EMSP",
     roleSplit: "Split by role",
     identifiersShort: "identifiers",
+    idroKnownUnavailable: "IDRO known, list unavailable",
+    comingSoon: "coming soon",
+    pendingOfficialIdroSource: "identifiers via another source",
+    addCountryTitle: "Add your country",
+    addCountryBody: "Share an official IDRO page, registry URL or public contact.",
     countriesTitle: "Browse by country",
     countriesSub: "Pick a country to explore its identifiers and their official sources.",
     seeAll: "Explore all →",
@@ -195,23 +217,74 @@ function renderCountries() {
   const lang = getLanguage();
   const stats = landingState.stats || LANDING_FALLBACK_STATS;
   const countries = stats.countsByIdentifierCountry || stats.countsByCountry || {};
-  const html = Object.keys(countries)
+  const supported = Object.keys(countries)
     .sort((left, right) => countries[right] - countries[left])
-    .map(
-      (code) => `
-        <a class="country-card" href="/explore/?country=${encodeURIComponent(code)}">
-          <div class="country-card-top">
-            <span class="country-code">${escapeHtml(code)}</span>
-            <span class="status-dot"></span>
-          </div>
-          <div class="country-name">${escapeHtml(countryName(code, lang))}</div>
-          <div class="country-count">${escapeHtml(formatNumber(countries[code], lang))}</div>
-          <div class="country-caption">${escapeHtml(LANDING_COPY[lang].identifiersShort)}</div>
-        </a>
-      `,
-    )
+    .map((code) => ({
+      code,
+      count: countries[code],
+      href: `/explore/?country=${encodeURIComponent(code)}`,
+      status: COMING_SOON_COUNTRIES.includes(code) ? "coming-soon" : "supported",
+    }));
+  const knownUnpublished = KNOWN_UNPUBLISHED_COUNTRIES.map((country) => ({
+    ...country,
+    count: 0,
+    href: country.url,
+    status: "known-unpublished",
+  }));
+  const comingSoon = COMING_SOON_COUNTRIES.filter((code) => !countries[code]).map((code) => ({
+    code,
+    count: 0,
+    href: null,
+    status: "coming-soon",
+  }));
+  const html = [...supported, ...knownUnpublished, ...comingSoon]
+    .map((country) => countryCardHtml(country, lang))
     .join("");
-  setHtml("#country-grid", html);
+  const ctaHtml = `
+    <a class="country-card country-card-cta" href="${ADD_COUNTRY_ISSUE_URL}" target="_blank" rel="noreferrer">
+      <div class="country-card-top">
+        <span class="country-flag" aria-hidden="true">+</span>
+        <span class="country-code">IDRO</span>
+      </div>
+      <div class="country-name">${escapeHtml(LANDING_COPY[lang].addCountryTitle)}</div>
+      <div class="country-caption">${escapeHtml(LANDING_COPY[lang].addCountryBody)}</div>
+    </a>
+  `;
+  setHtml("#country-grid", html + ctaHtml);
+}
+
+function countryCardHtml(country, lang) {
+  const content = `
+    <div class="country-card-top">
+      <span class="country-flag" aria-hidden="true">${escapeHtml(countryFlag(country.code))}</span>
+      <span class="status-dot ${country.status}"></span>
+    </div>
+    <div class="country-code-row">
+      <span class="country-code">${escapeHtml(country.code)}</span>
+    </div>
+    <div class="country-name">${escapeHtml(countryName(country.code, lang))}</div>
+    ${country.count > 0 ? `<div class="country-count">${escapeHtml(formatNumber(country.count, lang))}</div>` : ""}
+    <div class="country-caption">${escapeHtml(countryStatusCaption(country, lang))}</div>
+  `;
+  const className = `country-card country-card-${country.status}`;
+  if (!country.href)
+    return `<article class="${className}" aria-label="${escapeHtml(countryName(country.code, lang))}">${content}</article>`;
+  const target = country.href.startsWith("http") ? ' target="_blank" rel="noreferrer"' : "";
+  return `<a class="${className}" href="${escapeHtml(country.href)}"${target}>${content}</a>`;
+}
+
+function countryStatusCaption(country, lang) {
+  if (country.status === "known-unpublished") return LANDING_COPY[lang].idroKnownUnavailable;
+  if (country.status === "coming-soon" && country.count > 0)
+    return LANDING_COPY[lang].pendingOfficialIdroSource;
+  if (country.status === "coming-soon") return LANDING_COPY[lang].comingSoon;
+  return LANDING_COPY[lang].identifiersShort;
+}
+
+function countryFlag(code) {
+  return code
+    .toUpperCase()
+    .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
 }
 
 function renderChips(lang) {

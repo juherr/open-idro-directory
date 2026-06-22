@@ -27,10 +27,18 @@ export const sourceDefinitionSchema = z.object({
   safety: z
     .object({
       maxDeletionRatio: z.number().min(0).max(1).default(0.2),
+      maxDeletionCount: z.number().int().min(0).default(5),
       maxChangeRatio: z.number().min(0).max(1).default(0.5),
       maxParseErrorRatio: z.number().min(0).max(1).default(0.05),
+      acceptedDeletionKeys: z.array(z.string().min(1)).default([]),
     })
-    .default({ maxDeletionRatio: 0.2, maxChangeRatio: 0.5, maxParseErrorRatio: 0.05 }),
+    .default({
+      maxDeletionRatio: 0.2,
+      maxDeletionCount: 5,
+      maxChangeRatio: 0.5,
+      maxParseErrorRatio: 0.05,
+      acceptedDeletionKeys: [],
+    }),
 });
 
 export type SourceDefinition = z.infer<typeof sourceDefinitionSchema>;

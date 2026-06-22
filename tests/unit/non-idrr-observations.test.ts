@@ -172,7 +172,13 @@ function sampleSource(): SourceDefinition {
       redistributionAllowed: null,
       notes: null,
     },
-    safety: { maxDeletionRatio: 0.2, maxChangeRatio: 0.5, maxParseErrorRatio: 0.05 },
+    safety: {
+      maxDeletionRatio: 0.2,
+      maxDeletionCount: 5,
+      maxChangeRatio: 0.5,
+      maxParseErrorRatio: 0.05,
+      acceptedDeletionKeys: [],
+    },
   };
 }
 

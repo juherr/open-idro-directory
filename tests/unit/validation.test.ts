@@ -16,11 +16,42 @@ describe("validation", () => {
 
   it("rejects suspicious mass deletion", async () => {
     const source = await loadSourceDefinition("fr-afirev");
-    const previous = [sampleRecord("A"), sampleRecord("B"), sampleRecord("C")];
+    const previous = ["A", "B", "C", "D", "E", "F", "G", "H"].map((partyId) =>
+      sampleRecord(partyId),
+    );
     const current = [sampleRecord("A")];
     const issues = checkSafetyThresholds(source, previous, current, 0, '{"data":[]}');
 
     expect(issues.some((issue) => issue.code === "MASS_DELETION")).toBe(true);
+    expect(issues[0]?.message).toContain("deletion safety threshold exceeded");
+    expect(issues[0]?.message).toContain("Allowed up to");
+  });
+
+  it("allows small absolute deletions even when the ratio is high", async () => {
+    const source = await loadSourceDefinition("fr-afirev");
+    const previous = [sampleRecord("A"), sampleRecord("B"), sampleRecord("C")];
+    const current = [sampleRecord("A")];
+    const issues = checkSafetyThresholds(source, previous, current, 0, '{"data":[]}');
+
+    expect(issues.some((issue) => issue.code === "MASS_DELETION")).toBe(false);
+  });
+
+  it("excludes accepted deletion keys from deletion safety comparisons", async () => {
+    const source = {
+      ...(await loadSourceDefinition("fr-afirev")),
+      safety: {
+        maxDeletionRatio: 0.2,
+        maxDeletionCount: 5,
+        maxChangeRatio: 0.5,
+        maxParseErrorRatio: 0.05,
+        acceptedDeletionKeys: ["fr-afirev:FR:B:CPO", "fr-afirev:FR:C:CPO"],
+      },
+    };
+    const previous = [sampleRecord("A"), sampleRecord("B"), sampleRecord("C")];
+    const current = [sampleRecord("A")];
+    const issues = checkSafetyThresholds(source, previous, current, 0, '{"data":[]}');
+
+    expect(issues.some((issue) => issue.code === "MASS_DELETION")).toBe(false);
   });
 
   it("excludes retained tombstones from deletion safety comparisons", async () => {

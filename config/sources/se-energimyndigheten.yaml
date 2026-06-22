@@ -19,3 +19,31 @@ license:
 notes: >
   Uses the Swedish Energy Agency's public XLSX registers: one workbook for CPO
   identifiers and one workbook for EMSP identifiers.
+safety:
+  acceptedDeletionKeys:
+    - se-energimyndigheten:SE:ALEG:CPO
+    - se-energimyndigheten:SE:ALLE:CPO
+    - se-energimyndigheten:SE:APF:CPO
+    - se-energimyndigheten:SE:CHS:CPO
+    - se-energimyndigheten:SE:CLF:CPO
+    - se-energimyndigheten:SE:EBB:CPO
+    - se-energimyndigheten:SE:EDO:CPO
+    - se-energimyndigheten:SE:FDK:CPO
+    - se-energimyndigheten:SE:GIT:CPO
+    - se-energimyndigheten:SE:GSP:CPO
+    - se-energimyndigheten:SE:HSH:CPO
+    - se-energimyndigheten:SE:LDB:CPO
+    - se-energimyndigheten:SE:LEX:CPO
+    - se-energimyndigheten:SE:LIT:CPO
+    - se-energimyndigheten:SE:MCK:CPO
+    - se-energimyndigheten:SE:MIL:CPO
+    - se-energimyndigheten:SE:MSK:CPO
+    - se-energimyndigheten:SE:QWCE:CPO
+    - se-energimyndigheten:SE:REC:CPO
+    - se-energimyndigheten:SE:SMB:CPO
+    - se-energimyndigheten:SE:SOF:CPO
+    - se-energimyndigheten:SE:SWE:CPO
+    - se-energimyndigheten:SE:T124:CPO
+    - se-energimyndigheten:SE:VBK:CPO
+    - se-energimyndigheten:SE:VIR:CPO
+    - se-energimyndigheten:SE:VKK:CPO

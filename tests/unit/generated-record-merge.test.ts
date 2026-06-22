@@ -166,8 +166,10 @@ function plEipaSource(): SourceDefinition {
     },
     safety: {
       maxDeletionRatio: 0.3,
+      maxDeletionCount: 5,
       maxChangeRatio: 0.8,
       maxParseErrorRatio: 0.1,
+      acceptedDeletionKeys: [],
     },
   };
 }

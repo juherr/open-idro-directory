@@ -13,16 +13,26 @@ export function checkSafetyThresholds(
   if (previous.length > 0 && current.length === 0) {
     issues.push(error("SOURCE_BECAME_EMPTY", `${source.id} became empty.`));
   }
+  const acceptedDeletionKeys = new Set(source.safety.acceptedDeletionKeys);
   const removed = previous.filter(
     (record) => !current.some((candidate) => candidate.key === record.key),
   );
+  const unacceptedRemoved = removed.filter((record) => !acceptedDeletionKeys.has(record.key));
   const changed = current.filter((record) => {
     const old = previous.find((candidate) => candidate.key === record.key);
     return old && JSON.stringify(stableRecord(old)) !== JSON.stringify(stableRecord(record));
   });
-  if (previous.length > 0 && removed.length / previous.length > source.safety.maxDeletionRatio) {
+  const deletionRatio = previous.length > 0 ? unacceptedRemoved.length / previous.length : 0;
+  if (
+    previous.length > 0 &&
+    deletionRatio > source.safety.maxDeletionRatio &&
+    unacceptedRemoved.length > source.safety.maxDeletionCount
+  ) {
     issues.push(
-      error("MASS_DELETION", `${removed.length} of ${previous.length} records disappeared.`),
+      error(
+        "MASS_DELETION",
+        `${source.id} deletion safety threshold exceeded: ${unacceptedRemoved.length} of ${previous.length} active records disappeared (${formatPercent(deletionRatio)}). Allowed up to ${formatPercent(source.safety.maxDeletionRatio)} or ${source.safety.maxDeletionCount} records. If the removals are verified upstream changes, add the vanished keys to safety.acceptedDeletionKeys; otherwise inspect the source response and parser.`,
+      ),
     );
   }
   if (previous.length > 0 && changed.length / previous.length > source.safety.maxChangeRatio) {
@@ -67,6 +77,10 @@ function looksLikeFallback(body: string) {
     sample.includes("forbidden") ||
     sample.includes("se connecter")
   );
+}
+
+function formatPercent(value: number) {
+  return `${Math.round(value * 1000) / 10}%`;
 }
 
 function error(code: string, message: string): ValidationIssue {

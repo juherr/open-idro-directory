@@ -1,6 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
-import { VialietuvaConnector } from "../../src/connectors/lt-vialietuva/vialietuva.connector.js";
+import {
+  VialietuvaConnector,
+  vialietuvaLocationsUrl,
+} from "../../src/connectors/lt-vialietuva/vialietuva.connector.js";
 import { parseVialietuvaLocations } from "../../src/connectors/lt-vialietuva/vialietuva.parser.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
 
@@ -34,5 +37,14 @@ describe("Via Lietuva parser", () => {
       "lt-vialietuva:LT:ION:CPO",
     ]);
     expect(result.records[0]?.metadata.vialietuvaLocationCount).toBe(2);
+  });
+
+  it("requests enough OCPI locations to avoid the default partial page", () => {
+    expect(vialietuvaLocationsUrl("https://ev.vialietuva.lt/ocpi/2.3.0/locations")).toBe(
+      "https://ev.vialietuva.lt/ocpi/2.3.0/locations?limit=1000",
+    );
+    expect(vialietuvaLocationsUrl("https://ev.vialietuva.lt/ocpi/2.3.0/locations?limit=500")).toBe(
+      "https://ev.vialietuva.lt/ocpi/2.3.0/locations?limit=500",
+    );
   });
 });

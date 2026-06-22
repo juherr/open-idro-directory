@@ -36,6 +36,29 @@ describe("Swedish Energy Agency parser", () => {
     ]);
   });
 
+  it("parses Swedish CPO workbooks with operator-first headers", async () => {
+    const result = await parseEnergimyndighetenSnapshot(
+      JSON.stringify({
+        cpo: {
+          url: CPO_URL,
+          contentBase64: workbookBase64([
+            ["Operator", "CPO-ID"],
+            ["Aimo Charge", "SE*AIM"],
+          ]),
+        },
+        emsp: {
+          url: EMSP_URL,
+          contentBase64: workbookBase64([["ID", "Operator"]]),
+        },
+      }),
+    );
+
+    expect(result.errors).toHaveLength(0);
+    expect(result.records).toEqual([
+      { sourceValue: "SE*AIM", organizationName: "Aimo Charge", role: "CPO", sourceUrl: CPO_URL },
+    ]);
+  });
+
   it("normalizes Swedish CPO and EMSP identifiers", async () => {
     const source = await loadSourceDefinition("se-energimyndigheten");
     const connector = new EnergimyndighetenConnector();

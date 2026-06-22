@@ -22,6 +22,85 @@
     "SE": 52,
     "SI": 56
   },
+  "recordsByCountryRole": {
+    "AT": {
+      "CPO": 1108
+    },
+    "BE": {
+      "CPO": 204,
+      "EMSP": 153
+    },
+    "CH": {
+      "CPO": 91,
+      "EMSP": 69
+    },
+    "DE": {
+      "CPO": 1640,
+      "EMSP": 1436
+    },
+    "DK": {
+      "CPO": 56,
+      "EMSP": 25
+    },
+    "ES": {
+      "CPO": 237,
+      "EMSP": 77
+    },
+    "FI": {
+      "CPO": 23,
+      "EMSP": 17
+    },
+    "FR": {
+      "CPO": 580,
+      "EMSP": 146
+    },
+    "GB": {
+      "CPO": 101,
+      "EMSP": 93
+    },
+    "GR": {
+      "CPO": 81,
+      "EMSP": 50
+    },
+    "HU": {
+      "EMSP": 1
+    },
+    "IE": {
+      "CPO": 50,
+      "EMSP": 39
+    },
+    "LT": {
+      "CPO": 8
+    },
+    "LU": {
+      "CPO": 125,
+      "EMSP": 100
+    },
+    "LV": {
+      "CPO": 9,
+      "EMSP": 6
+    },
+    "NL": {
+      "CPO": 199,
+      "EMSP": 166
+    },
+    "PL": {
+      "CPO": 716,
+      "EMSP": 123
+    },
+    "PT": {
+      "CPO": 72,
+      "EMSP": 26
+    },
+    "SE": {
+      "CPO": 49,
+      "EMSP": 3
+    },
+    "SI": {
+      "CPO": 27,
+      "EMSP": 29
+    }
+  },
   "recordsByRole": {
     "CPO": 5376,
     "EMSP": 2559

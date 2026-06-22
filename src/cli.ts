@@ -6,6 +6,7 @@ import { fetchSources } from "./application/fetch-sources.js";
 import { validateGeneratedRegistry } from "./application/validate-registry.js";
 import { diffAgainstGit, writeChangeReport } from "./application/change-report.js";
 import { buildNonIdrrReports } from "./application/non-idrr-reports.js";
+import { updateCountryRoleHistory } from "./application/stats-history.js";
 import { loadSourceDefinitions } from "./infrastructure/filesystem/source-loader.js";
 import { fromRoot } from "./infrastructure/filesystem/paths.js";
 
@@ -97,6 +98,13 @@ program.command("stats").action(async () =>
   run(async () => {
     const stats = await readFile(fromRoot("data", "stats.json"), "utf8");
     console.log(stats.trim());
+  }),
+);
+
+program.command("stats:history").action(async () =>
+  run(async () => {
+    const rows = await updateCountryRoleHistory();
+    console.log(`Updated country role history with ${rows.length} country row(s).`);
   }),
 );
 

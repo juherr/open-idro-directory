@@ -7,6 +7,7 @@ import type { SourceDefinition } from "../../domain/source-definition.js";
 export interface GeneratedStats {
   totalRecords: number;
   recordsByCountry: Record<string, number>;
+  recordsByCountryRole: Record<string, Record<string, number>>;
   recordsByRole: Record<string, number>;
   recordsByStatus: Record<string, number>;
   recordsByRegistry: Record<string, number>;
@@ -135,6 +136,7 @@ function toStats(
   return {
     totalRecords: records.length,
     recordsByCountry: countBy(records, (record) => record.countryCode),
+    recordsByCountryRole: countByCountryRole(records),
     recordsByRole: countBy(records, (record) => record.role),
     recordsByStatus: countBy(records, (record) => record.status),
     recordsByRegistry: countBy(records, (record) => record.source.registryId),
@@ -153,4 +155,20 @@ function countBy(
   const counts: Record<string, number> = {};
   for (const record of records) counts[selector(record)] = (counts[selector(record)] ?? 0) + 1;
   return Object.fromEntries(Object.entries(counts).sort(([a], [b]) => a.localeCompare(b)));
+}
+
+function countByCountryRole(records: NormalizedRegistryRecord[]) {
+  const counts: Record<string, Record<string, number>> = {};
+  for (const record of records) {
+    const countryCounts = (counts[record.countryCode] ??= {});
+    countryCounts[record.role] = (countryCounts[record.role] ?? 0) + 1;
+  }
+  return Object.fromEntries(
+    Object.entries(counts)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([countryCode, roleCounts]) => [
+        countryCode,
+        Object.fromEntries(Object.entries(roleCounts).sort(([a], [b]) => a.localeCompare(b))),
+      ]),
+  );
 }

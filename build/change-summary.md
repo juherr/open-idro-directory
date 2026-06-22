@@ -3,8 +3,8 @@
 ## at-ladestellen
 
 - Previous records: 0
-- Current records: 1107
-- Added: 1107
+- Current records: 1111
+- Added: 1111
 - Updated: 0
 - Removed: 0
 - Unchanged: 0
@@ -418,6 +418,7 @@
 | Added | at-ladestellen:AT:DBS:CPO | n/a |
 | Added | at-ladestellen:AT:DCE:CPO | n/a |
 | Added | at-ladestellen:AT:DEW:CPO | n/a |
+| Added | at-ladestellen:AT:DKV:CPO | n/a |
 | Added | at-ladestellen:AT:DLV:CPO | n/a |
 | Added | at-ladestellen:AT:DMB:CPO | n/a |
 | Added | at-ladestellen:AT:DNH:CPO | n/a |
@@ -675,6 +676,7 @@
 | Added | at-ladestellen:AT:GY9:CPO | n/a |
 | Added | at-ladestellen:AT:GZT:CPO | n/a |
 | Added | at-ladestellen:AT:H22:CPO | n/a |
+| Added | at-ladestellen:AT:H70:CPO | n/a |
 | Added | at-ladestellen:AT:H71:CPO | n/a |
 | Added | at-ladestellen:AT:H7H:CPO | n/a |
 | Added | at-ladestellen:AT:HAF:CPO | n/a |
@@ -894,6 +896,7 @@
 | Added | at-ladestellen:AT:PKE:CPO | n/a |
 | Added | at-ladestellen:AT:PLN:CPO | n/a |
 | Added | at-ladestellen:AT:POD:CPO | n/a |
+| Added | at-ladestellen:AT:POL:CPO | n/a |
 | Added | at-ladestellen:AT:POM:CPO | n/a |
 | Added | at-ladestellen:AT:POW:CPO | n/a |
 | Added | at-ladestellen:AT:POZ:CPO | n/a |
@@ -1103,6 +1106,7 @@
 | Added | at-ladestellen:AT:YES:CPO | n/a |
 | Added | at-ladestellen:AT:YHI:CPO | n/a |
 | Added | at-ladestellen:AT:YOS:CPO | n/a |
+| Added | at-ladestellen:AT:YSS:CPO | n/a |
 | Added | at-ladestellen:AT:YXB:CPO | n/a |
 | Added | at-ladestellen:AT:YYK:CPO | n/a |
 | Added | at-ladestellen:AT:Z83:CPO | n/a |
@@ -1128,8 +1132,8 @@
 ## benelux-idro
 
 - Previous records: 0
-- Current records: 947
-- Added: 947
+- Current records: 949
+- Added: 949
 - Updated: 0
 - Removed: 0
 - Unchanged: 0
@@ -1378,6 +1382,8 @@
 | Added | benelux-idro:BE:MPL:CPO | n/a |
 | Added | benelux-idro:BE:MPL:EMSP | n/a |
 | Added | benelux-idro:BE:MPS:CPO | n/a |
+| Added | benelux-idro:BE:MVN:CPO | n/a |
+| Added | benelux-idro:BE:MVN:EMSP | n/a |
 | Added | benelux-idro:BE:NET:CPO | n/a |
 | Added | benelux-idro:BE:NET:EMSP | n/a |
 | Added | benelux-idro:BE:NIO:CPO | n/a |
@@ -2271,8 +2277,8 @@
 ## de-bdew
 
 - Previous records: 0
-- Current records: 3076
-- Added: 3076
+- Current records: 3086
+- Added: 3086
 - Updated: 0
 - Removed: 0
 - Unchanged: 0
@@ -2505,6 +2511,8 @@
 | Added | de-bdew:DE:486:CPO | n/a |
 | Added | de-bdew:DE:486:EMSP | n/a |
 | Added | de-bdew:DE:494:EMSP | n/a |
+| Added | de-bdew:DE:495:CPO | n/a |
+| Added | de-bdew:DE:495:EMSP | n/a |
 | Added | de-bdew:DE:501:CPO | n/a |
 | Added | de-bdew:DE:501:EMSP | n/a |
 | Added | de-bdew:DE:505:CPO | n/a |
@@ -2575,6 +2583,7 @@
 | Added | de-bdew:DE:747:EMSP | n/a |
 | Added | de-bdew:DE:753:CPO | n/a |
 | Added | de-bdew:DE:753:EMSP | n/a |
+| Added | de-bdew:DE:757:EMSP | n/a |
 | Added | de-bdew:DE:765:CPO | n/a |
 | Added | de-bdew:DE:765:EMSP | n/a |
 | Added | de-bdew:DE:769:CPO | n/a |
@@ -2716,6 +2725,7 @@
 | Added | de-bdew:DE:AEG:EMSP | n/a |
 | Added | de-bdew:DE:AEM:CPO | n/a |
 | Added | de-bdew:DE:AEM:EMSP | n/a |
+| Added | de-bdew:DE:AEN:CPO | n/a |
 | Added | de-bdew:DE:AEP:EMSP | n/a |
 | Added | de-bdew:DE:AES:CPO | n/a |
 | Added | de-bdew:DE:AEW:CPO | n/a |
@@ -2842,6 +2852,8 @@
 | Added | de-bdew:DE:BAU:CPO | n/a |
 | Added | de-bdew:DE:BAU:EMSP | n/a |
 | Added | de-bdew:DE:BBB:CPO | n/a |
+| Added | de-bdew:DE:BBE:CPO | n/a |
+| Added | de-bdew:DE:BBE:EMSP | n/a |
 | Added | de-bdew:DE:BCH:CPO | n/a |
 | Added | de-bdew:DE:BCH:EMSP | n/a |
 | Added | de-bdew:DE:BCK:CPO | n/a |
@@ -4102,6 +4114,7 @@
 | Added | de-bdew:DE:LB1:EMSP | n/a |
 | Added | de-bdew:DE:LBE:CPO | n/a |
 | Added | de-bdew:DE:LBE:EMSP | n/a |
+| Added | de-bdew:DE:LBQ:CPO | n/a |
 | Added | de-bdew:DE:LCG:CPO | n/a |
 | Added | de-bdew:DE:LCG:EMSP | n/a |
 | Added | de-bdew:DE:LDK:CPO | n/a |
@@ -4403,6 +4416,7 @@
 | Added | de-bdew:DE:OEG:EMSP | n/a |
 | Added | de-bdew:DE:OEK:CPO | n/a |
 | Added | de-bdew:DE:OEM:CPO | n/a |
+| Added | de-bdew:DE:OEP:CPO | n/a |
 | Added | de-bdew:DE:OER:CPO | n/a |
 | Added | de-bdew:DE:OER:EMSP | n/a |
 | Added | de-bdew:DE:OHP:CPO | n/a |
@@ -4481,6 +4495,7 @@
 | Added | de-bdew:DE:PJE:CPO | n/a |
 | Added | de-bdew:DE:PJE:EMSP | n/a |
 | Added | de-bdew:DE:PLE:EMSP | n/a |
+| Added | de-bdew:DE:PLM:CPO | n/a |
 | Added | de-bdew:DE:PLN:CPO | n/a |
 | Added | de-bdew:DE:PLN:EMSP | n/a |
 | Added | de-bdew:DE:PLQ:CPO | n/a |
@@ -5186,6 +5201,7 @@
 | Added | de-bdew:DE:VHM:EMSP | n/a |
 | Added | de-bdew:DE:VHY:CPO | n/a |
 | Added | de-bdew:DE:VHY:EMSP | n/a |
+| Added | de-bdew:DE:VIA:CPO | n/a |
 | Added | de-bdew:DE:VIB:CPO | n/a |
 | Added | de-bdew:DE:VIB:EMSP | n/a |
 | Added | de-bdew:DE:VIG:CPO | n/a |
@@ -5461,11 +5477,345 @@
 
 </details>
 
+## es-ripree
+
+- Previous records: 0
+- Current records: 316
+- Added: 316
+- Updated: 0
+- Removed: 0
+- Unchanged: 0
+- Warnings: 0
+
+<details>
+<summary>Record-level changes</summary>
+
+| Change | Key | Removal interpretation |
+| --- | --- | --- |
+| Added | es-ripree:ES:001:CPO | n/a |
+| Added | es-ripree:ES:010:CPO | n/a |
+| Added | es-ripree:ES:010:EMSP | n/a |
+| Added | es-ripree:ES:041:CPO | n/a |
+| Added | es-ripree:ES:054:CPO | n/a |
+| Added | es-ripree:ES:056:CPO | n/a |
+| Added | es-ripree:ES:069:CPO | n/a |
+| Added | es-ripree:ES:070:CPO | n/a |
+| Added | es-ripree:ES:071:CPO | n/a |
+| Added | es-ripree:ES:099:CPO | n/a |
+| Added | es-ripree:ES:109:EMSP | n/a |
+| Added | es-ripree:ES:111:CPO | n/a |
+| Added | es-ripree:ES:12C:CPO | n/a |
+| Added | es-ripree:ES:196:CPO | n/a |
+| Added | es-ripree:ES:200:CPO | n/a |
+| Added | es-ripree:ES:220:CPO | n/a |
+| Added | es-ripree:ES:223:CPO | n/a |
+| Added | es-ripree:ES:229:CPO | n/a |
+| Added | es-ripree:ES:232:CPO | n/a |
+| Added | es-ripree:ES:251:CPO | n/a |
+| Added | es-ripree:ES:252:CPO | n/a |
+| Added | es-ripree:ES:256:CPO | n/a |
+| Added | es-ripree:ES:259:CPO | n/a |
+| Added | es-ripree:ES:271:CPO | n/a |
+| Added | es-ripree:ES:275:CPO | n/a |
+| Added | es-ripree:ES:275:EMSP | n/a |
+| Added | es-ripree:ES:280:EMSP | n/a |
+| Added | es-ripree:ES:300:EMSP | n/a |
+| Added | es-ripree:ES:333:CPO | n/a |
+| Added | es-ripree:ES:345:CPO | n/a |
+| Added | es-ripree:ES:345:EMSP | n/a |
+| Added | es-ripree:ES:357:CPO | n/a |
+| Added | es-ripree:ES:357:EMSP | n/a |
+| Added | es-ripree:ES:361:CPO | n/a |
+| Added | es-ripree:ES:36A:CPO | n/a |
+| Added | es-ripree:ES:380:CPO | n/a |
+| Added | es-ripree:ES:580:CPO | n/a |
+| Added | es-ripree:ES:580:EMSP | n/a |
+| Added | es-ripree:ES:669:CPO | n/a |
+| Added | es-ripree:ES:686:CPO | n/a |
+| Added | es-ripree:ES:686:EMSP | n/a |
+| Added | es-ripree:ES:68C:CPO | n/a |
+| Added | es-ripree:ES:699:CPO | n/a |
+| Added | es-ripree:ES:710:CPO | n/a |
+| Added | es-ripree:ES:728:CPO | n/a |
+| Added | es-ripree:ES:746:CPO | n/a |
+| Added | es-ripree:ES:782:CPO | n/a |
+| Added | es-ripree:ES:789:EMSP | n/a |
+| Added | es-ripree:ES:809:CPO | n/a |
+| Added | es-ripree:ES:809:EMSP | n/a |
+| Added | es-ripree:ES:814:CPO | n/a |
+| Added | es-ripree:ES:843:CPO | n/a |
+| Added | es-ripree:ES:910:CPO | n/a |
+| Added | es-ripree:ES:911:CPO | n/a |
+| Added | es-ripree:ES:911:EMSP | n/a |
+| Added | es-ripree:ES:912:CPO | n/a |
+| Added | es-ripree:ES:913:CPO | n/a |
+| Added | es-ripree:ES:914:CPO | n/a |
+| Added | es-ripree:ES:915:CPO | n/a |
+| Added | es-ripree:ES:916:CPO | n/a |
+| Added | es-ripree:ES:918:CPO | n/a |
+| Added | es-ripree:ES:919:CPO | n/a |
+| Added | es-ripree:ES:920:CPO | n/a |
+| Added | es-ripree:ES:922:CPO | n/a |
+| Added | es-ripree:ES:923:CPO | n/a |
+| Added | es-ripree:ES:924:CPO | n/a |
+| Added | es-ripree:ES:925:CPO | n/a |
+| Added | es-ripree:ES:926:CPO | n/a |
+| Added | es-ripree:ES:927:CPO | n/a |
+| Added | es-ripree:ES:928:CPO | n/a |
+| Added | es-ripree:ES:935:CPO | n/a |
+| Added | es-ripree:ES:9A8:CPO | n/a |
+| Added | es-ripree:ES:A00:CPO | n/a |
+| Added | es-ripree:ES:A44:CPO | n/a |
+| Added | es-ripree:ES:A79:CPO | n/a |
+| Added | es-ripree:ES:ADT:CPO | n/a |
+| Added | es-ripree:ES:ADU:CPO | n/a |
+| Added | es-ripree:ES:ADU:EMSP | n/a |
+| Added | es-ripree:ES:AEQ:CPO | n/a |
+| Added | es-ripree:ES:AJF:CPO | n/a |
+| Added | es-ripree:ES:ALL:CPO | n/a |
+| Added | es-ripree:ES:ALT:CPO | n/a |
+| Added | es-ripree:ES:ALV:EMSP | n/a |
+| Added | es-ripree:ES:AMA:CPO | n/a |
+| Added | es-ripree:ES:AMA:EMSP | n/a |
+| Added | es-ripree:ES:APK:CPO | n/a |
+| Added | es-ripree:ES:ARE:CPO | n/a |
+| Added | es-ripree:ES:ARE:EMSP | n/a |
+| Added | es-ripree:ES:ARP:CPO | n/a |
+| Added | es-ripree:ES:ARP:EMSP | n/a |
+| Added | es-ripree:ES:ATE:CPO | n/a |
+| Added | es-ripree:ES:AUB:CPO | n/a |
+| Added | es-ripree:ES:AUT:CPO | n/a |
+| Added | es-ripree:ES:AVC:EMSP | n/a |
+| Added | es-ripree:ES:AVI:EMSP | n/a |
+| Added | es-ripree:ES:AVM:CPO | n/a |
+| Added | es-ripree:ES:AYA:CPO | n/a |
+| Added | es-ripree:ES:AYU:CPO | n/a |
+| Added | es-ripree:ES:B05:CPO | n/a |
+| Added | es-ripree:ES:B22:CPO | n/a |
+| Added | es-ripree:ES:B2M:EMSP | n/a |
+| Added | es-ripree:ES:B86:CPO | n/a |
+| Added | es-ripree:ES:BEA:CPO | n/a |
+| Added | es-ripree:ES:BEL:CPO | n/a |
+| Added | es-ripree:ES:BEM:CPO | n/a |
+| Added | es-ripree:ES:BEX:CPO | n/a |
+| Added | es-ripree:ES:BGO:CPO | n/a |
+| Added | es-ripree:ES:BIA:CPO | n/a |
+| Added | es-ripree:ES:BM0:CPO | n/a |
+| Added | es-ripree:ES:BSM:CPO | n/a |
+| Added | es-ripree:ES:BSM:EMSP | n/a |
+| Added | es-ripree:ES:CAL:CPO | n/a |
+| Added | es-ripree:ES:CAN:CPO | n/a |
+| Added | es-ripree:ES:CAN:EMSP | n/a |
+| Added | es-ripree:ES:CAS:CPO | n/a |
+| Added | es-ripree:ES:CBM:CPO | n/a |
+| Added | es-ripree:ES:CCR:CPO | n/a |
+| Added | es-ripree:ES:CEL:CPO | n/a |
+| Added | es-ripree:ES:CEL:EMSP | n/a |
+| Added | es-ripree:ES:CES:CPO | n/a |
+| Added | es-ripree:ES:CES:EMSP | n/a |
+| Added | es-ripree:ES:CG1:CPO | n/a |
+| Added | es-ripree:ES:CG1:EMSP | n/a |
+| Added | es-ripree:ES:CH1:CPO | n/a |
+| Added | es-ripree:ES:CHR:CPO | n/a |
+| Added | es-ripree:ES:CHR:EMSP | n/a |
+| Added | es-ripree:ES:CHT:CPO | n/a |
+| Added | es-ripree:ES:CHV:CPO | n/a |
+| Added | es-ripree:ES:CHV:EMSP | n/a |
+| Added | es-ripree:ES:CIA:CPO | n/a |
+| Added | es-ripree:ES:CM3:CPO | n/a |
+| Added | es-ripree:ES:CNP:EMSP | n/a |
+| Added | es-ripree:ES:CPI:CPO | n/a |
+| Added | es-ripree:ES:CRE:CPO | n/a |
+| Added | es-ripree:ES:CRE:EMSP | n/a |
+| Added | es-ripree:ES:CRF:CPO | n/a |
+| Added | es-ripree:ES:CRF:EMSP | n/a |
+| Added | es-ripree:ES:CRM:CPO | n/a |
+| Added | es-ripree:ES:CSN:CPO | n/a |
+| Added | es-ripree:ES:CTN:CPO | n/a |
+| Added | es-ripree:ES:DIP:CPO | n/a |
+| Added | es-ripree:ES:DIR:CPO | n/a |
+| Added | es-ripree:ES:DLP:CPO | n/a |
+| Added | es-ripree:ES:DLP:EMSP | n/a |
+| Added | es-ripree:ES:DRS:CPO | n/a |
+| Added | es-ripree:ES:DRV:CPO | n/a |
+| Added | es-ripree:ES:EAS:CPO | n/a |
+| Added | es-ripree:ES:EDP:CPO | n/a |
+| Added | es-ripree:ES:EDP:EMSP | n/a |
+| Added | es-ripree:ES:EDX:CPO | n/a |
+| Added | es-ripree:ES:EFI:CPO | n/a |
+| Added | es-ripree:ES:EFI:EMSP | n/a |
+| Added | es-ripree:ES:EFM:CPO | n/a |
+| Added | es-ripree:ES:EL5:CPO | n/a |
+| Added | es-ripree:ES:EL5:EMSP | n/a |
+| Added | es-ripree:ES:ELC:CPO | n/a |
+| Added | es-ripree:ES:ELE:CPO | n/a |
+| Added | es-ripree:ES:ELE:EMSP | n/a |
+| Added | es-ripree:ES:EMA:CPO | n/a |
+| Added | es-ripree:ES:EMO:CPO | n/a |
+| Added | es-ripree:ES:EMP:CPO | n/a |
+| Added | es-ripree:ES:EMP:EMSP | n/a |
+| Added | es-ripree:ES:EMT:CPO | n/a |
+| Added | es-ripree:ES:EMT:EMSP | n/a |
+| Added | es-ripree:ES:ENE:CPO | n/a |
+| Added | es-ripree:ES:ENE:EMSP | n/a |
+| Added | es-ripree:ES:EPK:CPO | n/a |
+| Added | es-ripree:ES:EPK:EMSP | n/a |
+| Added | es-ripree:ES:EPR:CPO | n/a |
+| Added | es-ripree:ES:EPR:EMSP | n/a |
+| Added | es-ripree:ES:EQY:CPO | n/a |
+| Added | es-ripree:ES:ER1:CPO | n/a |
+| Added | es-ripree:ES:ER1:EMSP | n/a |
+| Added | es-ripree:ES:ERA:CPO | n/a |
+| Added | es-ripree:ES:ERA:EMSP | n/a |
+| Added | es-ripree:ES:ESX:CPO | n/a |
+| Added | es-ripree:ES:ESX:EMSP | n/a |
+| Added | es-ripree:ES:ETE:CPO | n/a |
+| Added | es-ripree:ES:ETE:EMSP | n/a |
+| Added | es-ripree:ES:ETI:CPO | n/a |
+| Added | es-ripree:ES:ETI:EMSP | n/a |
+| Added | es-ripree:ES:EUC:EMSP | n/a |
+| Added | es-ripree:ES:EVE:CPO | n/a |
+| Added | es-ripree:ES:F04:CPO | n/a |
+| Added | es-ripree:ES:F22:CPO | n/a |
+| Added | es-ripree:ES:FAC:CPO | n/a |
+| Added | es-ripree:ES:FAC:EMSP | n/a |
+| Added | es-ripree:ES:FAS:CPO | n/a |
+| Added | es-ripree:ES:FB1:CPO | n/a |
+| Added | es-ripree:ES:FCT:CPO | n/a |
+| Added | es-ripree:ES:FEL:CPO | n/a |
+| Added | es-ripree:ES:FEN:CPO | n/a |
+| Added | es-ripree:ES:FES:CPO | n/a |
+| Added | es-ripree:ES:FES:EMSP | n/a |
+| Added | es-ripree:ES:FRD:EMSP | n/a |
+| Added | es-ripree:ES:FST:CPO | n/a |
+| Added | es-ripree:ES:FZ4:CPO | n/a |
+| Added | es-ripree:ES:GAI:CPO | n/a |
+| Added | es-ripree:ES:GAI:EMSP | n/a |
+| Added | es-ripree:ES:GDS:CPO | n/a |
+| Added | es-ripree:ES:GEE:CPO | n/a |
+| Added | es-ripree:ES:GEE:EMSP | n/a |
+| Added | es-ripree:ES:GIC:CPO | n/a |
+| Added | es-ripree:ES:GIN:CPO | n/a |
+| Added | es-ripree:ES:GSM:CPO | n/a |
+| Added | es-ripree:ES:GT2:CPO | n/a |
+| Added | es-ripree:ES:GU1:CPO | n/a |
+| Added | es-ripree:ES:H2P:CPO | n/a |
+| Added | es-ripree:ES:HBS:CPO | n/a |
+| Added | es-ripree:ES:HSS:CPO | n/a |
+| Added | es-ripree:ES:HVR:CPO | n/a |
+| Added | es-ripree:ES:I09:CPO | n/a |
+| Added | es-ripree:ES:IBD:CPO | n/a |
+| Added | es-ripree:ES:IBD:EMSP | n/a |
+| Added | es-ripree:ES:IBE:CPO | n/a |
+| Added | es-ripree:ES:IBE:EMSP | n/a |
+| Added | es-ripree:ES:IBL:CPO | n/a |
+| Added | es-ripree:ES:IBL:EMSP | n/a |
+| Added | es-ripree:ES:ICP:CPO | n/a |
+| Added | es-ripree:ES:ICP:EMSP | n/a |
+| Added | es-ripree:ES:INC:CPO | n/a |
+| Added | es-ripree:ES:INS:CPO | n/a |
+| Added | es-ripree:ES:IOY:CPO | n/a |
+| Added | es-ripree:ES:IPK:CPO | n/a |
+| Added | es-ripree:ES:IPM:CPO | n/a |
+| Added | es-ripree:ES:JA1:CPO | n/a |
+| Added | es-ripree:ES:JOV:CPO | n/a |
+| Added | es-ripree:ES:JR1:CPO | n/a |
+| Added | es-ripree:ES:LCG:CPO | n/a |
+| Added | es-ripree:ES:LEV:CPO | n/a |
+| Added | es-ripree:ES:LG1:CPO | n/a |
+| Added | es-ripree:ES:LIN:CPO | n/a |
+| Added | es-ripree:ES:LOP:CPO | n/a |
+| Added | es-ripree:ES:MAC:CPO | n/a |
+| Added | es-ripree:ES:MAD:EMSP | n/a |
+| Added | es-ripree:ES:MBL:CPO | n/a |
+| Added | es-ripree:ES:MBZ:CPO | n/a |
+| Added | es-ripree:ES:MCN:CPO | n/a |
+| Added | es-ripree:ES:MGC:CPO | n/a |
+| Added | es-ripree:ES:MGC:EMSP | n/a |
+| Added | es-ripree:ES:MOB:EMSP | n/a |
+| Added | es-ripree:ES:MOE:CPO | n/a |
+| Added | es-ripree:ES:MOY:CPO | n/a |
+| Added | es-ripree:ES:MPM:CPO | n/a |
+| Added | es-ripree:ES:MRX:CPO | n/a |
+| Added | es-ripree:ES:MRX:EMSP | n/a |
+| Added | es-ripree:ES:MSS:CPO | n/a |
+| Added | es-ripree:ES:NTG:CPO | n/a |
+| Added | es-ripree:ES:NTG:EMSP | n/a |
+| Added | es-ripree:ES:OSE:CPO | n/a |
+| Added | es-ripree:ES:OSE:EMSP | n/a |
+| Added | es-ripree:ES:PAV:CPO | n/a |
+| Added | es-ripree:ES:PAV:EMSP | n/a |
+| Added | es-ripree:ES:PET:CPO | n/a |
+| Added | es-ripree:ES:PGO:CPO | n/a |
+| Added | es-ripree:ES:PLC:CPO | n/a |
+| Added | es-ripree:ES:PLE:CPO | n/a |
+| Added | es-ripree:ES:PLN:CPO | n/a |
+| Added | es-ripree:ES:PLT:CPO | n/a |
+| Added | es-ripree:ES:PMO:CPO | n/a |
+| Added | es-ripree:ES:PRI:EMSP | n/a |
+| Added | es-ripree:ES:PRR:CPO | n/a |
+| Added | es-ripree:ES:PRR:EMSP | n/a |
+| Added | es-ripree:ES:PRS:CPO | n/a |
+| Added | es-ripree:ES:PRY:CPO | n/a |
+| Added | es-ripree:ES:PRY:EMSP | n/a |
+| Added | es-ripree:ES:PTG:CPO | n/a |
+| Added | es-ripree:ES:PTM:CPO | n/a |
+| Added | es-ripree:ES:PTP:EMSP | n/a |
+| Added | es-ripree:ES:PWH:CPO | n/a |
+| Added | es-ripree:ES:PWY:CPO | n/a |
+| Added | es-ripree:ES:PWY:EMSP | n/a |
+| Added | es-ripree:ES:RB1:EMSP | n/a |
+| Added | es-ripree:ES:REN:CPO | n/a |
+| Added | es-ripree:ES:REP:CPO | n/a |
+| Added | es-ripree:ES:RMS:CPO | n/a |
+| Added | es-ripree:ES:RPS:EMSP | n/a |
+| Added | es-ripree:ES:RSM:CPO | n/a |
+| Added | es-ripree:ES:S1D:EMSP | n/a |
+| Added | es-ripree:ES:SER:CPO | n/a |
+| Added | es-ripree:ES:SFM:CPO | n/a |
+| Added | es-ripree:ES:SII:CPO | n/a |
+| Added | es-ripree:ES:SJ1:CPO | n/a |
+| Added | es-ripree:ES:SMA:CPO | n/a |
+| Added | es-ripree:ES:SOL:CPO | n/a |
+| Added | es-ripree:ES:SOL:EMSP | n/a |
+| Added | es-ripree:ES:SPL:CPO | n/a |
+| Added | es-ripree:ES:SSU:EMSP | n/a |
+| Added | es-ripree:ES:TCB:CPO | n/a |
+| Added | es-ripree:ES:TER:CPO | n/a |
+| Added | es-ripree:ES:TJR:CPO | n/a |
+| Added | es-ripree:ES:TOR:CPO | n/a |
+| Added | es-ripree:ES:TOR:EMSP | n/a |
+| Added | es-ripree:ES:TOT:EMSP | n/a |
+| Added | es-ripree:ES:TRK:CPO | n/a |
+| Added | es-ripree:ES:TSL:CPO | n/a |
+| Added | es-ripree:ES:TSL:EMSP | n/a |
+| Added | es-ripree:ES:TUI:CPO | n/a |
+| Added | es-ripree:ES:TUI:EMSP | n/a |
+| Added | es-ripree:ES:TX1:CPO | n/a |
+| Added | es-ripree:ES:UMH:CPO | n/a |
+| Added | es-ripree:ES:VDR:CPO | n/a |
+| Added | es-ripree:ES:VIL:CPO | n/a |
+| Added | es-ripree:ES:VLT:CPO | n/a |
+| Added | es-ripree:ES:WE1:CPO | n/a |
+| Added | es-ripree:ES:WEN:CPO | n/a |
+| Added | es-ripree:ES:WEN:EMSP | n/a |
+| Added | es-ripree:ES:WHO:CPO | n/a |
+| Added | es-ripree:ES:WHS:CPO | n/a |
+| Added | es-ripree:ES:WU1:CPO | n/a |
+| Added | es-ripree:ES:XEX:CPO | n/a |
+| Added | es-ripree:ES:ZCN:CPO | n/a |
+| Added | es-ripree:ES:ZEV:CPO | n/a |
+| Added | es-ripree:ES:ZUN:CPO | n/a |
+| Added | es-ripree:ES:ZUN:EMSP | n/a |
+| Added | es-ripree:ES:ZZZ:CPO | n/a |
+
+</details>
+
 ## fi-traficom
 
 - Previous records: 0
-- Current records: 40
-- Added: 40
+- Current records: 43
+- Added: 43
 - Updated: 0
 - Removed: 0
 - Unchanged: 0
@@ -5480,6 +5830,7 @@
 | Added | fi-traficom:FI:001:EMSP | n/a |
 | Added | fi-traficom:FI:ABC:CPO | n/a |
 | Added | fi-traficom:FI:ABC:EMSP | n/a |
+| Added | fi-traficom:FI:AHO:CPO | n/a |
 | Added | fi-traficom:FI:AIM:CPO | n/a |
 | Added | fi-traficom:FI:AIM:EMSP | n/a |
 | Added | fi-traficom:FI:CHA:CPO | n/a |
@@ -5499,6 +5850,8 @@
 | Added | fi-traficom:FI:KCH:CPO | n/a |
 | Added | fi-traficom:FI:KCH:EMSP | n/a |
 | Added | fi-traficom:FI:KRT:CPO | n/a |
+| Added | fi-traficom:FI:LDL:CPO | n/a |
+| Added | fi-traficom:FI:LDL:EMSP | n/a |
 | Added | fi-traficom:FI:LEP:CPO | n/a |
 | Added | fi-traficom:FI:NES:CPO | n/a |
 | Added | fi-traficom:FI:NES:EMSP | n/a |
@@ -6263,6 +6616,291 @@
 
 </details>
 
+## gb-evroam
+
+- Previous records: 0
+- Current records: 267
+- Added: 267
+- Updated: 0
+- Removed: 0
+- Unchanged: 0
+- Warnings: 0
+
+<details>
+<summary>Record-level changes</summary>
+
+| Change | Key | Removal interpretation |
+| --- | --- | --- |
+| Added | gb-evroam:GB:007:CPO | n/a |
+| Added | gb-evroam:GB:007:EMSP | n/a |
+| Added | gb-evroam:GB:138:EMSP | n/a |
+| Added | gb-evroam:GB:191:CPO | n/a |
+| Added | gb-evroam:GB:240:CPO | n/a |
+| Added | gb-evroam:GB:240:EMSP | n/a |
+| Added | gb-evroam:GB:24L:CPO | n/a |
+| Added | gb-evroam:GB:24L:EMSP | n/a |
+| Added | gb-evroam:GB:253:CPO | n/a |
+| Added | gb-evroam:GB:311:CPO | n/a |
+| Added | gb-evroam:GB:311:EMSP | n/a |
+| Added | gb-evroam:GB:321:CPO | n/a |
+| Added | gb-evroam:GB:321:EMSP | n/a |
+| Added | gb-evroam:GB:369:CPO | n/a |
+| Added | gb-evroam:GB:369:EMSP | n/a |
+| Added | gb-evroam:GB:3TI:CPO | n/a |
+| Added | gb-evroam:GB:505:CPO | n/a |
+| Added | gb-evroam:GB:505:EMSP | n/a |
+| Added | gb-evroam:GB:911:CPO | n/a |
+| Added | gb-evroam:GB:911:EMSP | n/a |
+| Added | gb-evroam:GB:ACC:CPO | n/a |
+| Added | gb-evroam:GB:ALS:CPO | n/a |
+| Added | gb-evroam:GB:ALS:EMSP | n/a |
+| Added | gb-evroam:GB:APC:CPO | n/a |
+| Added | gb-evroam:GB:APC:EMSP | n/a |
+| Added | gb-evroam:GB:APG:CPO | n/a |
+| Added | gb-evroam:GB:AVL:EMSP | n/a |
+| Added | gb-evroam:GB:B3V:CPO | n/a |
+| Added | gb-evroam:GB:BB1:CPO | n/a |
+| Added | gb-evroam:GB:BB1:EMSP | n/a |
+| Added | gb-evroam:GB:BEV:CPO | n/a |
+| Added | gb-evroam:GB:BEV:EMSP | n/a |
+| Added | gb-evroam:GB:BLV:CPO | n/a |
+| Added | gb-evroam:GB:BLV:EMSP | n/a |
+| Added | gb-evroam:GB:BPC:CPO | n/a |
+| Added | gb-evroam:GB:BPC:EMSP | n/a |
+| Added | gb-evroam:GB:BPP:CPO | n/a |
+| Added | gb-evroam:GB:BPP:EMSP | n/a |
+| Added | gb-evroam:GB:BPT:CPO | n/a |
+| Added | gb-evroam:GB:BPT:EMSP | n/a |
+| Added | gb-evroam:GB:BTF:CPO | n/a |
+| Added | gb-evroam:GB:BTF:EMSP | n/a |
+| Added | gb-evroam:GB:CAG:CPO | n/a |
+| Added | gb-evroam:GB:CCR:CPO | n/a |
+| Added | gb-evroam:GB:CEV:CPO | n/a |
+| Added | gb-evroam:GB:CEV:EMSP | n/a |
+| Added | gb-evroam:GB:CHG:CPO | n/a |
+| Added | gb-evroam:GB:CHG:EMSP | n/a |
+| Added | gb-evroam:GB:CIR:EMSP | n/a |
+| Added | gb-evroam:GB:CIT:CPO | n/a |
+| Added | gb-evroam:GB:CP2:CPO | n/a |
+| Added | gb-evroam:GB:CP2:EMSP | n/a |
+| Added | gb-evroam:GB:CPI:CPO | n/a |
+| Added | gb-evroam:GB:CPI:EMSP | n/a |
+| Added | gb-evroam:GB:CPS:CPO | n/a |
+| Added | gb-evroam:GB:CPS:EMSP | n/a |
+| Added | gb-evroam:GB:CSC:EMSP | n/a |
+| Added | gb-evroam:GB:DAF:EMSP | n/a |
+| Added | gb-evroam:GB:DCS:EMSP | n/a |
+| Added | gb-evroam:GB:DGN:CPO | n/a |
+| Added | gb-evroam:GB:DGN:EMSP | n/a |
+| Added | gb-evroam:GB:DRX:CPO | n/a |
+| Added | gb-evroam:GB:DRX:EMSP | n/a |
+| Added | gb-evroam:GB:EFL:CPO | n/a |
+| Added | gb-evroam:GB:EFL:EMSP | n/a |
+| Added | gb-evroam:GB:EGF:CPO | n/a |
+| Added | gb-evroam:GB:EGF:EMSP | n/a |
+| Added | gb-evroam:GB:EGO:CPO | n/a |
+| Added | gb-evroam:GB:EGO:EMSP | n/a |
+| Added | gb-evroam:GB:EOC:CPO | n/a |
+| Added | gb-evroam:GB:EOC:EMSP | n/a |
+| Added | gb-evroam:GB:EST:CPO | n/a |
+| Added | gb-evroam:GB:EST:EMSP | n/a |
+| Added | gb-evroam:GB:EVA:EMSP | n/a |
+| Added | gb-evroam:GB:EVC:CPO | n/a |
+| Added | gb-evroam:GB:EVS:CPO | n/a |
+| Added | gb-evroam:GB:EVS:EMSP | n/a |
+| Added | gb-evroam:GB:EVY:CPO | n/a |
+| Added | gb-evroam:GB:EVY:EMSP | n/a |
+| Added | gb-evroam:GB:EZC:CPO | n/a |
+| Added | gb-evroam:GB:FAS:CPO | n/a |
+| Added | gb-evroam:GB:FAS:EMSP | n/a |
+| Added | gb-evroam:GB:FCH:CPO | n/a |
+| Added | gb-evroam:GB:FCH:EMSP | n/a |
+| Added | gb-evroam:GB:FGL:CPO | n/a |
+| Added | gb-evroam:GB:FGL:EMSP | n/a |
+| Added | gb-evroam:GB:FSE:CPO | n/a |
+| Added | gb-evroam:GB:FSE:EMSP | n/a |
+| Added | gb-evroam:GB:FSR:EMSP | n/a |
+| Added | gb-evroam:GB:GDL:CPO | n/a |
+| Added | gb-evroam:GB:GDL:EMSP | n/a |
+| Added | gb-evroam:GB:GDM:EMSP | n/a |
+| Added | gb-evroam:GB:GEN:CPO | n/a |
+| Added | gb-evroam:GB:GEV:CPO | n/a |
+| Added | gb-evroam:GB:GEV:EMSP | n/a |
+| Added | gb-evroam:GB:GFX:CPO | n/a |
+| Added | gb-evroam:GB:GFX:EMSP | n/a |
+| Added | gb-evroam:GB:GOZ:CPO | n/a |
+| Added | gb-evroam:GB:GP1:CPO | n/a |
+| Added | gb-evroam:GB:GPE:CPO | n/a |
+| Added | gb-evroam:GB:GRD:CPO | n/a |
+| Added | gb-evroam:GB:GRD:EMSP | n/a |
+| Added | gb-evroam:GB:GVE:CPO | n/a |
+| Added | gb-evroam:GB:GVE:EMSP | n/a |
+| Added | gb-evroam:GB:GVR:CPO | n/a |
+| Added | gb-evroam:GB:GVR:EMSP | n/a |
+| Added | gb-evroam:GB:HGV:CPO | n/a |
+| Added | gb-evroam:GB:HGV:EMSP | n/a |
+| Added | gb-evroam:GB:HUB:CPO | n/a |
+| Added | gb-evroam:GB:HUB:EMSP | n/a |
+| Added | gb-evroam:GB:HZC:CPO | n/a |
+| Added | gb-evroam:GB:HZC:EMSP | n/a |
+| Added | gb-evroam:GB:INS:CPO | n/a |
+| Added | gb-evroam:GB:INS:EMSP | n/a |
+| Added | gb-evroam:GB:IOY:CPO | n/a |
+| Added | gb-evroam:GB:JLR:EMSP | n/a |
+| Added | gb-evroam:GB:LCL:CPO | n/a |
+| Added | gb-evroam:GB:LCL:EMSP | n/a |
+| Added | gb-evroam:GB:LDL:CPO | n/a |
+| Added | gb-evroam:GB:LDL:EMSP | n/a |
+| Added | gb-evroam:GB:LMS:CPO | n/a |
+| Added | gb-evroam:GB:LMS:EMSP | n/a |
+| Added | gb-evroam:GB:LNI:CPO | n/a |
+| Added | gb-evroam:GB:MBX:CPO | n/a |
+| Added | gb-evroam:GB:MER:CPO | n/a |
+| Added | gb-evroam:GB:MER:EMSP | n/a |
+| Added | gb-evroam:GB:MFI:EMSP | n/a |
+| Added | gb-evroam:GB:MOT:CPO | n/a |
+| Added | gb-evroam:GB:MPS:CPO | n/a |
+| Added | gb-evroam:GB:MYE:CPO | n/a |
+| Added | gb-evroam:GB:MYE:EMSP | n/a |
+| Added | gb-evroam:GB:OCT:CPO | n/a |
+| Added | gb-evroam:GB:OCT:EMSP | n/a |
+| Added | gb-evroam:GB:OSP:CPO | n/a |
+| Added | gb-evroam:GB:OSP:EMSP | n/a |
+| Added | gb-evroam:GB:OTU:EMSP | n/a |
+| Added | gb-evroam:GB:P4Y:EMSP | n/a |
+| Added | gb-evroam:GB:PAR:EMSP | n/a |
+| Added | gb-evroam:GB:PAU:EMSP | n/a |
+| Added | gb-evroam:GB:PAY:EMSP | n/a |
+| Added | gb-evroam:GB:PO2:CPO | n/a |
+| Added | gb-evroam:GB:PO2:EMSP | n/a |
+| Added | gb-evroam:GB:POD:CPO | n/a |
+| Added | gb-evroam:GB:POD:EMSP | n/a |
+| Added | gb-evroam:GB:POG:CPO | n/a |
+| Added | gb-evroam:GB:POG:EMSP | n/a |
+| Added | gb-evroam:GB:QPA:CPO | n/a |
+| Added | gb-evroam:GB:QPA:EMSP | n/a |
+| Added | gb-evroam:GB:QWC:CPO | n/a |
+| Added | gb-evroam:GB:RCP:CPO | n/a |
+| Added | gb-evroam:GB:RCP:EMSP | n/a |
+| Added | gb-evroam:GB:SCC:CPO | n/a |
+| Added | gb-evroam:GB:SCC:EMSP | n/a |
+| Added | gb-evroam:GB:SFS:CPO | n/a |
+| Added | gb-evroam:GB:SFS:EMSP | n/a |
+| Added | gb-evroam:GB:SGB:CPO | n/a |
+| Added | gb-evroam:GB:SGB:EMSP | n/a |
+| Added | gb-evroam:GB:SHL:CPO | n/a |
+| Added | gb-evroam:GB:SHL:EMSP | n/a |
+| Added | gb-evroam:GB:SOL:CPO | n/a |
+| Added | gb-evroam:GB:SOL:EMSP | n/a |
+| Added | gb-evroam:GB:SPI:CPO | n/a |
+| Added | gb-evroam:GB:SPI:EMSP | n/a |
+| Added | gb-evroam:GB:SS2:CPO | n/a |
+| Added | gb-evroam:GB:SS2:EMSP | n/a |
+| Added | gb-evroam:GB:SSE:CPO | n/a |
+| Added | gb-evroam:GB:SSE:EMSP | n/a |
+| Added | gb-evroam:GB:SSM:CPO | n/a |
+| Added | gb-evroam:GB:SSM:EMSP | n/a |
+| Added | gb-evroam:GB:TAP:CPO | n/a |
+| Added | gb-evroam:GB:TAP:EMSP | n/a |
+| Added | gb-evroam:GB:TCS:CPO | n/a |
+| Added | gb-evroam:GB:TMC:EMSP | n/a |
+| Added | gb-evroam:GB:TNM:CPO | n/a |
+| Added | gb-evroam:GB:TNM:EMSP | n/a |
+| Added | gb-evroam:GB:TRA:EMSP | n/a |
+| Added | gb-evroam:GB:TUI:CPO | n/a |
+| Added | gb-evroam:GB:TUI:EMSP | n/a |
+| Added | gb-evroam:GB:UB1:CPO | n/a |
+| Added | gb-evroam:GB:UFX:CPO | n/a |
+| Added | gb-evroam:GB:VAY:CPO | n/a |
+| Added | gb-evroam:GB:VAY:EMSP | n/a |
+| Added | gb-evroam:GB:VIR:CPO | n/a |
+| Added | gb-evroam:GB:VOL:CPO | n/a |
+| Added | gb-evroam:GB:VOL:EMSP | n/a |
+| Added | gb-evroam:GB:VOQ:CPO | n/a |
+| Added | gb-evroam:GB:VSE:CPO | n/a |
+| Added | gb-evroam:GB:VTO:CPO | n/a |
+| Added | gb-evroam:GB:VTO:EMSP | n/a |
+| Added | gb-evroam:GB:VTR:CPO | n/a |
+| Added | gb-evroam:GB:VTR:EMSP | n/a |
+| Added | gb-evroam:GB:WAT:CPO | n/a |
+| Added | gb-evroam:GB:WAT:EMSP | n/a |
+| Added | gb-evroam:GB:WNI:CPO | n/a |
+| Added | gb-evroam:GB:WNI:EMSP | n/a |
+| Added | gb-evroam:GB:WUP:EMSP | n/a |
+| Added | gb-evroam:GB:ZAP:EMSP | n/a |
+| Added | gb-evroam:GB:ZCP:CPO | n/a |
+| Added | gb-evroam:GB:ZRA:CPO | n/a |
+| Added | gb-evroam:GB:ZRA:EMSP | n/a |
+| Added | gb-evroam:GB:ZST:CPO | n/a |
+| Added | gb-evroam:GB:ZST:EMSP | n/a |
+| Added | gb-evroam:IE:24L:CPO | n/a |
+| Added | gb-evroam:IE:24L:EMSP | n/a |
+| Added | gb-evroam:IE:253:CPO | n/a |
+| Added | gb-evroam:IE:311:CPO | n/a |
+| Added | gb-evroam:IE:311:EMSP | n/a |
+| Added | gb-evroam:IE:321:CPO | n/a |
+| Added | gb-evroam:IE:321:EMSP | n/a |
+| Added | gb-evroam:IE:505:CPO | n/a |
+| Added | gb-evroam:IE:505:EMSP | n/a |
+| Added | gb-evroam:IE:911:CPO | n/a |
+| Added | gb-evroam:IE:911:EMSP | n/a |
+| Added | gb-evroam:IE:ALS:CPO | n/a |
+| Added | gb-evroam:IE:ALS:EMSP | n/a |
+| Added | gb-evroam:IE:APG:CPO | n/a |
+| Added | gb-evroam:IE:BTF:CPO | n/a |
+| Added | gb-evroam:IE:BTF:EMSP | n/a |
+| Added | gb-evroam:IE:CAG:CPO | n/a |
+| Added | gb-evroam:IE:CSC:EMSP | n/a |
+| Added | gb-evroam:IE:DAF:EMSP | n/a |
+| Added | gb-evroam:IE:EST:CPO | n/a |
+| Added | gb-evroam:IE:EST:EMSP | n/a |
+| Added | gb-evroam:IE:EVS:CPO | n/a |
+| Added | gb-evroam:IE:EVS:EMSP | n/a |
+| Added | gb-evroam:IE:EVY:CPO | n/a |
+| Added | gb-evroam:IE:FGL:CPO | n/a |
+| Added | gb-evroam:IE:FGL:EMSP | n/a |
+| Added | gb-evroam:IE:FSR:EMSP | n/a |
+| Added | gb-evroam:IE:GDL:CPO | n/a |
+| Added | gb-evroam:IE:GDL:EMSP | n/a |
+| Added | gb-evroam:IE:GDM:EMSP | n/a |
+| Added | gb-evroam:IE:GEN:CPO | n/a |
+| Added | gb-evroam:IE:GPE:CPO | n/a |
+| Added | gb-evroam:IE:INE:EMSP | n/a |
+| Added | gb-evroam:IE:INS:CPO | n/a |
+| Added | gb-evroam:IE:JLR:EMSP | n/a |
+| Added | gb-evroam:IE:MBX:CPO | n/a |
+| Added | gb-evroam:IE:MFI:EMSP | n/a |
+| Added | gb-evroam:IE:MYE:CPO | n/a |
+| Added | gb-evroam:IE:MYE:EMSP | n/a |
+| Added | gb-evroam:IE:OCT:CPO | n/a |
+| Added | gb-evroam:IE:OCT:EMSP | n/a |
+| Added | gb-evroam:IE:OTU:EMSP | n/a |
+| Added | gb-evroam:IE:POD:CPO | n/a |
+| Added | gb-evroam:IE:POD:EMSP | n/a |
+| Added | gb-evroam:IE:QPA:CPO | n/a |
+| Added | gb-evroam:IE:QPA:EMSP | n/a |
+| Added | gb-evroam:IE:RCP:CPO | n/a |
+| Added | gb-evroam:IE:RCP:EMSP | n/a |
+| Added | gb-evroam:IE:SCC:CPO | n/a |
+| Added | gb-evroam:IE:SCC:EMSP | n/a |
+| Added | gb-evroam:IE:SIE:CPO | n/a |
+| Added | gb-evroam:IE:SIE:EMSP | n/a |
+| Added | gb-evroam:IE:SPI:CPO | n/a |
+| Added | gb-evroam:IE:TCS:CPO | n/a |
+| Added | gb-evroam:IE:TUI:CPO | n/a |
+| Added | gb-evroam:IE:TUI:EMSP | n/a |
+| Added | gb-evroam:IE:UB1:CPO | n/a |
+| Added | gb-evroam:IE:VIR:CPO | n/a |
+| Added | gb-evroam:IE:VOL:CPO | n/a |
+| Added | gb-evroam:IE:VOL:EMSP | n/a |
+| Added | gb-evroam:IE:VOQ:CPO | n/a |
+| Added | gb-evroam:IE:VTO:CPO | n/a |
+| Added | gb-evroam:IE:VTO:EMSP | n/a |
+| Added | gb-evroam:IE:WNI:CPO | n/a |
+| Added | gb-evroam:IE:WNI:EMSP | n/a |
+
+</details>
+
 ## gr-electrokinisi
 
 - Previous records: 0
@@ -6497,8 +7135,8 @@
 ## lt-vialietuva
 
 - Previous records: 0
-- Current records: 8
-- Added: 8
+- Current records: 14
+- Added: 14
 - Updated: 0
 - Removed: 0
 - Unchanged: 0
@@ -6509,14 +7147,20 @@
 
 | Change | Key | Removal interpretation |
 | --- | --- | --- |
+| Added | lt-vialietuva:LT:008:CPO | n/a |
 | Added | lt-vialietuva:LT:125:CPO | n/a |
 | Added | lt-vialietuva:LT:777:CPO | n/a |
 | Added | lt-vialietuva:LT:BRS:CPO | n/a |
+| Added | lt-vialietuva:LT:E85:CPO | n/a |
+| Added | lt-vialietuva:LT:ELD:CPO | n/a |
 | Added | lt-vialietuva:LT:ESO:CPO | n/a |
+| Added | lt-vialietuva:LT:ETR:CPO | n/a |
 | Added | lt-vialietuva:LT:IBG:CPO | n/a |
 | Added | lt-vialietuva:LT:IGN:CPO | n/a |
 | Added | lt-vialietuva:LT:IKR:CPO | n/a |
 | Added | lt-vialietuva:LT:ION:CPO | n/a |
+| Added | lt-vialietuva:LT:LLT:CPO | n/a |
+| Added | lt-vialietuva:LT:STR:CPO | n/a |
 
 </details>
 
@@ -6556,8 +7200,8 @@
 ## pl-eipa
 
 - Previous records: 0
-- Current records: 838
-- Added: 838
+- Current records: 840
+- Added: 840
 - Updated: 0
 - Removed: 0
 - Unchanged: 0
@@ -6696,6 +7340,7 @@
 | Added | pl-eipa:PL:6TE:CPO | n/a |
 | Added | pl-eipa:PL:6TE:EMSP | n/a |
 | Added | pl-eipa:PL:6TF:CPO | n/a |
+| Added | pl-eipa:PL:6US:CPO | n/a |
 | Added | pl-eipa:PL:6UY:CPO | n/a |
 | Added | pl-eipa:PL:6WJ:CPO | n/a |
 | Added | pl-eipa:PL:6X4:CPO | n/a |
@@ -6906,6 +7551,7 @@
 | Added | pl-eipa:PL:DWB:CPO | n/a |
 | Added | pl-eipa:PL:DWC:CPO | n/a |
 | Added | pl-eipa:PL:DY4:CPO | n/a |
+| Added | pl-eipa:PL:DYC:CPO | n/a |
 | Added | pl-eipa:PL:DYG:CPO | n/a |
 | Added | pl-eipa:PL:E1U:CPO | n/a |
 | Added | pl-eipa:PL:E38:CPO | n/a |
@@ -7528,8 +8174,8 @@
 ## se-energimyndigheten
 
 - Previous records: 0
-- Current records: 52
-- Added: 52
+- Current records: 77
+- Added: 77
 - Updated: 0
 - Removed: 0
 - Unchanged: 0
@@ -7540,21 +8186,28 @@
 
 | Change | Key | Removal interpretation |
 | --- | --- | --- |
+| Added | se-energimyndigheten:SE:5MF:CPO | n/a |
+| Added | se-energimyndigheten:SE:911:CPO | n/a |
 | Added | se-energimyndigheten:SE:AIM:CPO | n/a |
 | Added | se-energimyndigheten:SE:ALEG:CPO | n/a |
+| Added | se-energimyndigheten:SE:ALL:CPO | n/a |
 | Added | se-energimyndigheten:SE:ALLE:CPO | n/a |
 | Added | se-energimyndigheten:SE:APF:CPO | n/a |
+| Added | se-energimyndigheten:SE:BPK:CPO | n/a |
 | Added | se-energimyndigheten:SE:CEC:CPO | n/a |
 | Added | se-energimyndigheten:SE:CHA:CPO | n/a |
+| Added | se-energimyndigheten:SE:CHC:CPO | n/a |
 | Added | se-energimyndigheten:SE:CHS:CPO | n/a |
 | Added | se-energimyndigheten:SE:CKE:CPO | n/a |
 | Added | se-energimyndigheten:SE:CLF:CPO | n/a |
 | Added | se-energimyndigheten:SE:CNE:CPO | n/a |
 | Added | se-energimyndigheten:SE:CON:CPO | n/a |
+| Added | se-energimyndigheten:SE:CPI:CPO | n/a |
 | Added | se-energimyndigheten:SE:CPX:CPO | n/a |
 | Added | se-energimyndigheten:SE:EBB:CPO | n/a |
 | Added | se-energimyndigheten:SE:EDO:CPO | n/a |
 | Added | se-energimyndigheten:SE:EDR:CPO | n/a |
+| Added | se-energimyndigheten:SE:EFC:CPO | n/a |
 | Added | se-energimyndigheten:SE:EIN:CPO | n/a |
 | Added | se-energimyndigheten:SE:ESP:EMSP | n/a |
 | Added | se-energimyndigheten:SE:EVI:CPO | n/a |
@@ -7562,11 +8215,15 @@
 | Added | se-energimyndigheten:SE:GIT:CPO | n/a |
 | Added | se-energimyndigheten:SE:GOE:CPO | n/a |
 | Added | se-energimyndigheten:SE:GSP:CPO | n/a |
+| Added | se-energimyndigheten:SE:GTO:CPO | n/a |
+| Added | se-energimyndigheten:SE:HED:CPO | n/a |
 | Added | se-energimyndigheten:SE:HSH:CPO | n/a |
+| Added | se-energimyndigheten:SE:ICC:EMSP | n/a |
 | Added | se-energimyndigheten:SE:IOY:CPO | n/a |
 | Added | se-energimyndigheten:SE:JEG:CPO | n/a |
 | Added | se-energimyndigheten:SE:KWT:CPO | n/a |
 | Added | se-energimyndigheten:SE:LDB:CPO | n/a |
+| Added | se-energimyndigheten:SE:LDL:CPO | n/a |
 | Added | se-energimyndigheten:SE:LEX:CPO | n/a |
 | Added | se-energimyndigheten:SE:LIT:CPO | n/a |
 | Added | se-energimyndigheten:SE:MCK:CPO | n/a |
@@ -7575,23 +8232,37 @@
 | Added | se-energimyndigheten:SE:MPT:CPO | n/a |
 | Added | se-energimyndigheten:SE:MSK:CPO | n/a |
 | Added | se-energimyndigheten:SE:NMA:CPO | n/a |
+| Added | se-energimyndigheten:SE:OKQ:CPO | n/a |
 | Added | se-energimyndigheten:SE:OKV:CPO | n/a |
+| Added | se-energimyndigheten:SE:PAI:CPO | n/a |
+| Added | se-energimyndigheten:SE:PAR:CPO | n/a |
+| Added | se-energimyndigheten:SE:PGC:CPO | n/a |
 | Added | se-energimyndigheten:SE:PGE:EMSP | n/a |
+| Added | se-energimyndigheten:SE:PMO:CPO | n/a |
 | Added | se-energimyndigheten:SE:PNC:CPO | n/a |
 | Added | se-energimyndigheten:SE:PRM:CPO | n/a |
+| Added | se-energimyndigheten:SE:QWC:CPO | n/a |
 | Added | se-energimyndigheten:SE:QWCE:CPO | n/a |
 | Added | se-energimyndigheten:SE:REC:CPO | n/a |
+| Added | se-energimyndigheten:SE:SEC:CPO | n/a |
 | Added | se-energimyndigheten:SE:SMB:CPO | n/a |
 | Added | se-energimyndigheten:SE:SOF:CPO | n/a |
+| Added | se-energimyndigheten:SE:SPI:CPO | n/a |
 | Added | se-energimyndigheten:SE:ST1:CPO | n/a |
+| Added | se-energimyndigheten:SE:STP:CPO | n/a |
 | Added | se-energimyndigheten:SE:SWE:CPO | n/a |
 | Added | se-energimyndigheten:SE:T124:CPO | n/a |
+| Added | se-energimyndigheten:SE:TCS:CPO | n/a |
+| Added | se-energimyndigheten:SE:TNM:CPO | n/a |
+| Added | se-energimyndigheten:SE:TSL:CPO | n/a |
 | Added | se-energimyndigheten:SE:VAT:CPO | n/a |
 | Added | se-energimyndigheten:SE:VBK:CPO | n/a |
 | Added | se-energimyndigheten:SE:VGC:EMSP | n/a |
 | Added | se-energimyndigheten:SE:VIR:CPO | n/a |
 | Added | se-energimyndigheten:SE:VKK:CPO | n/a |
+| Added | se-energimyndigheten:SE:VLT:CPO | n/a |
 | Added | se-energimyndigheten:SE:WAT:CPO | n/a |
+| Added | se-energimyndigheten:SE:WAY:CPO | n/a |
 
 </details>
 

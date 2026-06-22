@@ -8,7 +8,18 @@ import { loadSourceDefinitions } from "../../src/infrastructure/filesystem/sourc
 describe("deterministic generation", () => {
   it("generates byte-identical registry data from the same raw fixture", async () => {
     const outputDir = await mkdtemp(join(tmpdir(), "open-idro-serialization-"));
-    const sources = await loadSourceDefinitions();
+    const sources = (await loadSourceDefinitions()).map((source) =>
+      source.id === "fr-afirev"
+        ? {
+            ...source,
+            safety: {
+              ...source.safety,
+              maxDeletionRatio: 1,
+              maxChangeRatio: 1,
+            },
+          }
+        : source,
+    );
     try {
       await buildRegistry(sources, {
         sourceId: "fr-afirev",

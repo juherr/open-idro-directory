@@ -14,15 +14,16 @@ import { parseVialietuvaLocations } from "./vialietuva.parser.js";
 import type { VialietuvaLocation } from "./vialietuva.types.js";
 
 const SOURCE_HOSTS = ["ev.vialietuva.lt"];
+const LOCATIONS_LIMIT = "1000";
 
 export class VialietuvaConnector implements RegistryConnector<VialietuvaLocation> {
   readonly sourceId = "lt-vialietuva";
 
   async fetch(context: FetchContext): Promise<FetchResult> {
-    const response = await getText(context.source.registryUrl, {
+    const response = await getText(vialietuvaLocationsUrl(context.source.registryUrl), {
       timeoutMs: 30_000,
       retries: 2,
-      maxBytes: 5_000_000,
+      maxBytes: 10_000_000,
       allowedHosts: SOURCE_HOSTS,
       userAgent: context.userAgent,
       headers: {
@@ -130,6 +131,14 @@ export class VialietuvaConnector implements RegistryConnector<VialietuvaLocation
     records.push(...byKey.values());
     return { records, warnings, errors };
   }
+}
+
+export function vialietuvaLocationsUrl(registryUrl: string) {
+  const url = new URL(registryUrl);
+  if (!url.searchParams.has("limit")) {
+    url.searchParams.set("limit", LOCATIONS_LIMIT);
+  }
+  return url.toString();
 }
 
 function parseLithuanianIdentifier(countryCode: string, partyId: string) {

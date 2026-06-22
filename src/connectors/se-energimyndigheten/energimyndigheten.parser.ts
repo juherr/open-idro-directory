@@ -57,7 +57,8 @@ async function parseWorkbook(
 ) {
   const rows = await readSheet(Buffer.from(contentBase64, "base64"));
   const headers = (rows[0] ?? []).map((value) => clean(String(value ?? "")) ?? "");
-  if (!hasExpectedHeaders(headers, role)) {
+  const columns = getColumns(headers, role);
+  if (!columns) {
     errors.push({
       severity: "error",
       code: "ENERGIMYNDIGHETEN_UNEXPECTED_HEADERS",
@@ -68,8 +69,8 @@ async function parseWorkbook(
 
   const records: EnergimyndighetenRow[] = [];
   rows.slice(1).forEach((row, index) => {
-    const identifier = clean(String(row[0] ?? ""));
-    const organizationName = clean(String(row[1] ?? ""));
+    const identifier = clean(String(row[columns.identifier] ?? ""));
+    const organizationName = clean(String(row[columns.operator] ?? ""));
     if (!identifier && !organizationName) return;
     if (!identifier) {
       warnings.push({
@@ -100,9 +101,12 @@ async function parseWorkbook(
   return records;
 }
 
-function hasExpectedHeaders(headers: string[], role: "CPO" | "EMSP") {
-  const identifierHeader = role === "CPO" ? "ESVEid" : "ID";
-  return headers[0] === identifierHeader && headers[1] === "Operator";
+function getColumns(headers: string[], role: "CPO" | "EMSP") {
+  const identifierHeaders = role === "CPO" ? ["ESVEid", "CPO-ID"] : ["ID"];
+  const identifier = headers.findIndex((header) => identifierHeaders.includes(header));
+  const operator = headers.findIndex((header) => header === "Operator");
+  if (identifier < 0 || operator < 0) return null;
+  return { identifier, operator };
 }
 
 function clean(value: string | null | undefined) {

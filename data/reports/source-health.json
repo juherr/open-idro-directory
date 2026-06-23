@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T12:11:10.982Z",
+  "generatedAt": "2026-06-22T19:00:07.292Z",
   "sources": [
     {
       "sourceId": "at-ladestellen",
@@ -57,12 +57,12 @@
     },
     {
       "sourceId": "es-ripree",
-      "enabled": false,
+      "enabled": true,
       "authorityLevel": "AUTHORITATIVE",
       "observationType": "OFFICIAL_ASSIGNMENT",
       "assessment": null,
       "observationCount": 0,
-      "status": "disabled"
+      "status": "current"
     },
     {
       "sourceId": "fi-traficom",
@@ -84,12 +84,12 @@
     },
     {
       "sourceId": "gb-evroam",
-      "enabled": false,
+      "enabled": true,
       "authorityLevel": "AUTHORITATIVE",
       "observationType": "OFFICIAL_ASSIGNMENT",
       "assessment": null,
       "observationCount": 0,
-      "status": "disabled"
+      "status": "current"
     },
     {
       "sourceId": "gr-electrokinisi",

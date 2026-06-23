@@ -30,7 +30,7 @@ jobs:
       - name: Validate commit messages
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            git fetch origin "${{ github.base_ref }}" --depth=1
+            git fetch origin "${{ github.base_ref }}"
             bun run commit:check -- --from="origin/${{ github.base_ref }}" --to=HEAD --verbose --git-log-args="--no-merges"
           else
             bun run commit:check -- --last --verbose

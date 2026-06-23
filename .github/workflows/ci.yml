@@ -36,7 +36,7 @@ jobs:
             bun run commit:check -- --last --verbose
           fi
       - run: bun run check
-      - name: Build AFIREV fixture source
+      - name: Build official IDRO sources
         if: github.head_ref != 'automation/update-registry'
-        run: bun run directory build --source fr-afirev
+        run: bun run directory build
       - run: bun run directory validate

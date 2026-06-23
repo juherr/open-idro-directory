@@ -38,21 +38,21 @@
     "@commander-js/extra-typings": "^15.0.0",
     "commander": "^15.0.0",
     "fflate": "^0.8.3",
-    "hono": "^4.10.7",
+    "hono": "^4.12.27",
     "read-excel-file": "^9.2.0",
-    "yaml": "^2.8.1",
-    "zod": "^4.1.13"
+    "yaml": "^2.9.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20251214.0",
+    "@cloudflare/workers-types": "^4.20260623.1",
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
-    "@types/node": "^25.9.3",
-    "tsx": "^4.21.0",
+    "@types/node": "^26.0.0",
+    "tsx": "^4.22.4",
     "typescript": "^6.0.3",
-    "vite-plus": "^0.1.24",
-    "vitest": "^4.0.14",
-    "wrangler": "^4.55.0"
+    "vite-plus": "^0.2.1",
+    "vitest": "^4.1.9",
+    "wrangler": "^4.103.0"
   },
   "engines": {
     "node": ">=24"

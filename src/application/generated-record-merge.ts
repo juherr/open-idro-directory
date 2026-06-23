@@ -23,7 +23,6 @@ export function mergeGeneratedRecords(
 
     return {
       ...record,
-      status: "ACTIVE" as const,
       source: {
         ...record.source,
         firstSeenAt: previousRecord.source.firstSeenAt,

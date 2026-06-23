@@ -107,6 +107,20 @@ describe("generated record merge", () => {
     expect(records[0]?.metadata).not.toHaveProperty("inactiveSince");
     expect(records[0]?.metadata).not.toHaveProperty("inactiveReason");
   });
+
+  it("preserves current official source status for records that remain present", () => {
+    const previous = sampleRecord({ status: "ACTIVE" });
+    const current = sampleRecord({ status: "RESERVED" });
+
+    const records = mergeGeneratedRecords(
+      plEipaSource(),
+      [previous],
+      [current],
+      current.source.retrievedAt,
+    );
+
+    expect(records[0]?.status).toBe("RESERVED");
+  });
 });
 
 function sampleRecord(

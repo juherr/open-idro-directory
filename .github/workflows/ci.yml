@@ -36,7 +36,4 @@ jobs:
             bun run commit:check -- --last --verbose
           fi
       - run: bun run check
-      - name: Build official IDRO sources
-        if: github.head_ref != 'automation/update-registry'
-        run: bun run directory build
       - run: bun run directory validate

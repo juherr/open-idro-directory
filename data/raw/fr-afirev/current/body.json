@@ -1009,6 +1009,14 @@
       "status": "INACTIVE"
     },
     {
+      "prefixId": "FRCOD",
+      "name": "Codetics",
+      "amenageurName": "Codetics",
+      "exploitantName": "Codetics",
+      "type": "MOBILITY",
+      "status": "AWAITING_PAYMENT"
+    },
+    {
       "prefixId": "FRCPB",
       "name": "Camping Les Pins Bleus",
       "amenageurName": "Ville de Labenne",
@@ -1961,6 +1969,14 @@
       "status": "ACTIVE"
     },
     {
+      "prefixId": "FRGUA",
+      "name": "Omexom Guadeloupe",
+      "amenageurName": "OMEXOM ENR ANTILLES ",
+      "exploitantName": "COGELUM IDF (CITEOS)",
+      "type": "CHARGE",
+      "status": "ACTIVE"
+    },
+    {
       "prefixId": "FRGWY",
       "name": "Greenway",
       "amenageurName": "GREENWAY",
@@ -2550,6 +2566,14 @@
       "amenageurName": "LE PLEIN",
       "exploitantName": "LE PLEIN",
       "type": "MOBILITY",
+      "status": "ACTIVE"
+    },
+    {
+      "prefixId": "FRLSB",
+      "name": "Leasy Borne",
+      "amenageurName": "Leasy Borne",
+      "exploitantName": "Leasy Borne",
+      "type": "CHARGE",
       "status": "ACTIVE"
     },
     {
@@ -4843,10 +4867,10 @@
     {
       "prefixId": "FRWII",
       "name": "Bornes W:I",
-      "amenageurName": "",
+      "amenageurName": "W:I",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRWIZ",
@@ -5369,5 +5393,5 @@
       "status": "ACTIVE"
     }
   ],
-  "total": 671
+  "total": 674
 }

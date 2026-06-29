@@ -31,16 +31,15 @@ jobs:
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends poppler-utils
       - run: vp install --frozen-lockfile
-      - name: Prepare update branch
+      - name: Configure git identity
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git ls-remote --exit-code --heads origin automation/update-registry >/dev/null; then
-            git fetch origin automation/update-registry
-            git switch -C automation/update-registry origin/automation/update-registry
-          else
-            git switch -C automation/update-registry
-          fi
+      # The pipeline runs on the checked-out default branch on purpose: the change report
+      # diffs the rebuilt registry against HEAD (the default branch), and the code executed
+      # is always the default branch's. Switching to the long-lived automation branch first
+      # would run that branch's stale code and diff against its stale data, marking every
+      # record as "Added". The result is published to the automation branch afterwards.
       - run: bun run directory update
       - run: bun run directory:non-idrr
       - run: bun run check
@@ -52,9 +51,13 @@ jobs:
             echo "No registry changes."
             exit 0
           fi
+          # Publish on a branch based on the current default-branch commit so the PR diff is
+          # always default-branch -> update. Reset (force) it each run: every run is a full
+          # rebuild, so the latest data is authoritative and the branch never carries stale code.
+          git switch -C automation/update-registry
           git add data schemas build/change-summary.md docs
           git commit -m "chore: update registry data"
-          git push origin automation/update-registry
+          git push --force origin automation/update-registry
           existing_pr=$(gh pr list --head automation/update-registry --state open --json url --jq '.[0].url // ""')
           if [ -n "$existing_pr" ]; then
             gh pr edit automation/update-registry --body-file build/change-summary-pr.md

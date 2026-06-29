@@ -43,12 +43,50 @@ export function diffRecords(
   };
 }
 
+// GitHub caps issue/PR bodies at 65,536 characters. Stay safely under it so the
+// automation can use the PR-body report directly with `gh pr create/edit --body-file`.
+const PR_BODY_MAX_CHARS = 60_000;
+const REPORT_HEADING = "# Registry Change Summary";
+
+export interface ChangeReportEntry {
+  sourceId: string;
+  diff: RegistryDiff;
+}
+
+export interface RenderedChangeReport {
+  /** Full report: per-source counts plus the record-level tables. */
+  full: string;
+  /** PR-body report: counts only, no record-level tables, capped to GitHub's body limit. */
+  prBody: string;
+}
+
 export async function writeChangeReport(sourceIds: string[]) {
   await mkdir(fromRoot("build"), { recursive: true });
-  const sections = [];
+  const entries: ChangeReportEntry[] = [];
   for (const sourceId of sourceIds) {
-    const diff = await diffAgainstGit(sourceId);
-    sections.push(`## ${sourceId}
+    entries.push({ sourceId, diff: await diffAgainstGit(sourceId) });
+  }
+  const { full, prBody } = renderChangeReports(entries);
+  await writeFile(fromRoot("build", "change-summary.md"), full);
+  await writeFile(fromRoot("build", "change-summary-pr.md"), prBody);
+}
+
+export function renderChangeReports(entries: ChangeReportEntry[]): RenderedChangeReport {
+  const fullSections = [];
+  const summarySections = [];
+  for (const { sourceId, diff } of entries) {
+    const summary = renderSummarySection(sourceId, diff);
+    fullSections.push(`${summary}\n\n${renderDetailsSection(diff)}\n`);
+    summarySections.push(`${summary}\n`);
+  }
+  return {
+    full: `${REPORT_HEADING}\n\n${fullSections.join("\n")}`,
+    prBody: truncateForPrBody(`${REPORT_HEADING}\n\n${summarySections.join("\n")}`),
+  };
+}
+
+function renderSummarySection(sourceId: string, diff: RegistryDiff) {
+  return `## ${sourceId}
 
 - Previous records: ${diff.previous}
 - Current records: ${diff.current}
@@ -56,9 +94,11 @@ export async function writeChangeReport(sourceIds: string[]) {
 - Updated: ${diff.updated.length}
 - Removed: ${diff.removed.length}
 - Unchanged: ${diff.unchanged}
-- Warnings: 0
+- Warnings: 0`;
+}
 
-<details>
+function renderDetailsSection(diff: RegistryDiff) {
+  return `<details>
 <summary>Record-level changes</summary>
 
 | Change | Key | Removal interpretation |
@@ -71,13 +111,15 @@ ${
   ].join("\n") || "| None | n/a | n/a |"
 }
 
-</details>
-`);
+</details>`;
+}
+
+function truncateForPrBody(body: string) {
+  if (body.length <= PR_BODY_MAX_CHARS) {
+    return body;
   }
-  await writeFile(
-    fromRoot("build", "change-summary.md"),
-    `# Registry Change Summary\n\n${sections.join("\n")}`,
-  );
+  const note = "\n\n…truncated, see `build/change-summary.md` for the full report.";
+  return `${body.slice(0, PR_BODY_MAX_CHARS - note.length)}${note}`;
 }
 
 async function readCurrent(): Promise<NormalizedRegistryRecord[]> {

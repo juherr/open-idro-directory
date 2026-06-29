@@ -136,11 +136,28 @@ async function readFromGit(): Promise<NormalizedRegistryRecord[]> {
   try {
     const { stdout } = await execFileAsync("git", ["show", "HEAD:data/registry.json"], {
       cwd: fromRoot(),
+      // registry.json is several MB. With the default 1 MB maxBuffer the git output
+      // overflows, the call rejects, and the previous snapshot reads as empty — making
+      // every record look "Added". Allow plenty of room for the committed registry.
+      maxBuffer: 512 * 1024 * 1024,
     });
     return JSON.parse(stdout) as NormalizedRegistryRecord[];
-  } catch {
-    return [];
+  } catch (error) {
+    // Only tolerate the legitimate "no committed registry yet" case (first run, or the
+    // file not present at HEAD). Anything else (maxBuffer overflow, malformed JSON) must
+    // surface rather than silently degrade the diff into an all-"Added" report.
+    if (isMissingFromGit(error)) {
+      return [];
+    }
+    throw error;
   }
+}
+
+function isMissingFromGit(error: unknown): boolean {
+  const stderr = (error as { stderr?: string } | null)?.stderr ?? "";
+  return /does not exist|exists on disk, but not in|unknown revision|ambiguous argument/i.test(
+    stderr,
+  );
 }
 
 function filter(records: NormalizedRegistryRecord[], sourceId?: string) {

@@ -1,16 +1,16 @@
 {
-  "totalRecords": 7997,
+  "totalRecords": 8010,
   "recordsByCountry": {
     "AT": 1111,
-    "BE": 359,
+    "BE": 361,
     "CH": 160,
-    "DE": 3086,
-    "DK": 81,
+    "DE": 3090,
+    "DK": 84,
     "ES": 316,
     "FI": 43,
-    "FR": 726,
+    "FR": 729,
     "GB": 202,
-    "GR": 131,
+    "GR": 132,
     "HU": 1,
     "IE": 91,
     "LT": 14,
@@ -27,20 +27,20 @@
       "CPO": 1111
     },
     "BE": {
-      "CPO": 205,
-      "EMSP": 154
+      "CPO": 206,
+      "EMSP": 155
     },
     "CH": {
       "CPO": 91,
       "EMSP": 69
     },
     "DE": {
-      "CPO": 1647,
-      "EMSP": 1439
+      "CPO": 1650,
+      "EMSP": 1440
     },
     "DK": {
-      "CPO": 56,
-      "EMSP": 25
+      "CPO": 58,
+      "EMSP": 26
     },
     "ES": {
       "CPO": 238,
@@ -51,15 +51,15 @@
       "EMSP": 18
     },
     "FR": {
-      "CPO": 580,
-      "EMSP": 146
+      "CPO": 582,
+      "EMSP": 147
     },
     "GB": {
       "CPO": 105,
       "EMSP": 97
     },
     "GR": {
-      "CPO": 81,
+      "CPO": 82,
       "EMSP": 50
     },
     "HU": {
@@ -102,26 +102,26 @@
     }
   },
   "recordsByRole": {
-    "CPO": 5426,
-    "EMSP": 2571
+    "CPO": 5435,
+    "EMSP": 2575
   },
   "recordsByStatus": {
-    "ACTIVE": 7398,
-    "INACTIVE": 256,
-    "RESERVED": 143,
-    "UNKNOWN": 200
+    "ACTIVE": 7407,
+    "INACTIVE": 260,
+    "RESERVED": 144,
+    "UNKNOWN": 199
   },
   "recordsByRegistry": {
     "at-ladestellen": 1111,
-    "benelux-idro": 949,
+    "benelux-idro": 951,
     "ch-suisseenergie": 160,
-    "de-bdew": 3086,
-    "dk-fstyr": 81,
+    "de-bdew": 3090,
+    "dk-fstyr": 84,
     "es-ripree": 316,
     "fi-traficom": 43,
-    "fr-afirev": 726,
+    "fr-afirev": 729,
     "gb-evroam": 267,
-    "gr-electrokinisi": 131,
+    "gr-electrokinisi": 132,
     "hu-idro": 1,
     "ie-tii": 26,
     "lt-vialietuva": 14,
@@ -132,5 +132,5 @@
     "si-nap": 56
   },
   "staleSources": [],
-  "generatedAt": "2026-06-23T06:47:44.604Z"
+  "generatedAt": "2026-06-29T15:37:08.083Z"
 }

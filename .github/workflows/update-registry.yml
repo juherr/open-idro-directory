@@ -55,15 +55,16 @@ jobs:
           git add data schemas build/change-summary.md docs
           git commit -m "chore: update registry data"
           git push origin automation/update-registry
-          if gh pr view automation/update-registry --json url --jq .url >/tmp/update-pr-url 2>/dev/null; then
-            gh pr edit automation/update-registry --body-file build/change-summary.md
-            echo "Updated pull request $(cat /tmp/update-pr-url)."
+          existing_pr=$(gh pr list --head automation/update-registry --state open --json url --jq '.[0].url // ""')
+          if [ -n "$existing_pr" ]; then
+            gh pr edit automation/update-registry --body-file build/change-summary-pr.md
+            echo "Updated pull request $existing_pr."
             exit 0
           fi
 
           if gh pr create \
             --title "chore: update registry data" \
-            --body-file build/change-summary.md \
+            --body-file build/change-summary-pr.md \
             --base "${{ github.event.repository.default_branch }}" \
             --head automation/update-registry \
             --draft; then

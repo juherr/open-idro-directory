@@ -81,5 +81,24 @@ describe("sourceDefinitionSchema", () => {
         "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
       "si-nap": "https://www.ncup.si/dc/prometej.register-cpo-msp",
     });
+
+    const spain = sources.find((source) => source.id === "es-ripree");
+    expect(spain?.reuse).toMatchObject({
+      status: "statutory",
+      legalBasis: {
+        name: expect.stringContaining("Law 37/2007"),
+        url: "https://www.boe.es/eli/es/l/2007/11/16/37/con",
+      },
+    });
+
+    const latvia = sources.find((source) => source.id === "lv-lvceli");
+    expect(latvia).toMatchObject({
+      authorityName: "SLLC Latvijas Valsts ceļi",
+      official: true,
+      homepageUrl: "https://www.transportdata.gov.lv/en/idro",
+      registryUrl: "https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json",
+      machineReadableUrl: "https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json",
+      verifiedAt: "2026-07-10",
+    });
   });
 });

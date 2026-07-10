@@ -88,6 +88,7 @@ export function openApiDocument(origin = "http://localhost:8787") {
           ],
           properties: {
             status: {
+              type: "string",
               enum: ["licensed", "statutory", "permission-granted", "restricted", "unspecified"],
             },
             legalBasis: {

@@ -8,7 +8,7 @@ jurisdictions:
 official: true
 homepageUrl: https://www.benelux-idro.eu/
 registryUrl: https://www.benelux-idro.eu/en/id-register/export
-machineReadableUrl: null
+machineReadableUrl: https://www.benelux-idro.eu/en/id-register/export
 verifiedAt: null
 connector: benelux-idro
 enabled: true

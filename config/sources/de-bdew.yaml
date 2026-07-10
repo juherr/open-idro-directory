@@ -6,7 +6,7 @@ jurisdictions:
 official: true
 homepageUrl: https://bdew-codes.de/
 registryUrl: https://bdew-codes.de/
-machineReadableUrl: null
+machineReadableUrl: https://bdew-codes.de/Codenumbers/EMobilityId/GetActiveCodes
 verifiedAt: null
 connector: de-bdew
 enabled: true

@@ -6,7 +6,7 @@ jurisdictions:
 official: true
 homepageUrl: https://www.nap.si/en/id-codes
 registryUrl: https://www.ncup.si/dc/prometej.register-cpo-msp
-machineReadableUrl: null
+machineReadableUrl: https://www.ncup.si/dc/prometej.register-cpo-msp
 verifiedAt: null
 connector: si-nap
 enabled: true

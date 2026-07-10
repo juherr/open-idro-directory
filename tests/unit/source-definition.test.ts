@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { sourceDefinitionSchema } from "../../src/domain/source-definition.js";
+import { loadSourceDefinitions } from "../../src/infrastructure/filesystem/source-loader.js";
 
 const baseSource = {
   id: "es-ripree",
@@ -54,5 +55,31 @@ describe("sourceDefinitionSchema", () => {
         },
       }),
     ).toThrow();
+  });
+
+  it("exposes structured sources consumed by connectors", async () => {
+    const sources = await loadSourceDefinitions();
+    const machineReadableUrls = Object.fromEntries(
+      sources
+        .filter((source) => source.machineReadableUrl)
+        .map((source) => [source.id, source.machineReadableUrl]),
+    );
+
+    expect(machineReadableUrls).toEqual({
+      "at-ladestellen": "https://admin.ladestellen.at/api/countries/AT/operators/basic",
+      "benelux-idro": "https://www.benelux-idro.eu/en/id-register/export",
+      "ch-suisseenergie": "https://www.suisseenergie.ch/page-data/sq/d/3887988665.json",
+      "de-bdew": "https://bdew-codes.de/Codenumbers/EMobilityId/GetActiveCodes",
+      "es-ripree": "https://energia.serviciosmin.gob.es/Ripree/ExportarEmpresas/GenerarXml",
+      "fr-afirev": "https://api.afirev.fr/public/prefixes",
+      "gb-evroam": "https://evroam.org.uk/_functions/getRegister",
+      "hr-croidro": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "lt-vialietuva": "https://ev.vialietuva.lt/ocpi/2.3.0/locations",
+      "lv-lvceli": "https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json",
+      "pl-eipa": "https://eipa.udt.gov.pl/list/csv",
+      "se-energimyndigheten":
+        "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
+      "si-nap": "https://www.ncup.si/dc/prometej.register-cpo-msp",
+    });
   });
 });

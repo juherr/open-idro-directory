@@ -6,7 +6,7 @@ jurisdictions:
 official: true
 homepageUrl: https://pametnamobilnost.hr/idro/Pretraga
 registryUrl: https://pametnamobilnost.hr/idro/Home/IspisiCSV
-machineReadableUrl: null
+machineReadableUrl: https://pametnamobilnost.hr/idro/Home/IspisiCSV
 verifiedAt: null
 connector: hr-croidro
 enabled: true

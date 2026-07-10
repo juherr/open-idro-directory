@@ -6,7 +6,7 @@ jurisdictions:
 official: true
 homepageUrl: https://admin.ladestellen.at/#/registrierte-ids
 registryUrl: https://admin.ladestellen.at/api/countries/AT/operators/basic
-machineReadableUrl: null
+machineReadableUrl: https://admin.ladestellen.at/api/countries/AT/operators/basic
 verifiedAt: null
 connector: at-ladestellen
 enabled: true

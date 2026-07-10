@@ -6,7 +6,7 @@ jurisdictions:
 official: true
 homepageUrl: https://afirev.fr/prefixes/consulter-l-annuaire/
 registryUrl: https://api.afirev.fr/public/prefixes
-machineReadableUrl: null
+machineReadableUrl: https://api.afirev.fr/public/prefixes
 verifiedAt: null
 connector: fr-afirev
 enabled: true

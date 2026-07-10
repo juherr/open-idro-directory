@@ -7,7 +7,7 @@ jurisdictions:
 official: true
 homepageUrl: https://www.evroam.org.uk/
 registryUrl: https://evroam.org.uk/_functions/getRegister
-machineReadableUrl: null
+machineReadableUrl: https://evroam.org.uk/_functions/getRegister
 verifiedAt: null
 connector: gb-evroam
 enabled: true

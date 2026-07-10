@@ -6,7 +6,7 @@ jurisdictions:
 official: true
 homepageUrl: https://lakd.lt/viesuju-elektromobiliu-ikrovimo-prieigu-registravimas
 registryUrl: https://ev.vialietuva.lt/ocpi/2.3.0/locations
-machineReadableUrl: null
+machineReadableUrl: https://ev.vialietuva.lt/ocpi/2.3.0/locations
 verifiedAt: null
 connector: lt-vialietuva
 enabled: true

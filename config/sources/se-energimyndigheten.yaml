@@ -6,7 +6,7 @@ jurisdictions:
 official: true
 homepageUrl: https://www.energimyndigheten.se/klimat/transporter/laddinfrastruktur/identification-registration-organisation-idro/
 registryUrl: https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx
-machineReadableUrl: null
+machineReadableUrl: https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx
 verifiedAt: null
 connector: se-energimyndigheten
 enabled: true
@@ -23,7 +23,8 @@ reuse:
   notes: No explicit reuse terms have been identified.
 notes: >
   Uses the Swedish Energy Agency's public XLSX registers: one workbook for CPO
-  identifiers and one workbook for EMSP identifiers.
+  identifiers and one workbook for EMSP identifiers. machineReadableUrl points
+  to the configured CPO workbook; EMSP records retain their own workbook URL.
 safety:
   acceptedDeletionKeys:
     - se-energimyndigheten:SE:ALEG:CPO

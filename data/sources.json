@@ -10,7 +10,7 @@
     "enabled": true,
     "homepageUrl": "https://admin.ladestellen.at/#/registrierte-ids",
     "registryUrl": "https://admin.ladestellen.at/api/countries/AT/operators/basic",
-    "machineReadableUrl": null,
+    "machineReadableUrl": "https://admin.ladestellen.at/api/countries/AT/operators/basic",
     "verifiedAt": null,
     "connector": "at-ladestellen",
     "supportedRoles": [
@@ -47,7 +47,7 @@
     "enabled": true,
     "homepageUrl": "https://www.benelux-idro.eu/",
     "registryUrl": "https://www.benelux-idro.eu/en/id-register/export",
-    "machineReadableUrl": null,
+    "machineReadableUrl": "https://www.benelux-idro.eu/en/id-register/export",
     "verifiedAt": null,
     "connector": "benelux-idro",
     "supportedRoles": [
@@ -83,7 +83,7 @@
     "enabled": true,
     "homepageUrl": "https://www.suisseenergie.ch/programmes/infrastructure-de-recharge/outils/identifiant-pour-les-cpo-et-les-emp/registre-suisse-des-identifiants/",
     "registryUrl": "https://www.suisseenergie.ch/page-data/sq/d/3887988665.json",
-    "machineReadableUrl": null,
+    "machineReadableUrl": "https://www.suisseenergie.ch/page-data/sq/d/3887988665.json",
     "verifiedAt": null,
     "connector": "ch-suisseenergie",
     "supportedRoles": [
@@ -155,7 +155,7 @@
     "enabled": true,
     "homepageUrl": "https://bdew-codes.de/",
     "registryUrl": "https://bdew-codes.de/",
-    "machineReadableUrl": null,
+    "machineReadableUrl": "https://bdew-codes.de/Codenumbers/EMobilityId/GetActiveCodes",
     "verifiedAt": null,
     "connector": "de-bdew",
     "supportedRoles": [
@@ -302,7 +302,7 @@
     "enabled": true,
     "homepageUrl": "https://afirev.fr/prefixes/consulter-l-annuaire/",
     "registryUrl": "https://api.afirev.fr/public/prefixes",
-    "machineReadableUrl": null,
+    "machineReadableUrl": "https://api.afirev.fr/public/prefixes",
     "verifiedAt": null,
     "connector": "fr-afirev",
     "supportedRoles": [
@@ -339,7 +339,7 @@
     "enabled": true,
     "homepageUrl": "https://www.evroam.org.uk/",
     "registryUrl": "https://evroam.org.uk/_functions/getRegister",
-    "machineReadableUrl": null,
+    "machineReadableUrl": "https://evroam.org.uk/_functions/getRegister",
     "verifiedAt": null,
     "connector": "gb-evroam",
     "supportedRoles": [
@@ -411,7 +411,7 @@
     "enabled": true,
     "homepageUrl": "https://pametnamobilnost.hr/idro/Pretraga",
     "registryUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
-    "machineReadableUrl": null,
+    "machineReadableUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
     "verifiedAt": null,
     "connector": "hr-croidro",
     "supportedRoles": [
@@ -519,7 +519,7 @@
     "enabled": true,
     "homepageUrl": "https://lakd.lt/viesuju-elektromobiliu-ikrovimo-prieigu-registravimas",
     "registryUrl": "https://ev.vialietuva.lt/ocpi/2.3.0/locations",
-    "machineReadableUrl": null,
+    "machineReadableUrl": "https://ev.vialietuva.lt/ocpi/2.3.0/locations",
     "verifiedAt": null,
     "connector": "lt-vialietuva",
     "supportedRoles": [
@@ -593,7 +593,7 @@
     "enabled": true,
     "homepageUrl": "https://eipa.udt.gov.pl/list",
     "registryUrl": "https://eipa.udt.gov.pl/list/csv",
-    "machineReadableUrl": null,
+    "machineReadableUrl": "https://eipa.udt.gov.pl/list/csv",
     "verifiedAt": null,
     "connector": "pl-eipa",
     "supportedRoles": [
@@ -665,7 +665,7 @@
     "enabled": true,
     "homepageUrl": "https://www.energimyndigheten.se/klimat/transporter/laddinfrastruktur/identification-registration-organisation-idro/",
     "registryUrl": "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
-    "machineReadableUrl": null,
+    "machineReadableUrl": "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
     "verifiedAt": null,
     "connector": "se-energimyndigheten",
     "supportedRoles": [
@@ -701,7 +701,7 @@
     "enabled": true,
     "homepageUrl": "https://www.nap.si/en/id-codes",
     "registryUrl": "https://www.ncup.si/dc/prometej.register-cpo-msp",
-    "machineReadableUrl": null,
+    "machineReadableUrl": "https://www.ncup.si/dc/prometej.register-cpo-msp",
     "verifiedAt": null,
     "connector": "si-nap",
     "supportedRoles": [

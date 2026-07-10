@@ -6,7 +6,7 @@ jurisdictions:
 official: true
 homepageUrl: https://eipa.udt.gov.pl/list
 registryUrl: https://eipa.udt.gov.pl/list/csv
-machineReadableUrl: null
+machineReadableUrl: https://eipa.udt.gov.pl/list/csv
 verifiedAt: null
 connector: pl-eipa
 enabled: true

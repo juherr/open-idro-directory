@@ -6,7 +6,7 @@ jurisdictions:
 official: true
 homepageUrl: https://www.suisseenergie.ch/programmes/infrastructure-de-recharge/outils/identifiant-pour-les-cpo-et-les-emp/registre-suisse-des-identifiants/
 registryUrl: https://www.suisseenergie.ch/page-data/sq/d/3887988665.json
-machineReadableUrl: null
+machineReadableUrl: https://www.suisseenergie.ch/page-data/sq/d/3887988665.json
 verifiedAt: null
 connector: ch-suisseenergie
 enabled: true

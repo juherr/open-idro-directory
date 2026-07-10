@@ -170,11 +170,13 @@ function plEipaSource(): SourceDefinition {
     enabled: true,
     refreshSchedule: "weekly",
     supportedRoles: ["CPO", "EMSP"],
-    license: {
-      status: "unknown",
-      name: null,
-      url: null,
-      attributionRequired: false,
+    machineReadableUrl: "https://eipa.udt.gov.pl/list/csv",
+    verifiedAt: null,
+    reuse: {
+      status: "unspecified",
+      legalBasis: null,
+      licence: null,
+      attributionNotice: null,
       redistributionAllowed: null,
       notes: null,
     },

@@ -6,16 +6,21 @@ jurisdictions:
 official: true
 homepageUrl: https://electrokinisi.yme.gov.gr/public/IDRO/?mlang=en
 registryUrl: https://electrokinisi.yme.gov.gr/public/IDRO/?mlang=en
+machineReadableUrl: null
+verifiedAt: null
 connector: gr-electrokinisi
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
   - EMSP
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: unspecified
+  legalBasis: null
+  licence: null
+  attributionNotice: null
+  redistributionAllowed: null
+  notes: No explicit reuse terms have been identified.
 notes: >
   Official Greek IDRO registry page. No machine-readable export or API was
   identified; the connector parses the public server-rendered HTML table.

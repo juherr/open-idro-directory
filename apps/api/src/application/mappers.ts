@@ -1,4 +1,5 @@
 import { encodeCursor } from "../domain/cursor.js";
+import { SOURCE_DISCLAIMER } from "../domain/constants.js";
 import type {
   ConflictRow,
   DatasetRelease,
@@ -66,12 +67,19 @@ export function sourcePayload(row: SourceRow) {
     official: Boolean(row.official),
     homepageUrl: row.homepage_url,
     registryUrl: row.registry_url,
+    machineReadableUrl: row.machine_readable_url,
+    verifiedAt: row.verified_at,
     jurisdictions: parseJson<string[]>(row.jurisdictions_json),
-    license: {
-      status: row.license_status,
-      name: row.license_name,
-      url: row.license_url,
-      caveat: "Source licensing may vary. Verify upstream terms before redistribution.",
+    reuse: {
+      status: row.reuse_status,
+      legalBasis: reference(row.reuse_legal_basis_name, row.reuse_legal_basis_url),
+      licence: reference(row.reuse_licence_name, row.reuse_licence_url),
+      attributionNotice: row.reuse_attribution_notice,
+      redistributionAllowed:
+        row.reuse_redistribution_allowed === null
+          ? null
+          : Boolean(row.reuse_redistribution_allowed),
+      notes: row.reuse_notes,
     },
     health: {
       status: row.health_status,
@@ -83,6 +91,7 @@ export function sourcePayload(row: SourceRow) {
       latestErrorSummary: row.latest_error_summary,
       checksum: row.source_checksum,
     },
+    disclaimer: SOURCE_DISCLAIMER,
   };
 }
 
@@ -142,4 +151,8 @@ export function countMap(rows: Array<{ key: string; count: number }>) {
 
 function parseJson<T>(value: string) {
   return JSON.parse(value) as T;
+}
+
+function reference(name: string | null, url: string | null) {
+  return name && url ? { name, url } : null;
 }

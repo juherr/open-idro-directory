@@ -8,16 +8,21 @@ jurisdictions:
 official: true
 homepageUrl: https://www.benelux-idro.eu/
 registryUrl: https://www.benelux-idro.eu/en/id-register/export
+machineReadableUrl: https://www.benelux-idro.eu/en/id-register/export
+verifiedAt: null
 connector: benelux-idro
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
   - EMSP
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: unspecified
+  legalBasis: null
+  licence: null
+  attributionNotice: null
+  redistributionAllowed: null
+  notes: No explicit reuse terms have been identified.
 notes: >
   Official Benelux registry of Mobility Service Provider and Charge Point
   Operator identifiers. The public registry exposes a CSV export endpoint.

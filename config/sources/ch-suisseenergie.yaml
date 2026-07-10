@@ -6,16 +6,21 @@ jurisdictions:
 official: true
 homepageUrl: https://www.suisseenergie.ch/programmes/infrastructure-de-recharge/outils/identifiant-pour-les-cpo-et-les-emp/registre-suisse-des-identifiants/
 registryUrl: https://www.suisseenergie.ch/page-data/sq/d/3887988665.json
+machineReadableUrl: https://www.suisseenergie.ch/page-data/sq/d/3887988665.json
+verifiedAt: null
 connector: ch-suisseenergie
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
   - EMSP
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: unspecified
+  legalBasis: null
+  licence: null
+  attributionNotice: null
+  redistributionAllowed: null
+  notes: No explicit reuse terms have been identified.
 notes: >
   Uses the public Gatsby page-data JSON that powers SuisseEnergie's Swiss
   register of valid CPO and EMP identifiers. Locale duplicates are deduplicated

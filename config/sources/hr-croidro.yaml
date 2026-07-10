@@ -6,16 +6,21 @@ jurisdictions:
 official: true
 homepageUrl: https://pametnamobilnost.hr/idro/Pretraga
 registryUrl: https://pametnamobilnost.hr/idro/Home/IspisiCSV
+machineReadableUrl: https://pametnamobilnost.hr/idro/Home/IspisiCSV
+verifiedAt: null
 connector: hr-croidro
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
   - EMSP
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: unspecified
+  legalBasis: null
+  licence: null
+  attributionNotice: null
+  redistributionAllowed: null
+  notes: No explicit reuse terms have been identified.
 notes: >
   Official Croatian registry of Charge Point Operator and Mobility Service
   Provider identifiers. The public search page exposes a CSV export endpoint.

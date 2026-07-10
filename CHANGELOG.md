@@ -9,7 +9,19 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
+- Source-level authoritative provenance, machine-readable URLs, editorial
+  verification dates, and explicit reuse mechanisms.
+- A `directory sources` command that refreshes source metadata without
+  rebuilding registry records or changing their timestamps.
+- Statutory reuse details for Spain's RIPREE registry and verified authoritative
+  provenance for the Latvian National Access Point register.
 - Initial Open IDRO Directory MVP.
+
+### Changed
+
+- **Breaking:** replace the ambiguous source `license` contract with `reuse`,
+  distinguishing explicit licences, statutory bases, granted permissions,
+  restrictions, and unspecified terms.
 - Ladestellen.at source descriptor, connector, parser, normalization, and fixture-based tests.
 - Benelux IDRO source descriptor, CSV export connector, parser, normalization, and fixture-based tests.
 - Croatian IDRO source descriptor, CSV export connector, parser, normalization, and fixture-based tests.

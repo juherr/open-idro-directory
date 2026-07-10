@@ -34,11 +34,16 @@ interface SourceSummary {
   enabled: boolean;
   homepageUrl: string | null;
   registryUrl: string | null;
+  machineReadableUrl: string | null;
+  verifiedAt: string | null;
   supportedRoles: string[];
-  license: {
+  reuse: {
     status: string;
-    name: string | null;
-    url: string | null;
+    legalBasis: { name: string; url: string } | null;
+    licence: { name: string; url: string } | null;
+    attributionNotice: string | null;
+    redistributionAllowed: boolean | null;
+    notes: string | null;
   };
   health: {
     stale: boolean;
@@ -284,10 +289,22 @@ function toSources(sources: SourceSummary[], datasetReleaseId: string) {
       official: source.official ? 1 : 0,
       homepage_url: source.homepageUrl,
       registry_url: source.registryUrl,
+      machine_readable_url: source.machineReadableUrl,
+      verified_at: source.verifiedAt,
       jurisdictions_json: stableJson(source.jurisdictions),
-      license_status: source.license.status,
-      license_name: source.license.name,
-      license_url: source.license.url,
+      reuse_status: source.reuse.status,
+      reuse_legal_basis_name: source.reuse.legalBasis?.name ?? null,
+      reuse_legal_basis_url: source.reuse.legalBasis?.url ?? null,
+      reuse_licence_name: source.reuse.licence?.name ?? null,
+      reuse_licence_url: source.reuse.licence?.url ?? null,
+      reuse_attribution_notice: source.reuse.attributionNotice,
+      reuse_redistribution_allowed:
+        source.reuse.redistributionAllowed === null
+          ? null
+          : source.reuse.redistributionAllowed
+            ? 1
+            : 0,
+      reuse_notes: source.reuse.notes,
       health_status: source.health.stale ? "stale" : source.enabled ? "current" : "disabled",
       record_count: source.health.recordCount,
       last_attempted_at: source.health.lastAttemptedRetrieval,

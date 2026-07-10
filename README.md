@@ -138,6 +138,7 @@ bun run directory fetch --source se-energimyndigheten
 bun run directory build
 bun run directory validate
 bun run directory update
+bun run directory sources
 bun run directory non-idrr:reports
 bun run directory diff
 bun run directory stats
@@ -160,13 +161,13 @@ without explicit alias evidence.
 
 Every normalized value keeps the originating registry ID, source URL, exact source value, retrieval timestamp, and raw snapshot checksum. A failed source does not erase previously generated records; it is marked stale in `sources.json`.
 
-## License Warning
+## Reuse Warning
 
 Open IDRO Directory is an open-source project, and its source code uses Apache
 License 2.0. The aggregated registry data is collected from upstream sources and
-may remain subject to those sources' own rights, terms, and licenses. Source
-provenance and license status are preserved where known; unknown licensing is
-displayed explicitly and must not be treated as open-data permission. This is an
+may remain subject to those sources' own rights and reuse terms. Source
+provenance and the applicable reuse basis are preserved where known; unspecified
+terms are displayed explicitly and must not be treated as open-data permission. This is an
 engineering note, not legal advice.
 
 ## Contributing

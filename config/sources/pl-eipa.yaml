@@ -6,16 +6,21 @@ jurisdictions:
 official: true
 homepageUrl: https://eipa.udt.gov.pl/list
 registryUrl: https://eipa.udt.gov.pl/list/csv
+machineReadableUrl: https://eipa.udt.gov.pl/list/csv
+verifiedAt: null
 connector: pl-eipa
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
   - EMSP
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: unspecified
+  legalBasis: null
+  licence: null
+  attributionNotice: null
+  redistributionAllowed: null
+  notes: No explicit reuse terms have been identified.
 notes: >
   Official Polish EIPA registered entities list published as a public
   semicolon-delimited CSV export.

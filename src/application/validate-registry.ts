@@ -78,7 +78,9 @@ const sourceSchema = {
     "enabled",
     "refreshSchedule",
     "supportedRoles",
-    "license",
+    "machineReadableUrl",
+    "verifiedAt",
+    "reuse",
   ],
 };
 

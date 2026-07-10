@@ -164,11 +164,13 @@ function sampleSource(): SourceDefinition {
     enabled: true,
     refreshSchedule: "weekly",
     supportedRoles: ["CPO", "EMSP"],
-    license: {
-      status: "unknown",
-      name: null,
-      url: null,
-      attributionRequired: false,
+    machineReadableUrl: "https://afirev.fr/prefixes/consulter-l-annuaire/",
+    verifiedAt: null,
+    reuse: {
+      status: "unspecified",
+      legalBasis: null,
+      licence: null,
+      attributionNotice: null,
       redistributionAllowed: null,
       notes: null,
     },

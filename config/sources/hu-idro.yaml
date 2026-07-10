@@ -6,16 +6,21 @@ jurisdictions:
 official: true
 homepageUrl: https://idro.hu/en/page/members
 registryUrl: https://idro.hu/en/page/members
+machineReadableUrl: null
+verifiedAt: null
 connector: hu-idro
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
   - EMSP
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: unspecified
+  legalBasis: null
+  licence: null
+  attributionNotice: null
+  redistributionAllowed: null
+  notes: No explicit reuse terms have been identified.
 notes: >
   Official Hungarian IDRO members page. The download page exposes guidance PDFs,
   but no machine-readable ID export was identified; the connector parses the

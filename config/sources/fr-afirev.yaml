@@ -6,16 +6,21 @@ jurisdictions:
 official: true
 homepageUrl: https://afirev.fr/prefixes/consulter-l-annuaire/
 registryUrl: https://api.afirev.fr/public/prefixes
+machineReadableUrl: https://api.afirev.fr/public/prefixes
+verifiedAt: null
 connector: fr-afirev
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
   - EMSP
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: unspecified
+  legalBasis: null
+  licence: null
+  attributionNotice: null
+  redistributionAllowed: null
+  notes: No explicit reuse terms have been identified.
 notes: >
   Official French registry of e-mobility prefixes. The public website embeds an
   AFIREV application that reads this JSON endpoint without authentication.

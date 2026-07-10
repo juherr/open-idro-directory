@@ -117,7 +117,10 @@ export function createApp() {
         alternativeNames: unique(
           observations.items.map((row) => row.organization_name).filter(isString),
         ),
-        sourceSummary: unique(observations.items.map((row) => row.source_id)),
+        sourceSummary: unique(observations.items.map((row) => row.source_id)).map((sourceId) => ({
+          id: sourceId,
+          url: `${API_PREFIX}/sources/${sourceId}`,
+        })),
         conflictSummary: {
           count: conflicts.items.length,
           severities: unique(conflicts.items.map((row) => row.severity)),

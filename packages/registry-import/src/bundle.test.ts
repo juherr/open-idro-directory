@@ -9,6 +9,10 @@ describe("Cloudflare import bundle", () => {
     expect(bundle.manifest.files["observations.ndjson"]?.rows).toBe(bundle.observations.length);
     expect(bundle.parties.length).toBeGreaterThan(0);
     expect(bundle.observations[0]?.dataset_release_id).toBe(bundle.release.id);
+    expect(bundle.sources.every((source) => source.reuse_status.length > 0)).toBe(true);
+    expect(bundle.sources).not.toContainEqual(
+      expect.objectContaining({ license_status: expect.anything() }),
+    );
   });
 
   it("writes D1 remote-compatible import SQL", async () => {

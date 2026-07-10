@@ -6,15 +6,22 @@ jurisdictions:
 official: true
 homepageUrl: https://lakd.lt/viesuju-elektromobiliu-ikrovimo-prieigu-registravimas
 registryUrl: https://ev.vialietuva.lt/ocpi/2.3.0/locations
+machineReadableUrl: https://ev.vialietuva.lt/ocpi/2.3.0/locations
+verifiedAt: null
 connector: lt-vialietuva
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
-license:
-  status: open
-  name: CC BY 4.0 / ODC-BY
-  url: https://ev.vialietuva.lt/atviri-duomenys-1
+reuse:
+  status: licensed
+  legalBasis: null
+  licence:
+    name: CC BY 4.0 / ODC-BY
+    url: https://ev.vialietuva.lt/atviri-duomenys-1
+  attributionNotice: Cite Via Lietuva as the source.
+  redistributionAllowed: true
+  notes: null
 notes: >
   Via Lietuva publishes public charging infrastructure as DATEX II and OCPI.
   The OCPI locations endpoint exposes CPO country_code and party_id values,

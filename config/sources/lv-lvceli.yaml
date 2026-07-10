@@ -6,20 +6,26 @@ jurisdictions:
 official: true
 homepageUrl: https://www.transportdata.gov.lv/en/idro
 registryUrl: https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json
+machineReadableUrl: https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json
+verifiedAt: 2026-07-10
 connector: lv-lvceli
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
   - EMSP
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: unspecified
+  legalBasis: null
+  licence: null
+  attributionNotice: null
+  redistributionAllowed: null
+  notes: No explicit reuse terms have been identified.
 notes: >
-  Official Latvian IDRO page managed through the transportdata.gov.lv Drupal
-  content API. The connector parses the public HTML table embedded in the JSON
-  page body.
+  Authoritative Latvian register maintained by SLLC Latvijas Valsts celi and
+  published through the Latvian National Access Point. The connector parses the
+  public HTML table embedded in the portal JSON response. Open IDRO Directory is
+  an independent aggregation and does not replace the national register.
 safety:
   maxDeletionRatio: 0.3
   maxChangeRatio: 0.6

@@ -4,7 +4,14 @@ Official IDRO sources are preferred. API or export files are preferred over HTML
 
 Access controls, authentication gates, CAPTCHA, anti-bot controls, and rate limits must not be bypassed.
 
-Every published record requires provenance. Unknown licensing must be shown explicitly. Public accessibility does not imply redistribution permission.
+Every published record requires provenance. The reuse mechanism must be shown
+explicitly as licensed, statutory, permission-granted, restricted, or
+unspecified. Public accessibility does not imply redistribution permission.
+
+Retrieval and editorial verification are separate events. `retrievedAt` records
+an automated source retrieval. `verifiedAt` records a manual confirmation of the
+authority, source location, or reuse basis. Source responses must link directly
+to the authoritative landing page and machine-readable source when available.
 
 Source owners may request corrections or removal. Disappearance from a source is not automatically interpreted as revocation. Organization names are not reliable identifiers.
 

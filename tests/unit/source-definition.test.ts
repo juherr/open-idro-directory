@@ -83,6 +83,7 @@ describe("sourceDefinitionSchema", () => {
     });
 
     const spain = sources.find((source) => source.id === "es-ripree");
+    expect(spain).toBeDefined();
     expect(spain?.reuse).toMatchObject({
       status: "statutory",
       legalBasis: {
@@ -92,6 +93,7 @@ describe("sourceDefinitionSchema", () => {
     });
 
     const latvia = sources.find((source) => source.id === "lv-lvceli");
+    expect(latvia).toBeDefined();
     expect(latvia).toMatchObject({
       authorityName: "SLLC Latvijas Valsts ceļi",
       official: true,

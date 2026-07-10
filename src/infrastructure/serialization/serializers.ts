@@ -104,17 +104,7 @@ function toSourcesSummary(sources: SourceDefinition[], results: SourceBuildResul
   return sources.map((source) => {
     const result = resultById.get(source.id);
     return {
-      id: source.id,
-      name: source.name,
-      authorityName: source.authorityName,
-      jurisdictions: source.jurisdictions,
-      official: source.official,
-      enabled: source.enabled,
-      homepageUrl: source.homepageUrl,
-      registryUrl: source.registryUrl,
-      connector: source.connector,
-      supportedRoles: source.supportedRoles,
-      license: source.license,
+      ...toSourceMetadata(source),
       health: {
         stale: result?.stale ?? !source.enabled,
         recordCount: result?.records.length ?? 0,
@@ -126,6 +116,24 @@ function toSourcesSummary(sources: SourceDefinition[], results: SourceBuildResul
       },
     };
   });
+}
+
+export function toSourceMetadata(source: SourceDefinition) {
+  return {
+    id: source.id,
+    name: source.name,
+    authorityName: source.authorityName,
+    jurisdictions: source.jurisdictions,
+    official: source.official,
+    enabled: source.enabled,
+    homepageUrl: source.homepageUrl,
+    registryUrl: source.registryUrl,
+    machineReadableUrl: source.machineReadableUrl,
+    verifiedAt: source.verifiedAt,
+    connector: source.connector,
+    supportedRoles: source.supportedRoles,
+    reuse: source.reuse,
+  };
 }
 
 function toStats(

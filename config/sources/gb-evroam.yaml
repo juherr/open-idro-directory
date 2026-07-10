@@ -7,16 +7,21 @@ jurisdictions:
 official: true
 homepageUrl: https://www.evroam.org.uk/
 registryUrl: https://evroam.org.uk/_functions/getRegister
+machineReadableUrl: null
+verifiedAt: null
 connector: gb-evroam
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
   - EMSP
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: unspecified
+  legalBasis: null
+  licence: null
+  attributionNotice: null
+  redistributionAllowed: null
+  notes: No explicit reuse terms have been identified.
 notes: >
   EV Roam public register API. The response contains GB identifiers and IE
   identifiers for organizations that also hold Irish CPO and/or EMSP codes. GB

@@ -6,15 +6,20 @@ jurisdictions:
 official: true
 homepageUrl: https://admin.ladestellen.at/#/registrierte-ids
 registryUrl: https://admin.ladestellen.at/api/countries/AT/operators/basic
+machineReadableUrl: null
+verifiedAt: null
 connector: at-ladestellen
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: unspecified
+  legalBasis: null
+  licence: null
+  attributionNotice: null
+  redistributionAllowed: null
+  notes: No explicit reuse terms have been identified.
 notes: >
   Official Austrian registry of registered e-mobility operator identifiers. The
   public admin application reads this JSON endpoint with the public API key

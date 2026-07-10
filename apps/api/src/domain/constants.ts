@@ -1,9 +1,11 @@
 export const API_VERSION = "v1";
 export const API_PREFIX = "/api/v1";
-export const SCHEMA_VERSION = "1.0.0";
+export const SCHEMA_VERSION = "1.1.0";
 export const REPOSITORY_URL = "https://github.com/juherr/open-idro-directory";
 export const DISCLAIMER =
   "Open IDRO Directory is an independent aggregation project. It does not issue e-mobility identifiers and is not an authoritative source. Consumers must refer to the originating IDRO for legal, contractual, or operational verification.";
+export const SOURCE_DISCLAIMER =
+  "Open IDRO Directory is an independent aggregation service. It is not an official copy of, or a substitute for, the originating national register.";
 
 export const CACHE_CONTROL = {
   health: "public, max-age=60",

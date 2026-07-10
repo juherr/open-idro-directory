@@ -6,16 +6,21 @@ jurisdictions:
 official: true
 homepageUrl: https://www.nap.si/en/id-codes
 registryUrl: https://www.ncup.si/dc/prometej.register-cpo-msp
+machineReadableUrl: null
+verifiedAt: null
 connector: si-nap
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
   - EMSP
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: unspecified
+  legalBasis: null
+  licence: null
+  attributionNotice: null
+  redistributionAllowed: null
+  notes: No explicit reuse terms have been identified.
 notes: >
   Official Slovenian NAP page links to the PROMETEJ national repository of CPO
   and MSP IDs as a public XLSX download.

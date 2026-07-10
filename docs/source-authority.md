@@ -10,4 +10,4 @@ Authority levels:
 
 Observation types include official assignments, official directory entries, legacy assignments, network registrations, infrastructure observations, self declarations, and community observations.
 
-Do not infer `AUTHORITATIVE` from public availability. Source authority and license caveats are exposed in API source responses so consumers can verify upstream terms.
+Do not infer `AUTHORITATIVE` from public availability. Source authority and reuse conditions are exposed in API source responses so consumers can verify upstream terms.

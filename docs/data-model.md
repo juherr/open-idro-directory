@@ -10,6 +10,24 @@ registryId + ":" + countryCode + ":" + partyId + ":" + role
 
 Organizations are not used as identifiers. Similar names are not merged. Source-specific fields are preserved in `metadata`.
 
+## Source Provenance And Reuse
+
+Each source identifies its authoritative organization, landing page, registry
+URL, and machine-readable URL when one exists. `verifiedAt` records the date of
+the latest editorial verification; generated source health metadata records the
+latest attempted and successful retrievals independently.
+
+The `reuse.status` field distinguishes the legal mechanism that applies:
+
+- `licensed`: an explicit licence is published in `reuse.licence`;
+- `statutory`: reuse relies on legislation recorded in `reuse.legalBasis`;
+- `permission-granted`: the source owner granted permission outside a published licence;
+- `restricted`: known terms restrict reuse;
+- `unspecified`: no explicit reuse terms have been identified.
+
+Public availability must not be represented as permission to reuse. A statutory
+basis must not be represented as a Creative Commons or Open Data Commons licence.
+
 ## Complementary Observations
 
 Non-IDRR sources use a separate `IdentifierObservation` model. Observations do

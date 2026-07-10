@@ -17,7 +17,7 @@ const release: DatasetRelease = {
   generated_at: "2026-06-15T06:39:47.501Z",
   imported_at: "1970-01-01T00:00:00.000Z",
   dataset_checksum: "checksum-1",
-  schema_version: "1.0.0",
+  schema_version: "1.1.0",
   record_count: 1,
   source_count: 1,
   importer_version: "0.1.0",
@@ -63,9 +63,16 @@ const source: SourceRow = {
   homepage_url: "https://afirev.fr/",
   registry_url: "https://api.afirev.fr/public/prefixes",
   jurisdictions_json: '["FR"]',
-  license_status: "unknown",
-  license_name: null,
-  license_url: null,
+  machine_readable_url: "https://api.afirev.fr/public/prefixes",
+  verified_at: "2026-01-02",
+  reuse_status: "unspecified",
+  reuse_legal_basis_name: null,
+  reuse_legal_basis_url: null,
+  reuse_licence_name: null,
+  reuse_licence_url: null,
+  reuse_attribution_notice: null,
+  reuse_redistribution_allowed: null,
+  reuse_notes: "No explicit reuse terms have been identified.",
   health_status: "current",
   record_count: 1,
   last_attempted_at: "2026-01-01T00:00:00.000Z",
@@ -163,6 +170,26 @@ describe("Cloudflare API", () => {
   });
 
   it("exposes source health, observations, conflicts, stats and OpenAPI", async () => {
+    const sourceResponse = await request("/api/v1/sources/fr-afirev");
+    const sourceBody = (await sourceResponse.json()) as {
+      data: {
+        machineReadableUrl: string;
+        verifiedAt: string;
+        reuse: { status: string; licence: null; notes: string };
+        disclaimer: string;
+      };
+    };
+    expect(sourceBody.data).toMatchObject({
+      machineReadableUrl: "https://api.afirev.fr/public/prefixes",
+      verifiedAt: "2026-01-02",
+      reuse: {
+        status: "unspecified",
+        licence: null,
+        notes: "No explicit reuse terms have been identified.",
+      },
+    });
+    expect(sourceBody.data).not.toHaveProperty("license");
+    expect(sourceBody.data.disclaimer).toContain("independent aggregation");
     expect((await request("/api/v1/sources/fr-afirev/health")).status).toBe(200);
     expect((await request("/api/v1/parties/FR/ABC/observations")).status).toBe(200);
     expect((await request("/api/v1/parties/FR/ABC/conflicts")).status).toBe(200);

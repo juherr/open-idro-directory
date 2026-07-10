@@ -1,6 +1,6 @@
 # Source Limitations
 
-AFIREV licensing is unknown. The project publishes provenance and source metadata but does not claim upstream data ownership or a blanket open-data license.
+AFIREV reuse terms are unspecified. The project publishes provenance and source metadata but does not claim upstream data ownership or a blanket right to reuse upstream data.
 
 AFIREV status `SUSPENDED` is normalized as `UNKNOWN` because the common status enum has no exact suspended state. The original value remains in `metadata.afirevStatus`.
 

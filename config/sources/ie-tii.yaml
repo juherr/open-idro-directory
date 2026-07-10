@@ -6,16 +6,21 @@ jurisdictions:
 official: true
 homepageUrl: https://www.tii.ie/en/roads-tolling/alt-fuel-projects-unit/alt-fuels-data-office/register-idro/
 registryUrl: https://www.tii.ie/media/pqigaadi/idro-public-register-19-march-2026.pdf
+machineReadableUrl: null
+verifiedAt: null
 connector: ie-tii
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
   - EMSP
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: unspecified
+  legalBasis: null
+  licence: null
+  attributionNotice: null
+  redistributionAllowed: null
+  notes: No explicit reuse terms have been identified.
 notes: >
   Official Irish IDRO public register published as a PDF by Transport
   Infrastructure Ireland. The connector extracts text from the PDF and

@@ -6,16 +6,21 @@ jurisdictions:
 official: true
 homepageUrl: https://www.danishroadtrafficauthority.dk/afir/idro-registration
 registryUrl: https://www.danishroadtrafficauthority.dk/afir/idro-registration
+machineReadableUrl: null
+verifiedAt: null
 connector: dk-fstyr
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
   - EMSP
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: unspecified
+  legalBasis: null
+  licence: null
+  attributionNotice: null
+  redistributionAllowed: null
+  notes: No explicit reuse terms have been identified.
 notes: >
   Official Danish IDRO registration page. The public page embeds the current
   CPO/MSP identifier register as an HTML table; API references on the page are

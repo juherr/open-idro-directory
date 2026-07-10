@@ -25,3 +25,10 @@ Design implications:
 - Cap `limit` at 200.
 - Avoid runtime scraping and dynamic export generation.
 - Cache public GET responses with dataset-versioned ETags.
+
+## Source Metadata Only
+
+Run `bun run directory sources` after changing source authority, provenance,
+verification, or reuse configuration without fetching or rebuilding registry
+records. The command preserves existing source health and retrieval timestamps,
+and updates only `data/sources.json`.

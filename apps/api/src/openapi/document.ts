@@ -5,7 +5,7 @@ export function openApiDocument(origin = "http://localhost:8787") {
     openapi: "3.1.0",
     info: {
       title: "Open IDRO Directory API",
-      version: "1.0.0",
+      version: "1.1.0",
       description: DISCLAIMER,
       license: { name: "Apache-2.0" },
     },
@@ -74,6 +74,39 @@ export function openApiDocument(origin = "http://localhost:8787") {
                 requestId: { type: "string" },
               },
             },
+          },
+        },
+        SourceReuse: {
+          type: "object",
+          required: [
+            "status",
+            "legalBasis",
+            "licence",
+            "attributionNotice",
+            "redistributionAllowed",
+            "notes",
+          ],
+          properties: {
+            status: {
+              enum: ["licensed", "statutory", "permission-granted", "restricted", "unspecified"],
+            },
+            legalBasis: {
+              anyOf: [{ $ref: "#/components/schemas/SourceReference" }, { type: "null" }],
+            },
+            licence: {
+              anyOf: [{ $ref: "#/components/schemas/SourceReference" }, { type: "null" }],
+            },
+            attributionNotice: { type: ["string", "null"] },
+            redistributionAllowed: { type: ["boolean", "null"] },
+            notes: { type: ["string", "null"] },
+          },
+        },
+        SourceReference: {
+          type: "object",
+          required: ["name", "url"],
+          properties: {
+            name: { type: "string" },
+            url: { type: "string", format: "uri" },
           },
         },
       },

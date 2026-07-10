@@ -6,20 +6,30 @@ jurisdictions:
 official: true
 homepageUrl: https://energia.serviciosmin.gob.es/RIPREE
 registryUrl: https://energia.serviciosmin.gob.es/Ripree/ExportarEmpresas/Export
+machineReadableUrl: https://energia.serviciosmin.gob.es/Ripree/ExportarEmpresas/GenerarXml
+verifiedAt: 2026-07-10
 connector: es-ripree
 enabled: true
 refreshSchedule: weekly
 supportedRoles:
   - CPO
   - EMSP
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: statutory
+  legalBasis:
+    name: Spanish Law 37/2007 on reuse of public-sector information
+    url: https://www.boe.es/eli/es/l/2007/11/16/37/con
+  licence: null
+  attributionNotice: Cite RIPREE as the source and state the last update date.
+  redistributionAllowed: true
+  notes: >
+    Reuse is based on legislation, as amended for the transposition of Directive
+    (EU) 2019/1024, and not on an explicit open-data licence.
 notes: >
-  Official Spanish RIPREE public company export page. The page exposes CSV and
-  XML export actions; the connector posts to the public XML export endpoint and
-  normalizes CPO/EMSP CodigoId values.
+  RIPREE is Spain's authoritative registry. The public company export page
+  exposes CSV and XML actions; the connector posts to the documented XML source
+  and normalizes CPO/EMSP CodigoId values. Open IDRO Directory is an independent
+  aggregation and does not replace RIPREE.
 safety:
   maxDeletionRatio: 0.3
   maxChangeRatio: 0.8

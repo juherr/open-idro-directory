@@ -6,16 +6,21 @@ jurisdictions:
 official: true
 homepageUrl: https://www.mcw.gov.cy/mcw/ems/ems.nsf/All/D764FAE19922743BC2258DAA002FA4BC?OpenDocument
 registryUrl: https://www.mcw.gov.cy/mcw/ems/ems.nsf/All/D764FAE19922743BC2258DAA002FA4BC?OpenDocument
+machineReadableUrl: null
+verifiedAt: null
 connector: cy-ems
 enabled: false
 refreshSchedule: weekly
 supportedRoles:
   - CPO
   - EMSP
-license:
-  status: unknown
-  name: null
-  url: null
+reuse:
+  status: unspecified
+  legalBasis: null
+  licence: null
+  attributionNotice: null
+  redistributionAllowed: null
+  notes: No explicit reuse terms have been identified.
 notes: >
   Placeholder descriptor for Cyprus. The referenced Department of Electrical
   and Mechanical Services page is a temporary public charging stations page

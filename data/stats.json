@@ -1,18 +1,18 @@
 {
-  "totalRecords": 8027,
+  "totalRecords": 8048,
   "recordsByCountry": {
-    "AT": 1111,
+    "AT": 1112,
     "BE": 362,
     "CH": 162,
-    "DE": 3097,
-    "DK": 84,
-    "ES": 317,
+    "DE": 3107,
+    "DK": 85,
+    "ES": 320,
     "FI": 43,
-    "FR": 729,
-    "GB": 203,
+    "FR": 731,
+    "GB": 205,
     "GR": 132,
     "HU": 1,
-    "IE": 92,
+    "IE": 94,
     "LT": 14,
     "LU": 225,
     "LV": 15,
@@ -24,7 +24,7 @@
   },
   "recordsByCountryRole": {
     "AT": {
-      "CPO": 1111
+      "CPO": 1112
     },
     "BE": {
       "CPO": 207,
@@ -35,28 +35,28 @@
       "EMSP": 70
     },
     "DE": {
-      "CPO": 1654,
-      "EMSP": 1443
+      "CPO": 1660,
+      "EMSP": 1447
     },
     "DK": {
       "CPO": 58,
-      "EMSP": 26
+      "EMSP": 27
     },
     "ES": {
-      "CPO": 239,
-      "EMSP": 78
+      "CPO": 241,
+      "EMSP": 79
     },
     "FI": {
       "CPO": 25,
       "EMSP": 18
     },
     "FR": {
-      "CPO": 582,
-      "EMSP": 147
+      "CPO": 583,
+      "EMSP": 148
     },
     "GB": {
-      "CPO": 105,
-      "EMSP": 98
+      "CPO": 106,
+      "EMSP": 99
     },
     "GR": {
       "CPO": 82,
@@ -66,8 +66,8 @@
       "EMSP": 1
     },
     "IE": {
-      "CPO": 51,
-      "EMSP": 41
+      "CPO": 52,
+      "EMSP": 42
     },
     "LT": {
       "CPO": 14
@@ -102,25 +102,25 @@
     }
   },
   "recordsByRole": {
-    "CPO": 5445,
-    "EMSP": 2582
+    "CPO": 5457,
+    "EMSP": 2591
   },
   "recordsByStatus": {
-    "ACTIVE": 7415,
-    "INACTIVE": 270,
+    "ACTIVE": 7427,
+    "INACTIVE": 277,
     "RESERVED": 144,
-    "UNKNOWN": 198
+    "UNKNOWN": 200
   },
   "recordsByRegistry": {
-    "at-ladestellen": 1111,
+    "at-ladestellen": 1112,
     "benelux-idro": 953,
     "ch-suisseenergie": 162,
-    "de-bdew": 3097,
-    "dk-fstyr": 84,
-    "es-ripree": 317,
+    "de-bdew": 3107,
+    "dk-fstyr": 85,
+    "es-ripree": 320,
     "fi-traficom": 43,
-    "fr-afirev": 729,
-    "gb-evroam": 269,
+    "fr-afirev": 731,
+    "gb-evroam": 273,
     "gr-electrokinisi": 132,
     "hu-idro": 1,
     "ie-tii": 26,
@@ -132,5 +132,5 @@
     "si-nap": 56
   },
   "staleSources": [],
-  "generatedAt": "2026-07-06T07:56:26.040Z"
+  "generatedAt": "2026-07-13T06:31:39.648Z"
 }

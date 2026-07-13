@@ -3,11 +3,11 @@
 ## at-ladestellen
 
 - Previous records: 1111
-- Current records: 1111
-- Added: 0
-- Updated: 2
+- Current records: 1112
+- Added: 1
+- Updated: 0
 - Removed: 0
-- Unchanged: 1109
+- Unchanged: 1111
 - Warnings: 0
 
 <details>
@@ -15,19 +15,18 @@
 
 | Change | Key | Removal interpretation |
 | --- | --- | --- |
-| Updated | at-ladestellen:AT:NES:CPO | n/a |
-| Updated | at-ladestellen:AT:TWG:CPO | n/a |
+| Added | at-ladestellen:AT:3NB:CPO | n/a |
 
 </details>
 
 ## benelux-idro
 
-- Previous records: 951
+- Previous records: 953
 - Current records: 953
-- Added: 2
-- Updated: 15
+- Added: 0
+- Updated: 1
 - Removed: 0
-- Unchanged: 936
+- Unchanged: 952
 - Warnings: 0
 
 <details>
@@ -35,88 +34,18 @@
 
 | Change | Key | Removal interpretation |
 | --- | --- | --- |
-| Added | benelux-idro:BE:BE9:CPO | n/a |
-| Added | benelux-idro:NL:YEV:CPO | n/a |
-| Updated | benelux-idro:BE:BMS:CPO | n/a |
-| Updated | benelux-idro:BE:IPC:CPO | n/a |
-| Updated | benelux-idro:BE:IPC:EMSP | n/a |
-| Updated | benelux-idro:BE:STP:CPO | n/a |
-| Updated | benelux-idro:BE:STP:EMSP | n/a |
-| Updated | benelux-idro:LU:BMS:CPO | n/a |
-| Updated | benelux-idro:LU:IPC:CPO | n/a |
-| Updated | benelux-idro:LU:IPC:EMSP | n/a |
-| Updated | benelux-idro:LU:STP:CPO | n/a |
-| Updated | benelux-idro:LU:STP:EMSP | n/a |
-| Updated | benelux-idro:NL:BMS:CPO | n/a |
-| Updated | benelux-idro:NL:IPC:CPO | n/a |
-| Updated | benelux-idro:NL:IPC:EMSP | n/a |
-| Updated | benelux-idro:NL:STP:CPO | n/a |
-| Updated | benelux-idro:NL:STP:EMSP | n/a |
+| Updated | benelux-idro:BE:I2G:CPO | n/a |
 
 </details>
 
 ## ch-suisseenergie
 
-- Previous records: 160
+- Previous records: 162
 - Current records: 162
-- Added: 2
-- Updated: 0
-- Removed: 0
-- Unchanged: 160
-- Warnings: 0
-
-<details>
-<summary>Record-level changes</summary>
-
-| Change | Key | Removal interpretation |
-| --- | --- | --- |
-| Added | ch-suisseenergie:CH:INO:CPO | n/a |
-| Added | ch-suisseenergie:CH:INO:EMSP | n/a |
-
-</details>
-
-## de-bdew
-
-- Previous records: 3090
-- Current records: 3097
-- Added: 7
-- Updated: 9
-- Removed: 0
-- Unchanged: 3081
-- Warnings: 0
-
-<details>
-<summary>Record-level changes</summary>
-
-| Change | Key | Removal interpretation |
-| --- | --- | --- |
-| Added | de-bdew:DE:133:CPO | n/a |
-| Added | de-bdew:DE:133:EMSP | n/a |
-| Added | de-bdew:DE:555:CPO | n/a |
-| Added | de-bdew:DE:555:EMSP | n/a |
-| Added | de-bdew:DE:ITN:CPO | n/a |
-| Added | de-bdew:DE:ITN:EMSP | n/a |
-| Added | de-bdew:DE:ULE:CPO | n/a |
-| Updated | de-bdew:DE:2GO:CPO | n/a |
-| Updated | de-bdew:DE:2GO:EMSP | n/a |
-| Updated | de-bdew:DE:BTB:CPO | n/a |
-| Updated | de-bdew:DE:BTB:EMSP | n/a |
-| Updated | de-bdew:DE:ESC:CPO | n/a |
-| Updated | de-bdew:DE:ESC:EMSP | n/a |
-| Updated | de-bdew:DE:EWE:CPO | n/a |
-| Updated | de-bdew:DE:EWE:EMSP | n/a |
-| Updated | de-bdew:DE:WAY:EMSP | n/a |
-
-</details>
-
-## dk-fstyr
-
-- Previous records: 84
-- Current records: 84
 - Added: 0
 - Updated: 0
 - Removed: 0
-- Unchanged: 84
+- Unchanged: 162
 - Warnings: 0
 
 <details>
@@ -128,14 +57,14 @@
 
 </details>
 
-## es-ripree
+## de-bdew
 
-- Previous records: 316
-- Current records: 317
-- Added: 1
+- Previous records: 3097
+- Current records: 3107
+- Added: 10
 - Updated: 0
 - Removed: 0
-- Unchanged: 316
+- Unchanged: 3097
 - Warnings: 0
 
 <details>
@@ -143,7 +72,58 @@
 
 | Change | Key | Removal interpretation |
 | --- | --- | --- |
-| Added | es-ripree:ES:REV:CPO | n/a |
+| Added | de-bdew:DE:906:CPO | n/a |
+| Added | de-bdew:DE:906:EMSP | n/a |
+| Added | de-bdew:DE:BAL:CPO | n/a |
+| Added | de-bdew:DE:BAL:EMSP | n/a |
+| Added | de-bdew:DE:CCP:EMSP | n/a |
+| Added | de-bdew:DE:CHP:CPO | n/a |
+| Added | de-bdew:DE:PHC:CPO | n/a |
+| Added | de-bdew:DE:RUD:CPO | n/a |
+| Added | de-bdew:DE:THG:CPO | n/a |
+| Added | de-bdew:DE:THG:EMSP | n/a |
+
+</details>
+
+## dk-fstyr
+
+- Previous records: 84
+- Current records: 85
+- Added: 1
+- Updated: 2
+- Removed: 0
+- Unchanged: 82
+- Warnings: 0
+
+<details>
+<summary>Record-level changes</summary>
+
+| Change | Key | Removal interpretation |
+| --- | --- | --- |
+| Added | dk-fstyr:DK:QPA:EMSP | n/a |
+| Updated | dk-fstyr:DK:DRV:CPO | n/a |
+| Updated | dk-fstyr:DK:SPI:EMSP | n/a |
+
+</details>
+
+## es-ripree
+
+- Previous records: 317
+- Current records: 320
+- Added: 3
+- Updated: 0
+- Removed: 0
+- Unchanged: 317
+- Warnings: 0
+
+<details>
+<summary>Record-level changes</summary>
+
+| Change | Key | Removal interpretation |
+| --- | --- | --- |
+| Added | es-ripree:ES:AEN:CPO | n/a |
+| Added | es-ripree:ES:AEN:EMSP | n/a |
+| Added | es-ripree:ES:HDT:CPO | n/a |
 
 </details>
 
@@ -169,11 +149,11 @@
 ## fr-afirev
 
 - Previous records: 729
-- Current records: 729
-- Added: 0
-- Updated: 0
+- Current records: 731
+- Added: 2
+- Updated: 2
 - Removed: 0
-- Unchanged: 729
+- Unchanged: 727
 - Warnings: 0
 
 <details>
@@ -181,18 +161,21 @@
 
 | Change | Key | Removal interpretation |
 | --- | --- | --- |
-| None | n/a | n/a |
+| Added | fr-afirev:FR:PBR:CPO | n/a |
+| Added | fr-afirev:FR:VTX:EMSP | n/a |
+| Updated | fr-afirev:FR:S49:CPO | n/a |
+| Updated | fr-afirev:FR:VTX:CPO | n/a |
 
 </details>
 
 ## gb-evroam
 
-- Previous records: 267
-- Current records: 269
-- Added: 2
-- Updated: 8
+- Previous records: 269
+- Current records: 273
+- Added: 4
+- Updated: 2
 - Removed: 0
-- Unchanged: 259
+- Unchanged: 267
 - Warnings: 0
 
 <details>
@@ -200,16 +183,12 @@
 
 | Change | Key | Removal interpretation |
 | --- | --- | --- |
-| Added | gb-evroam:GB:MCF:EMSP | n/a |
-| Added | gb-evroam:IE:MCF:EMSP | n/a |
-| Updated | gb-evroam:GB:24L:CPO | n/a |
-| Updated | gb-evroam:GB:24L:EMSP | n/a |
-| Updated | gb-evroam:GB:EOC:CPO | n/a |
-| Updated | gb-evroam:GB:EOC:EMSP | n/a |
-| Updated | gb-evroam:GB:SOL:CPO | n/a |
-| Updated | gb-evroam:GB:SOL:EMSP | n/a |
-| Updated | gb-evroam:IE:24L:CPO | n/a |
-| Updated | gb-evroam:IE:24L:EMSP | n/a |
+| Added | gb-evroam:GB:OTM:CPO | n/a |
+| Added | gb-evroam:GB:OTM:EMSP | n/a |
+| Added | gb-evroam:IE:OTM:CPO | n/a |
+| Added | gb-evroam:IE:OTM:EMSP | n/a |
+| Updated | gb-evroam:GB:GVR:CPO | n/a |
+| Updated | gb-evroam:GB:GVR:EMSP | n/a |
 
 </details>
 
@@ -294,9 +273,9 @@
 - Previous records: 14
 - Current records: 14
 - Added: 0
-- Updated: 0
+- Updated: 1
 - Removed: 0
-- Unchanged: 14
+- Unchanged: 13
 - Warnings: 0
 
 <details>
@@ -304,7 +283,7 @@
 
 | Change | Key | Removal interpretation |
 | --- | --- | --- |
-| None | n/a | n/a |
+| Updated | lt-vialietuva:LT:008:CPO | n/a |
 
 </details>
 
@@ -329,10 +308,10 @@
 
 ## pl-eipa
 
-- Previous records: 840
+- Previous records: 843
 - Current records: 843
-- Added: 3
-- Updated: 0
+- Added: 0
+- Updated: 3
 - Removed: 0
 - Unchanged: 840
 - Warnings: 0
@@ -342,9 +321,9 @@
 
 | Change | Key | Removal interpretation |
 | --- | --- | --- |
-| Added | pl-eipa:PL:6JP:CPO | n/a |
-| Added | pl-eipa:PL:6JP:EMSP | n/a |
-| Added | pl-eipa:PL:ERI:CPO | n/a |
+| Updated | pl-eipa:PL:J3H:CPO | n/a |
+| Updated | pl-eipa:PL:K68:CPO | n/a |
+| Updated | pl-eipa:PL:SCE:CPO | n/a |
 
 </details>
 

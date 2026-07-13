@@ -3049,6 +3049,14 @@
       "status": "ACTIVE"
     },
     {
+      "prefixId": "FRPBR",
+      "name": "Petite Borne",
+      "amenageurName": "Petite Borne",
+      "exploitantName": "Petite Borne",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
+    },
+    {
       "prefixId": "FRPD1",
       "name": "Power Dot",
       "amenageurName": "POWER DOT FRANCE",
@@ -3670,7 +3678,7 @@
       "amenageurName": "Syndicat intercommunal d'énergies de Maine-et-Loire (Siéml)",
       "exploitantName": "BOUYGUES ENERGIES & SERVICES",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRS50",
@@ -4709,7 +4717,7 @@
       "name": "VOLTIX",
       "amenageurName": "VOLTIX",
       "exploitantName": "VOLTIX",
-      "type": "CHARGE",
+      "type": "BOTH",
       "status": "ACTIVE"
     },
     {
@@ -5393,5 +5401,5 @@
       "status": "ACTIVE"
     }
   ],
-  "total": 674
+  "total": 675
 }

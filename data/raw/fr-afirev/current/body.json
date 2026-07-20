@@ -886,7 +886,7 @@
       "amenageurName": "Syndicat Départemental d'Energies de l'Indre (SDEI)",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRC4F",
@@ -1211,10 +1211,10 @@
     {
       "prefixId": "FRE10",
       "name": "Virta",
-      "amenageurName": "",
+      "amenageurName": "VIRTA SARL",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "SUSPENDED"
+      "status": "AWAITING_PAYMENT"
     },
     {
       "prefixId": "FRE11",
@@ -1531,10 +1531,10 @@
     {
       "prefixId": "FRERA",
       "name": "Eranovum e-Mobility",
-      "amenageurName": "",
-      "exploitantName": "",
+      "amenageurName": "ERANOVUM FRANCE",
+      "exploitantName": "ERANOVUM E-MOBILITY FRANCE",
       "type": "CHARGE",
-      "status": "INACTIVE"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRESE",
@@ -2186,7 +2186,7 @@
     },
     {
       "prefixId": "FRHDV",
-      "name": "e-Vadea Trucks",
+      "name": "e-Vadea Truck",
       "amenageurName": "CITYFMET",
       "exploitantName": "SPIE CITYNETWORKS",
       "type": "CHARGE",
@@ -4683,10 +4683,10 @@
     {
       "prefixId": "FRVIR",
       "name": "VIRTA Global France",
-      "amenageurName": "",
+      "amenageurName": "VIRTA SARL",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRVIS",

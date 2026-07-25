@@ -203,6 +203,54 @@ describe("Traficom parser", () => {
       "fi-traficom:FI:ABC:EMSP",
     ]);
     expect(result.records.map((record) => record.eMobilityId)).toEqual(["FIABC", "FIABC"]);
+    expect(result.records[0]?.source.sourceUrl).toBe(source.registryUrl);
+  });
+
+  it("reports rows that do not expose the four expected columns", () => {
+    const result = parseTraficomHtml(
+      [
+        "<table><thead><tr>",
+        "<th>Issued CPO ID</th><th>Issued MSP ID</th><th>FI business ID (if available)</th>",
+        "</tr></thead><tbody>",
+        "<tr><td>Helen Oy</td><td>FI HLN</td><td>2630573-4</td></tr>",
+        "</tbody></table>",
+      ].join(""),
+    );
+
+    expect(result.records).toHaveLength(0);
+    expect(result.errors[0]?.code).toBe("TRAFICOM_MALFORMED_ROW");
+  });
+
+  it("warns and skips identifiers already issued for the same role", async () => {
+    const source = await loadSourceDefinition("fi-traficom");
+    const connector = new TraficomConnector();
+    const result = await connector.normalize({
+      source,
+      retrievedAt: "2026-06-15T00:00:00.000Z",
+      records: [
+        {
+          companyName: "Helen Oy",
+          cpoIds: ["FI HLN"],
+          emspIds: ["FI HLN"],
+          businessId: "2630573-4",
+        },
+        {
+          companyName: "Helen Oy",
+          cpoIds: ["FI-HLN"],
+          emspIds: ["FI HLN"],
+          businessId: "2630573-4",
+        },
+      ],
+    });
+
+    expect(result.records.map((record) => record.key)).toEqual([
+      "fi-traficom:FI:HLN:CPO",
+      "fi-traficom:FI:HLN:EMSP",
+    ]);
+    expect(result.warnings.map((warning) => warning.code)).toEqual([
+      "TRAFICOM_DUPLICATE_IDENTIFIER",
+      "TRAFICOM_DUPLICATE_IDENTIFIER",
+    ]);
   });
 
   it("normalizes all 45 official assignments and excludes observed IDs", async () => {

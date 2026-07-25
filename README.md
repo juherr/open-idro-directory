@@ -176,7 +176,17 @@ Read `docs/adding-a-source.md` before adding a connector. Use official APIs or d
 
 ## Roadmap
 
-- Milestone 2: non-IDRR source investigation, EVSEID.eu portal matrix, public
-  infrastructure observations, conflict reporting, historical observations.
-- Milestone 3: GitHub Pages search, country-specific static JSON, lookup pages, health dashboard.
-- Milestone 4: broader IDRO coverage guided by the EAFO IDRR, source owner workflow, signed releases, public change feed.
+Delivery is tracked in the
+[Open IDRO Directory roadmap](https://github.com/users/juherr/projects/4).
+
+- [v0.2 — Trusted source metadata](https://github.com/juherr/open-idro-directory/milestone/1):
+  correct authority feedback, complete source metadata, and prevent documentation
+  drift.
+- [v0.3 — Country discovery](https://github.com/juherr/open-idro-directory/milestone/2):
+  expose country-level authority, source, provenance, and identifier discovery.
+- [v0.4 — IDRO interoperability](https://github.com/juherr/open-idro-directory/milestone/3):
+  define interoperable publication, history, embedding, and authority
+  collaboration capabilities.
+
+GitHub issues use labels for type, area, priority, dependency status, and size.
+Only decision-complete and unblocked issues enter the roadmap's `Ready` state.

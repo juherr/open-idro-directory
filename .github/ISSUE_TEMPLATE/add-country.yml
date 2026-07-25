@@ -2,7 +2,8 @@ name: Add country coverage
 description: Share an official IDRO source or contact for a country not covered yet.
 title: "Add country: <country>"
 labels:
-  - source
+  - type:research
+  - area:registry
   - country-coverage
 body:
   - type: markdown

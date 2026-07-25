@@ -487,19 +487,22 @@
     "homepageUrl": "https://www.tii.ie/en/roads-tolling/alt-fuel-projects-unit/alt-fuels-data-office/register-idro/",
     "registryUrl": "https://www.tii.ie/media/pqigaadi/idro-public-register-19-march-2026.pdf",
     "machineReadableUrl": null,
-    "verifiedAt": null,
+    "verifiedAt": "2026-07-25",
     "connector": "ie-tii",
     "supportedRoles": [
       "CPO",
       "EMSP"
     ],
     "reuse": {
-      "status": "unspecified",
+      "status": "licensed",
       "legalBasis": null,
-      "licence": null,
-      "attributionNotice": null,
-      "redistributionAllowed": null,
-      "notes": "No explicit reuse terms have been identified."
+      "licence": {
+        "name": "CC BY 4.0",
+        "url": "https://www.tii.ie/en/compliance/reuse-of-public-sector-information/"
+      },
+      "attributionNotice": "Contains Irish Public Sector Information licensed under a Creative Commons Attribution 4.0 International (CC BY 4.0) licence",
+      "redistributionAllowed": true,
+      "notes": "TII's public-sector information policy excludes personal information, third-party rights that TII is not authorized to license, and TII names, crests, logos, and official symbols.\n"
     },
     "health": {
       "stale": false,

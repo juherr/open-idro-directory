@@ -8,8 +8,8 @@ provenance, but it is not an official copy of any national register.
 
 Most upstream sources do not publish explicit reuse terms. Their `reuse.status`
 is therefore `unspecified`; public access does not imply permission to
-redistribute. Spain uses a statutory reuse basis, while Traficom and Via Lietuva
-publish explicit licences.
+redistribute. Spain uses a statutory reuse basis, while Traficom, TII, and Via
+Lietuva publish explicit licences.
 
 Many sources publish identifiers without a lifecycle status. Connectors mark
 those current entries as `ACTIVE`. When an official source no longer publishes a
@@ -42,7 +42,7 @@ connectors that aggregate multiple resources.
 | `gr-electrokinisi`     | HTML table                    | Greek CPO and EMSP identifiers                                        | No structured export has been identified. The connector depends on server-rendered table markup.                                                                                                       |
 | `hr-croidro`           | CSV export                    | Croatian CPO and MSP identifiers                                      | Current export rows are normalized as `ACTIVE` because the source does not expose a lifecycle status.                                                                                                  |
 | `hu-idro`              | HTML list                     | Hungarian CPO and MSP identifiers                                     | The connector skips entries whose role label is unknown and depends on server-rendered markup.                                                                                                         |
-| `ie-tii`               | PDF register                  | Irish CPO and eMSP identifiers                                        | Extraction requires Poppler `pdftotext`. PDF layout or filename changes can break parsing or retrieval.                                                                                                |
+| `ie-tii`               | PDF register                  | Irish CPO and eMSP identifiers                                        | TII is the appointed IDRO and publishes the authoritative register under CC BY 4.0. Extraction requires Poppler `pdftotext`; PDF layout or filename changes can break parsing or retrieval.            |
 | `lt-vialietuva`        | OCPI locations API            | Lithuanian CPO identifiers observed in charging locations             | The connector derives CPO party IDs from location records and does not provide an eMSP register. Multiple locations collapse into one CPO record.                                                      |
 | `lv-lvceli`            | JSON response containing HTML | Latvian CPO and EMSP identifiers                                      | The API wraps the register as an HTML table inside JSON. Table markup changes can break extraction.                                                                                                    |
 | `pl-eipa`              | Semicolon-delimited CSV       | Polish CPO and EMSP identifiers                                       | Current export rows are normalized as `ACTIVE` because the source does not expose a lifecycle status.                                                                                                  |

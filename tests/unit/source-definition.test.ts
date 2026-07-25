@@ -127,5 +127,28 @@ describe("sourceDefinitionSchema", () => {
       },
       notes: expect.stringContaining("Fintraffic"),
     });
+
+    const ireland = sources.find((source) => source.id === "ie-tii");
+    expect(ireland).toBeDefined();
+    expect(ireland).toMatchObject({
+      name: "TII IDRO Public Register",
+      authorityName: "Transport Infrastructure Ireland",
+      homepageUrl:
+        "https://www.tii.ie/en/roads-tolling/alt-fuel-projects-unit/alt-fuels-data-office/register-idro/",
+      registryUrl: "https://www.tii.ie/media/pqigaadi/idro-public-register-19-march-2026.pdf",
+      verifiedAt: "2026-07-25",
+      reuse: {
+        status: "licensed",
+        legalBasis: null,
+        licence: {
+          name: "CC BY 4.0",
+          url: "https://www.tii.ie/en/compliance/reuse-of-public-sector-information/",
+        },
+        attributionNotice:
+          "Contains Irish Public Sector Information licensed under a Creative Commons Attribution 4.0 International (CC BY 4.0) licence",
+        redistributionAllowed: true,
+      },
+      notes: expect.stringContaining("S.I. No. 52 of 2026"),
+    });
   });
 });

@@ -25,6 +25,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Correct Finnish source attribution and reuse metadata, distinguishing
   Traficom's IDRO register from Fintraffic's infrastructure-data publication
   role.
+- Record TII's statutory appointment as the Irish IDRO and its CC BY 4.0
+  public-sector information terms.
 - Ladestellen.at source descriptor, connector, parser, normalization, and fixture-based tests.
 - Benelux IDRO source descriptor, CSV export connector, parser, normalization, and fixture-based tests.
 - Croatian IDRO source descriptor, CSV export connector, parser, normalization, and fixture-based tests.

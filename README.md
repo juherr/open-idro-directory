@@ -31,19 +31,19 @@ registry.
 | Via Lietuva public charging data (`lt-vialietuva`) | Supported: 🇱🇹 | Public OCPI locations endpoint for CPO identifiers | [CC BY 4.0 / ODC-BY](https://ev.vialietuva.lt/atviri-duomenys-1) |
 | EIPA (`pl-eipa`) | Supported: 🇵🇱 | Public CSV export from the registered entities list | Undetermined |
 | MOBI.E IDACS (`pt-mobie`) | Supported: 🇵🇹 | Public PDF register | Undetermined |
-| RIPREE (`es-ripree`) | Supported: 🇪🇸 | Public XML export from the company register export page | Statutory — [Spanish Law 37/2007 on reuse of public-sector information](https://www.boe.es/eli/es/l/2007/11/16/37/con) |
+| RIPREE (`es-ripree`) | Supported: 🇪🇸 | Public XML export from the company register export page | Statutory - [Spanish Law 37/2007 on reuse of public-sector information](https://www.boe.es/eli/es/l/2007/11/16/37/con) |
 | Slovenian NAP IDRO (`si-nap`) | Supported: 🇸🇮 | Public XLSX national repository from NAP | Undetermined |
 | SuisseEnergie Swiss ID register (`ch-suisseenergie`) | Supported: 🇨🇭 (Non-EU) | Public Gatsby page-data JSON endpoint | Undetermined |
 | Swedish Energy Agency IDRO (`se-energimyndigheten`) | Supported: 🇸🇪 | Public XLSX registers for CPO and EMSP identifiers | Undetermined |
 | EV Roam (`gb-evroam`) | Supported: 🇬🇧 (Non-EU) | Public JSON API with official GB and cross-register IE identifiers | Undetermined |
-| Bulgaria | Coming soon: 🇧🇬 | Awaiting IDRR data | Not applicable — source pending |
-| Czechia | Coming soon: 🇨🇿 | Awaiting IDRR data | Not applicable — source pending |
-| Estonia | Coming soon: 🇪🇪 | Awaiting IDRR data | Not applicable — source pending |
-| Italy | Coming soon: 🇮🇹 | Awaiting IDRR data | Not applicable — source pending |
-| Luxembourg national IDRO | Coming soon: 🇱🇺 | Awaiting IDRR data | Not applicable — source pending |
-| Malta | Coming soon: 🇲🇹 | Awaiting IDRR data | Not applicable — source pending |
-| Romania | Coming soon: 🇷🇴 | Awaiting IDRR data | Not applicable — source pending |
-| Slovakia | Coming soon: 🇸🇰 | Awaiting IDRR data | Not applicable — source pending |
+| Bulgaria | Coming soon: 🇧🇬 | Awaiting IDRR data | Not applicable - source pending |
+| Czechia | Coming soon: 🇨🇿 | Awaiting IDRR data | Not applicable - source pending |
+| Estonia | Coming soon: 🇪🇪 | Awaiting IDRR data | Not applicable - source pending |
+| Italy | Coming soon: 🇮🇹 | Awaiting IDRR data | Not applicable - source pending |
+| Luxembourg national IDRO | Coming soon: 🇱🇺 | Awaiting IDRR data | Not applicable - source pending |
+| Malta | Coming soon: 🇲🇹 | Awaiting IDRR data | Not applicable - source pending |
+| Romania | Coming soon: 🇷🇴 | Awaiting IDRR data | Not applicable - source pending |
+| Slovakia | Coming soon: 🇸🇰 | Awaiting IDRR data | Not applicable - source pending |
 
 <!-- END GENERATED SUPPORTED SOURCES -->
 

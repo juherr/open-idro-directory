@@ -158,7 +158,7 @@ export function renderSupportedSourcesTable(sources: SourceDefinition[]): string
 
   rows.push(
     ...PENDING_SOURCES.map((source) =>
-      tableRow(source.name, source.coverage, source.mechanism, "Not applicable — source pending"),
+      tableRow(source.name, source.coverage, source.mechanism, "Not applicable - source pending"),
     ),
   );
 
@@ -194,7 +194,7 @@ function renderReuseBasis(source: SourceDefinition): string {
         : "Licensed";
     case "statutory":
       return source.reuse.legalBasis
-        ? `Statutory — ${markdownLink(source.reuse.legalBasis.name, source.reuse.legalBasis.url)}`
+        ? `Statutory - ${markdownLink(source.reuse.legalBasis.name, source.reuse.legalBasis.url)}`
         : "Statutory";
     case "permission-granted":
       return "Permission granted";

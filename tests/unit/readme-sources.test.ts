@@ -12,7 +12,7 @@ describe("README supported sources", () => {
     const table = renderSupportedSourcesTable(await loadSourceDefinitions());
 
     expect(table).toContain(
-      "Statutory — [Spanish Law 37/2007 on reuse of public-sector information](https://www.boe.es/eli/es/l/2007/11/16/37/con)",
+      "Statutory - [Spanish Law 37/2007 on reuse of public-sector information](https://www.boe.es/eli/es/l/2007/11/16/37/con)",
     );
     expect(table).toContain("No explicit reuse terms identified (reviewed 2026-07-10)");
     expect(table).toContain(

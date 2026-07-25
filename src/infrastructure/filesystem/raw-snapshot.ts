@@ -47,8 +47,8 @@ export async function preserveRawSnapshot(result: FetchResult) {
 
 /**
  * Pretty-prints JSON response bodies so the committed snapshot produces readable git diffs
- * (the upstream APIs return minified single-line JSON). Non-JSON bodies — and JSON that fails
- * to parse — are preserved byte-for-byte. The snapshot is only ever re-parsed (whitespace
+ * (the upstream APIs return minified single-line JSON). Non-JSON bodies - and JSON that fails
+ * to parse - are preserved byte-for-byte. The snapshot is only ever re-parsed (whitespace
  * insensitive) and scanned for fallback markers, and change detection uses the metadata
  * checksum of the raw response, so reformatting here is safe.
  */

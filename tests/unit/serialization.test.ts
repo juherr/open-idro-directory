@@ -70,4 +70,87 @@ describe("deterministic generation", () => {
       await rm(outputDir, { recursive: true, force: true });
     }
   });
+
+  it("serializes structured Finnish reuse metadata", async () => {
+    const outputDir = await mkdtemp(join(tmpdir(), "open-idro-finnish-metadata-"));
+    const source = (await loadSourceDefinitions()).find(
+      (candidate) => candidate.id === "fi-traficom",
+    );
+    if (!source) throw new Error("Expected the Finnish source definition.");
+    const health = {
+      stale: false,
+      recordCount: 25,
+      lastAttemptedRetrieval: "2026-07-24T00:00:00.000Z",
+      lastSuccessfulRetrieval: "2026-07-24T00:00:00.000Z",
+      checksum: "finnish-checksum",
+      freshness: "current",
+      latestErrorSummary: null,
+    };
+    try {
+      await writeFile(
+        join(outputDir, "sources.json"),
+        `${JSON.stringify([{ id: source.id, health }], null, 2)}\n`,
+      );
+
+      const [summary] = await refreshSourceMetadata([source], outputDir);
+
+      expect(summary).toMatchObject({
+        id: "fi-traficom",
+        verifiedAt: "2026-07-25",
+        reuse: {
+          status: "licensed",
+          licence: {
+            name: "CC BY 4.0",
+            url: "https://traficom.fi/en/transport-system/geoinformationsmaterial/use-and-licences-data",
+          },
+          attributionNotice: expect.stringContaining("Traficom"),
+          redistributionAllowed: true,
+        },
+        health,
+      });
+    } finally {
+      await rm(outputDir, { recursive: true, force: true });
+    }
+  });
+
+  it("serializes structured Irish reuse metadata", async () => {
+    const outputDir = await mkdtemp(join(tmpdir(), "open-idro-irish-metadata-"));
+    const source = (await loadSourceDefinitions()).find((candidate) => candidate.id === "ie-tii");
+    if (!source) throw new Error("Expected the Irish source definition.");
+    const health = {
+      stale: false,
+      recordCount: 26,
+      lastAttemptedRetrieval: "2026-07-24T00:00:00.000Z",
+      lastSuccessfulRetrieval: "2026-07-24T00:00:00.000Z",
+      checksum: "irish-checksum",
+      freshness: "current",
+      latestErrorSummary: null,
+    };
+    try {
+      await writeFile(
+        join(outputDir, "sources.json"),
+        `${JSON.stringify([{ id: source.id, health }], null, 2)}\n`,
+      );
+
+      const [summary] = await refreshSourceMetadata([source], outputDir);
+
+      expect(summary).toMatchObject({
+        id: "ie-tii",
+        verifiedAt: "2026-07-25",
+        reuse: {
+          status: "licensed",
+          licence: {
+            name: "CC BY 4.0",
+            url: "https://www.tii.ie/en/compliance/reuse-of-public-sector-information/",
+          },
+          attributionNotice:
+            "Contains Irish Public Sector Information licensed under a Creative Commons Attribution 4.0 International (CC BY 4.0) licence",
+          redistributionAllowed: true,
+        },
+        health,
+      });
+    } finally {
+      await rm(outputDir, { recursive: true, force: true });
+    }
+  });
 });

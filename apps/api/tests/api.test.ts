@@ -65,14 +65,14 @@ const source: SourceRow = {
   jurisdictions_json: '["FR"]',
   machine_readable_url: "https://api.afirev.fr/public/prefixes",
   verified_at: "2026-01-02",
-  reuse_status: "unspecified",
+  reuse_status: "licensed",
   reuse_legal_basis_name: null,
   reuse_legal_basis_url: null,
-  reuse_licence_name: null,
-  reuse_licence_url: null,
-  reuse_attribution_notice: null,
-  reuse_redistribution_allowed: null,
-  reuse_notes: "No explicit reuse terms have been identified.",
+  reuse_licence_name: "CC BY 4.0",
+  reuse_licence_url: "https://creativecommons.org/licenses/by/4.0/",
+  reuse_attribution_notice: "Cite the source.",
+  reuse_redistribution_allowed: 1,
+  reuse_notes: null,
   health_status: "current",
   record_count: 1,
   last_attempted_at: "2026-01-01T00:00:00.000Z",
@@ -175,7 +175,13 @@ describe("Cloudflare API", () => {
       data: {
         machineReadableUrl: string;
         verifiedAt: string;
-        reuse: { status: string; licence: null; notes: string };
+        reuse: {
+          status: string;
+          licence: { name: string; url: string };
+          attributionNotice: string;
+          redistributionAllowed: boolean;
+          notes: null;
+        };
         disclaimer: string;
       };
     };
@@ -183,9 +189,14 @@ describe("Cloudflare API", () => {
       machineReadableUrl: "https://api.afirev.fr/public/prefixes",
       verifiedAt: "2026-01-02",
       reuse: {
-        status: "unspecified",
-        licence: null,
-        notes: "No explicit reuse terms have been identified.",
+        status: "licensed",
+        licence: {
+          name: "CC BY 4.0",
+          url: "https://creativecommons.org/licenses/by/4.0/",
+        },
+        attributionNotice: "Cite the source.",
+        redistributionAllowed: true,
+        notes: null,
       },
     });
     expect(sourceBody.data).not.toHaveProperty("license");

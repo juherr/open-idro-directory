@@ -13,6 +13,28 @@ describe("Cloudflare import bundle", () => {
     expect(bundle.sources).not.toContainEqual(
       expect.objectContaining({ license_status: expect.anything() }),
     );
+    expect(bundle.sources).toContainEqual(
+      expect.objectContaining({
+        id: "fi-traficom",
+        reuse_status: "licensed",
+        reuse_licence_name: "CC BY 4.0",
+        reuse_licence_url:
+          "https://traficom.fi/en/transport-system/geoinformationsmaterial/use-and-licences-data",
+        reuse_attribution_notice: expect.stringContaining("Traficom"),
+        reuse_redistribution_allowed: 1,
+      }),
+    );
+    expect(bundle.sources).toContainEqual(
+      expect.objectContaining({
+        id: "ie-tii",
+        reuse_status: "licensed",
+        reuse_licence_name: "CC BY 4.0",
+        reuse_licence_url: "https://www.tii.ie/en/compliance/reuse-of-public-sector-information/",
+        reuse_attribution_notice:
+          "Contains Irish Public Sector Information licensed under a Creative Commons Attribution 4.0 International (CC BY 4.0) licence",
+        reuse_redistribution_allowed: 1,
+      }),
+    );
   });
 
   it("writes D1 remote-compatible import SQL", async () => {

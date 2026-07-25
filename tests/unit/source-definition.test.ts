@@ -102,5 +102,53 @@ describe("sourceDefinitionSchema", () => {
       machineReadableUrl: "https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json",
       verifiedAt: "2026-07-10",
     });
+
+    const finland = sources.find((source) => source.id === "fi-traficom");
+    expect(finland).toBeDefined();
+    expect(finland).toMatchObject({
+      name: "Traficom IDRO register",
+      authorityName: "Finnish Transport and Communications Agency Traficom",
+      homepageUrl:
+        "https://www.traficom.fi/en/transport-system/sustainable-transport/apply-afir-id-charging-point-operator-andor-mobility-service-provider",
+      registryUrl:
+        "https://www.traficom.fi/en/transport-system/sustainable-transport/apply-afir-id-charging-point-operator-andor-mobility-service-provider",
+      verifiedAt: "2026-07-25",
+      reuse: {
+        status: "licensed",
+        legalBasis: null,
+        licence: {
+          name: "CC BY 4.0",
+          url: "https://traficom.fi/en/transport-system/geoinformationsmaterial/use-and-licences-data",
+        },
+        attributionNotice: expect.stringContaining(
+          "Finnish Transport and Communications Agency Traficom",
+        ),
+        redistributionAllowed: true,
+      },
+      notes: expect.stringContaining("Fintraffic"),
+    });
+
+    const ireland = sources.find((source) => source.id === "ie-tii");
+    expect(ireland).toBeDefined();
+    expect(ireland).toMatchObject({
+      name: "TII IDRO Public Register",
+      authorityName: "Transport Infrastructure Ireland",
+      homepageUrl:
+        "https://www.tii.ie/en/roads-tolling/alt-fuel-projects-unit/alt-fuels-data-office/register-idro/",
+      registryUrl: "https://www.tii.ie/media/pqigaadi/idro-public-register-19-march-2026.pdf",
+      verifiedAt: "2026-07-25",
+      reuse: {
+        status: "licensed",
+        legalBasis: null,
+        licence: {
+          name: "CC BY 4.0",
+          url: "https://www.tii.ie/en/compliance/reuse-of-public-sector-information/",
+        },
+        attributionNotice:
+          "Contains Irish Public Sector Information licensed under a Creative Commons Attribution 4.0 International (CC BY 4.0) licence",
+        redistributionAllowed: true,
+      },
+      notes: expect.stringContaining("S.I. No. 52 of 2026"),
+    });
   });
 });

@@ -22,6 +22,9 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - **Breaking:** replace the ambiguous source `license` contract with `reuse`,
   distinguishing explicit licences, statutory bases, granted permissions,
   restrictions, and unspecified terms.
+- Correct Finnish source attribution and reuse metadata, distinguishing
+  Traficom's IDRO register from Fintraffic's infrastructure-data publication
+  role.
 - Ladestellen.at source descriptor, connector, parser, normalization, and fixture-based tests.
 - Benelux IDRO source descriptor, CSV export connector, parser, normalization, and fixture-based tests.
 - Croatian IDRO source descriptor, CSV export connector, parser, normalization, and fixture-based tests.

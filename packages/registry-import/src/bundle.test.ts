@@ -13,6 +13,17 @@ describe("Cloudflare import bundle", () => {
     expect(bundle.sources).not.toContainEqual(
       expect.objectContaining({ license_status: expect.anything() }),
     );
+    expect(bundle.sources).toContainEqual(
+      expect.objectContaining({
+        id: "fi-traficom",
+        reuse_status: "licensed",
+        reuse_licence_name: "CC BY 4.0",
+        reuse_licence_url:
+          "https://traficom.fi/en/transport-system/geoinformationsmaterial/use-and-licences-data",
+        reuse_attribution_notice: expect.stringContaining("Traficom"),
+        reuse_redistribution_allowed: 1,
+      }),
+    );
   });
 
   it("writes D1 remote-compatible import SQL", async () => {

@@ -1,5 +1,5 @@
 id: fi-traficom
-name: Traficom AFIR ID registry
+name: Traficom IDRO register
 authorityName: Finnish Transport and Communications Agency Traficom
 jurisdictions:
   - FI
@@ -7,7 +7,7 @@ official: true
 homepageUrl: https://www.traficom.fi/en/transport-system/sustainable-transport/apply-afir-id-charging-point-operator-andor-mobility-service-provider
 registryUrl: https://www.traficom.fi/en/transport-system/sustainable-transport/apply-afir-id-charging-point-operator-andor-mobility-service-provider
 machineReadableUrl: null
-verifiedAt: null
+verifiedAt: 2026-07-25
 connector: fi-traficom
 enabled: true
 refreshSchedule: weekly
@@ -15,13 +15,24 @@ supportedRoles:
   - CPO
   - EMSP
 reuse:
-  status: unspecified
+  status: licensed
   legalBasis: null
-  licence: null
-  attributionNotice: null
-  redistributionAllowed: null
-  notes: No explicit reuse terms have been identified.
+  licence:
+    name: CC BY 4.0
+    url: https://traficom.fi/en/transport-system/geoinformationsmaterial/use-and-licences-data
+  attributionNotice: >
+    Cite the Finnish Transport and Communications Agency Traficom as the source,
+    preserve copyright and disclaimer information, link to the original material
+    and CC BY 4.0 licence where possible, and identify modifications.
+  redistributionAllowed: true
+  notes: >
+    The licence applies to data maintained by Traficom, except separately
+    licensed hydrographic data. Attribution and disclaimer requirements remain
+    applicable, and no endorsement by Traficom is implied.
 notes: >
-  Parses the public Traficom HTML table of issued AFIR IDs. The page also lists
-  other observed IDs, but those are not normalized because their roles are not
-  explicit.
+  Traficom is Finland's IDRO and issues and manages AFIR IDs. This connector
+  parses Traficom's public HTML table of issued IDs. Fintraffic separately
+  maintains Finland's National Access Point and publishes charging
+  infrastructure data; it is not the source of this IDRO register. The page also
+  lists other observed IDs, but those are not normalized because their roles are
+  not explicit.

@@ -11,3 +11,12 @@ Authority levels:
 Observation types include official assignments, official directory entries, legacy assignments, network registrations, infrastructure observations, self declarations, and community observations.
 
 Do not infer `AUTHORITATIVE` from public availability. Source authority and reuse conditions are exposed in API source responses so consumers can verify upstream terms.
+
+## National Responsibility Boundaries
+
+In Finland, the Finnish Transport and Communications Agency Traficom is the
+appointed IDRO and issues and manages operator identifiers. The `fi-traficom`
+source consumes Traficom's public ID register. Fintraffic has a separate role:
+it maintains Finland's National Access Point through the Traffic Data Catalogue
+and publishes charging-infrastructure data. Fintraffic is not the authority or
+publication source for the identifiers represented by `fi-traficom`.

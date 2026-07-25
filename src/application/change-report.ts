@@ -118,7 +118,7 @@ function truncateForPrBody(body: string) {
   if (body.length <= PR_BODY_MAX_CHARS) {
     return body;
   }
-  const note = "\n\n…truncated, see `build/change-summary.md` for the full report.";
+  const note = "\n\n...truncated, see `build/change-summary.md` for the full report.";
   return `${body.slice(0, PR_BODY_MAX_CHARS - note.length)}${note}`;
 }
 
@@ -137,7 +137,7 @@ async function readFromGit(): Promise<NormalizedRegistryRecord[]> {
     const { stdout } = await execFileAsync("git", ["show", "HEAD:data/registry.json"], {
       cwd: fromRoot(),
       // registry.json is several MB. With the default 1 MB maxBuffer the git output
-      // overflows, the call rejects, and the previous snapshot reads as empty — making
+      // overflows, the call rejects, and the previous snapshot reads as empty - making
       // every record look "Added". Allow plenty of room for the committed registry.
       maxBuffer: 512 * 1024 * 1024,
     });

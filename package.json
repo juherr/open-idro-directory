@@ -24,6 +24,7 @@
     "directory:update": "node --import tsx src/cli.ts update",
     "directory:non-idrr": "node --import tsx src/cli.ts non-idrr:reports",
     "directory:validate": "node --import tsx src/cli.ts validate",
+    "docs:sync": "node --import tsx src/documentation/sync-readme-sources.ts",
     "api:dev": "bun run --cwd apps/api dev",
     "api:test": "bun run --cwd apps/api test",
     "api:typecheck": "bun run --cwd apps/api typecheck",

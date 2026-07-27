@@ -14,8 +14,14 @@ export interface DatasetRelease {
 export interface SourceRow {
   id: string;
   name: string;
+  authority_id: string | null;
   authority_name: string | null;
   authority_level: string;
+  joined_authority_name?: string | null;
+  joined_authority_level?: string | null;
+  authority_jurisdictions_json: string | null;
+  authority_homepage_url: string | null;
+  authority_notes: string | null;
   observation_type: string;
   official: number;
   homepage_url: string | null;

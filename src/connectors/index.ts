@@ -22,7 +22,7 @@ import { createNapConnector } from "./si-nap/index.js";
 import { createRipreeConnector } from "./es-ripree/index.js";
 
 export function createConnector(source: SourceDefinition): RegistryConnector {
-  switch (source.connector) {
+  switch (source.publication.connector) {
     case "at-ladestellen":
       return new LadestellenConnector();
     case "fr-afirev":
@@ -64,6 +64,6 @@ export function createConnector(source: SourceDefinition): RegistryConnector {
     case "es-ripree":
       return createRipreeConnector();
     default:
-      throw new Error(`No connector registered for ${source.connector}`);
+      throw new Error(`No connector registered for ${source.publication.connector}`);
   }
 }

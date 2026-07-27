@@ -1,18 +1,21 @@
 id: lt-vialietuva
 name: Via Lietuva public charging data
-authorityName: Via Lietuva
-jurisdictions:
-  - LT
-official: true
-homepageUrl: https://lakd.lt/viesuju-elektromobiliu-ikrovimo-prieigu-registravimas
-registryUrl: https://ev.vialietuva.lt/ocpi/2.3.0/locations
-machineReadableUrl: https://ev.vialietuva.lt/ocpi/2.3.0/locations
-verifiedAt: null
-connector: lt-vialietuva
-enabled: true
-refreshSchedule: weekly
-supportedRoles:
-  - CPO
+authorityId: lt-vialietuva
+registry:
+  url: https://ev.vialietuva.lt/ocpi/2.3.0/locations
+  observationType: OFFICIAL_ASSIGNMENT
+  supportedRoles:
+    - CPO
+publication:
+  connector: lt-vialietuva
+  machineReadableUrl: https://ev.vialietuva.lt/ocpi/2.3.0/locations
+  refreshSchedule: weekly
+  enabled: true
+  verifiedAt: null
+  safety:
+    maxDeletionRatio: 0.4
+    maxChangeRatio: 0.8
+    maxParseErrorRatio: 0.1
 reuse:
   status: licensed
   legalBasis: null
@@ -23,10 +26,6 @@ reuse:
   redistributionAllowed: true
   notes: null
 notes: >
-  Via Lietuva publishes public charging infrastructure as DATEX II and OCPI.
-  The OCPI locations endpoint exposes CPO country_code and party_id values,
-  which are normalized as Lithuanian CPO identifiers. No eMSP list was found.
-safety:
-  maxDeletionRatio: 0.4
-  maxChangeRatio: 0.8
-  maxParseErrorRatio: 0.1
+  Via Lietuva publishes public charging infrastructure as DATEX II and OCPI. The OCPI
+  locations endpoint exposes CPO country_code and party_id values, which are normalized
+  as Lithuanian CPO identifiers. No eMSP list was found.

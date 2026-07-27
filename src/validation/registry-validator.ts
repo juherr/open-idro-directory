@@ -2,7 +2,7 @@ import {
   normalizedRegistryRecordSchema,
   type NormalizedRegistryRecord,
 } from "../domain/registry-record.js";
-import type { SourceDefinition } from "../domain/source-definition.js";
+import { sourceJurisdictions, type SourceDefinition } from "../domain/source-definition.js";
 import type { ValidationIssue } from "../domain/validation-issue.js";
 import { validateRecord } from "./identifier-validator.js";
 
@@ -36,7 +36,7 @@ export function validateRegistry(
       keys.set(record.key, record);
     }
     const source = sourceById.get(record.source.registryId);
-    if (source && !source.jurisdictions.includes(record.countryCode)) {
+    if (source && !sourceJurisdictions(source).includes(record.countryCode)) {
       issues.push({
         severity: "error",
         code: "JURISDICTION_MISMATCH",

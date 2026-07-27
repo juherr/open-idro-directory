@@ -1,3 +1,4 @@
+import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -28,7 +29,7 @@ export class CroIdroConnector implements RegistryConnector<CroIdroCsvRow> {
       ...(context.previousLastModified ? { lastModified: context.previousLastModified } : {}),
     };
     const response = await getText(
-      context.source.registryUrl,
+      context.source.registry.url,
       {
         timeoutMs: 30_000,
         retries: 2,
@@ -37,7 +38,7 @@ export class CroIdroConnector implements RegistryConnector<CroIdroCsvRow> {
         userAgent: context.userAgent,
         headers: {
           Accept: "text/csv,*/*",
-          Referer: context.source.homepageUrl,
+          Referer: context.source.authority.homepageUrl,
         },
       },
       conditionals,
@@ -131,9 +132,9 @@ export class CroIdroConnector implements RegistryConnector<CroIdroCsvRow> {
           },
           source: {
             registryId: input.source.id,
-            official: input.source.official,
+            official: isAuthoritative(input.source),
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
-            sourceUrl: input.source.registryUrl,
+            sourceUrl: input.source.registry.url,
             sourceValue: identifier.sourceValue,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,

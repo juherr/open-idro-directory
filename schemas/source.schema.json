@@ -1,21 +1,18 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "SourceDefinition",
-  "type": "object",
-  "required": [
-    "id",
-    "name",
-    "authorityName",
-    "jurisdictions",
-    "official",
-    "homepageUrl",
-    "registryUrl",
-    "connector",
-    "enabled",
-    "refreshSchedule",
-    "supportedRoles",
-    "machineReadableUrl",
-    "verifiedAt",
-    "reuse"
-  ]
+  "title": "SourceSummaryDataset",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "id",
+      "name",
+      "authority",
+      "registry",
+      "publication",
+      "official",
+      "reuse",
+      "health"
+    ]
+  }
 }

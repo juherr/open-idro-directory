@@ -8,6 +8,16 @@ import type {
 } from "./types.js";
 import { parseEmobilityIdentifierInput } from "../../domain/identifier.js";
 
+/** Sources joined to their authority. The join misses until the first import after migration 0004. */
+const SOURCE_WITH_AUTHORITY = `SELECT s.*,
+        a.name AS joined_authority_name,
+        a.level AS joined_authority_level,
+        a.jurisdictions_json AS authority_jurisdictions_json,
+        a.homepage_url AS authority_homepage_url,
+        a.notes AS authority_notes
+ FROM sources s
+ LEFT JOIN authorities a ON a.id = s.authority_id`;
+
 export interface ListResult<T> {
   items: T[];
   nextCursor: string | null;
@@ -199,19 +209,14 @@ export class RegistryRepository {
 
   async listSources(releaseId: string) {
     return this.all<SourceRow>(
-      `SELECT *
-       FROM sources
-       WHERE dataset_release_id = ?
-       ORDER BY id ASC`,
+      `${SOURCE_WITH_AUTHORITY} WHERE s.dataset_release_id = ? ORDER BY s.id ASC`,
       [releaseId],
     );
   }
 
   async getSource(releaseId: string, sourceId: string) {
     return this.first<SourceRow>(
-      `SELECT *
-       FROM sources
-       WHERE dataset_release_id = ? AND id = ?`,
+      `${SOURCE_WITH_AUTHORITY} WHERE s.dataset_release_id = ? AND s.id = ?`,
       [releaseId, sourceId],
     );
   }

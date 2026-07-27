@@ -13,10 +13,13 @@ describe("deterministic generation", () => {
       source.id === "fr-afirev"
         ? {
             ...source,
-            safety: {
-              ...source.safety,
-              maxDeletionRatio: 1,
-              maxChangeRatio: 1,
+            publication: {
+              ...source.publication,
+              safety: {
+                ...source.publication.safety,
+                maxDeletionRatio: 1,
+                maxChangeRatio: 1,
+              },
             },
           }
         : source,
@@ -96,7 +99,12 @@ describe("deterministic generation", () => {
 
       expect(summary).toMatchObject({
         id: "fi-traficom",
-        verifiedAt: "2026-07-25",
+        authority: {
+          name: "Finnish Transport and Communications Agency Traficom",
+          level: "AUTHORITATIVE",
+        },
+        publication: { machineReadableUrl: null, verifiedAt: "2026-07-25" },
+        official: true,
         reuse: {
           status: "licensed",
           licence: {
@@ -136,7 +144,12 @@ describe("deterministic generation", () => {
 
       expect(summary).toMatchObject({
         id: "ie-tii",
-        verifiedAt: "2026-07-25",
+        authority: {
+          name: "Transport Infrastructure Ireland",
+          level: "AUTHORITATIVE",
+        },
+        publication: { machineReadableUrl: null, verifiedAt: "2026-07-25" },
+        official: true,
         reuse: {
           status: "licensed",
           licence: {

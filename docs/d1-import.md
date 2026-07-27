@@ -5,6 +5,7 @@
 Generated files:
 
 - `release.json`
+- `authorities.ndjson`
 - `sources.ndjson`
 - `parties.ndjson`
 - `party-roles.ndjson`

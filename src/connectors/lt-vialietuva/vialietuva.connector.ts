@@ -1,3 +1,4 @@
+import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -20,7 +21,7 @@ export class VialietuvaConnector implements RegistryConnector<VialietuvaLocation
   readonly sourceId = "lt-vialietuva";
 
   async fetch(context: FetchContext): Promise<FetchResult> {
-    const response = await getText(vialietuvaLocationsUrl(context.source.registryUrl), {
+    const response = await getText(vialietuvaLocationsUrl(context.source.registry.url), {
       timeoutMs: 30_000,
       retries: 2,
       maxBytes: 10_000_000,
@@ -28,7 +29,7 @@ export class VialietuvaConnector implements RegistryConnector<VialietuvaLocation
       userAgent: context.userAgent,
       headers: {
         Accept: "application/json,*/*",
-        Referer: context.source.homepageUrl,
+        Referer: context.source.authority.homepageUrl,
       },
     });
     return {
@@ -112,9 +113,9 @@ export class VialietuvaConnector implements RegistryConnector<VialietuvaLocation
         },
         source: {
           registryId: input.source.id,
-          official: input.source.official,
+          official: isAuthoritative(input.source),
           sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
-          sourceUrl: input.source.homepageUrl,
+          sourceUrl: input.source.authority.homepageUrl,
           sourceValue: `${sourceRecord.country_code}-${sourceRecord.party_id}`,
           firstSeenAt: input.retrievedAt,
           lastSeenAt: input.retrievedAt,

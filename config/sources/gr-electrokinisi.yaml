@@ -1,19 +1,22 @@
 id: gr-electrokinisi
 name: Hellenic IDRO
-authorityName: Hellenic Ministry of Infrastructure and Transport
-jurisdictions:
-  - GR
-official: true
-homepageUrl: https://electrokinisi.yme.gov.gr/public/IDRO/?mlang=en
-registryUrl: https://electrokinisi.yme.gov.gr/public/IDRO/?mlang=en
-machineReadableUrl: null
-verifiedAt: null
-connector: gr-electrokinisi
-enabled: true
-refreshSchedule: weekly
-supportedRoles:
-  - CPO
-  - EMSP
+authorityId: gr-yme
+registry:
+  url: https://electrokinisi.yme.gov.gr/public/IDRO/?mlang=en
+  observationType: OFFICIAL_ASSIGNMENT
+  supportedRoles:
+    - CPO
+    - EMSP
+publication:
+  connector: gr-electrokinisi
+  machineReadableUrl: null
+  refreshSchedule: weekly
+  enabled: true
+  verifiedAt: null
+  safety:
+    maxDeletionRatio: 0.2
+    maxChangeRatio: 0.8
+    maxParseErrorRatio: 0.05
 reuse:
   status: unspecified
   legalBasis: null
@@ -22,9 +25,5 @@ reuse:
   redistributionAllowed: null
   notes: No explicit reuse terms have been identified.
 notes: >
-  Official Greek IDRO registry page. No machine-readable export or API was
-  identified; the connector parses the public server-rendered HTML table.
-safety:
-  maxDeletionRatio: 0.2
-  maxChangeRatio: 0.8
-  maxParseErrorRatio: 0.05
+  Official Greek IDRO registry page. No machine-readable export or API was identified;
+  the connector parses the public server-rendered HTML table.

@@ -1,5 +1,5 @@
 import type { NormalizedRegistryRecord } from "../domain/registry-record.js";
-import type { SourceDefinition } from "../domain/source-definition.js";
+import { isAuthoritative, type SourceDefinition } from "../domain/source-definition.js";
 
 const INACTIVE_REASON = "missing-from-official-source";
 
@@ -9,7 +9,7 @@ export function mergeGeneratedRecords(
   current: NormalizedRegistryRecord[],
   retrievedAt: string,
 ) {
-  if (!source.official) return current;
+  if (!isAuthoritative(source)) return current;
 
   const previousByKey = new Map(previous.map((record) => [record.key, record]));
   const currentKeys = new Set(current.map((record) => record.key));

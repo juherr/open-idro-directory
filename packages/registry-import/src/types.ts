@@ -1,10 +1,11 @@
 import type {
   AuthorityLevel,
+  ObservationType,
   RegistryRole,
   RegistryStatus,
 } from "../../registry-model/src/index.js";
 
-export const API_SCHEMA_VERSION = "1.1.0";
+export const API_SCHEMA_VERSION = "1.2.0";
 export const IMPORTER_VERSION = "0.1.0";
 
 export interface DatasetReleaseRow {
@@ -20,12 +21,23 @@ export interface DatasetReleaseRow {
   importer_version: string;
 }
 
+export interface AuthorityRow {
+  id: string;
+  name: string;
+  level: AuthorityLevel;
+  jurisdictions_json: string;
+  homepage_url: string;
+  notes: string | null;
+  dataset_release_id: string;
+}
+
 export interface SourceRow {
   id: string;
   name: string;
+  authority_id: string;
   authority_name: string | null;
   authority_level: AuthorityLevel;
-  observation_type: string;
+  observation_type: ObservationType;
   official: number;
   homepage_url: string | null;
   registry_url: string | null;

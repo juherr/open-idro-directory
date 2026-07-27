@@ -1,19 +1,22 @@
 id: es-ripree
 name: RIPREE
-authorityName: Ministerio para la Transición Ecológica y el Reto Demográfico
-jurisdictions:
-  - ES
-official: true
-homepageUrl: https://energia.serviciosmin.gob.es/RIPREE
-registryUrl: https://energia.serviciosmin.gob.es/Ripree/ExportarEmpresas/Export
-machineReadableUrl: https://energia.serviciosmin.gob.es/Ripree/ExportarEmpresas/GenerarXml
-verifiedAt: 2026-07-10
-connector: es-ripree
-enabled: true
-refreshSchedule: weekly
-supportedRoles:
-  - CPO
-  - EMSP
+authorityId: es-miteco
+registry:
+  url: https://energia.serviciosmin.gob.es/Ripree/ExportarEmpresas/Export
+  observationType: OFFICIAL_ASSIGNMENT
+  supportedRoles:
+    - CPO
+    - EMSP
+publication:
+  connector: es-ripree
+  machineReadableUrl: https://energia.serviciosmin.gob.es/Ripree/ExportarEmpresas/GenerarXml
+  refreshSchedule: weekly
+  enabled: true
+  verifiedAt: 2026-07-10
+  safety:
+    maxDeletionRatio: 0.3
+    maxChangeRatio: 0.8
+    maxParseErrorRatio: 0.1
 reuse:
   status: statutory
   legalBasis:
@@ -23,14 +26,10 @@ reuse:
   attributionNotice: Cite RIPREE as the source and state the last update date.
   redistributionAllowed: true
   notes: >
-    Reuse is based on legislation, as amended for the transposition of Directive
-    (EU) 2019/1024, and not on an explicit open-data licence.
+    Reuse is based on legislation, as amended for the transposition of Directive (EU)
+    2019/1024, and not on an explicit open-data licence.
 notes: >
-  RIPREE is Spain's authoritative registry. The public company export page
-  exposes CSV and XML actions; the connector posts to the documented XML source
-  and normalizes CPO/EMSP CodigoId values. Open IDRO Directory is an independent
-  aggregation and does not replace RIPREE.
-safety:
-  maxDeletionRatio: 0.3
-  maxChangeRatio: 0.8
-  maxParseErrorRatio: 0.1
+  RIPREE is Spain's authoritative registry. The public company export page exposes CSV
+  and XML actions; the connector posts to the documented XML source and normalizes
+  CPO/EMSP CodigoId values. Open IDRO Directory is an independent aggregation and does
+  not replace RIPREE.

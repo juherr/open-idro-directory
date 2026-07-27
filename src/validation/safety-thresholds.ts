@@ -13,7 +13,7 @@ export function checkSafetyThresholds(
   if (previous.length > 0 && current.length === 0) {
     issues.push(error("SOURCE_BECAME_EMPTY", `${source.id} became empty.`));
   }
-  const acceptedDeletionKeys = new Set(source.safety.acceptedDeletionKeys);
+  const acceptedDeletionKeys = new Set(source.publication.safety.acceptedDeletionKeys);
   const removed = previous.filter(
     (record) => !current.some((candidate) => candidate.key === record.key),
   );
@@ -25,21 +25,24 @@ export function checkSafetyThresholds(
   const deletionRatio = previous.length > 0 ? unacceptedRemoved.length / previous.length : 0;
   if (
     previous.length > 0 &&
-    deletionRatio > source.safety.maxDeletionRatio &&
-    unacceptedRemoved.length > source.safety.maxDeletionCount
+    deletionRatio > source.publication.safety.maxDeletionRatio &&
+    unacceptedRemoved.length > source.publication.safety.maxDeletionCount
   ) {
     issues.push(
       error(
         "MASS_DELETION",
-        `${source.id} deletion safety threshold exceeded: ${unacceptedRemoved.length} of ${previous.length} active records disappeared (${formatPercent(deletionRatio)}). Allowed up to ${formatPercent(source.safety.maxDeletionRatio)} or ${source.safety.maxDeletionCount} records. If the removals are verified upstream changes, add the vanished keys to safety.acceptedDeletionKeys; otherwise inspect the source response and parser.`,
+        `${source.id} deletion safety threshold exceeded: ${unacceptedRemoved.length} of ${previous.length} active records disappeared (${formatPercent(deletionRatio)}). Allowed up to ${formatPercent(source.publication.safety.maxDeletionRatio)} or ${source.publication.safety.maxDeletionCount} records. If the removals are verified upstream changes, add the vanished keys to publication.safety.acceptedDeletionKeys; otherwise inspect the source response and parser.`,
       ),
     );
   }
-  if (previous.length > 0 && changed.length / previous.length > source.safety.maxChangeRatio) {
+  if (
+    previous.length > 0 &&
+    changed.length / previous.length > source.publication.safety.maxChangeRatio
+  ) {
     issues.push(error("MASS_CHANGE", `${changed.length} of ${previous.length} records changed.`));
   }
   const totalRows = current.length + parseErrors;
-  if (totalRows > 0 && parseErrors / totalRows > source.safety.maxParseErrorRatio) {
+  if (totalRows > 0 && parseErrors / totalRows > source.publication.safety.maxParseErrorRatio) {
     issues.push(error("PARSE_ERROR_THRESHOLD", `${parseErrors} parse errors exceeded threshold.`));
   }
   if (looksLikeFallback(rawBody)) {

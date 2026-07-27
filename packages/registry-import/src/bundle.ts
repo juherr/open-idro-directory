@@ -5,7 +5,9 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   normalizedRegistryRecordSchema,
+  type AuthorityLevel,
   type NormalizedRegistryRecord,
+  type ObservationType,
   type RegistryRole,
   type RegistryStatus,
 } from "../../registry-model/src/index.js";
@@ -15,6 +17,7 @@ import {
   type ConflictRow,
   type DatasetReleaseRow,
   type ImportManifest,
+  type AuthorityRow,
   type ObservationRow,
   type PartyRoleRow,
   type PartyRow,
@@ -28,15 +31,28 @@ const deterministicImportTimestamp = "1970-01-01T00:00:00.000Z";
 interface SourceSummary {
   id: string;
   name: string;
-  authorityName: string;
-  jurisdictions: string[];
+  authority: {
+    id: string;
+    name: string;
+    level: AuthorityLevel;
+    jurisdictions: string[];
+    homepageUrl: string;
+    notes?: string;
+  };
+  registry: {
+    url: string;
+    observationType: ObservationType;
+    supportedRoles: string[];
+    jurisdictions: string[];
+  };
+  publication: {
+    connector: string;
+    machineReadableUrl: string | null;
+    refreshSchedule: string;
+    enabled: boolean;
+    verifiedAt: string | null;
+  };
   official: boolean;
-  enabled: boolean;
-  homepageUrl: string | null;
-  registryUrl: string | null;
-  machineReadableUrl: string | null;
-  verifiedAt: string | null;
-  supportedRoles: string[];
   reuse: {
     status: string;
     legalBasis: { name: string; url: string } | null;
@@ -74,6 +90,7 @@ interface ConflictReport {
 
 export interface ImportBundle {
   release: DatasetReleaseRow;
+  authorities: AuthorityRow[];
   sources: SourceRow[];
   parties: PartyRow[];
   partyRoles: PartyRoleRow[];
@@ -94,9 +111,10 @@ export async function buildImportBundle() {
   const generatedAt = stats.generatedAt;
   const datasetChecksum = sha256(JSON.stringify(records));
   const datasetReleaseId = `${generatedAt.replace(/[-:.TZ]/g, "").slice(0, 14)}-${gitCommitSha.slice(0, 12)}`;
-  const observations = toOfficialObservations(records, datasetReleaseId);
+  const observations = toOfficialObservations(records, sources, datasetReleaseId);
   const parties = toParties(records, observations, datasetReleaseId);
   const partyRoles = toPartyRoles(records, observations, datasetReleaseId);
+  const authorityRows = toAuthorities(sources, datasetReleaseId);
   const sourceRows = toSources(sources, datasetReleaseId);
   const conflicts = toConflicts(conflictsReport, records, datasetReleaseId);
   const release: DatasetReleaseRow = {
@@ -113,6 +131,7 @@ export async function buildImportBundle() {
   };
   const files = {
     "release.json": JSON.stringify(release, null, 2) + "\n",
+    "authorities.ndjson": toNdjson(authorityRows),
     "sources.ndjson": toNdjson(sourceRows),
     "parties.ndjson": toNdjson(parties),
     "party-roles.ndjson": toNdjson(partyRoles),
@@ -136,7 +155,16 @@ export async function buildImportBundle() {
     recordCount: records.length,
     sourceCount: sources.length,
   };
-  return { release, sources: sourceRows, parties, partyRoles, observations, conflicts, manifest };
+  return {
+    release,
+    authorities: authorityRows,
+    sources: sourceRows,
+    parties,
+    partyRoles,
+    observations,
+    conflicts,
+    manifest,
+  };
 }
 
 export async function writeImportBundle(bundle?: ImportBundle) {
@@ -144,6 +172,7 @@ export async function writeImportBundle(bundle?: ImportBundle) {
   await mkdir(outputDir, { recursive: true });
   const files = new Map<string, string>([
     ["release.json", JSON.stringify(bundle.release, null, 2) + "\n"],
+    ["authorities.ndjson", toNdjson(bundle.authorities)],
     ["sources.ndjson", toNdjson(bundle.sources)],
     ["parties.ndjson", toNdjson(bundle.parties)],
     ["party-roles.ndjson", toNdjson(bundle.partyRoles)],
@@ -179,36 +208,57 @@ async function readRegistryRecords() {
   return rawRecords.map((record) => normalizedRegistryRecordSchema.parse(record));
 }
 
-function toOfficialObservations(records: NormalizedRegistryRecord[], datasetReleaseId: string) {
+export function toOfficialObservations(
+  records: NormalizedRegistryRecord[],
+  sources: SourceSummary[],
+  datasetReleaseId: string,
+) {
+  const byId = new Map(sources.map((source) => [source.id, source]));
   return records
-    .map<ObservationRow>((record) => ({
-      key: record.key,
-      party_key: partyKey(record.countryCode, record.partyId),
-      source_id: record.source.registryId,
-      scheme: schemeForRole(record.role),
-      country_code: record.countryCode,
-      party_id: record.partyId,
-      emobility_id: record.eMobilityId,
-      role: record.role,
-      status: record.status,
-      organization_name: record.organization.name,
-      legal_name: record.organization.legalName,
-      website: record.organization.website,
-      source_record_id: record.source.sourceRecordId,
-      source_value: record.source.sourceValue,
-      source_url: record.source.sourceUrl,
-      authority_level: record.source.official ? "AUTHORITATIVE" : "SECONDARY",
-      observation_type: record.source.official ? "OFFICIAL_ASSIGNMENT" : "OFFICIAL_DIRECTORY_ENTRY",
-      first_seen_at: record.source.firstSeenAt,
-      last_seen_at: record.source.lastSeenAt,
-      retrieved_at: record.source.retrievedAt,
-      metadata_json: stableJson(record.metadata),
-      raw_record_checksum:
-        typeof record.metadata.rawSnapshotChecksum === "string"
-          ? record.metadata.rawSnapshotChecksum
-          : null,
-      dataset_release_id: datasetReleaseId,
-    }))
+    .map<ObservationRow>((record) => {
+      const source = byId.get(record.source.registryId);
+      // `record.source.official` is per-record, not per-source: a register may be
+      // authoritative for its own country while only cross-registering another's
+      // identifiers. When the record is covered by its source's authority we take the
+      // declared level and observation type; otherwise the observation is secondary
+      // whatever the source claims for itself. This boolean gate is provisional --
+      // it cannot express SELF_ASSERTED or UNVERIFIED for an off-remit record.
+      // Issue #49 replaces it by carrying the level on the record itself.
+      const authorityLevel: AuthorityLevel = record.source.official
+        ? (source?.authority.level ?? "AUTHORITATIVE")
+        : "SECONDARY";
+      const observationType: ObservationType = record.source.official
+        ? (source?.registry.observationType ?? "OFFICIAL_ASSIGNMENT")
+        : "OFFICIAL_DIRECTORY_ENTRY";
+      return {
+        key: record.key,
+        party_key: partyKey(record.countryCode, record.partyId),
+        source_id: record.source.registryId,
+        scheme: schemeForRole(record.role),
+        country_code: record.countryCode,
+        party_id: record.partyId,
+        emobility_id: record.eMobilityId,
+        role: record.role,
+        status: record.status,
+        organization_name: record.organization.name,
+        legal_name: record.organization.legalName,
+        website: record.organization.website,
+        source_record_id: record.source.sourceRecordId,
+        source_value: record.source.sourceValue,
+        source_url: record.source.sourceUrl,
+        authority_level: authorityLevel,
+        observation_type: observationType,
+        first_seen_at: record.source.firstSeenAt,
+        last_seen_at: record.source.lastSeenAt,
+        retrieved_at: record.source.retrievedAt,
+        metadata_json: stableJson(record.metadata),
+        raw_record_checksum:
+          typeof record.metadata.rawSnapshotChecksum === "string"
+            ? record.metadata.rawSnapshotChecksum
+            : null,
+        dataset_release_id: datasetReleaseId,
+      };
+    })
     .sort((a, b) => a.key.localeCompare(b.key));
 }
 
@@ -278,20 +328,38 @@ function toPartyRoles(
     .sort((a, b) => a.party_key.localeCompare(b.party_key) || a.role.localeCompare(b.role));
 }
 
+function toAuthorities(sources: SourceSummary[], datasetReleaseId: string) {
+  const byId = new Map<string, AuthorityRow>();
+  for (const source of sources) {
+    const { authority } = source;
+    byId.set(authority.id, {
+      id: authority.id,
+      name: authority.name,
+      level: authority.level,
+      jurisdictions_json: stableJson(authority.jurisdictions),
+      homepage_url: authority.homepageUrl,
+      notes: authority.notes ?? null,
+      dataset_release_id: datasetReleaseId,
+    });
+  }
+  return [...byId.values()].sort((a, b) => a.id.localeCompare(b.id));
+}
+
 function toSources(sources: SourceSummary[], datasetReleaseId: string) {
   return sources
     .map<SourceRow>((source) => ({
       id: source.id,
       name: source.name,
-      authority_name: source.authorityName,
-      authority_level: source.official ? "AUTHORITATIVE" : "SECONDARY",
-      observation_type: source.official ? "OFFICIAL_ASSIGNMENT" : "OFFICIAL_DIRECTORY_ENTRY",
+      authority_id: source.authority.id,
+      authority_name: source.authority.name,
+      authority_level: source.authority.level,
+      observation_type: source.registry.observationType,
       official: source.official ? 1 : 0,
-      homepage_url: source.homepageUrl,
-      registry_url: source.registryUrl,
-      machine_readable_url: source.machineReadableUrl,
-      verified_at: source.verifiedAt,
-      jurisdictions_json: stableJson(source.jurisdictions),
+      homepage_url: source.authority.homepageUrl,
+      registry_url: source.registry.url,
+      machine_readable_url: source.publication.machineReadableUrl,
+      verified_at: source.publication.verifiedAt,
+      jurisdictions_json: stableJson(source.registry.jurisdictions),
       reuse_status: source.reuse.status,
       reuse_legal_basis_name: source.reuse.legalBasis?.name ?? null,
       reuse_legal_basis_url: source.reuse.legalBasis?.url ?? null,
@@ -305,7 +373,11 @@ function toSources(sources: SourceSummary[], datasetReleaseId: string) {
             ? 1
             : 0,
       reuse_notes: source.reuse.notes,
-      health_status: source.health.stale ? "stale" : source.enabled ? "current" : "disabled",
+      health_status: source.health.stale
+        ? "stale"
+        : source.publication.enabled
+          ? "current"
+          : "disabled",
       record_count: source.health.recordCount,
       last_attempted_at: source.health.lastAttemptedRetrieval,
       last_successful_at: source.health.lastSuccessfulRetrieval,
@@ -354,8 +426,10 @@ function toImportSql(bundle: ImportBundle) {
     "DELETE FROM party_roles;",
     "DELETE FROM parties;",
     "DELETE FROM sources;",
+    "DELETE FROM authorities;",
     "DELETE FROM dataset_releases;",
     ...insertMany("dataset_releases", [bundle.release]),
+    ...insertMany("authorities", bundle.authorities),
     ...insertMany("sources", bundle.sources),
     ...insertMany("parties", bundle.parties),
     ...insertMany("party_roles", bundle.partyRoles),

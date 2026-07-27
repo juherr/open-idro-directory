@@ -201,8 +201,8 @@ function renderReuseBasis(source: SourceDefinition): string {
     case "restricted":
       return "Restricted";
     case "unspecified":
-      return source.verifiedAt
-        ? `No explicit reuse terms identified (reviewed ${source.verifiedAt})`
+      return source.publication.verifiedAt
+        ? `No explicit reuse terms identified (reviewed ${source.publication.verifiedAt})`
         : "Undetermined";
   }
 }

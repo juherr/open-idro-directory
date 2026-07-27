@@ -12,6 +12,17 @@ Observation types include official assignments, official directory entries, lega
 
 Do not infer `AUTHORITATIVE` from public availability. Source authority and reuse conditions are exposed in API source responses so consumers can verify upstream terms.
 
+The level lives on the authority (`config/authorities/<id>.yaml`) and the
+observation type lives on the registry it operates, so a single organisation can
+back several registers without repeating its metadata. See
+[data-model.md](data-model.md) for the authority/registry/publication split.
+
+Every source currently published is `AUTHORITATIVE` with an `OFFICIAL_ASSIGNMENT`
+registry: the split records the distinction faithfully but does not reclassify
+any existing source. Role-scoped and jurisdiction-scoped precedence, such as EV
+Roam being authoritative for GB while only cross-registering IE identifiers, is
+still resolved by connectors rather than by the descriptor.
+
 ## National Responsibility Boundaries
 
 In Finland, the Finnish Transport and Communications Agency Traficom is the

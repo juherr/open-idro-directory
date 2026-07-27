@@ -1,3 +1,4 @@
+import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -32,7 +33,7 @@ export class BdewConnector implements RegistryConnector<BdewSnapshot> {
       sourceId: this.sourceId,
       body,
       contentType: "application/json",
-      finalUrl: context.source.registryUrl,
+      finalUrl: context.source.registry.url,
       httpStatus: 200,
       retrievedAt: context.retrievedAt,
       checksum: sha256(body),
@@ -83,7 +84,7 @@ async function fetchCodes(context: FetchContext, showProviderId: boolean) {
   let total = Number.POSITIVE_INFINITY;
 
   for (let startIndex = 0; startIndex < total; startIndex += PAGE_SIZE) {
-    const url = new URL("Codenumbers/EMobilityId/GetActiveCodes", context.source.registryUrl);
+    const url = new URL("Codenumbers/EMobilityId/GetActiveCodes", context.source.registry.url);
     url.searchParams.set("showProviderId", String(showProviderId));
     url.searchParams.set("jtStartIndex", String(startIndex));
     url.searchParams.set("jtPageSize", String(PAGE_SIZE));
@@ -160,9 +161,9 @@ function normalizeCode(
     },
     source: {
       registryId: input.source.id,
-      official: input.source.official,
+      official: isAuthoritative(input.source),
       sourceRecordId: String(sourceRecord.Id),
-      sourceUrl: bdewSourceUrl(input.source.registryUrl, role),
+      sourceUrl: bdewSourceUrl(input.source.registry.url, role),
       sourceValue: sourceRecord.Code,
       firstSeenAt: input.retrievedAt,
       lastSeenAt: input.retrievedAt,

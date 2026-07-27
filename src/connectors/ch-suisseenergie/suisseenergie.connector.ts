@@ -1,3 +1,4 @@
+import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -29,7 +30,7 @@ export class SuisseEnergieConnector implements RegistryConnector<SuisseEnergiePr
       ...(context.previousLastModified ? { lastModified: context.previousLastModified } : {}),
     };
     const response = await getText(
-      context.source.registryUrl,
+      context.source.registry.url,
       {
         timeoutMs: 30_000,
         retries: 2,
@@ -38,7 +39,7 @@ export class SuisseEnergieConnector implements RegistryConnector<SuisseEnergiePr
         userAgent: context.userAgent,
         headers: {
           Accept: "application/json,*/*",
-          Referer: context.source.homepageUrl,
+          Referer: context.source.authority.homepageUrl,
         },
       },
       conditionals,
@@ -134,9 +135,9 @@ export class SuisseEnergieConnector implements RegistryConnector<SuisseEnergiePr
           },
           source: {
             registryId: input.source.id,
-            official: input.source.official,
+            official: isAuthoritative(input.source),
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
-            sourceUrl: input.source.registryUrl,
+            sourceUrl: input.source.registry.url,
             sourceValue: sourceRecord.digitId,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,

@@ -1,3 +1,4 @@
+import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -23,7 +24,7 @@ export class TiiConnector implements RegistryConnector<TiiRow> {
   readonly sourceId = "ie-tii";
 
   async fetch(context: FetchContext): Promise<FetchResult> {
-    const response = await getBinary(context.source.registryUrl, {
+    const response = await getBinary(context.source.registry.url, {
       timeoutMs: 30_000,
       retries: 2,
       maxBytes: 2_000_000,
@@ -31,7 +32,7 @@ export class TiiConnector implements RegistryConnector<TiiRow> {
       userAgent: context.userAgent,
       headers: {
         Accept: "application/pdf,*/*",
-        Referer: context.source.homepageUrl,
+        Referer: context.source.authority.homepageUrl,
       },
     });
     const body = JSON.stringify({
@@ -121,9 +122,9 @@ export class TiiConnector implements RegistryConnector<TiiRow> {
           },
           source: {
             registryId: input.source.id,
-            official: input.source.official,
+            official: isAuthoritative(input.source),
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
-            sourceUrl: input.source.registryUrl,
+            sourceUrl: input.source.registry.url,
             sourceValue: identifier.sourceValue,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,

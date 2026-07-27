@@ -1,19 +1,22 @@
 id: dk-fstyr
 name: Danish Road Traffic Authority
-authorityName: Danish Road Traffic Authority
-jurisdictions:
-  - DK
-official: true
-homepageUrl: https://www.danishroadtrafficauthority.dk/afir/idro-registration
-registryUrl: https://www.danishroadtrafficauthority.dk/afir/idro-registration
-machineReadableUrl: null
-verifiedAt: null
-connector: dk-fstyr
-enabled: true
-refreshSchedule: weekly
-supportedRoles:
-  - CPO
-  - EMSP
+authorityId: dk-fstyr
+registry:
+  url: https://www.danishroadtrafficauthority.dk/afir/idro-registration
+  observationType: OFFICIAL_ASSIGNMENT
+  supportedRoles:
+    - CPO
+    - EMSP
+publication:
+  connector: dk-fstyr
+  machineReadableUrl: null
+  refreshSchedule: weekly
+  enabled: true
+  verifiedAt: null
+  safety:
+    maxDeletionRatio: 0.2
+    maxChangeRatio: 0.5
+    maxParseErrorRatio: 0.05
 reuse:
   status: unspecified
   legalBasis: null
@@ -22,10 +25,6 @@ reuse:
   redistributionAllowed: null
   notes: No explicit reuse terms have been identified.
 notes: >
-  Official Danish IDRO registration page. The public page embeds the current
-  CPO/MSP identifier register as an HTML table; API references on the page are
-  used for the registration form rather than for a public CSV export.
-safety:
-  maxDeletionRatio: 0.2
-  maxChangeRatio: 0.5
-  maxParseErrorRatio: 0.05
+  Official Danish IDRO registration page. The public page embeds the current CPO/MSP
+  identifier register as an HTML table; API references on the page are used for the
+  registration form rather than for a public CSV export.

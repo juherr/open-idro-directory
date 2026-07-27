@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { SCHEMA_VERSION } from "../src/domain/constants.js";
 import { createApp, type Env } from "../src/http/app.js";
 import worker from "../src/index.js";
 import type {
@@ -17,7 +18,7 @@ const release: DatasetRelease = {
   generated_at: "2026-06-15T06:39:47.501Z",
   imported_at: "1970-01-01T00:00:00.000Z",
   dataset_checksum: "checksum-1",
-  schema_version: "1.1.0",
+  schema_version: SCHEMA_VERSION,
   record_count: 1,
   source_count: 1,
   importer_version: "0.1.0",
@@ -56,8 +57,12 @@ const role: PartyRoleRow = {
 const source: SourceRow = {
   id: "fr-afirev",
   name: "AFIREV",
+  authority_id: "fr-afirev",
   authority_name: "AFIREV",
   authority_level: "AUTHORITATIVE",
+  authority_jurisdictions_json: '["FR"]',
+  authority_homepage_url: "https://afirev.fr/",
+  authority_notes: null,
   observation_type: "OFFICIAL_ASSIGNMENT",
   official: 1,
   homepage_url: "https://afirev.fr/",
@@ -164,6 +169,48 @@ describe("Cloudflare API", () => {
     expect(response.status).toBe(422);
   });
 
+  it("falls back to the source row when the authority join misses", async () => {
+    // Between migration 0004 and the next import, sources.authority_id is NULL for
+    // every row, so the LEFT JOIN yields no authority columns. The response must
+    // still describe the source rather than reporting a nameless authority.
+    const unjoined: SourceRow = {
+      ...source,
+      authority_id: null,
+      joined_authority_name: null,
+      joined_authority_level: null,
+      authority_jurisdictions_json: null,
+      authority_homepage_url: null,
+      authority_notes: null,
+    };
+    const db = {
+      prepare: (sql: string) => ({
+        bind: () => ({
+          first: async () => (sql.includes("FROM sources") ? unjoined : first(sql, [])),
+          all: async () => ({ results: [] }),
+        }),
+      }),
+    } as unknown as D1Database;
+    const app = createApp();
+    const response = await app.request("/api/v1/sources/fr-afirev", undefined, {
+      REGISTRY_DB: db,
+    } satisfies Env);
+    const body = (await response.json()) as {
+      data: {
+        authority: { name: string; level: string; jurisdictions: string[]; homepageUrl: string };
+        authorityName: string;
+      };
+    };
+
+    expect(response.status).toBe(200);
+    expect(body.data.authority).toMatchObject({
+      name: "AFIREV",
+      level: "AUTHORITATIVE",
+      jurisdictions: ["FR"],
+      homepageUrl: "https://afirev.fr/",
+    });
+    expect(body.data.authorityName).toBe("AFIREV");
+  });
+
   it("rejects unknown query filters", async () => {
     const response = await request("/api/v1/parties?unknown=1");
     expect(response.status).toBe(400);
@@ -173,6 +220,9 @@ describe("Cloudflare API", () => {
     const sourceResponse = await request("/api/v1/sources/fr-afirev");
     const sourceBody = (await sourceResponse.json()) as {
       data: {
+        authority: { id: string; name: string; level: string; homepageUrl: string };
+        registry: { url: string; observationType: string };
+        publication: { machineReadableUrl: string; verifiedAt: string };
         machineReadableUrl: string;
         verifiedAt: string;
         reuse: {
@@ -186,6 +236,20 @@ describe("Cloudflare API", () => {
       };
     };
     expect(sourceBody.data).toMatchObject({
+      authority: {
+        id: "fr-afirev",
+        name: "AFIREV",
+        level: "AUTHORITATIVE",
+        homepageUrl: "https://afirev.fr/",
+      },
+      registry: {
+        url: "https://api.afirev.fr/public/prefixes",
+        observationType: "OFFICIAL_ASSIGNMENT",
+      },
+      publication: {
+        machineReadableUrl: "https://api.afirev.fr/public/prefixes",
+        verifiedAt: "2026-01-02",
+      },
       machineReadableUrl: "https://api.afirev.fr/public/prefixes",
       verifiedAt: "2026-01-02",
       reuse: {

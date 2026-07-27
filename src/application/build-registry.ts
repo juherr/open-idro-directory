@@ -20,7 +20,7 @@ export interface BuildOptions {
 export async function buildRegistry(sources: SourceDefinition[], options: BuildOptions = {}) {
   const generatedAt = options.generatedAt ?? new Date().toISOString();
   const selected = sources.filter(
-    (source) => source.enabled && (!options.sourceId || source.id === options.sourceId),
+    (source) => source.publication.enabled && (!options.sourceId || source.id === options.sourceId),
   );
   const results: SourceBuildResult[] = [];
   const records: NormalizedRegistryRecord[] = [];

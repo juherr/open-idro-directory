@@ -58,18 +58,48 @@ export function partyPayload(row: PartyRow, roles: PartyRoleRow[] = []) {
 }
 
 export function sourcePayload(row: SourceRow) {
+  // Until the first import after migration 0004, sources.authority_id is NULL and
+  // the authority join misses, so each field falls back to the source's own column.
+  const authorityName = row.joined_authority_name ?? row.authority_name;
+  const authorityLevel = row.joined_authority_level ?? row.authority_level;
+  const homepageUrl = row.authority_homepage_url ?? row.homepage_url;
+  const registryJurisdictions = parseJson<string[]>(row.jurisdictions_json);
+
   return {
     id: row.id,
     name: row.name,
-    authorityName: row.authority_name,
-    authorityLevel: row.authority_level,
+    // The appointed organisation. Several sources may name the same authority.
+    authority: {
+      id: row.authority_id,
+      name: authorityName,
+      level: authorityLevel,
+      jurisdictions: row.authority_jurisdictions_json
+        ? parseJson<string[]>(row.authority_jurisdictions_json)
+        : registryJurisdictions,
+      homepageUrl,
+      notes: row.authority_notes,
+    },
+    // The register that authority operates.
+    registry: {
+      url: row.registry_url,
+      observationType: row.observation_type,
+      jurisdictions: registryJurisdictions,
+    },
+    // The technical resource this project consumes.
+    publication: {
+      machineReadableUrl: row.machine_readable_url,
+      verifiedAt: row.verified_at,
+    },
+    // Flat fields kept for consumers of API schema 1.1.x. Derived, not authoritative.
+    authorityName,
+    authorityLevel,
     observationType: row.observation_type,
     official: Boolean(row.official),
-    homepageUrl: row.homepage_url,
+    homepageUrl,
     registryUrl: row.registry_url,
     machineReadableUrl: row.machine_readable_url,
     verifiedAt: row.verified_at,
-    jurisdictions: parseJson<string[]>(row.jurisdictions_json),
+    jurisdictions: registryJurisdictions,
     reuse: {
       status: row.reuse_status,
       legalBasis: reference(row.reuse_legal_basis_name, row.reuse_legal_basis_url),

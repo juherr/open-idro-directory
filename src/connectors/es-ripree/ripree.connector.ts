@@ -1,3 +1,4 @@
+import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -23,7 +24,7 @@ export class RipreeConnector implements RegistryConnector<RipreeXmlRow> {
   readonly sourceId = "es-ripree";
 
   async fetch(context: FetchContext): Promise<FetchResult> {
-    const response = await postText(xmlExportUrl(context.source.registryUrl), "{}", {
+    const response = await postText(xmlExportUrl(context.source.registry.url), "{}", {
       timeoutMs: 30_000,
       retries: 2,
       maxBytes: 2_000_000,
@@ -32,7 +33,7 @@ export class RipreeConnector implements RegistryConnector<RipreeXmlRow> {
       headers: {
         Accept: "text/xml,application/xml,*/*",
         "Content-Type": "application/json",
-        Referer: context.source.registryUrl,
+        Referer: context.source.registry.url,
       },
     });
     return {
@@ -124,9 +125,9 @@ export class RipreeConnector implements RegistryConnector<RipreeXmlRow> {
         },
         source: {
           registryId: input.source.id,
-          official: input.source.official,
+          official: isAuthoritative(input.source),
           sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
-          sourceUrl: input.source.registryUrl,
+          sourceUrl: input.source.registry.url,
           sourceValue: sourceRecord.sourceValue,
           firstSeenAt: input.retrievedAt,
           lastSeenAt: input.retrievedAt,

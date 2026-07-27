@@ -1,3 +1,4 @@
+import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -24,7 +25,7 @@ export class ElectrokinisiConnector implements RegistryConnector<ElectrokinisiHt
       ...(context.previousLastModified ? { lastModified: context.previousLastModified } : {}),
     };
     const response = await getText(
-      context.source.registryUrl,
+      context.source.registry.url,
       {
         timeoutMs: 30_000,
         retries: 2,
@@ -121,9 +122,9 @@ export class ElectrokinisiConnector implements RegistryConnector<ElectrokinisiHt
         },
         source: {
           registryId: input.source.id,
-          official: input.source.official,
+          official: isAuthoritative(input.source),
           sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
-          sourceUrl: input.source.registryUrl,
+          sourceUrl: input.source.registry.url,
           sourceValue: sourceRecord.sourceValue,
           firstSeenAt: input.retrievedAt,
           lastSeenAt: input.retrievedAt,

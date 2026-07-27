@@ -155,17 +155,18 @@ function sampleSource(): SourceDefinition {
   return {
     id: "fr-afirev",
     name: "AFIREV",
-    authorityName: "AFIREV",
-    jurisdictions: ["FR"],
-    official: true,
-    homepageUrl: "https://afirev.fr/",
-    registryUrl: "https://afirev.fr/prefixes/consulter-l-annuaire/",
-    connector: "fr-afirev",
-    enabled: true,
-    refreshSchedule: "weekly",
-    supportedRoles: ["CPO", "EMSP"],
-    machineReadableUrl: "https://afirev.fr/prefixes/consulter-l-annuaire/",
-    verifiedAt: null,
+    authority: {
+      id: "fr-afirev",
+      name: "AFIREV",
+      level: "AUTHORITATIVE",
+      jurisdictions: ["FR"],
+      homepageUrl: "https://afirev.fr/",
+    },
+    registry: {
+      url: "https://afirev.fr/prefixes/consulter-l-annuaire/",
+      observationType: "OFFICIAL_ASSIGNMENT",
+      supportedRoles: ["CPO", "EMSP"],
+    },
     reuse: {
       status: "unspecified",
       legalBasis: null,
@@ -174,12 +175,19 @@ function sampleSource(): SourceDefinition {
       redistributionAllowed: null,
       notes: null,
     },
-    safety: {
-      maxDeletionRatio: 0.2,
-      maxDeletionCount: 5,
-      maxChangeRatio: 0.5,
-      maxParseErrorRatio: 0.05,
-      acceptedDeletionKeys: [],
+    publication: {
+      connector: "fr-afirev",
+      machineReadableUrl: "https://afirev.fr/prefixes/consulter-l-annuaire/",
+      refreshSchedule: "weekly",
+      enabled: true,
+      verifiedAt: null,
+      safety: {
+        maxDeletionRatio: 0.2,
+        maxDeletionCount: 5,
+        maxChangeRatio: 0.5,
+        maxParseErrorRatio: 0.05,
+        acceptedDeletionKeys: [],
+      },
     },
   };
 }

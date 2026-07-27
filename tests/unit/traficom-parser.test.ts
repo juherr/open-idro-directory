@@ -203,7 +203,7 @@ describe("Traficom parser", () => {
       "fi-traficom:FI:ABC:EMSP",
     ]);
     expect(result.records.map((record) => record.eMobilityId)).toEqual(["FIABC", "FIABC"]);
-    expect(result.records[0]?.source.sourceUrl).toBe(source.registryUrl);
+    expect(result.records[0]?.source.sourceUrl).toBe(source.registry.url);
   });
 
   it("reports rows that do not expose the four expected columns", () => {

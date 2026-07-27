@@ -1,20 +1,18 @@
 id: gb-evroam
 name: EV Roam
-authorityName: EV Roam
-jurisdictions:
-  - GB
-  - IE
-official: true
-homepageUrl: https://www.evroam.org.uk/
-registryUrl: https://evroam.org.uk/_functions/getRegister
-machineReadableUrl: https://evroam.org.uk/_functions/getRegister
-verifiedAt: null
-connector: gb-evroam
-enabled: true
-refreshSchedule: weekly
-supportedRoles:
-  - CPO
-  - EMSP
+authorityId: gb-evroam
+registry:
+  url: https://evroam.org.uk/_functions/getRegister
+  observationType: OFFICIAL_ASSIGNMENT
+  supportedRoles:
+    - CPO
+    - EMSP
+publication:
+  connector: gb-evroam
+  machineReadableUrl: https://evroam.org.uk/_functions/getRegister
+  refreshSchedule: weekly
+  enabled: true
+  verifiedAt: null
 reuse:
   status: unspecified
   legalBasis: null
@@ -23,8 +21,7 @@ reuse:
   redistributionAllowed: null
   notes: No explicit reuse terms have been identified.
 notes: >
-  EV Roam public register API. The response contains GB identifiers and IE
-  identifiers for organizations that also hold Irish CPO and/or EMSP codes. GB
-  records are treated as EV Roam official assignments; IE records are preserved
-  as unknown-status cross-register observations because TII is the Irish
-  registrar.
+  EV Roam public register API. The response contains GB identifiers and IE identifiers
+  for organizations that also hold Irish CPO and/or EMSP codes. GB records are treated
+  as EV Roam official assignments; IE records are preserved as unknown-status
+  cross-register observations because TII is the Irish registrar.

@@ -29,6 +29,10 @@ export async function writeSchemas() {
     fromRoot("schemas", "identifier-observation.schema.json"),
     `${JSON.stringify(identifierObservationSchema, null, 2)}\n`,
   );
+  await writeFile(
+    fromRoot("schemas", "authority.schema.json"),
+    `${JSON.stringify(authoritySchema, null, 2)}\n`,
+  );
 }
 
 const registrySchema = {
@@ -64,24 +68,19 @@ const registrySchema = {
 
 const sourceSchema = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
-  title: "SourceDefinition",
+  title: "SourceSummaryDataset",
+  type: "array",
+  items: {
+    type: "object",
+    required: ["id", "name", "authority", "registry", "publication", "official", "reuse", "health"],
+  },
+};
+
+const authoritySchema = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  title: "AuthorityDefinition",
   type: "object",
-  required: [
-    "id",
-    "name",
-    "authorityName",
-    "jurisdictions",
-    "official",
-    "homepageUrl",
-    "registryUrl",
-    "connector",
-    "enabled",
-    "refreshSchedule",
-    "supportedRoles",
-    "machineReadableUrl",
-    "verifiedAt",
-    "reuse",
-  ],
+  required: ["id", "name", "level", "jurisdictions", "homepageUrl"],
 };
 
 const identifierObservationSchema = {

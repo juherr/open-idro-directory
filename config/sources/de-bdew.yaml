@@ -1,19 +1,18 @@
 id: de-bdew
 name: BDEW
-authorityName: BDEW
-jurisdictions:
-  - DE
-official: true
-homepageUrl: https://bdew-codes.de/
-registryUrl: https://bdew-codes.de/
-machineReadableUrl: https://bdew-codes.de/Codenumbers/EMobilityId/GetActiveCodes
-verifiedAt: null
-connector: de-bdew
-enabled: true
-refreshSchedule: weekly
-supportedRoles:
-  - CPO
-  - EMSP
+authorityId: de-bdew
+registry:
+  url: https://bdew-codes.de/
+  observationType: OFFICIAL_ASSIGNMENT
+  supportedRoles:
+    - CPO
+    - EMSP
+publication:
+  connector: de-bdew
+  machineReadableUrl: https://bdew-codes.de/Codenumbers/EMobilityId/GetActiveCodes
+  refreshSchedule: weekly
+  enabled: true
+  verifiedAt: null
 reuse:
   status: unspecified
   legalBasis: null
@@ -22,5 +21,4 @@ reuse:
   redistributionAllowed: null
   notes: No explicit reuse terms have been identified.
 notes: >
-  Uses BDEW's public paginated e-mobility ID JSON endpoint for active CPO and
-  EMSP codes.
+  Uses BDEW's public paginated e-mobility ID JSON endpoint for active CPO and EMSP codes.

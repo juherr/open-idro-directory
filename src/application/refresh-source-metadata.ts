@@ -18,12 +18,12 @@ export async function refreshSourceMetadata(
   const summaries = sources.map((source) => ({
     ...toSourceMetadata(source),
     health: healthById.get(source.id) ?? {
-      stale: !source.enabled,
+      stale: !source.publication.enabled,
       recordCount: 0,
       lastAttemptedRetrieval: null,
       lastSuccessfulRetrieval: null,
       checksum: null,
-      freshness: source.enabled ? "unknown" : "disabled",
+      freshness: source.publication.enabled ? "unknown" : "disabled",
       latestErrorSummary: null,
     },
   }));

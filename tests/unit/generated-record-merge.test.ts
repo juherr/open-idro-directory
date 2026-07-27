@@ -161,17 +161,18 @@ function plEipaSource(): SourceDefinition {
   return {
     id: "pl-eipa",
     name: "EIPA",
-    authorityName: "Urzad Dozoru Technicznego",
-    jurisdictions: ["PL"],
-    official: true,
-    homepageUrl: "https://eipa.udt.gov.pl/list",
-    registryUrl: "https://eipa.udt.gov.pl/list/csv",
-    connector: "pl-eipa",
-    enabled: true,
-    refreshSchedule: "weekly",
-    supportedRoles: ["CPO", "EMSP"],
-    machineReadableUrl: "https://eipa.udt.gov.pl/list/csv",
-    verifiedAt: null,
+    authority: {
+      id: "pl-udt",
+      name: "Urzad Dozoru Technicznego",
+      level: "AUTHORITATIVE",
+      jurisdictions: ["PL"],
+      homepageUrl: "https://eipa.udt.gov.pl/list",
+    },
+    registry: {
+      url: "https://eipa.udt.gov.pl/list/csv",
+      observationType: "OFFICIAL_ASSIGNMENT",
+      supportedRoles: ["CPO", "EMSP"],
+    },
     reuse: {
       status: "unspecified",
       legalBasis: null,
@@ -180,12 +181,19 @@ function plEipaSource(): SourceDefinition {
       redistributionAllowed: null,
       notes: null,
     },
-    safety: {
-      maxDeletionRatio: 0.3,
-      maxDeletionCount: 5,
-      maxChangeRatio: 0.8,
-      maxParseErrorRatio: 0.1,
-      acceptedDeletionKeys: [],
+    publication: {
+      connector: "pl-eipa",
+      machineReadableUrl: "https://eipa.udt.gov.pl/list/csv",
+      refreshSchedule: "weekly",
+      enabled: true,
+      verifiedAt: null,
+      safety: {
+        maxDeletionRatio: 0.3,
+        maxDeletionCount: 5,
+        maxChangeRatio: 0.8,
+        maxParseErrorRatio: 0.1,
+        acceptedDeletionKeys: [],
+      },
     },
   };
 }

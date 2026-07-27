@@ -1,19 +1,22 @@
 id: si-nap
 name: Slovenian NAP IDRO
-authorityName: Ministry of the Environment, Climate and Energy
-jurisdictions:
-  - SI
-official: true
-homepageUrl: https://www.nap.si/en/id-codes
-registryUrl: https://www.ncup.si/dc/prometej.register-cpo-msp
-machineReadableUrl: https://www.ncup.si/dc/prometej.register-cpo-msp
-verifiedAt: null
-connector: si-nap
-enabled: true
-refreshSchedule: weekly
-supportedRoles:
-  - CPO
-  - EMSP
+authorityId: si-mopse
+registry:
+  url: https://www.ncup.si/dc/prometej.register-cpo-msp
+  observationType: OFFICIAL_ASSIGNMENT
+  supportedRoles:
+    - CPO
+    - EMSP
+publication:
+  connector: si-nap
+  machineReadableUrl: https://www.ncup.si/dc/prometej.register-cpo-msp
+  refreshSchedule: weekly
+  enabled: true
+  verifiedAt: null
+  safety:
+    maxDeletionRatio: 0.3
+    maxChangeRatio: 0.8
+    maxParseErrorRatio: 0.1
 reuse:
   status: unspecified
   legalBasis: null
@@ -22,9 +25,5 @@ reuse:
   redistributionAllowed: null
   notes: No explicit reuse terms have been identified.
 notes: >
-  Official Slovenian NAP page links to the PROMETEJ national repository of CPO
-  and MSP IDs as a public XLSX download.
-safety:
-  maxDeletionRatio: 0.3
-  maxChangeRatio: 0.8
-  maxParseErrorRatio: 0.1
+  Official Slovenian NAP page links to the PROMETEJ national repository of CPO and MSP
+  IDs as a public XLSX download.

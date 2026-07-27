@@ -1,0 +1,8 @@
+id: benelux-idro
+name: Benelux IDRO
+level: AUTHORITATIVE
+jurisdictions:
+  - BE
+  - NL
+  - LU
+homepageUrl: https://www.benelux-idro.eu/

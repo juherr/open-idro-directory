@@ -331,10 +331,10 @@
     {
       "prefixId": "FRABA",
       "name": "CCVBA",
-      "amenageurName": "",
+      "amenageurName": "Communauté des communes Vallée des Baux-Alpilles",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "SUSPENDED"
+      "status": "AWAITING_PAYMENT"
     },
     {
       "prefixId": "FRACA",
@@ -884,8 +884,8 @@
       "prefixId": "FRC36",
       "name": "SDEI 36",
       "amenageurName": "Syndicat Départemental d'Energies de l'Indre (SDEI)",
-      "exploitantName": "",
-      "type": "CHARGE",
+      "exploitantName": "Syndicat Départemental d'Energies de l'Indre (SDEI)",
+      "type": "BOTH",
       "status": "ACTIVE"
     },
     {
@@ -942,7 +942,7 @@
       "amenageurName": "CHARGEPOLY",
       "exploitantName": "CHARGEPOLY",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRCHF",
@@ -983,6 +983,14 @@
       "exploitantName": "CLEM'",
       "type": "CHARGE",
       "status": "SUSPENDED"
+    },
+    {
+      "prefixId": "FRCMG",
+      "name": "Société de construction MG",
+      "amenageurName": "SOCIETE DE PROMOTION CONSTRUCTION MG",
+      "exploitantName": "PICOTY",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
     },
     {
       "prefixId": "FRCMP",
@@ -1650,9 +1658,9 @@
     },
     {
       "prefixId": "FREVZ",
-      "name": "evZen",
-      "amenageurName": "Greenflux",
-      "exploitantName": "Greenflux",
+      "name": "EVzen",
+      "amenageurName": "SMEG DEVELOPPEMENT",
+      "exploitantName": "SMEG DEVELOPPEMENT",
       "type": "BOTH",
       "status": "AWAITING_PAYMENT"
     },
@@ -2614,7 +2622,7 @@
       "amenageurName": "Métropole d'Aix-Marseille-Provence",
       "exploitantName": "SMEG DEVELOPPEMENT",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRM29",
@@ -2843,10 +2851,10 @@
     {
       "prefixId": "FRMON",
       "name": "Monaco ON France",
-      "amenageurName": "",
+      "amenageurName": "SMEG DEVELOPPEMENT",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRMOO",
@@ -4884,7 +4892,7 @@
       "prefixId": "FRWIZ",
       "name": "Réseau WiiiZ",
       "amenageurName": "Communautés d'agglomération Sophia Antipolis",
-      "exploitantName": "",
+      "exploitantName": "SMEG DEVELOPPEMENT",
       "type": "CHARGE",
       "status": "ACTIVE"
     },
@@ -5342,7 +5350,7 @@
       "amenageurName": "ZEPHYRE",
       "exploitantName": "ZEPHYRE",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRZPE",
@@ -5401,5 +5409,5 @@
       "status": "ACTIVE"
     }
   ],
-  "total": 675
+  "total": 676
 }

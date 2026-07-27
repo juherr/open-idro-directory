@@ -1,14 +1,14 @@
 {
-  "totalRecords": 8056,
+  "totalRecords": 8066,
   "recordsByCountry": {
-    "AT": 1112,
+    "AT": 1113,
     "BE": 362,
-    "CH": 162,
-    "DE": 3109,
+    "CH": 164,
+    "DE": 3114,
     "DK": 85,
     "ES": 321,
     "FI": 45,
-    "FR": 731,
+    "FR": 733,
     "GB": 205,
     "GR": 133,
     "HU": 1,
@@ -24,19 +24,19 @@
   },
   "recordsByCountryRole": {
     "AT": {
-      "CPO": 1112
+      "CPO": 1113
     },
     "BE": {
       "CPO": 207,
       "EMSP": 155
     },
     "CH": {
-      "CPO": 92,
-      "EMSP": 70
+      "CPO": 93,
+      "EMSP": 71
     },
     "DE": {
-      "CPO": 1661,
-      "EMSP": 1448
+      "CPO": 1664,
+      "EMSP": 1450
     },
     "DK": {
       "CPO": 58,
@@ -51,8 +51,8 @@
       "EMSP": 19
     },
     "FR": {
-      "CPO": 583,
-      "EMSP": 148
+      "CPO": 584,
+      "EMSP": 149
     },
     "GB": {
       "CPO": 106,
@@ -102,24 +102,24 @@
     }
   },
   "recordsByRole": {
-    "CPO": 5463,
-    "EMSP": 2593
+    "CPO": 5469,
+    "EMSP": 2597
   },
   "recordsByStatus": {
-    "ACTIVE": 7442,
-    "INACTIVE": 272,
-    "RESERVED": 145,
-    "UNKNOWN": 197
+    "ACTIVE": 7451,
+    "INACTIVE": 276,
+    "RESERVED": 144,
+    "UNKNOWN": 195
   },
   "recordsByRegistry": {
-    "at-ladestellen": 1112,
+    "at-ladestellen": 1113,
     "benelux-idro": 954,
-    "ch-suisseenergie": 162,
-    "de-bdew": 3109,
+    "ch-suisseenergie": 164,
+    "de-bdew": 3114,
     "dk-fstyr": 85,
     "es-ripree": 321,
     "fi-traficom": 45,
-    "fr-afirev": 731,
+    "fr-afirev": 733,
     "gb-evroam": 273,
     "gr-electrokinisi": 133,
     "hu-idro": 1,
@@ -132,5 +132,5 @@
     "si-nap": 56
   },
   "staleSources": [],
-  "generatedAt": "2026-07-20T06:27:41.652Z"
+  "generatedAt": "2026-07-27T06:44:15.562Z"
 }

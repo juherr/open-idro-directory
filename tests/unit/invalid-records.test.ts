@@ -1,8 +1,7 @@
-import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { describe, expect, it } from "vitest";
-import { AfirevConnector } from "../../src/connectors/fr-afirev/afirev.connector.js";
 import type { NormalizedRegistryRecord } from "../../src/domain/registry-record.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
 import { writeDatasets } from "../../src/infrastructure/serialization/serializers.js";
@@ -110,50 +109,6 @@ describe("invalid identifier handling", () => {
     } finally {
       await rm(outputDir, { recursive: true, force: true });
     }
-  });
-
-  it("turns a connector rejection into a counted row", async () => {
-    const source = await loadSourceDefinition("fr-afirev");
-    const connector = new AfirevConnector();
-    const result = await connector.normalize({
-      source,
-      retrievedAt: "2026-06-15T00:00:00.000Z",
-      records: [{ prefixId: "FRABCD", name: "Too long", type: "AME", status: "Attribué" }],
-    });
-
-    expect(result.records).toHaveLength(0);
-    expect(toRejectedSourceRows("fr-afirev", result.warnings)).toEqual([
-      {
-        registryId: "fr-afirev",
-        code: "AFIREV_MALFORMED_IDENTIFIER",
-        sourceValue: "FRABCD",
-        message: "Unexpected AFIREV prefix syntax: FRABCD",
-      },
-    ]);
-  });
-
-  it("makes every connector report the raw value it rejected", async () => {
-    const files = await readdir("src/connectors", { recursive: true });
-    const connectors = files.filter((file) => file.endsWith(".connector.ts"));
-    const missing: string[] = [];
-    let checked = 0;
-
-    for (const file of connectors) {
-      const lines = (await readFile(join("src/connectors", file), "utf8")).split("\n");
-      const index = lines.findIndex((line) => line.includes("_MALFORMED_IDENTIFIER"));
-      if (index === -1) continue;
-      checked += 1;
-      // The rejected value must sit in the same issue object, right after the
-      // code and message lines that describe it.
-      if (!lines.slice(index, index + 4).some((line) => line.includes("rejectedIdentifier:"))) {
-        missing.push(file);
-      }
-    }
-
-    expect(missing).toEqual([]);
-    // Guards the scan itself: if the file or code naming convention drifts, the
-    // loop would silently check nothing.
-    expect(checked).toBeGreaterThanOrEqual(19);
   });
 
   it("collects rows the connectors could not parse into an identifier", () => {

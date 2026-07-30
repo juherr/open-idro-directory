@@ -1,6 +1,6 @@
 {
   "totalRecords": 8062,
-  "totalInvalidRecords": 4,
+  "totalInvalidRecords": 0,
   "totalRejectedRows": 0,
   "recordsByCountry": {
     "AT": 1113,
@@ -133,12 +133,8 @@
     "se-energimyndigheten": 73,
     "si-nap": 56
   },
-  "invalidRecordsByReason": {
-    "INVALID_PARTY_ID": 4
-  },
-  "invalidRecordsByRegistry": {
-    "se-energimyndigheten": 4
-  },
+  "invalidRecordsByReason": {},
+  "invalidRecordsByRegistry": {},
   "rejectedRowsByRegistry": {},
   "staleSources": [],
   "generatedAt": "2026-07-27T06:44:15.562Z"

@@ -41,8 +41,11 @@ read and then refused. Rejected rows are only reported for sources whose run was
 actually ingested -- a source that fails its safety thresholds republishes its
 previous records, so its discarded rows would describe nothing.
 
-Excluded entries never appear in `data/registry.*`. The file is regenerated on
-every build; a non-empty list signals an upstream or connector regression.
+Excluded entries never appear in `data/registry.*`. The file reports what the
+latest build refused, not a history of past exclusions: it is regenerated from
+scratch every run, so an identifier the source has stopped publishing simply
+disappears from it instead of being counted forever. A non-empty list means the
+current upstream data still carries the problem.
 
 The rule applies to the official registry pipeline only. Complementary
 observations use other identifier schemes with their own length rules.

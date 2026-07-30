@@ -69,7 +69,7 @@ const safetySchema = z
  */
 export const registryDescriptorSchema = z
   .object({
-    url: z.string().url(),
+    url: z.url(),
     observationType: observationTypeSchema,
     supportedRoles: z.array(registryRoleSchema).min(1),
     jurisdictions: jurisdictionsSchema.optional(),
@@ -85,7 +85,7 @@ export type RegistryDescriptor = z.infer<typeof registryDescriptorSchema>;
 export const publicationDescriptorSchema = z
   .object({
     connector: z.string().min(1),
-    machineReadableUrl: z.string().url().nullable(),
+    machineReadableUrl: z.url().nullable(),
     refreshSchedule: z.string().min(1),
     enabled: z.boolean(),
     verifiedAt: z
@@ -131,7 +131,25 @@ export function resolveSourceDefinitions(
   descriptors: SourceDescriptor[],
   authorities: AuthorityDefinition[],
 ): SourceDefinition[] {
-  const byId = new Map(authorities.map((authority) => [authority.id, authority]));
+  const byId = new Map<string, AuthorityDefinition>();
+  for (const authority of authorities) {
+    if (byId.has(authority.id)) {
+      throw new Error(`Duplicate authority id ${authority.id} in the authority catalog.`);
+    }
+    byId.set(authority.id, authority);
+  }
+  // An inline authority is local to its source, so its id must not collide with a
+  // catalogued one: downstream consumers key authorities by id and the loser would
+  // be silently overwritten. Sources that share an authority use authorityId.
+  for (const descriptor of descriptors) {
+    if (!descriptor.authority) continue;
+    if (byId.has(descriptor.authority.id)) {
+      throw new Error(
+        `Source ${descriptor.id} declares an inline authority whose id ${descriptor.authority.id} is already defined elsewhere.`,
+      );
+    }
+    byId.set(descriptor.authority.id, descriptor.authority);
+  }
 
   return descriptors.map((descriptor) => {
     const authority =

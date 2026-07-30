@@ -15,7 +15,7 @@ export const authorityDefinitionSchema = z
     name: z.string().min(1),
     level: authorityLevelSchema,
     jurisdictions: jurisdictionsSchema,
-    homepageUrl: z.string().url(),
+    homepageUrl: z.url(),
     notes: z.string().min(1).optional(),
   })
   .strict();

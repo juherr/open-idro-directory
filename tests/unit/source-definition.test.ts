@@ -227,6 +227,24 @@ describe("resolveSourceDefinitions", () => {
     expect(isAuthoritative(resolved!)).toBe(false);
   });
 
+  it("rejects an inline authority whose id collides with a catalogued one", () => {
+    // Downstream consumers key authorities by id, so the loser would be silently
+    // overwritten in the import bundle.
+    const { authorityId: _omitted, ...withoutAuthorityId } = baseDescriptor;
+    const descriptor = sourceDescriptorSchema.parse({
+      ...withoutAuthorityId,
+      authority: { ...ripreeAuthority, id: "benelux-idro" },
+      reuse: unspecifiedReuse,
+    });
+
+    expect(() => resolveSourceDefinitions([descriptor], authorities)).toThrow(/benelux-idro/);
+  });
+
+  it("rejects a duplicate id inside the authority catalog", () => {
+    const twice = [...authorities, authorityDefinitionSchema.parse(ripreeAuthority)];
+    expect(() => resolveSourceDefinitions([], twice)).toThrow(/es-miteco/);
+  });
+
   it("keeps an inline authority local to its source", () => {
     const { authorityId: _omitted, ...withoutAuthorityId } = baseDescriptor;
     const descriptor = sourceDescriptorSchema.parse({

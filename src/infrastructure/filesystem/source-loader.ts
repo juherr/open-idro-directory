@@ -49,6 +49,10 @@ export async function loadSourceDescriptors(): Promise<SourceDescriptor[]> {
     if (!parsed.success) {
       throw new Error(`Invalid source descriptor ${file}: ${parsed.error.message}`);
     }
+    const duplicate = descriptors.find((descriptor) => descriptor.id === parsed.data.id);
+    if (duplicate) {
+      throw new Error(`Duplicate source id ${parsed.data.id} in ${file}.`);
+    }
     descriptors.push(parsed.data);
   }
   return descriptors;

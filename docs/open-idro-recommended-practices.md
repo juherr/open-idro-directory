@@ -6,20 +6,16 @@ stated publicly about their own registers, and what this project observes while
 consuming those registers.
 
 The title says "recommended practices" rather than "best practices" deliberately.
-The recommendations rest on a limited evidence base and have not been validated
-across the sector; the stronger label would claim a consensus that does not exist
-yet.
+This working draft rests on a limited set of observed registers and has not been
+reviewed or endorsed by a representative group of IDROs, a standards body, or a
+European institution. It therefore offers practical guidance rather than describing
+a sector-wide consensus, and its wording is expected to change if a public
+consultation takes place.
 
 Open IDRO Directory is an independent aggregation project. It does not issue
 e-mobility identifiers, does not appoint IDROs, and holds no regulatory mandate.
 This document is guidance, not a compliance requirement, not a standard, and not
 legal advice. Nothing here creates an obligation for any organisation.
-
-This is a working draft. It has not been reviewed or endorsed by a representative
-group of national IDROs, by a standards body, or by a European institution. It
-describes practices observed across a limited set of registers, not a sector-wide
-consensus. A stronger status would require a public consultation with IDRO
-organisations, and the wording here is expected to change if one takes place.
 
 Recommendations use `should`. Statements about registers that already exist use the
 present indicative and are verifiable from the sources this repository configures.
@@ -55,8 +51,9 @@ tooling.
   See [data-model.md](data-model.md) for the split this project applies.
 - **Transparency and auditability**: a publication date, a change history, and a
   stated reuse basis let a consumer explain where a value came from.
-- **Interoperability**: identifiers should be usable across eMI3 schemes, OCPI, and
-  national access points without a private translation table.
+- **Interoperability**: identifier syntax, semantics, and any published mappings to
+  eMI3, OCPI, or relevant national publication profiles should be documented
+  publicly rather than maintained in private translation tables.
 - **Registers are not directories**: an official register asserts that an identifier
   was assigned. A directory lists registers. The European Alternative Fuels
   Observatory's Identification Registration Repository is a directory of registries,
@@ -82,12 +79,12 @@ Correspondence with IDRO representatives is not reproduced. Only points stated o
 confirmed publicly, or verifiable from published sources, are recorded here. No
 individual is named; the table below cites organisations and public issue numbers.
 
-| Feedback received                                                                       | Public reference                                                     | Resulting practice                                                     |
-| --------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| Finnish entries published by this project were incomplete against the official register | [issue #42](https://github.com/juherr/open-idro-directory/issues/42) | Publish every issued identifier, not a filtered subset                 |
-| Traficom is the Finnish IDRO; Fintraffic separately operates the National Access Point  | [issue #47](https://github.com/juherr/open-idro-directory/issues/47) | State the IDRO role explicitly and distinguish it from NAP publication |
-| TII is the Irish IDRO under S.I. No. 52 of 2026 and publishes under CC BY 4.0           | [issue #45](https://github.com/juherr/open-idro-directory/issues/45) | Publish the appointing instrument and the exact attribution wording    |
-| Authority, register, and publication were conflated in source metadata                  | [issue #46](https://github.com/juherr/open-idro-directory/issues/46) | Model and publish the three identities separately                      |
+| Feedback received                                                                       | Public reference                                                     | Resulting practice                                                                                                    |
+| --------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Finnish entries published by this project were incomplete against the official register | [issue #42](https://github.com/juherr/open-idro-directory/issues/42) | Publish every identifier currently in force without filtering, and retain the lifecycle history of issued identifiers |
+| Traficom is the Finnish IDRO; Fintraffic separately operates the National Access Point  | [issue #47](https://github.com/juherr/open-idro-directory/issues/47) | State the IDRO role explicitly and distinguish it from NAP publication                                                |
+| TII is the Irish IDRO under S.I. No. 52 of 2026 and publishes under CC BY 4.0           | [issue #45](https://github.com/juherr/open-idro-directory/issues/45) | Publish the appointing instrument and the exact attribution wording                                                   |
+| Authority, register, and publication were conflated in source metadata                  | [issue #46](https://github.com/juherr/open-idro-directory/issues/46) | Model and publish the three identities separately                                                                     |
 
 Counts quoted throughout this document describe the 20 sources configured in this
 repository at the time of writing. `data/sources.json` is the authoritative record of
@@ -144,8 +141,9 @@ publications.
   project marks an entry that disappears from an official source as `INACTIVE` with
   `metadata.inactiveReason`, and, as stated in [source-policy.md](source-policy.md),
   does not interpret disappearance as revocation.
-- **Per-entry fields** (`Minimum`): identifier, role, organisation name, legal name,
-  and status; assignment date and last change date at `Advanced`.
+- **Per-entry fields** (`Minimum`): identifier, role, organisation name, and legal
+  name. Lifecycle status is added at `Good`, and assignment and change dates at
+  `Advanced`.
 - **Explicit lifecycle status** (`Good`): publish a status per entry rather than
   implying it by presence in the list. Of the configured sources, only the French
   AFIREV register publishes a detailed lifecycle status; the others expose none, so
@@ -156,9 +154,11 @@ publications.
   native vocabulary is more useful than an imported one. This project maps source
   values onto `ACTIVE`, `INACTIVE`, `RESERVED`, `REVOKED`, and `UNKNOWN` for
   aggregation; that set is not proposed as a standard for national registers.
-- **Publication and update dates** (`Minimum`): date the register page, and date each
-  entry's last change. A register without a date cannot be distinguished from a stale
+- **Register publication date** (`Minimum`): publish the register's publication or
+  last-update date. A register without a date cannot be distinguished from a stale
   copy.
+- **Per-entry change dates** (`Advanced`): publish the assignment date and the last
+  change date for each entry, so that a consumer can tell which rows moved.
 - **Authoritative-source notice** (`Minimum`): state what the page is, which
   organisation operates it, under which appointment, and where to report an error.
   This is the cheapest capability in this document and the one most often missing.
@@ -322,8 +322,10 @@ definitions are in [data-model.md](data-model.md).
 - **Syntax validation at assignment** (`Minimum`): check that the country code is
   ISO 3166-1 alpha-2 and matches the issuing jurisdiction, that the party identifier
   respects a published length and character set, and that case normalization is
-  stated. This project composes `eMobilityId` as `countryCode + partyId`; see
-  [data-model.md](data-model.md).
+  stated. An eMI3 party ID is exactly three uppercase alphanumeric characters, so a
+  register that issues or republishes anything else produces identifiers its
+  consumers will refuse; this project rejects them at ingestion. See "Identifier
+  Validity" in [data-model.md](data-model.md).
 - **Duplicate detection** (`Minimum`): reject a repeated country code, party
   identifier, and role combination at assignment and at publication.
 - **Mandatory-field checks** (`Minimum`): reject an incomplete row rather than
@@ -343,8 +345,13 @@ definitions are in [data-model.md](data-model.md).
   response time, and how the outcome is recorded. Source owners may also request
   corrections from aggregators; see [source-policy.md](source-policy.md).
 - **Audit trail** (`Advanced`): record the assignment date, every change date, the
-  reason for a change, and retain history. A row should never be deleted silently; it
-  should move to a terminal status.
+  reason for a change, and retain history. A previously published valid record should
+  not disappear silently: it should either move to a terminal status or be
+  accompanied by a correction event explaining why it was withdrawn. The second case
+  covers a genuine publication error -- a duplicate, or a row that was never a valid
+  assignment -- which has no terminal lifecycle status to move to. This project keeps
+  an append-only history of the identifiers it refuses for exactly that reason; see
+  "Identifier Validity" in [data-model.md](data-model.md).
 - **Distinguish why a record changed** (`Advanced`): correcting an erroneous value is
   not the same event as a legal-name change, a role being added or removed, a
   suspension, a revocation, an expiry, or a transfer between legal entities, and a

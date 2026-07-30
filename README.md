@@ -187,6 +187,10 @@ machine-readable exports, explicit reuse terms, data quality, and progressive
 maturity levels. It is derived from public feedback and from registers this
 project consumes; it is a working draft, not a compliance standard.
 
+`docs/current-landscape.md` records what those registers publish today, in formats
+and counts. It is kept separate so the guidance can stay stable while the observed
+landscape changes.
+
 ## Contributing
 
 Read `docs/adding-a-source.md` before adding a connector. Use official APIs or downloads before HTML parsing, keep connector-specific logic isolated, and add deterministic fixture tests.

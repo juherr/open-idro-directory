@@ -86,12 +86,12 @@ individual is named; the table below cites organisations and public issue number
 | TII is the Irish IDRO under S.I. No. 52 of 2026 and publishes under CC BY 4.0           | [issue #45](https://github.com/juherr/open-idro-directory/issues/45) | Publish the appointing instrument and the exact attribution wording                                                   |
 | Authority, register, and publication were conflated in source metadata                  | [issue #46](https://github.com/juherr/open-idro-directory/issues/46) | Model and publish the three identities separately                                                                     |
 
-Every count quoted in this document is a snapshot of the 20 sources configured in
-this repository as of the `data/sources.json` generated on 2026-07-27, and is not
-updated as the repository changes. Read `data/sources.json` for the current figures;
-it is the authoritative record of what the project consumes. Generating these counts
-instead of hand-writing them is tracked in
-[issue #74](https://github.com/juherr/open-idro-directory/issues/74).
+This document states what a register should publish, not how many currently do. The
+recommendations are meant to stay valid for years, while the registers they describe
+change every few weeks, so counts, per-country comparisons, and format tallies live
+in [current-landscape.md](current-landscape.md) and evolve independently. Examples
+appear here only where they are durable and where the practice is the publisher's to
+claim.
 
 ## Core IDRO Information
 
@@ -120,10 +120,9 @@ instead of hand-writing them is tracked in
   consumer who understands the procedure can interpret a missing identifier
   correctly.
 
-Roles must be covered completely to be usable. Of the 20 configured sources, 18
-declare both CPO and eMSP registers; two publish CPO identifiers only, so an eMSP
-holding a national identifier has no public national record through those
-publications.
+Role coverage should be complete to be usable. Where a register publishes one role
+and not another, an identifier holder in the missing role has no public national
+record, however correctly the identifier was assigned.
 
 ## Public Registry Publication
 
@@ -148,10 +147,10 @@ publications.
   name. Lifecycle status is added at `Good`, and assignment and change dates at
   `Advanced`.
 - **Explicit lifecycle status** (`Good`): publish a status per entry rather than
-  implying it by presence in the list. Of the configured sources, only the French
-  AFIREV register publishes a detailed lifecycle status; the others expose none, so
-  connectors normalize current rows to `ACTIVE`. See "Status Normalization" in
-  [source-limitations.md](source-limitations.md).
+  implying it by presence in the list. Few currently observed registers expose an
+  explicit status, so a consumer has to assume that every row it can see is active
+  -- an assumption that is silently wrong the moment one is not. See "Status
+  Normalization" in [source-limitations.md](source-limitations.md).
 - **Documented status semantics** (`Good`): publish the meaning of each native status
   value and, at `Advanced`, the transitions permitted between them. A documented
   native vocabulary is more useful than an imported one. This project maps source
@@ -171,24 +170,29 @@ publications.
 | Format                | Purpose                          | Introduced at              | Notes                                                                                |
 | --------------------- | -------------------------------- | -------------------------- | ------------------------------------------------------------------------------------ |
 | HTML register page    | Human consultation               | `Minimum`                  | Crawlable and linkable, without a CAPTCHA or a login                                 |
-| CSV export            | Tabular reuse                    | `Good`                     | UTF-8, RFC 4180, documented delimiter; Poland publishes semicolon-delimited CSV      |
-| XLSX workbook         | Tabular reuse in office tooling  | `Good`                     | Should not be the only structured form; Sweden publishes two role-specific workbooks |
+| CSV export            | Tabular reuse                    | `Good`                     | UTF-8, RFC 4180, documented delimiter -- a non-comma delimiter needs stating         |
+| XLSX workbook         | Tabular reuse in office tooling  | `Good`                     | Should not be the only structured form; one workbook per role needs a documented set |
 | JSON or NDJSON export | Programmatic reuse               | `Advanced`                 | Documented schema and stable field names                                             |
 | Read-only HTTP API    | Query and integration            | `Advanced`                 | Publicly accessible, versioned, documented, with predictable access conditions       |
 | Interoperable profile | Cross-border and roaming tooling | `Reference implementation` | See [Interoperability](#interoperability)                                            |
 | PDF                   | Legal archive                    | not applicable             | Not a machine-readable format; suitable beside a data export, not instead of one     |
 
-Of the 20 configured sources, 13 expose a stable machine-readable URL and 7 require
-HTML or PDF parsing. The Irish and Portuguese registers are published only as PDF and
-require Poppler `pdftotext` for extraction. The Irish register URL encodes its
-publication date, so every new edition changes the URL and breaks a stored link; a
-stable "latest" URL beside a dated archive avoids that.
+Two patterns are worth calling out because they cost consumers the most, and both
+are cheap to avoid.
 
-Several endpoints this project consumes are private application interfaces rather
-than documented public ones: the Austrian public application supplies an API key from
-its client bundle, the Latvian access point wraps an HTML table inside a JSON
-response, and the Swiss register is read from a generated site page-data path. These
-can change without notice and without a redirect.
+A register URL that encodes its edition or publication date changes with every new
+edition, so every stored link breaks and every consumer silently keeps reading the
+previous one. Publishing a stable "latest" URL beside the dated archive fixes it
+without giving up the archive.
+
+An endpoint that exists to serve a register's own web front end is not a published
+interface. It can change shape, move, or start requiring a key at any time, and
+nothing was promised. Where a register is machine-readable in practice, saying so
+explicitly and documenting the endpoint costs little and turns an accident into a
+contract.
+
+For which registers currently publish in which format, see
+[current-landscape.md](current-landscape.md).
 
 Further recommendations:
 
@@ -335,10 +339,10 @@ definitions are in [data-model.md](data-model.md).
 - **Carry the reuse terms inside the export** (`Reference implementation`): a
   consumer that receives only the file should still be able to read the licence or
   legal basis and the attribution notice.
-- **Public availability is not permission.** Of the 20 configured sources, 16 publish
-  no reuse terms and are recorded as `unspecified`; three publish an explicit licence
-  and one relies on a statutory basis. This project displays `unspecified` explicitly
-  and does not treat it as open data.
+- **Public availability is not permission.** Most currently observed registers
+  publish no reuse terms at all. This project records those as `unspecified`,
+  displays it explicitly, and does not treat them as open data -- which means a
+  register that says nothing gets less reuse than its publisher probably intends.
 
 ## Data Quality And Validation
 
@@ -355,15 +359,18 @@ definitions are in [data-model.md](data-model.md).
   publish it with empty fields. An empty organisation name is indistinguishable from
   an unnamed holder.
 - **Role validation** (`Good`): publish one row per role, or an explicit multi-role
-  field, rather than a combined type. AFIREV publishes a `BOTH` type, which this
-  project expands into separate CPO and eMSP records -- an expansion the register
-  could express directly.
+  field, rather than a combined type such as "both". A combined value has to be
+  expanded by every consumer independently, and each one has to guess whether the
+  two resulting entries share a lifecycle.
 - **Published validation rules** (`Advanced`): publish the syntax and role rules the
   register enforces, so that an applicant can pre-validate and a consumer can detect
   an anomaly.
 - **Cross-register conflicts** (`Advanced`): flag identifiers that another register
-  also publishes. EV Roam cross-registers Irish identifiers issued by TII; this
-  project keeps those entries separate and non-authoritative rather than merging them.
+  also publishes, and state which register issued them. Cross-registration is
+  legitimate and common between neighbouring or historically linked jurisdictions;
+  what breaks a consumer is not being told which entry is the assignment and which
+  is the copy. This project keeps such entries separate and non-authoritative rather
+  than merging them.
 - **Correction and dispute process** (`Advanced`): publish the route, the expected
   response time, and how the outcome is recorded. Source owners may also request
   corrections from aggregators; see [source-policy.md](source-policy.md).
@@ -427,11 +434,10 @@ gated behind the workflow tooling, an account, or a payment system.
   credentials exchange and does not carry legal appointment, registry authority,
   provenance, reuse conditions, assignment dates, lifecycle history, correction
   history, or publication versions. The authoritative registry model should stay
-  independent of the OCPI credentials workflow and retain that metadata. One
-  configured source is read over OCPI today -- Via Lietuva's `ocpi/2.3.0/locations`
-  endpoint -- but it yields CPO party identifiers derived from charging locations,
-  not an eMSP register; that is a workaround for a missing register export. A
-  publication profile is being drafted in
+  independent of the OCPI credentials workflow and retain that metadata. Deriving
+  party identifiers from an OCPI locations endpoint, which this project does where no
+  register export exists, is a workaround rather than a profile: it only surfaces the
+  roles that operate charging locations. A publication profile is being drafted in
   [issue #48](https://github.com/juherr/open-idro-directory/issues/48).
 - **Shared machine-readable format** (`Reference implementation`): a common IDRO
   register format is being drafted in
@@ -519,34 +525,6 @@ about the quality of a register; they are deliberately excluded here.
 | `legalClarity`       | An explicit licence or a cited statutory basis          | Reuse terms, attribution notice        |
 | `stability`          | URL and schema durability across editions               | Stable register URL, documented schema |
 
-## Observed National Practices
-
-The examples below describe what a register publishes. They are not an endorsement,
-not a ranking, and not a comparison of national performance. They can change without
-notice, and per-source detail is not repeated here.
-
-| Practice                                     | Where observed              | What is verifiable                                                         |
-| -------------------------------------------- | --------------------------- | -------------------------------------------------------------------------- |
-| Explicit open licence on the register        | Finland, Ireland, Lithuania | Licence terms linked from the publisher's own reuse page                   |
-| Required attribution wording published       | Ireland                     | The exact notice appears in the public-sector information policy           |
-| Statutory reuse basis instead of a licence   | Spain                       | Law 37/2007, cited by its ELI identifier                                   |
-| Appointing instrument published              | Ireland                     | S.I. No. 52 of 2026 in the Irish Statute Book                              |
-| Detailed lifecycle status in the export      | France                      | `ACTIVE`, `INACTIVE`, and `SUSPENDED` values in the public JSON            |
-| Structured export of the identifier register | Benelux, Croatia, Poland    | Public CSV export endpoints                                                |
-| Role-specific structured workbooks           | Sweden                      | Separate CPO and eMSP XLSX registers                                       |
-| Standards-based endpoint                     | Lithuania                   | OCPI 2.3.0 locations endpoint, CPO identifiers only                        |
-| Register published as PDF                    | Ireland, Portugal           | Text extraction required; the Irish file name encodes its publication date |
-| No public identifier list identified         | Cyprus                      | The source is configured but disabled                                      |
-
-Two clarifications. The Croatian entry cites the structure of the export, not its
-contents; it currently yields no records in the generated dataset. And a register can
-be legally impeccable while sitting low on the maturity ladder -- the two axes are
-independent.
-
-Per-source formats, coverage, and limitations are recorded in
-[source-limitations.md](source-limitations.md), and the current state of every
-configured source is in `data/sources.json`.
-
 ## Open Legal And Regulatory Questions
 
 The questions below cannot be resolved by this project. Each requires validation by
@@ -554,7 +532,7 @@ the competent national authority or by legal counsel. They are stated as questio
 not as positions, and this document takes no view on any of them.
 
 - **Does public availability of a national register imply a right to redistribute
-  it?** Sixteen of the 20 configured sources publish no reuse terms. This project
+  it?** Most currently observed registers publish no reuse terms. This project
   records them as `unspecified` and does not treat them as open data.
 - **Which open-data or public-sector-information regime applies to an IDRO
   register?** Directive (EU) 2019/1024 and its national transpositions may or may not
@@ -570,9 +548,10 @@ not as positions, and this document takes no view on any of them.
   where it is legally permitted.
 - **May a register be redistributed under terms other than the ones it carries?**
   Attribution notices constrain the form of downstream publication.
-- **Which register is authoritative when two publish the same identifier?** Irish
-  identifiers appear both in TII's register and in EV Roam's cross-register listing.
-  This project keeps both and does not arbitrate.
+- **Which register is authoritative when two publish the same identifier?** Registers
+  in neighbouring or historically linked jurisdictions do cross-register each other's
+  identifiers. This project keeps both entries, records which register issued the
+  identifier, and does not arbitrate.
 - **What is the legal status of an identifier that disappears from a register?** This
   project does not treat disappearance as revocation.
 - **May an aggregator publish a corrected value when a register contains an evident
@@ -613,6 +592,9 @@ register.
 
 ## Related Documentation
 
+- [current-landscape.md](current-landscape.md) -- what the registers this project
+  consumes currently publish, in formats and counts, kept separate so that it can
+  change without destabilising the guidance above.
 - [source-authority.md](source-authority.md) -- authority levels, observation types,
   and national responsibility boundaries.
 - [source-policy.md](source-policy.md) -- source acquisition, provenance, and

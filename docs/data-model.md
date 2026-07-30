@@ -23,12 +23,26 @@ These patterns live in `src/domain/emi3-identifier.ts` and are the single source
 of truth for the zod schemas, the record validator, and the generated JSON
 Schemas.
 
-Records that fail the rule are excluded from `data/registry.*` and collected in
-`data/registry-invalid.json` with their reason codes (`INVALID_COUNTRY`,
-`INVALID_PARTY_ID`). `data/stats.json` reports them as counters
-(`totalInvalidRecords`, `invalidRecordsByReason`, `invalidRecordsByRegistry`),
-never as entries. The file is regenerated on every build and is normally empty;
-a non-empty list signals an upstream or connector regression.
+A row can be refused at two stages, and `data/registry-invalid.json` reports
+both:
+
+- `records`: rows a connector normalized into a record whose identifier then
+  failed the rule, with their reason codes (`INVALID_COUNTRY`,
+  `INVALID_PARTY_ID`). Counted by `totalInvalidRecords`,
+  `invalidRecordsByReason`, and `invalidRecordsByRegistry`.
+- `rows`: raw upstream values a connector could not split into a country code
+  and a party ID at all, so they never became a record. Each carries its
+  `registryId`, the connector issue `code`, the rejected `sourceValue`, and the
+  message. Counted by `totalRejectedRows` and `rejectedRowsByRegistry`.
+
+The two are counted separately because they mean different things: a rejected
+row is upstream data the pipeline could not read, an invalid record is data it
+read and then refused. Rejected rows are only reported for sources whose run was
+actually ingested -- a source that fails its safety thresholds republishes its
+previous records, so its discarded rows would describe nothing.
+
+Excluded entries never appear in `data/registry.*`. The file is regenerated on
+every build; a non-empty list signals an upstream or connector regression.
 
 The rule applies to the official registry pipeline only. Complementary
 observations use other identifier schemes with their own length rules.

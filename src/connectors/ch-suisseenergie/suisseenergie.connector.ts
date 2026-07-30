@@ -90,6 +90,7 @@ export class SuisseEnergieConnector implements RegistryConnector<SuisseEnergiePr
           sourceId: input.source.id,
           code: "SUISSEENERGIE_MALFORMED_IDENTIFIER",
           message: `Unexpected SuisseEnergie identifier syntax: ${sourceRecord.digitId}`,
+          rejectedIdentifier: sourceRecord.digitId,
         });
         continue;
       }

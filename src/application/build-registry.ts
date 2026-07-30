@@ -3,13 +3,17 @@ import { createConnector } from "../connectors/index.js";
 import type {
   InvalidRegistryRecordEntry,
   NormalizedRegistryRecord,
+  RejectedSourceRow,
 } from "../domain/registry-record.js";
 import type { SourceBuildResult } from "../domain/source-result.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
 import { readCurrentSnapshot } from "../infrastructure/filesystem/raw-snapshot.js";
 import { fromRoot } from "../infrastructure/filesystem/paths.js";
 import { writeDatasets } from "../infrastructure/serialization/serializers.js";
-import { partitionRecordsByIdentifierValidity } from "../validation/identifier-validator.js";
+import {
+  partitionRecordsByIdentifierValidity,
+  toRejectedSourceRows,
+} from "../validation/identifier-validator.js";
 import { validateRegistry } from "../validation/registry-validator.js";
 import { checkSafetyThresholds } from "../validation/safety-thresholds.js";
 import { mergeGeneratedRecords } from "./generated-record-merge.js";
@@ -29,6 +33,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   const results: SourceBuildResult[] = [];
   const records: NormalizedRegistryRecord[] = [];
   const invalidRecords: InvalidRegistryRecordEntry[] = [];
+  const rejectedRows: RejectedSourceRow[] = [];
   for (const source of selected) {
     const connector = createConnector(source);
     try {
@@ -53,14 +58,15 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
         snapshot.body,
       );
       const errors = [...parsed.errors, ...normalized.errors, ...safety];
-      const resultRecords = errors.some((issue) => issue.severity === "error")
-        ? previous
-        : mergeGeneratedRecords(
-            source,
-            previous,
-            normalized.records,
-            snapshot.metadata.retrievedAt,
-          );
+      const ingested = !errors.some((issue) => issue.severity === "error");
+      const resultRecords = ingested
+        ? mergeGeneratedRecords(source, previous, normalized.records, snapshot.metadata.retrievedAt)
+        : previous;
+      const warnings = [...parsed.warnings, ...normalized.warnings];
+      // Rows the connector could not turn into an identifier are only reported
+      // when this run was actually ingested. A failed source republishes its
+      // previous records, so its discarded rows would describe nothing.
+      if (ingested) rejectedRows.push(...toRejectedSourceRows(source.id, warnings));
       // Partitioning after the merge also cleans records carried over from the
       // previous dataset, which is where retained tombstones come from. Safety
       // thresholds keep comparing unfiltered connector output, so an exclusion
@@ -71,7 +77,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
       results.push({
         sourceId: source.id,
         records: publishable.valid,
-        warnings: [...parsed.warnings, ...normalized.warnings],
+        warnings,
         errors,
         retrievedAt: snapshot.metadata.retrievedAt,
         checksum: snapshot.metadata.checksum,
@@ -115,6 +121,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     generatedAt,
     options.outputDir,
     invalidRecords,
+    rejectedRows,
   );
   if (registryIssues.some((issue) => issue.severity === "error")) {
     throw new Error(
@@ -132,6 +139,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   return {
     records: policyRecords,
     invalidRecords,
+    rejectedRows,
     results: policyResults,
     issues: registryIssues,
   };

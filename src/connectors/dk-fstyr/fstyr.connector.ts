@@ -96,6 +96,7 @@ export class FstyrConnector implements RegistryConnector<FstyrHtmlRow> {
             sourceId: input.source.id,
             code: "FSTYR_MALFORMED_IDENTIFIER",
             message: `Unexpected Danish IDRO identifier syntax: ${identifier.sourceValue}`,
+            rejectedIdentifier: identifier.sourceValue,
           });
           continue;
         }

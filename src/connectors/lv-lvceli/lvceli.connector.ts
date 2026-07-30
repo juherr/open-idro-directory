@@ -86,6 +86,7 @@ export class LvceliConnector implements RegistryConnector<LvceliRow> {
             sourceId: input.source.id,
             code: "LVCELI_MALFORMED_IDENTIFIER",
             message: `Unexpected Latvian IDRO identifier syntax: ${identifier.sourceValue}`,
+            rejectedIdentifier: identifier.sourceValue,
           });
           continue;
         }

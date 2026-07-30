@@ -4,6 +4,7 @@ import { isValidEmi3Identifier } from "../../domain/emi3-identifier.js";
 import type {
   InvalidRegistryRecordEntry,
   NormalizedRegistryRecord,
+  RejectedSourceRow,
 } from "../../domain/registry-record.js";
 import type { SourceBuildResult } from "../../domain/source-result.js";
 import {
@@ -15,6 +16,7 @@ import {
 export interface GeneratedStats {
   totalRecords: number;
   totalInvalidRecords: number;
+  totalRejectedRows: number;
   recordsByCountry: Record<string, number>;
   recordsByCountryRole: Record<string, Record<string, number>>;
   recordsByRole: Record<string, number>;
@@ -22,6 +24,7 @@ export interface GeneratedStats {
   recordsByRegistry: Record<string, number>;
   invalidRecordsByReason: Record<string, number>;
   invalidRecordsByRegistry: Record<string, number>;
+  rejectedRowsByRegistry: Record<string, number>;
   staleSources: string[];
   generatedAt: string;
 }
@@ -33,6 +36,7 @@ export async function writeDatasets(
   generatedAt: string,
   outputDir = fromRoot("data"),
   invalid: InvalidRegistryRecordEntry[] = [],
+  rejected: RejectedSourceRow[] = [],
 ) {
   await mkdir(outputDir, { recursive: true });
   const sorted = sortRecords(records);
@@ -50,9 +54,10 @@ export async function writeDatasets(
   );
   await writeFile(`${outputDir}/registry.csv`, toCsv(sorted));
   const sortedInvalid = sortInvalidRecords(invalid);
+  const sortedRejected = sortRejectedRows(rejected);
   await writeFile(
     `${outputDir}/registry-invalid.json`,
-    `${JSON.stringify({ generatedAt, records: sortedInvalid }, null, 2)}\n`,
+    `${JSON.stringify({ generatedAt, records: sortedInvalid, rows: sortedRejected }, null, 2)}\n`,
   );
   await writeFile(
     `${outputDir}/sources.json`,
@@ -60,7 +65,7 @@ export async function writeDatasets(
   );
   await writeFile(
     `${outputDir}/stats.json`,
-    `${JSON.stringify(toStats(sorted, sortedInvalid, results, generatedAt), null, 2)}\n`,
+    `${JSON.stringify(toStats(sorted, sortedInvalid, sortedRejected, results, generatedAt), null, 2)}\n`,
   );
 }
 
@@ -70,6 +75,15 @@ export function sortRecords(records: NormalizedRegistryRecord[]) {
 
 export function sortInvalidRecords(entries: InvalidRegistryRecordEntry[]) {
   return [...entries].sort((a, b) => compareRecords(a.record, b.record));
+}
+
+export function sortRejectedRows(rows: RejectedSourceRow[]) {
+  return [...rows].sort(
+    (a, b) =>
+      a.registryId.localeCompare(b.registryId) ||
+      a.sourceValue.localeCompare(b.sourceValue) ||
+      a.code.localeCompare(b.code),
+  );
 }
 
 function compareRecords(a: NormalizedRegistryRecord, b: NormalizedRegistryRecord) {
@@ -176,12 +190,14 @@ export function toSourceMetadata(source: SourceDefinition) {
 function toStats(
   records: NormalizedRegistryRecord[],
   invalid: InvalidRegistryRecordEntry[],
+  rejected: RejectedSourceRow[],
   results: SourceBuildResult[],
   generatedAt: string,
 ): GeneratedStats {
   return {
     totalRecords: records.length,
     totalInvalidRecords: invalid.length,
+    totalRejectedRows: rejected.length,
     recordsByCountry: countBy(records, (record) => record.countryCode),
     recordsByCountryRole: countByCountryRole(records),
     recordsByRole: countBy(records, (record) => record.role),
@@ -192,6 +208,7 @@ function toStats(
       (reason) => reason,
     ),
     invalidRecordsByRegistry: countBy(invalid, (entry) => entry.record.source.registryId),
+    rejectedRowsByRegistry: countBy(rejected, (row) => row.registryId),
     staleSources: results
       .filter((result) => result.stale)
       .map((result) => result.sourceId)

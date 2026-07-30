@@ -82,6 +82,7 @@ export class RipreeConnector implements RegistryConnector<RipreeXmlRow> {
           sourceId: input.source.id,
           code: "RIPREE_MALFORMED_IDENTIFIER",
           message: `Unexpected Spanish RIPREE identifier syntax: ${sourceRecord.sourceValue}`,
+          rejectedIdentifier: sourceRecord.sourceValue,
         });
         continue;
       }

@@ -95,6 +95,7 @@ export class MobieConnector implements RegistryConnector<MobieRow> {
             sourceId: input.source.id,
             code: "MOBIE_MALFORMED_IDENTIFIER",
             message: `Unexpected MOBI.E identifier syntax: ${identifier.sourceValue}`,
+            rejectedIdentifier: identifier.sourceValue,
           });
           continue;
         }

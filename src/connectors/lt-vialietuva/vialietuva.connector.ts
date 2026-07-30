@@ -83,6 +83,7 @@ export class VialietuvaConnector implements RegistryConnector<VialietuvaLocation
           sourceId: input.source.id,
           code: "VIALIETUVA_MALFORMED_IDENTIFIER",
           message: `Unexpected Via Lietuva identifier syntax: ${sourceRecord.country_code}-${sourceRecord.party_id}`,
+          rejectedIdentifier: `${sourceRecord.country_code}-${sourceRecord.party_id}`,
         });
         continue;
       }

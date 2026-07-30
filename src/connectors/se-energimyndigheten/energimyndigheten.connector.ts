@@ -77,6 +77,7 @@ export class EnergimyndighetenConnector implements RegistryConnector<Energimyndi
           sourceId: input.source.id,
           code: "ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER",
           message: `Unexpected Swedish Energy Agency identifier syntax: ${sourceRecord.sourceValue}`,
+          rejectedIdentifier: sourceRecord.sourceValue,
         });
         continue;
       }

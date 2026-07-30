@@ -1,6 +1,7 @@
 {
   "totalRecords": 8062,
   "totalInvalidRecords": 4,
+  "totalRejectedRows": 0,
   "recordsByCountry": {
     "AT": 1113,
     "BE": 362,
@@ -138,6 +139,7 @@
   "invalidRecordsByRegistry": {
     "se-energimyndigheten": 4
   },
+  "rejectedRowsByRegistry": {},
   "staleSources": [],
   "generatedAt": "2026-07-27T06:44:15.562Z"
 }

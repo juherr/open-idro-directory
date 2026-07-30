@@ -96,6 +96,7 @@ export class TraficomConnector implements RegistryConnector<TraficomHtmlRow> {
             sourceId: input.source.id,
             code: "TRAFICOM_MALFORMED_IDENTIFIER",
             message: `Unexpected Traficom identifier syntax: ${identifier.sourceValue}`,
+            rejectedIdentifier: identifier.sourceValue,
           });
           continue;
         }

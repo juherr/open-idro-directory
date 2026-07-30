@@ -52,6 +52,17 @@ export interface InvalidRegistryRecordEntry {
   record: NormalizedRegistryRecord;
 }
 
+// Upstream rows rejected earlier, by a connector, because their raw value could
+// not be split into a country code and a party ID at all. They never become a
+// record, so they are reported next to the invalid records rather than among
+// them.
+export interface RejectedSourceRow {
+  registryId: string;
+  code: string;
+  sourceValue: string;
+  message: string;
+}
+
 export function makeRegistryKey(
   registryId: string,
   countryCode: string,

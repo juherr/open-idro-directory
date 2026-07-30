@@ -94,6 +94,7 @@ export class BeneluxIdroConnector implements RegistryConnector<BeneluxCsvRow> {
             sourceId: input.source.id,
             code: "BENELUX_MALFORMED_IDENTIFIER",
             message: `Unexpected Benelux IDRO identifier syntax: ${identifier.sourceValue}`,
+            rejectedIdentifier: identifier.sourceValue,
           });
           continue;
         }

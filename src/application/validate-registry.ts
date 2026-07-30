@@ -83,9 +83,22 @@ const registryInvalidSchema = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   title: "InvalidRegistryDataset",
   type: "object",
-  required: ["generatedAt", "records"],
+  required: ["generatedAt", "records", "rows"],
   properties: {
     generatedAt: { type: "string" },
+    rows: {
+      type: "array",
+      items: {
+        type: "object",
+        required: ["registryId", "code", "sourceValue", "message"],
+        properties: {
+          registryId: { type: "string" },
+          code: { type: "string" },
+          sourceValue: { type: "string" },
+          message: { type: "string" },
+        },
+      },
+    },
     records: {
       type: "array",
       items: {

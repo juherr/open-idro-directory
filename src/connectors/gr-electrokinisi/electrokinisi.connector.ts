@@ -85,6 +85,7 @@ export class ElectrokinisiConnector implements RegistryConnector<ElectrokinisiHt
           sourceId: input.source.id,
           code: "ELECTROKINISI_MALFORMED_IDENTIFIER",
           message: `Unexpected Greek IDRO identifier syntax: ${sourceRecord.sourceValue}`,
+          rejectedIdentifier: sourceRecord.sourceValue,
         });
         continue;
       }

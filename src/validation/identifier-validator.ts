@@ -2,6 +2,7 @@ import { emi3IdentifierReasons } from "../domain/emi3-identifier.js";
 import type {
   InvalidRegistryRecordEntry,
   NormalizedRegistryRecord,
+  RejectedSourceRow,
 } from "../domain/registry-record.js";
 import type { ValidationIssue } from "../domain/validation-issue.js";
 
@@ -21,6 +22,22 @@ export function partitionRecordsByIdentifierValidity(records: NormalizedRegistry
     else invalid.push({ reasons, record });
   }
   return { valid, invalid };
+}
+
+// Connector issues carrying a rejected raw value are the earlier half of the
+// same story as the invalid records: rows the pipeline refused to publish.
+export function toRejectedSourceRows(
+  registryId: string,
+  issues: ValidationIssue[],
+): RejectedSourceRow[] {
+  return issues
+    .filter((issue) => issue.rejectedIdentifier !== undefined)
+    .map((issue) => ({
+      registryId,
+      code: issue.code,
+      sourceValue: issue.rejectedIdentifier ?? "",
+      message: issue.message,
+    }));
 }
 
 export function validateRecord(record: NormalizedRegistryRecord): ValidationIssue[] {

@@ -84,6 +84,7 @@ export class HuIdroConnector implements RegistryConnector<HuIdroHtmlRow> {
           sourceId: input.source.id,
           code: "HU_IDRO_MALFORMED_IDENTIFIER",
           message: `Unexpected Hungarian IDRO identifier syntax: ${sourceRecord.sourceValue}`,
+          rejectedIdentifier: sourceRecord.sourceValue,
         });
         continue;
       }

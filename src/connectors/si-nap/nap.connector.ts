@@ -93,6 +93,7 @@ export class NapConnector implements RegistryConnector<NapRow> {
             sourceId: input.source.id,
             code: "NAP_MALFORMED_IDENTIFIER",
             message: `Unexpected Slovenian NAP identifier syntax: ${identifier.sourceValue}`,
+            rejectedIdentifier: identifier.sourceValue,
           });
           continue;
         }

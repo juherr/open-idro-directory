@@ -9,11 +9,14 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
-- `data/registry-invalid.json`, a single list of the records excluded from the
-  published datasets because their eMI3 identifier is invalid, each with its
-  reason codes, plus a `schemas/registry-invalid.schema.json` contract.
-- `totalInvalidRecords`, `invalidRecordsByReason`, and `invalidRecordsByRegistry`
-  counters in `data/stats.json`.
+- `data/registry-invalid.json`, a single list of everything the pipeline excluded
+  from the published datasets: `records` whose eMI3 identifier is invalid, and
+  `rows` a connector could not read as an identifier at all. Plus a
+  `schemas/registry-invalid.schema.json` contract.
+- `totalInvalidRecords`, `invalidRecordsByReason`, `invalidRecordsByRegistry`,
+  `totalRejectedRows`, and `rejectedRowsByRegistry` counters in
+  `data/stats.json`. Rows a connector drops were previously reported nowhere, so
+  a source publishing malformed identifiers shrank silently.
 - An authority catalog under `config/authorities/`. An appointed IDRO is now
   described once and referenced by every source it operates, so one organisation
   can back several registries without duplicated metadata.

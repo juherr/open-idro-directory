@@ -92,6 +92,7 @@ describe("Swedish Energy Agency parser", () => {
 
     expect(result.records).toHaveLength(0);
     expect(result.warnings[0]?.code).toBe("ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER");
+    expect(result.warnings[0]?.rejectedIdentifier).toBe("SEALLE");
   });
 
   it("warns and skips non-Swedish identifiers", async () => {

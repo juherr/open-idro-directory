@@ -10,12 +10,36 @@ registryId + ":" + countryCode + ":" + partyId + ":" + role
 
 Organizations are not used as identifiers. Similar names are not merged. Source-specific fields are preserved in `metadata`.
 
-## Source Provenance And Reuse
+## Authority, Registry, And Publication
 
-Each source identifies its authoritative organization, landing page, registry
-URL, and machine-readable URL when one exists. `verifiedAt` records the date of
-the latest editorial verification; generated source health metadata records the
-latest attempted and successful retrievals independently.
+A source descriptor separates three identities that were previously conflated in
+one flat object:
+
+- **Authority** (`config/authorities/<id>.yaml`): the appointed organisation. It
+  carries `level`, `jurisdictions`, and its landing page. An authority is
+  described once; every source it operates references it through `authorityId`,
+  so the same organisation is never duplicated. A source may instead declare an
+  inline `authority` when the organisation backs only that one source.
+- **Registry** (`registry` in the source descriptor): the register the authority
+  operates. It carries the register `url`, the `observationType` its entries
+  represent, and `supportedRoles`. Its optional `jurisdictions` may only narrow
+  the authority's scope, never widen it.
+- **Publication** (`publication` in the source descriptor): the technical
+  resource a connector consumes -- `connector`, `machineReadableUrl`,
+  `refreshSchedule`, `enabled`, `verifiedAt`, and safety thresholds. Several
+  publications may expose the same registry, so freshness belongs here.
+
+`verifiedAt` records the date of the latest editorial verification; generated
+source health metadata records the latest attempted and successful retrievals
+independently.
+
+Authoritativeness is expressed by `authority.level`, not by a boolean. Generated
+data and API responses still carry a derived `official` field, which is exactly
+`authority.level === "AUTHORITATIVE"` and is never the source of truth. A null
+`machineReadableUrl` means no stable machine-readable publication was found, not
+that the registry is absent.
+
+## Source Provenance And Reuse
 
 The `reuse.status` field distinguishes the legal mechanism that applies:
 

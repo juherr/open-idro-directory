@@ -1,3 +1,4 @@
+import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -35,7 +36,7 @@ export class EnergimyndighetenConnector implements RegistryConnector<Energimyndi
       sourceId: this.sourceId,
       body,
       contentType: "application/json",
-      finalUrl: context.source.registryUrl,
+      finalUrl: context.source.registry.url,
       httpStatus: 200,
       retrievedAt: context.retrievedAt,
       checksum: sha256(body),
@@ -113,7 +114,7 @@ export class EnergimyndighetenConnector implements RegistryConnector<Energimyndi
         },
         source: {
           registryId: input.source.id,
-          official: input.source.official,
+          official: isAuthoritative(input.source),
           sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
           sourceUrl: sourceRecord.sourceUrl,
           sourceValue: sourceRecord.sourceValue,
@@ -141,7 +142,7 @@ async function fetchWorkbook(url: string, context: FetchContext) {
     userAgent: context.userAgent,
     headers: {
       Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*",
-      Referer: context.source.homepageUrl,
+      Referer: context.source.authority.homepageUrl,
     },
   });
 

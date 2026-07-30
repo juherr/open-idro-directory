@@ -1,19 +1,18 @@
 id: cy-ems
 name: Cyprus EMS
-authorityName: Department of Electrical and Mechanical Services
-jurisdictions:
-  - CY
-official: true
-homepageUrl: https://www.mcw.gov.cy/mcw/ems/ems.nsf/All/D764FAE19922743BC2258DAA002FA4BC?OpenDocument
-registryUrl: https://www.mcw.gov.cy/mcw/ems/ems.nsf/All/D764FAE19922743BC2258DAA002FA4BC?OpenDocument
-machineReadableUrl: null
-verifiedAt: null
-connector: cy-ems
-enabled: false
-refreshSchedule: weekly
-supportedRoles:
-  - CPO
-  - EMSP
+authorityId: cy-ems
+registry:
+  url: https://www.mcw.gov.cy/mcw/ems/ems.nsf/All/D764FAE19922743BC2258DAA002FA4BC?OpenDocument
+  observationType: OFFICIAL_ASSIGNMENT
+  supportedRoles:
+    - CPO
+    - EMSP
+publication:
+  connector: cy-ems
+  machineReadableUrl: null
+  refreshSchedule: weekly
+  enabled: false
+  verifiedAt: null
 reuse:
   status: unspecified
   legalBasis: null
@@ -22,7 +21,6 @@ reuse:
   redistributionAllowed: null
   notes: No explicit reuse terms have been identified.
 notes: >
-  Placeholder descriptor for Cyprus. The referenced Department of Electrical
-  and Mechanical Services page is a temporary public charging stations page
-  with application documents, but no machine-readable CPO/MSP identifier list
-  has been identified yet.
+  Placeholder descriptor for Cyprus. The referenced Department of Electrical and
+  Mechanical Services page is a temporary public charging stations page with application
+  documents, but no machine-readable CPO/MSP identifier list has been identified yet.

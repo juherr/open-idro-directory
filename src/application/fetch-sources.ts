@@ -11,7 +11,7 @@ export async function fetchSources(
 ) {
   const retrievedAt = new Date().toISOString();
   const selected = sources.filter(
-    (source) => source.enabled && (!options.sourceId || source.id === options.sourceId),
+    (source) => source.publication.enabled && (!options.sourceId || source.id === options.sourceId),
   );
   const userAgent = `open-idro-directory/0.1 (+https://github.com/${options.owner ?? "OWNER"}/open-idro-directory)`;
   const results = [];

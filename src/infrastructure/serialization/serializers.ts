@@ -2,7 +2,11 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { fromRoot } from "../filesystem/paths.js";
 import type { NormalizedRegistryRecord } from "../../domain/registry-record.js";
 import type { SourceBuildResult } from "../../domain/source-result.js";
-import type { SourceDefinition } from "../../domain/source-definition.js";
+import {
+  isAuthoritative,
+  sourceJurisdictions,
+  type SourceDefinition,
+} from "../../domain/source-definition.js";
 
 export interface GeneratedStats {
   totalRecords: number;
@@ -106,12 +110,12 @@ function toSourcesSummary(sources: SourceDefinition[], results: SourceBuildResul
     return {
       ...toSourceMetadata(source),
       health: {
-        stale: result?.stale ?? !source.enabled,
+        stale: result?.stale ?? !source.publication.enabled,
         recordCount: result?.records.length ?? 0,
         lastAttemptedRetrieval: result?.retrievedAt ?? null,
         lastSuccessfulRetrieval: result && !result.latestError ? result.retrievedAt : null,
         checksum: result?.checksum ?? null,
-        freshness: result?.stale ? "stale" : source.enabled ? "current" : "disabled",
+        freshness: result?.stale ? "stale" : source.publication.enabled ? "current" : "disabled",
         latestErrorSummary: result?.latestError ?? null,
       },
     };
@@ -122,16 +126,23 @@ export function toSourceMetadata(source: SourceDefinition) {
   return {
     id: source.id,
     name: source.name,
-    authorityName: source.authorityName,
-    jurisdictions: source.jurisdictions,
-    official: source.official,
-    enabled: source.enabled,
-    homepageUrl: source.homepageUrl,
-    registryUrl: source.registryUrl,
-    machineReadableUrl: source.machineReadableUrl,
-    verifiedAt: source.verifiedAt,
-    connector: source.connector,
-    supportedRoles: source.supportedRoles,
+    authority: source.authority,
+    registry: {
+      url: source.registry.url,
+      observationType: source.registry.observationType,
+      supportedRoles: source.registry.supportedRoles,
+      jurisdictions: sourceJurisdictions(source),
+    },
+    publication: {
+      connector: source.publication.connector,
+      machineReadableUrl: source.publication.machineReadableUrl,
+      refreshSchedule: source.publication.refreshSchedule,
+      enabled: source.publication.enabled,
+      verifiedAt: source.publication.verifiedAt,
+    },
+    // Derived from authority.level, kept so consumers of the previous shape and
+    // the public API keep a single-field answer to "is this the appointed IDRO".
+    official: isAuthoritative(source),
     reuse: source.reuse,
   };
 }

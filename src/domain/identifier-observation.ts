@@ -63,7 +63,7 @@ export const identifierObservationSchema = z.object({
   organization: z.object({
     name: z.string().nullable(),
     legalName: z.string().nullable(),
-    website: z.string().url().nullable(),
+    website: z.url().nullable(),
   }),
   source: z.object({
     sourceId: z.string().min(1),
@@ -71,11 +71,11 @@ export const identifierObservationSchema = z.object({
     observationType: observationTypeSchema,
     sourceRecordId: z.string().nullable(),
     sourceValue: z.string().min(1),
-    sourceUrl: z.string().url(),
-    evidenceUrl: z.string().url().nullable(),
-    firstSeenAt: z.string().datetime(),
-    lastSeenAt: z.string().datetime(),
-    retrievedAt: z.string().datetime(),
+    sourceUrl: z.url(),
+    evidenceUrl: z.url().nullable(),
+    firstSeenAt: z.iso.datetime(),
+    lastSeenAt: z.iso.datetime(),
+    retrievedAt: z.iso.datetime(),
   }),
   confidence: z.object({
     score: z.number().min(0).max(1),

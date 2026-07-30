@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const energimyndighetenWorkbookSchema = z.object({
-  url: z.string().url(),
+  url: z.url(),
   contentBase64: z.string().min(1),
 });
 
@@ -14,7 +14,7 @@ export const energimyndighetenRowSchema = z.object({
   sourceValue: z.string(),
   organizationName: z.string().nullable(),
   role: z.enum(["CPO", "EMSP"]),
-  sourceUrl: z.string().url(),
+  sourceUrl: z.url(),
 });
 
 export type EnergimyndighetenSnapshot = z.infer<typeof energimyndighetenSnapshotSchema>;

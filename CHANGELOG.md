@@ -9,6 +9,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
+- An authority catalog under `config/authorities/`. An appointed IDRO is now
+  described once and referenced by every source it operates, so one organisation
+  can back several registries without duplicated metadata.
+- Nested `authority`, `registry`, and `publication` objects on `/sources`
+  responses and in `data/sources.json`, plus an `authorities` table in the API
+  database.
 - Source-level authoritative provenance, machine-readable URLs, editorial
   verification dates, and explicit reuse mechanisms.
 - A `directory sources` command that refreshes source metadata without
@@ -19,6 +25,27 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Changed
 
+- **Breaking:** source descriptors separate the appointed authority, the registry
+  it operates, and the publication a connector consumes, instead of flattening
+  all three into one object. Pre-existing flat descriptors are still accepted and
+  lifted into the new shape automatically. Authoritativeness is now carried by
+  `authority.level`; the `official` boolean survives in generated data and API
+  responses but is derived from it rather than being the source of truth. No
+  generated identifier record changed.
+- **Breaking:** `data/sources.json` replaces its flat `authorityName`,
+  `jurisdictions`, `homepageUrl`, `registryUrl`, `machineReadableUrl`,
+  `verifiedAt`, `connector`, `supportedRoles`, and `enabled` fields with the
+  nested `authority`, `registry`, and `publication` objects. `official` and
+  `health` are unchanged. The API keeps its flat fields for schema 1.1.x
+  consumers; this dataset artifact does not.
+- Observation rows in the D1 import bundle now take their authority level and
+  observation type from the source descriptor instead of deriving both from a
+  boolean, so a non-`AUTHORITATIVE` source is no longer reported as authoritative.
+  Records a source does not cover, such as the Irish identifiers cross-registered
+  by EV Roam, stay `SECONDARY`.
+- API schema version is now `1.2.0`, and the OpenAPI document version follows the
+  same constant so the body, the `X-Registry-Schema-Version` header, and the
+  document cannot drift apart.
 - **Breaking:** replace the ambiguous source `license` contract with `reuse`,
   distinguishing explicit licences, statutory bases, granted permissions,
   restrictions, and unspecified terms.

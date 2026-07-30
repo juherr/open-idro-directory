@@ -1,19 +1,22 @@
 id: lv-lvceli
 name: LVC IDRO Register
-authorityName: SLLC Latvijas Valsts ceļi
-jurisdictions:
-  - LV
-official: true
-homepageUrl: https://www.transportdata.gov.lv/en/idro
-registryUrl: https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json
-machineReadableUrl: https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json
-verifiedAt: 2026-07-10
-connector: lv-lvceli
-enabled: true
-refreshSchedule: weekly
-supportedRoles:
-  - CPO
-  - EMSP
+authorityId: lv-lvceli
+registry:
+  url: https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json
+  observationType: OFFICIAL_ASSIGNMENT
+  supportedRoles:
+    - CPO
+    - EMSP
+publication:
+  connector: lv-lvceli
+  machineReadableUrl: https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json
+  refreshSchedule: weekly
+  enabled: true
+  verifiedAt: 2026-07-10
+  safety:
+    maxDeletionRatio: 0.3
+    maxChangeRatio: 0.6
+    maxParseErrorRatio: 0.1
 reuse:
   status: unspecified
   legalBasis: null
@@ -22,11 +25,7 @@ reuse:
   redistributionAllowed: null
   notes: No explicit reuse terms have been identified.
 notes: >
-  Authoritative Latvian register maintained by SLLC Latvijas Valsts celi and
-  published through the Latvian National Access Point. The connector parses the
-  public HTML table embedded in the portal JSON response. Open IDRO Directory is
-  an independent aggregation and does not replace the national register.
-safety:
-  maxDeletionRatio: 0.3
-  maxChangeRatio: 0.6
-  maxParseErrorRatio: 0.1
+  Authoritative Latvian register maintained by SLLC Latvijas Valsts celi and published
+  through the Latvian National Access Point. The connector parses the public HTML table
+  embedded in the portal JSON response. Open IDRO Directory is an independent
+  aggregation and does not replace the national register.

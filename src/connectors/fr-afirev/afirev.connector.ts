@@ -1,3 +1,4 @@
+import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -41,7 +42,7 @@ export class AfirevConnector implements RegistryConnector<AfirevRecord> {
       ...(context.previousLastModified ? { lastModified: context.previousLastModified } : {}),
     };
     const response = await getText(
-      context.source.registryUrl,
+      context.source.registry.url,
       {
         timeoutMs: 30_000,
         retries: 2,
@@ -122,9 +123,9 @@ export class AfirevConnector implements RegistryConnector<AfirevRecord> {
           },
           source: {
             registryId: input.source.id,
-            official: input.source.official,
+            official: isAuthoritative(input.source),
             sourceRecordId: prefix,
-            sourceUrl: input.source.homepageUrl,
+            sourceUrl: input.source.authority.homepageUrl,
             sourceValue: sourceRecord.prefixId,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,

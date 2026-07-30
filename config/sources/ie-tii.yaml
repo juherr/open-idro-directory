@@ -1,40 +1,39 @@
 id: ie-tii
 name: TII IDRO Public Register
-authorityName: Transport Infrastructure Ireland
-jurisdictions:
-  - IE
-official: true
-homepageUrl: https://www.tii.ie/en/roads-tolling/alt-fuel-projects-unit/alt-fuels-data-office/register-idro/
-registryUrl: https://www.tii.ie/media/pqigaadi/idro-public-register-19-march-2026.pdf
-machineReadableUrl: null
-verifiedAt: 2026-07-25
-connector: ie-tii
-enabled: true
-refreshSchedule: weekly
-supportedRoles:
-  - CPO
-  - EMSP
+authorityId: ie-tii
+registry:
+  url: https://www.tii.ie/media/pqigaadi/idro-public-register-19-march-2026.pdf
+  observationType: OFFICIAL_ASSIGNMENT
+  supportedRoles:
+    - CPO
+    - EMSP
+publication:
+  connector: ie-tii
+  machineReadableUrl: null
+  refreshSchedule: weekly
+  enabled: true
+  verifiedAt: 2026-07-25
+  safety:
+    maxDeletionRatio: 0.3
+    maxChangeRatio: 1
+    maxParseErrorRatio: 0.1
 reuse:
   status: licensed
   legalBasis: null
   licence:
     name: CC BY 4.0
     url: https://www.tii.ie/en/compliance/reuse-of-public-sector-information/
-  attributionNotice: Contains Irish Public Sector Information licensed under a Creative Commons Attribution 4.0 International (CC BY 4.0) licence
+  attributionNotice: Contains Irish Public Sector Information licensed under a Creative
+    Commons Attribution 4.0 International (CC BY 4.0) licence
   redistributionAllowed: true
   notes: >
-    TII's public-sector information policy excludes personal information,
-    third-party rights that TII is not authorized to license, and TII names,
-    crests, logos, and official symbols.
+    TII's public-sector information policy excludes personal information, third-party
+    rights that TII is not authorized to license, and TII names, crests, logos, and
+    official symbols.
 notes: >
-  The National Roads Authority, operating as Transport Infrastructure Ireland,
-  is appointed as Ireland's IDRO under S.I. No. 52 of 2026
-  (https://www.irishstatutebook.ie/2026/en/si/0052.html). TII publishes the
-  official Irish IDRO public register as a PDF. The connector extracts text from
-  the PDF and normalizes the IDRO-issued party ID for CPO and eMSP rows. Open
-  IDRO Directory is an independent aggregation and is not an official TII
-  service.
-safety:
-  maxDeletionRatio: 0.3
-  maxChangeRatio: 1
-  maxParseErrorRatio: 0.1
+  The National Roads Authority, operating as Transport Infrastructure Ireland, is
+  appointed as Ireland's IDRO under S.I. No. 52 of 2026
+  (https://www.irishstatutebook.ie/2026/en/si/0052.html). TII publishes the official
+  Irish IDRO public register as a PDF. The connector extracts text from the PDF and
+  normalizes the IDRO-issued party ID for CPO and eMSP rows. Open IDRO Directory is an
+  independent aggregation and is not an official TII service.

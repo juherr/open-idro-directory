@@ -1,0 +1,7 @@
+id: gb-evroam
+name: EV Roam
+level: AUTHORITATIVE
+jurisdictions:
+  - GB
+  - IE
+homepageUrl: https://www.evroam.org.uk/

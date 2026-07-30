@@ -21,6 +21,18 @@ export {
   type RegistryStatus,
 } from "../../../src/domain/registry-record.js";
 export {
-  sourceDefinitionSchema,
+  authorityDefinitionSchema,
+  type AuthorityDefinition,
+} from "../../../src/domain/authority-definition.js";
+export {
+  isAuthoritative,
+  publicationDescriptorSchema,
+  registryDescriptorSchema,
+  resolveSourceDefinitions,
+  sourceDescriptorSchema,
+  sourceJurisdictions,
+  type PublicationDescriptor,
+  type RegistryDescriptor,
   type SourceDefinition,
+  type SourceDescriptor,
 } from "../../../src/domain/source-definition.js";

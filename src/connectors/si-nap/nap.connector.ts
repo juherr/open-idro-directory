@@ -1,3 +1,4 @@
+import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -23,7 +24,7 @@ export class NapConnector implements RegistryConnector<NapRow> {
   readonly sourceId = "si-nap";
 
   async fetch(context: FetchContext): Promise<FetchResult> {
-    const response = await getBinary(context.source.registryUrl, {
+    const response = await getBinary(context.source.registry.url, {
       timeoutMs: 30_000,
       retries: 2,
       maxBytes: 2_000_000,
@@ -31,7 +32,7 @@ export class NapConnector implements RegistryConnector<NapRow> {
       userAgent: context.userAgent,
       headers: {
         Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*",
-        Referer: context.source.homepageUrl,
+        Referer: context.source.authority.homepageUrl,
       },
     });
     const body = JSON.stringify({
@@ -119,9 +120,9 @@ export class NapConnector implements RegistryConnector<NapRow> {
           },
           source: {
             registryId: input.source.id,
-            official: input.source.official,
+            official: isAuthoritative(input.source),
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
-            sourceUrl: input.source.registryUrl,
+            sourceUrl: input.source.registry.url,
             sourceValue: identifier.sourceValue,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,

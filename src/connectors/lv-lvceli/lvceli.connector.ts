@@ -1,3 +1,4 @@
+import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -23,7 +24,7 @@ export class LvceliConnector implements RegistryConnector<LvceliRow> {
   readonly sourceId = "lv-lvceli";
 
   async fetch(context: FetchContext): Promise<FetchResult> {
-    const response = await getText(context.source.registryUrl, {
+    const response = await getText(context.source.registry.url, {
       timeoutMs: 30_000,
       retries: 2,
       maxBytes: 2_000_000,
@@ -111,9 +112,9 @@ export class LvceliConnector implements RegistryConnector<LvceliRow> {
           },
           source: {
             registryId: input.source.id,
-            official: input.source.official,
+            official: isAuthoritative(input.source),
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
-            sourceUrl: input.source.homepageUrl,
+            sourceUrl: input.source.authority.homepageUrl,
             sourceValue: identifier.sourceValue,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,

@@ -1,3 +1,4 @@
+import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -23,7 +24,7 @@ export class EipaConnector implements RegistryConnector<EipaCsvRow> {
   readonly sourceId = "pl-eipa";
 
   async fetch(context: FetchContext): Promise<FetchResult> {
-    const response = await getText(context.source.registryUrl, {
+    const response = await getText(context.source.registry.url, {
       timeoutMs: 30_000,
       retries: 2,
       maxBytes: 2_000_000,
@@ -31,7 +32,7 @@ export class EipaConnector implements RegistryConnector<EipaCsvRow> {
       userAgent: context.userAgent,
       headers: {
         Accept: "text/csv,text/plain,*/*",
-        Referer: context.source.homepageUrl,
+        Referer: context.source.authority.homepageUrl,
       },
     });
     return {
@@ -115,9 +116,9 @@ export class EipaConnector implements RegistryConnector<EipaCsvRow> {
           },
           source: {
             registryId: input.source.id,
-            official: input.source.official,
+            official: isAuthoritative(input.source),
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
-            sourceUrl: input.source.registryUrl,
+            sourceUrl: input.source.registry.url,
             sourceValue: identifier.sourceValue,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,

@@ -1,3 +1,4 @@
+import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -25,7 +26,7 @@ export class LadestellenConnector implements RegistryConnector<LadestellenOperat
       ...(context.previousLastModified ? { lastModified: context.previousLastModified } : {}),
     };
     const response = await getText(
-      context.source.registryUrl,
+      context.source.registry.url,
       {
         timeoutMs: 30_000,
         retries: 2,
@@ -34,7 +35,7 @@ export class LadestellenConnector implements RegistryConnector<LadestellenOperat
         userAgent: context.userAgent,
         headers: {
           Apikey: PUBLIC_API_KEY,
-          Referer: context.source.homepageUrl,
+          Referer: context.source.authority.homepageUrl,
         },
       },
       conditionals,
@@ -88,9 +89,9 @@ export class LadestellenConnector implements RegistryConnector<LadestellenOperat
         },
         source: {
           registryId: input.source.id,
-          official: input.source.official,
+          official: isAuthoritative(input.source),
           sourceRecordId: `${countryCode}${partyId}`,
-          sourceUrl: input.source.homepageUrl,
+          sourceUrl: input.source.authority.homepageUrl,
           sourceValue: `${countryCode}*${partyId}`,
           firstSeenAt: input.retrievedAt,
           lastSeenAt: input.retrievedAt,

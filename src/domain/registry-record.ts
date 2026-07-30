@@ -22,17 +22,17 @@ export const normalizedRegistryRecordSchema = z.object({
   organization: z.object({
     name: z.string().min(1),
     legalName: z.string().nullable(),
-    website: z.string().url().nullable(),
+    website: z.url().nullable(),
   }),
   source: z.object({
     registryId: z.string().min(1),
     official: z.boolean(),
     sourceRecordId: z.string().nullable(),
-    sourceUrl: z.string().url(),
+    sourceUrl: z.url(),
     sourceValue: z.string().min(1),
-    firstSeenAt: z.string().datetime(),
-    lastSeenAt: z.string().datetime(),
-    retrievedAt: z.string().datetime(),
+    firstSeenAt: z.iso.datetime(),
+    lastSeenAt: z.iso.datetime(),
+    retrievedAt: z.iso.datetime(),
   }),
   metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])),
 });

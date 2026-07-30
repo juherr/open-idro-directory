@@ -1,21 +1,22 @@
 id: benelux-idro
 name: Benelux IDRO
-authorityName: Benelux IDRO
-jurisdictions:
-  - BE
-  - NL
-  - LU
-official: true
-homepageUrl: https://www.benelux-idro.eu/
-registryUrl: https://www.benelux-idro.eu/en/id-register/export
-machineReadableUrl: https://www.benelux-idro.eu/en/id-register/export
-verifiedAt: null
-connector: benelux-idro
-enabled: true
-refreshSchedule: weekly
-supportedRoles:
-  - CPO
-  - EMSP
+authorityId: benelux-idro
+registry:
+  url: https://www.benelux-idro.eu/en/id-register/export
+  observationType: OFFICIAL_ASSIGNMENT
+  supportedRoles:
+    - CPO
+    - EMSP
+publication:
+  connector: benelux-idro
+  machineReadableUrl: https://www.benelux-idro.eu/en/id-register/export
+  refreshSchedule: weekly
+  enabled: true
+  verifiedAt: null
+  safety:
+    maxDeletionRatio: 0.2
+    maxChangeRatio: 0.5
+    maxParseErrorRatio: 0.05
 reuse:
   status: unspecified
   legalBasis: null
@@ -24,9 +25,5 @@ reuse:
   redistributionAllowed: null
   notes: No explicit reuse terms have been identified.
 notes: >
-  Official Benelux registry of Mobility Service Provider and Charge Point
-  Operator identifiers. The public registry exposes a CSV export endpoint.
-safety:
-  maxDeletionRatio: 0.2
-  maxChangeRatio: 0.5
-  maxParseErrorRatio: 0.05
+  Official Benelux registry of Mobility Service Provider and Charge Point Operator
+  identifiers. The public registry exposes a CSV export endpoint.

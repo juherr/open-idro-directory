@@ -229,12 +229,12 @@ function buildSourceHealth(
   return sources
     .map((source) => ({
       sourceId: source.id,
-      enabled: source.enabled,
-      authorityLevel: source.official ? "AUTHORITATIVE" : null,
-      observationType: source.official ? "OFFICIAL_ASSIGNMENT" : null,
+      enabled: source.publication.enabled,
+      authorityLevel: source.authority.level,
+      observationType: source.registry.observationType,
       assessment: null,
       observationCount: counts.get(source.id) ?? 0,
-      status: source.enabled ? ("current" as const) : ("disabled" as const),
+      status: source.publication.enabled ? ("current" as const) : ("disabled" as const),
     }))
     .sort((a, b) => a.sourceId.localeCompare(b.sourceId));
 }

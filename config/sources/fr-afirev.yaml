@@ -1,19 +1,22 @@
 id: fr-afirev
 name: AFIREV
-authorityName: AFIREV / Avere-France
-jurisdictions:
-  - FR
-official: true
-homepageUrl: https://afirev.fr/prefixes/consulter-l-annuaire/
-registryUrl: https://api.afirev.fr/public/prefixes
-machineReadableUrl: https://api.afirev.fr/public/prefixes
-verifiedAt: null
-connector: fr-afirev
-enabled: true
-refreshSchedule: weekly
-supportedRoles:
-  - CPO
-  - EMSP
+authorityId: fr-afirev
+registry:
+  url: https://api.afirev.fr/public/prefixes
+  observationType: OFFICIAL_ASSIGNMENT
+  supportedRoles:
+    - CPO
+    - EMSP
+publication:
+  connector: fr-afirev
+  machineReadableUrl: https://api.afirev.fr/public/prefixes
+  refreshSchedule: weekly
+  enabled: true
+  verifiedAt: null
+  safety:
+    maxDeletionRatio: 0.2
+    maxChangeRatio: 0.5
+    maxParseErrorRatio: 0.05
 reuse:
   status: unspecified
   legalBasis: null
@@ -22,9 +25,5 @@ reuse:
   redistributionAllowed: null
   notes: No explicit reuse terms have been identified.
 notes: >
-  Official French registry of e-mobility prefixes. The public website embeds an
-  AFIREV application that reads this JSON endpoint without authentication.
-safety:
-  maxDeletionRatio: 0.2
-  maxChangeRatio: 0.5
-  maxParseErrorRatio: 0.05
+  Official French registry of e-mobility prefixes. The public website embeds an AFIREV
+  application that reads this JSON endpoint without authentication.

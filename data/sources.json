@@ -2,20 +2,33 @@
   {
     "id": "at-ladestellen",
     "name": "Ladestellen.at",
-    "authorityName": "E-Control Austria",
-    "jurisdictions": [
-      "AT"
-    ],
+    "authority": {
+      "id": "at-econtrol",
+      "name": "E-Control Austria",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "AT"
+      ],
+      "homepageUrl": "https://admin.ladestellen.at/#/registrierte-ids"
+    },
+    "registry": {
+      "url": "https://admin.ladestellen.at/api/countries/AT/operators/basic",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO"
+      ],
+      "jurisdictions": [
+        "AT"
+      ]
+    },
+    "publication": {
+      "connector": "at-ladestellen",
+      "machineReadableUrl": "https://admin.ladestellen.at/api/countries/AT/operators/basic",
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://admin.ladestellen.at/#/registrierte-ids",
-    "registryUrl": "https://admin.ladestellen.at/api/countries/AT/operators/basic",
-    "machineReadableUrl": "https://admin.ladestellen.at/api/countries/AT/operators/basic",
-    "verifiedAt": null,
-    "connector": "at-ladestellen",
-    "supportedRoles": [
-      "CPO"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -37,23 +50,38 @@
   {
     "id": "benelux-idro",
     "name": "Benelux IDRO",
-    "authorityName": "Benelux IDRO",
-    "jurisdictions": [
-      "BE",
-      "NL",
-      "LU"
-    ],
+    "authority": {
+      "id": "benelux-idro",
+      "name": "Benelux IDRO",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "BE",
+        "NL",
+        "LU"
+      ],
+      "homepageUrl": "https://www.benelux-idro.eu/"
+    },
+    "registry": {
+      "url": "https://www.benelux-idro.eu/en/id-register/export",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "BE",
+        "NL",
+        "LU"
+      ]
+    },
+    "publication": {
+      "connector": "benelux-idro",
+      "machineReadableUrl": "https://www.benelux-idro.eu/en/id-register/export",
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://www.benelux-idro.eu/",
-    "registryUrl": "https://www.benelux-idro.eu/en/id-register/export",
-    "machineReadableUrl": "https://www.benelux-idro.eu/en/id-register/export",
-    "verifiedAt": null,
-    "connector": "benelux-idro",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -75,21 +103,34 @@
   {
     "id": "ch-suisseenergie",
     "name": "SuisseEnergie Swiss ID register",
-    "authorityName": "Swiss Federal Office of Energy",
-    "jurisdictions": [
-      "CH"
-    ],
+    "authority": {
+      "id": "ch-bfe",
+      "name": "Swiss Federal Office of Energy",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "CH"
+      ],
+      "homepageUrl": "https://www.suisseenergie.ch/programmes/infrastructure-de-recharge/outils/identifiant-pour-les-cpo-et-les-emp/registre-suisse-des-identifiants/"
+    },
+    "registry": {
+      "url": "https://www.suisseenergie.ch/page-data/sq/d/3887988665.json",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "CH"
+      ]
+    },
+    "publication": {
+      "connector": "ch-suisseenergie",
+      "machineReadableUrl": "https://www.suisseenergie.ch/page-data/sq/d/3887988665.json",
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://www.suisseenergie.ch/programmes/infrastructure-de-recharge/outils/identifiant-pour-les-cpo-et-les-emp/registre-suisse-des-identifiants/",
-    "registryUrl": "https://www.suisseenergie.ch/page-data/sq/d/3887988665.json",
-    "machineReadableUrl": "https://www.suisseenergie.ch/page-data/sq/d/3887988665.json",
-    "verifiedAt": null,
-    "connector": "ch-suisseenergie",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -111,21 +152,34 @@
   {
     "id": "cy-ems",
     "name": "Cyprus EMS",
-    "authorityName": "Department of Electrical and Mechanical Services",
-    "jurisdictions": [
-      "CY"
-    ],
+    "authority": {
+      "id": "cy-ems",
+      "name": "Department of Electrical and Mechanical Services",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "CY"
+      ],
+      "homepageUrl": "https://www.mcw.gov.cy/mcw/ems/ems.nsf/All/D764FAE19922743BC2258DAA002FA4BC?OpenDocument"
+    },
+    "registry": {
+      "url": "https://www.mcw.gov.cy/mcw/ems/ems.nsf/All/D764FAE19922743BC2258DAA002FA4BC?OpenDocument",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "CY"
+      ]
+    },
+    "publication": {
+      "connector": "cy-ems",
+      "machineReadableUrl": null,
+      "refreshSchedule": "weekly",
+      "enabled": false,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": false,
-    "homepageUrl": "https://www.mcw.gov.cy/mcw/ems/ems.nsf/All/D764FAE19922743BC2258DAA002FA4BC?OpenDocument",
-    "registryUrl": "https://www.mcw.gov.cy/mcw/ems/ems.nsf/All/D764FAE19922743BC2258DAA002FA4BC?OpenDocument",
-    "machineReadableUrl": null,
-    "verifiedAt": null,
-    "connector": "cy-ems",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -147,21 +201,34 @@
   {
     "id": "de-bdew",
     "name": "BDEW",
-    "authorityName": "BDEW",
-    "jurisdictions": [
-      "DE"
-    ],
+    "authority": {
+      "id": "de-bdew",
+      "name": "BDEW",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "DE"
+      ],
+      "homepageUrl": "https://bdew-codes.de/"
+    },
+    "registry": {
+      "url": "https://bdew-codes.de/",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "DE"
+      ]
+    },
+    "publication": {
+      "connector": "de-bdew",
+      "machineReadableUrl": "https://bdew-codes.de/Codenumbers/EMobilityId/GetActiveCodes",
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://bdew-codes.de/",
-    "registryUrl": "https://bdew-codes.de/",
-    "machineReadableUrl": "https://bdew-codes.de/Codenumbers/EMobilityId/GetActiveCodes",
-    "verifiedAt": null,
-    "connector": "de-bdew",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -183,21 +250,34 @@
   {
     "id": "dk-fstyr",
     "name": "Danish Road Traffic Authority",
-    "authorityName": "Danish Road Traffic Authority",
-    "jurisdictions": [
-      "DK"
-    ],
+    "authority": {
+      "id": "dk-fstyr",
+      "name": "Danish Road Traffic Authority",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "DK"
+      ],
+      "homepageUrl": "https://www.danishroadtrafficauthority.dk/afir/idro-registration"
+    },
+    "registry": {
+      "url": "https://www.danishroadtrafficauthority.dk/afir/idro-registration",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "DK"
+      ]
+    },
+    "publication": {
+      "connector": "dk-fstyr",
+      "machineReadableUrl": null,
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://www.danishroadtrafficauthority.dk/afir/idro-registration",
-    "registryUrl": "https://www.danishroadtrafficauthority.dk/afir/idro-registration",
-    "machineReadableUrl": null,
-    "verifiedAt": null,
-    "connector": "dk-fstyr",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -219,21 +299,34 @@
   {
     "id": "es-ripree",
     "name": "RIPREE",
-    "authorityName": "Ministerio para la Transición Ecológica y el Reto Demográfico",
-    "jurisdictions": [
-      "ES"
-    ],
+    "authority": {
+      "id": "es-miteco",
+      "name": "Ministerio para la Transición Ecológica y el Reto Demográfico",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "ES"
+      ],
+      "homepageUrl": "https://energia.serviciosmin.gob.es/RIPREE"
+    },
+    "registry": {
+      "url": "https://energia.serviciosmin.gob.es/Ripree/ExportarEmpresas/Export",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "ES"
+      ]
+    },
+    "publication": {
+      "connector": "es-ripree",
+      "machineReadableUrl": "https://energia.serviciosmin.gob.es/Ripree/ExportarEmpresas/GenerarXml",
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": "2026-07-10"
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://energia.serviciosmin.gob.es/RIPREE",
-    "registryUrl": "https://energia.serviciosmin.gob.es/Ripree/ExportarEmpresas/Export",
-    "machineReadableUrl": "https://energia.serviciosmin.gob.es/Ripree/ExportarEmpresas/GenerarXml",
-    "verifiedAt": "2026-07-10",
-    "connector": "es-ripree",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "statutory",
       "legalBasis": {
@@ -258,21 +351,34 @@
   {
     "id": "fi-traficom",
     "name": "Traficom IDRO register",
-    "authorityName": "Finnish Transport and Communications Agency Traficom",
-    "jurisdictions": [
-      "FI"
-    ],
+    "authority": {
+      "id": "fi-traficom",
+      "name": "Finnish Transport and Communications Agency Traficom",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "FI"
+      ],
+      "homepageUrl": "https://www.traficom.fi/en/transport-system/sustainable-transport/apply-afir-id-charging-point-operator-andor-mobility-service-provider"
+    },
+    "registry": {
+      "url": "https://www.traficom.fi/en/transport-system/sustainable-transport/apply-afir-id-charging-point-operator-andor-mobility-service-provider",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "FI"
+      ]
+    },
+    "publication": {
+      "connector": "fi-traficom",
+      "machineReadableUrl": null,
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": "2026-07-25"
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://www.traficom.fi/en/transport-system/sustainable-transport/apply-afir-id-charging-point-operator-andor-mobility-service-provider",
-    "registryUrl": "https://www.traficom.fi/en/transport-system/sustainable-transport/apply-afir-id-charging-point-operator-andor-mobility-service-provider",
-    "machineReadableUrl": null,
-    "verifiedAt": "2026-07-25",
-    "connector": "fi-traficom",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "licensed",
       "legalBasis": null,
@@ -297,21 +403,34 @@
   {
     "id": "fr-afirev",
     "name": "AFIREV",
-    "authorityName": "AFIREV / Avere-France",
-    "jurisdictions": [
-      "FR"
-    ],
+    "authority": {
+      "id": "fr-afirev",
+      "name": "AFIREV / Avere-France",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "FR"
+      ],
+      "homepageUrl": "https://afirev.fr/prefixes/consulter-l-annuaire/"
+    },
+    "registry": {
+      "url": "https://api.afirev.fr/public/prefixes",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "FR"
+      ]
+    },
+    "publication": {
+      "connector": "fr-afirev",
+      "machineReadableUrl": "https://api.afirev.fr/public/prefixes",
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://afirev.fr/prefixes/consulter-l-annuaire/",
-    "registryUrl": "https://api.afirev.fr/public/prefixes",
-    "machineReadableUrl": "https://api.afirev.fr/public/prefixes",
-    "verifiedAt": null,
-    "connector": "fr-afirev",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -333,22 +452,36 @@
   {
     "id": "gb-evroam",
     "name": "EV Roam",
-    "authorityName": "EV Roam",
-    "jurisdictions": [
-      "GB",
-      "IE"
-    ],
+    "authority": {
+      "id": "gb-evroam",
+      "name": "EV Roam",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "GB",
+        "IE"
+      ],
+      "homepageUrl": "https://www.evroam.org.uk/"
+    },
+    "registry": {
+      "url": "https://evroam.org.uk/_functions/getRegister",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "GB",
+        "IE"
+      ]
+    },
+    "publication": {
+      "connector": "gb-evroam",
+      "machineReadableUrl": "https://evroam.org.uk/_functions/getRegister",
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://www.evroam.org.uk/",
-    "registryUrl": "https://evroam.org.uk/_functions/getRegister",
-    "machineReadableUrl": "https://evroam.org.uk/_functions/getRegister",
-    "verifiedAt": null,
-    "connector": "gb-evroam",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -370,21 +503,34 @@
   {
     "id": "gr-electrokinisi",
     "name": "Hellenic IDRO",
-    "authorityName": "Hellenic Ministry of Infrastructure and Transport",
-    "jurisdictions": [
-      "GR"
-    ],
+    "authority": {
+      "id": "gr-yme",
+      "name": "Hellenic Ministry of Infrastructure and Transport",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "GR"
+      ],
+      "homepageUrl": "https://electrokinisi.yme.gov.gr/public/IDRO/?mlang=en"
+    },
+    "registry": {
+      "url": "https://electrokinisi.yme.gov.gr/public/IDRO/?mlang=en",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "GR"
+      ]
+    },
+    "publication": {
+      "connector": "gr-electrokinisi",
+      "machineReadableUrl": null,
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://electrokinisi.yme.gov.gr/public/IDRO/?mlang=en",
-    "registryUrl": "https://electrokinisi.yme.gov.gr/public/IDRO/?mlang=en",
-    "machineReadableUrl": null,
-    "verifiedAt": null,
-    "connector": "gr-electrokinisi",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -406,21 +552,34 @@
   {
     "id": "hr-croidro",
     "name": "Croatian IDRO",
-    "authorityName": "CRO IDRO",
-    "jurisdictions": [
-      "HR"
-    ],
+    "authority": {
+      "id": "hr-croidro",
+      "name": "CRO IDRO",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "HR"
+      ],
+      "homepageUrl": "https://pametnamobilnost.hr/idro/Pretraga"
+    },
+    "registry": {
+      "url": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "HR"
+      ]
+    },
+    "publication": {
+      "connector": "hr-croidro",
+      "machineReadableUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://pametnamobilnost.hr/idro/Pretraga",
-    "registryUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
-    "machineReadableUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
-    "verifiedAt": null,
-    "connector": "hr-croidro",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -442,21 +601,34 @@
   {
     "id": "hu-idro",
     "name": "Hungarian IDRO",
-    "authorityName": "Hungarian ID Registration Office",
-    "jurisdictions": [
-      "HU"
-    ],
+    "authority": {
+      "id": "hu-idro",
+      "name": "Hungarian ID Registration Office",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "HU"
+      ],
+      "homepageUrl": "https://idro.hu/en/page/members"
+    },
+    "registry": {
+      "url": "https://idro.hu/en/page/members",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "HU"
+      ]
+    },
+    "publication": {
+      "connector": "hu-idro",
+      "machineReadableUrl": null,
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://idro.hu/en/page/members",
-    "registryUrl": "https://idro.hu/en/page/members",
-    "machineReadableUrl": null,
-    "verifiedAt": null,
-    "connector": "hu-idro",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -478,21 +650,34 @@
   {
     "id": "ie-tii",
     "name": "TII IDRO Public Register",
-    "authorityName": "Transport Infrastructure Ireland",
-    "jurisdictions": [
-      "IE"
-    ],
+    "authority": {
+      "id": "ie-tii",
+      "name": "Transport Infrastructure Ireland",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "IE"
+      ],
+      "homepageUrl": "https://www.tii.ie/en/roads-tolling/alt-fuel-projects-unit/alt-fuels-data-office/register-idro/"
+    },
+    "registry": {
+      "url": "https://www.tii.ie/media/pqigaadi/idro-public-register-19-march-2026.pdf",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "IE"
+      ]
+    },
+    "publication": {
+      "connector": "ie-tii",
+      "machineReadableUrl": null,
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": "2026-07-25"
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://www.tii.ie/en/roads-tolling/alt-fuel-projects-unit/alt-fuels-data-office/register-idro/",
-    "registryUrl": "https://www.tii.ie/media/pqigaadi/idro-public-register-19-march-2026.pdf",
-    "machineReadableUrl": null,
-    "verifiedAt": "2026-07-25",
-    "connector": "ie-tii",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "licensed",
       "legalBasis": null,
@@ -517,20 +702,33 @@
   {
     "id": "lt-vialietuva",
     "name": "Via Lietuva public charging data",
-    "authorityName": "Via Lietuva",
-    "jurisdictions": [
-      "LT"
-    ],
+    "authority": {
+      "id": "lt-vialietuva",
+      "name": "Via Lietuva",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "LT"
+      ],
+      "homepageUrl": "https://lakd.lt/viesuju-elektromobiliu-ikrovimo-prieigu-registravimas"
+    },
+    "registry": {
+      "url": "https://ev.vialietuva.lt/ocpi/2.3.0/locations",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO"
+      ],
+      "jurisdictions": [
+        "LT"
+      ]
+    },
+    "publication": {
+      "connector": "lt-vialietuva",
+      "machineReadableUrl": "https://ev.vialietuva.lt/ocpi/2.3.0/locations",
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://lakd.lt/viesuju-elektromobiliu-ikrovimo-prieigu-registravimas",
-    "registryUrl": "https://ev.vialietuva.lt/ocpi/2.3.0/locations",
-    "machineReadableUrl": "https://ev.vialietuva.lt/ocpi/2.3.0/locations",
-    "verifiedAt": null,
-    "connector": "lt-vialietuva",
-    "supportedRoles": [
-      "CPO"
-    ],
     "reuse": {
       "status": "licensed",
       "legalBasis": null,
@@ -555,21 +753,34 @@
   {
     "id": "lv-lvceli",
     "name": "LVC IDRO Register",
-    "authorityName": "SLLC Latvijas Valsts ceļi",
-    "jurisdictions": [
-      "LV"
-    ],
+    "authority": {
+      "id": "lv-lvceli",
+      "name": "SLLC Latvijas Valsts ceļi",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "LV"
+      ],
+      "homepageUrl": "https://www.transportdata.gov.lv/en/idro"
+    },
+    "registry": {
+      "url": "https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "LV"
+      ]
+    },
+    "publication": {
+      "connector": "lv-lvceli",
+      "machineReadableUrl": "https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json",
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": "2026-07-10"
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://www.transportdata.gov.lv/en/idro",
-    "registryUrl": "https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json",
-    "machineReadableUrl": "https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json",
-    "verifiedAt": "2026-07-10",
-    "connector": "lv-lvceli",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -591,21 +802,34 @@
   {
     "id": "pl-eipa",
     "name": "EIPA",
-    "authorityName": "Urząd Dozoru Technicznego",
-    "jurisdictions": [
-      "PL"
-    ],
+    "authority": {
+      "id": "pl-udt",
+      "name": "Urząd Dozoru Technicznego",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "PL"
+      ],
+      "homepageUrl": "https://eipa.udt.gov.pl/list"
+    },
+    "registry": {
+      "url": "https://eipa.udt.gov.pl/list/csv",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "PL"
+      ]
+    },
+    "publication": {
+      "connector": "pl-eipa",
+      "machineReadableUrl": "https://eipa.udt.gov.pl/list/csv",
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://eipa.udt.gov.pl/list",
-    "registryUrl": "https://eipa.udt.gov.pl/list/csv",
-    "machineReadableUrl": "https://eipa.udt.gov.pl/list/csv",
-    "verifiedAt": null,
-    "connector": "pl-eipa",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -627,21 +851,34 @@
   {
     "id": "pt-mobie",
     "name": "MOBI.E IDACS",
-    "authorityName": "MOBI.E",
-    "jurisdictions": [
-      "PT"
-    ],
+    "authority": {
+      "id": "pt-mobie",
+      "name": "MOBI.E",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "PT"
+      ],
+      "homepageUrl": "https://www.mobie.pt/en/who-we-are/idacs"
+    },
+    "registry": {
+      "url": "https://www.mobie.pt/documents/42032/223588/PartyID_MOBIE.pdf",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "PT"
+      ]
+    },
+    "publication": {
+      "connector": "pt-mobie",
+      "machineReadableUrl": null,
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://www.mobie.pt/en/who-we-are/idacs",
-    "registryUrl": "https://www.mobie.pt/documents/42032/223588/PartyID_MOBIE.pdf",
-    "machineReadableUrl": null,
-    "verifiedAt": null,
-    "connector": "pt-mobie",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -663,21 +900,34 @@
   {
     "id": "se-energimyndigheten",
     "name": "Swedish Energy Agency IDRO",
-    "authorityName": "Swedish Energy Agency",
-    "jurisdictions": [
-      "SE"
-    ],
+    "authority": {
+      "id": "se-energimyndigheten",
+      "name": "Swedish Energy Agency",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "SE"
+      ],
+      "homepageUrl": "https://www.energimyndigheten.se/klimat/transporter/laddinfrastruktur/identification-registration-organisation-idro/"
+    },
+    "registry": {
+      "url": "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "SE"
+      ]
+    },
+    "publication": {
+      "connector": "se-energimyndigheten",
+      "machineReadableUrl": "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://www.energimyndigheten.se/klimat/transporter/laddinfrastruktur/identification-registration-organisation-idro/",
-    "registryUrl": "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
-    "machineReadableUrl": "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
-    "verifiedAt": null,
-    "connector": "se-energimyndigheten",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,
@@ -699,21 +949,34 @@
   {
     "id": "si-nap",
     "name": "Slovenian NAP IDRO",
-    "authorityName": "Ministry of the Environment, Climate and Energy",
-    "jurisdictions": [
-      "SI"
-    ],
+    "authority": {
+      "id": "si-mopse",
+      "name": "Ministry of the Environment, Climate and Energy",
+      "level": "AUTHORITATIVE",
+      "jurisdictions": [
+        "SI"
+      ],
+      "homepageUrl": "https://www.nap.si/en/id-codes"
+    },
+    "registry": {
+      "url": "https://www.ncup.si/dc/prometej.register-cpo-msp",
+      "observationType": "OFFICIAL_ASSIGNMENT",
+      "supportedRoles": [
+        "CPO",
+        "EMSP"
+      ],
+      "jurisdictions": [
+        "SI"
+      ]
+    },
+    "publication": {
+      "connector": "si-nap",
+      "machineReadableUrl": "https://www.ncup.si/dc/prometej.register-cpo-msp",
+      "refreshSchedule": "weekly",
+      "enabled": true,
+      "verifiedAt": null
+    },
     "official": true,
-    "enabled": true,
-    "homepageUrl": "https://www.nap.si/en/id-codes",
-    "registryUrl": "https://www.ncup.si/dc/prometej.register-cpo-msp",
-    "machineReadableUrl": "https://www.ncup.si/dc/prometej.register-cpo-msp",
-    "verifiedAt": null,
-    "connector": "si-nap",
-    "supportedRoles": [
-      "CPO",
-      "EMSP"
-    ],
     "reuse": {
       "status": "unspecified",
       "legalBasis": null,

@@ -1,18 +1,21 @@
 id: at-ladestellen
 name: Ladestellen.at
-authorityName: E-Control Austria
-jurisdictions:
-  - AT
-official: true
-homepageUrl: https://admin.ladestellen.at/#/registrierte-ids
-registryUrl: https://admin.ladestellen.at/api/countries/AT/operators/basic
-machineReadableUrl: https://admin.ladestellen.at/api/countries/AT/operators/basic
-verifiedAt: null
-connector: at-ladestellen
-enabled: true
-refreshSchedule: weekly
-supportedRoles:
-  - CPO
+authorityId: at-econtrol
+registry:
+  url: https://admin.ladestellen.at/api/countries/AT/operators/basic
+  observationType: OFFICIAL_ASSIGNMENT
+  supportedRoles:
+    - CPO
+publication:
+  connector: at-ladestellen
+  machineReadableUrl: https://admin.ladestellen.at/api/countries/AT/operators/basic
+  refreshSchedule: weekly
+  enabled: true
+  verifiedAt: null
+  safety:
+    maxDeletionRatio: 0.2
+    maxChangeRatio: 0.5
+    maxParseErrorRatio: 0.05
 reuse:
   status: unspecified
   legalBasis: null
@@ -21,10 +24,6 @@ reuse:
   redistributionAllowed: null
   notes: No explicit reuse terms have been identified.
 notes: >
-  Official Austrian registry of registered e-mobility operator identifiers. The
-  public admin application reads this JSON endpoint with the public API key
-  embedded in the application bundle.
-safety:
-  maxDeletionRatio: 0.2
-  maxChangeRatio: 0.5
-  maxParseErrorRatio: 0.05
+  Official Austrian registry of registered e-mobility operator identifiers. The public
+  admin application reads this JSON endpoint with the public API key embedded in the
+  application bundle.

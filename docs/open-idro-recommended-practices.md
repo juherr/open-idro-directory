@@ -574,9 +574,10 @@ a design.
 | Correction and dispute intake | Data Quality And Validation | Reporter, claim, evidence, outcome, public reference                                     |
 | Interoperable profile output  | Interoperability            | Shared register schema and an OCPI-aligned representation                                |
 
-Console delivery is tracked separately. It is distinct from
-[issue #56](https://github.com/juherr/open-idro-directory/issues/56), which covers a
-collaboration surface operated by Open IDRO Directory for verified IDRO
+Console specification is tracked in
+[issue #73](https://github.com/juherr/open-idro-directory/issues/73). It is distinct
+from [issue #56](https://github.com/juherr/open-idro-directory/issues/56), which
+covers a collaboration surface operated by Open IDRO Directory for verified IDRO
 representatives; the console described here would be operated by an IDRO for its own
 register.
 

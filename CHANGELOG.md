@@ -9,6 +9,11 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
+- `data/registry-invalid.json`, a single list of the records excluded from the
+  published datasets because their eMI3 identifier is invalid, each with its
+  reason codes, plus a `schemas/registry-invalid.schema.json` contract.
+- `totalInvalidRecords`, `invalidRecordsByReason`, and `invalidRecordsByRegistry`
+  counters in `data/stats.json`.
 - An authority catalog under `config/authorities/`. An appointed IDRO is now
   described once and referenced by every source it operates, so one organisation
   can back several registries without duplicated metadata.
@@ -25,6 +30,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Changed
 
+- **Breaking:** the published datasets now only contain valid eMI3 identifiers.
+  A party ID must be exactly three uppercase alphanumeric characters; the former
+  `UNCOMMON_PARTY_ID` warning accepted two to eight and let invalid records reach
+  `data/registry.*`. Invalid records are excluded and reported as counters
+  instead. Four inactive Swedish records (`SE-ALEG`, `SE-ALLE`, `SE-QWCE`,
+  `SE-T124`) leave the registry, the CSV, the NDJSON, and the public API.
 - **Breaking:** source descriptors separate the appointed authority, the registry
   it operates, and the publication a connector consumes, instead of flattening
   all three into one object. Pre-existing flat descriptors are still accepted and
@@ -81,5 +92,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Commitlint Conventional Commits validation.
 - Local VitePlus Git hooks for pre-commit, commit-message, and pre-push checks.
 - Bun, mise, and VitePlus project configuration.
+
+### Fixed
+
+- The Swedish Energy Agency connector accepted party IDs of three to five
+  characters, so `SEALEG`-style workbook rows were split into four-character
+  party IDs and published. It now matches every other connector and accepts
+  exactly three.
 
 [unreleased]: https://github.com/OWNER/open-idro-directory/commits/HEAD

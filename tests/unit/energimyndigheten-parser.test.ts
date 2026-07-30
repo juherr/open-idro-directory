@@ -75,13 +75,23 @@ describe("Swedish Energy Agency parser", () => {
     expect(result.records.map((record) => record.key)).toEqual([
       "se-energimyndigheten:SE:AIM:CPO",
       "se-energimyndigheten:SE:ESP:EMSP",
-      "se-energimyndigheten:SE:ALLE:CPO",
     ]);
-    expect(result.records.map((record) => record.eMobilityId)).toEqual([
-      "SEAIM",
-      "SEESP",
-      "SEALLE",
-    ]);
+    expect(result.records.map((record) => record.eMobilityId)).toEqual(["SEAIM", "SEESP"]);
+  });
+
+  it("warns and skips party IDs that are not exactly three characters", async () => {
+    const source = await loadSourceDefinition("se-energimyndigheten");
+    const connector = new EnergimyndighetenConnector();
+    const result = await connector.normalize({
+      source,
+      retrievedAt: "2026-06-15T00:00:00.000Z",
+      records: [
+        { sourceValue: "SEALLE", organizationName: "Allego", role: "CPO", sourceUrl: CPO_URL },
+      ],
+    });
+
+    expect(result.records).toHaveLength(0);
+    expect(result.warnings[0]?.code).toBe("ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER");
   });
 
   it("warns and skips non-Swedish identifiers", async () => {

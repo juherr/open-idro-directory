@@ -1,11 +1,15 @@
 import { readFile } from "node:fs/promises";
 import { createConnector } from "../connectors/index.js";
-import type { NormalizedRegistryRecord } from "../domain/registry-record.js";
+import type {
+  InvalidRegistryRecordEntry,
+  NormalizedRegistryRecord,
+} from "../domain/registry-record.js";
 import type { SourceBuildResult } from "../domain/source-result.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
 import { readCurrentSnapshot } from "../infrastructure/filesystem/raw-snapshot.js";
 import { fromRoot } from "../infrastructure/filesystem/paths.js";
 import { writeDatasets } from "../infrastructure/serialization/serializers.js";
+import { partitionRecordsByIdentifierValidity } from "../validation/identifier-validator.js";
 import { validateRegistry } from "../validation/registry-validator.js";
 import { checkSafetyThresholds } from "../validation/safety-thresholds.js";
 import { mergeGeneratedRecords } from "./generated-record-merge.js";
@@ -24,6 +28,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   );
   const results: SourceBuildResult[] = [];
   const records: NormalizedRegistryRecord[] = [];
+  const invalidRecords: InvalidRegistryRecordEntry[] = [];
   for (const source of selected) {
     const connector = createConnector(source);
     try {
@@ -56,10 +61,16 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
             normalized.records,
             snapshot.metadata.retrievedAt,
           );
-      records.push(...resultRecords);
+      // Partitioning after the merge also cleans records carried over from the
+      // previous dataset, which is where retained tombstones come from. Safety
+      // thresholds keep comparing unfiltered connector output, so an exclusion
+      // can never be mistaken for an upstream mass deletion.
+      const publishable = partitionRecordsByIdentifierValidity(resultRecords);
+      records.push(...publishable.valid);
+      invalidRecords.push(...publishable.invalid);
       results.push({
         sourceId: source.id,
-        records: resultRecords,
+        records: publishable.valid,
         warnings: [...parsed.warnings, ...normalized.warnings],
         errors,
         retrievedAt: snapshot.metadata.retrievedAt,
@@ -69,10 +80,12 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
       });
     } catch (error) {
       const previous = await readPreviousGeneratedRecords(source.id);
-      records.push(...previous);
+      const publishable = partitionRecordsByIdentifierValidity(previous);
+      records.push(...publishable.valid);
+      invalidRecords.push(...publishable.invalid);
       results.push({
         sourceId: source.id,
-        records: previous,
+        records: publishable.valid,
         warnings: [],
         errors: [
           {
@@ -95,7 +108,14 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     records: result.records.map((record) => policyRecordByKey.get(record.key) ?? record),
   }));
   const registryIssues = validateRegistry(policyRecords, sources);
-  await writeDatasets(policyRecords, sources, policyResults, generatedAt, options.outputDir);
+  await writeDatasets(
+    policyRecords,
+    sources,
+    policyResults,
+    generatedAt,
+    options.outputDir,
+    invalidRecords,
+  );
   if (registryIssues.some((issue) => issue.severity === "error")) {
     throw new Error(
       `Registry validation failed: ${registryIssues.map((issue) => issue.message).join("; ")}`,
@@ -109,7 +129,12 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
         .join("; ")}`,
     );
   }
-  return { records: policyRecords, results: policyResults, issues: registryIssues };
+  return {
+    records: policyRecords,
+    invalidRecords,
+    results: policyResults,
+    issues: registryIssues,
+  };
 }
 
 async function readPreviousGeneratedRecords(sourceId: string): Promise<NormalizedRegistryRecord[]> {

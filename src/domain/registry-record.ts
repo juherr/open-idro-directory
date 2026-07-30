@@ -1,4 +1,10 @@
 import { z } from "zod";
+import {
+  emi3CountryCodeSchema,
+  emi3IdentifierSchema,
+  emi3PartyIdSchema,
+  type Emi3ValidityReason,
+} from "./emi3-identifier.js";
 
 export const registryRoleSchema = z.enum(["CPO", "CSO", "EMSP", "NSP", "HUB", "OTHER"]);
 export type RegistryRole = z.infer<typeof registryRoleSchema>;
@@ -14,9 +20,9 @@ export type RegistryStatus = z.infer<typeof registryStatusSchema>;
 
 export const normalizedRegistryRecordSchema = z.object({
   key: z.string().min(1),
-  countryCode: z.string().regex(/^[A-Z]{2}$/),
-  partyId: z.string().min(1),
-  eMobilityId: z.string().min(3),
+  countryCode: emi3CountryCodeSchema,
+  partyId: emi3PartyIdSchema,
+  eMobilityId: emi3IdentifierSchema,
   role: registryRoleSchema,
   status: registryStatusSchema,
   organization: z.object({
@@ -38,6 +44,13 @@ export const normalizedRegistryRecordSchema = z.object({
 });
 
 export type NormalizedRegistryRecord = z.infer<typeof normalizedRegistryRecordSchema>;
+
+// Records whose identifier is not a valid eMI3 assignment are excluded from the
+// published datasets and collected in `data/registry-invalid.json` instead.
+export interface InvalidRegistryRecordEntry {
+  reasons: Emi3ValidityReason[];
+  record: NormalizedRegistryRecord;
+}
 
 export function makeRegistryKey(
   registryId: string,

@@ -1,6 +1,10 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { fromRoot } from "../filesystem/paths.js";
-import type { NormalizedRegistryRecord } from "../../domain/registry-record.js";
+import { isValidEmi3Identifier } from "../../domain/emi3-identifier.js";
+import type {
+  InvalidRegistryRecordEntry,
+  NormalizedRegistryRecord,
+} from "../../domain/registry-record.js";
 import type { SourceBuildResult } from "../../domain/source-result.js";
 import {
   isAuthoritative,
@@ -10,11 +14,14 @@ import {
 
 export interface GeneratedStats {
   totalRecords: number;
+  totalInvalidRecords: number;
   recordsByCountry: Record<string, number>;
   recordsByCountryRole: Record<string, Record<string, number>>;
   recordsByRole: Record<string, number>;
   recordsByStatus: Record<string, number>;
   recordsByRegistry: Record<string, number>;
+  invalidRecordsByReason: Record<string, number>;
+  invalidRecordsByRegistry: Record<string, number>;
   staleSources: string[];
   generatedAt: string;
 }
@@ -25,9 +32,16 @@ export async function writeDatasets(
   results: SourceBuildResult[],
   generatedAt: string,
   outputDir = fromRoot("data"),
+  invalid: InvalidRegistryRecordEntry[] = [],
 ) {
   await mkdir(outputDir, { recursive: true });
   const sorted = sortRecords(records);
+  // Last line of defence: the published datasets are written before
+  // `validateRegistry` can throw, so a regression must not reach disk.
+  const published = sorted.find((record) => !isValidEmi3Identifier(record));
+  if (published) {
+    throw new Error(`Refusing to publish record with an invalid eMI3 identifier: ${published.key}`);
+  }
   await writeFile(`${outputDir}/registry.json`, `${JSON.stringify(sorted, null, 2)}\n`);
   await writeFile(`${outputDir}/registry.min.json`, JSON.stringify(sorted));
   await writeFile(
@@ -35,23 +49,35 @@ export async function writeDatasets(
     sorted.map((record) => JSON.stringify(record)).join("\n") + "\n",
   );
   await writeFile(`${outputDir}/registry.csv`, toCsv(sorted));
+  const sortedInvalid = sortInvalidRecords(invalid);
+  await writeFile(
+    `${outputDir}/registry-invalid.json`,
+    `${JSON.stringify({ generatedAt, records: sortedInvalid }, null, 2)}\n`,
+  );
   await writeFile(
     `${outputDir}/sources.json`,
     `${JSON.stringify(toSourcesSummary(sources, results), null, 2)}\n`,
   );
   await writeFile(
     `${outputDir}/stats.json`,
-    `${JSON.stringify(toStats(sorted, results, generatedAt), null, 2)}\n`,
+    `${JSON.stringify(toStats(sorted, sortedInvalid, results, generatedAt), null, 2)}\n`,
   );
 }
 
 export function sortRecords(records: NormalizedRegistryRecord[]) {
-  return [...records].sort(
-    (a, b) =>
-      a.countryCode.localeCompare(b.countryCode) ||
-      a.partyId.localeCompare(b.partyId) ||
-      a.role.localeCompare(b.role) ||
-      a.source.registryId.localeCompare(b.source.registryId),
+  return [...records].sort(compareRecords);
+}
+
+export function sortInvalidRecords(entries: InvalidRegistryRecordEntry[]) {
+  return [...entries].sort((a, b) => compareRecords(a.record, b.record));
+}
+
+function compareRecords(a: NormalizedRegistryRecord, b: NormalizedRegistryRecord) {
+  return (
+    a.countryCode.localeCompare(b.countryCode) ||
+    a.partyId.localeCompare(b.partyId) ||
+    a.role.localeCompare(b.role) ||
+    a.source.registryId.localeCompare(b.source.registryId)
   );
 }
 
@@ -149,16 +175,23 @@ export function toSourceMetadata(source: SourceDefinition) {
 
 function toStats(
   records: NormalizedRegistryRecord[],
+  invalid: InvalidRegistryRecordEntry[],
   results: SourceBuildResult[],
   generatedAt: string,
 ): GeneratedStats {
   return {
     totalRecords: records.length,
+    totalInvalidRecords: invalid.length,
     recordsByCountry: countBy(records, (record) => record.countryCode),
     recordsByCountryRole: countByCountryRole(records),
     recordsByRole: countBy(records, (record) => record.role),
     recordsByStatus: countBy(records, (record) => record.status),
     recordsByRegistry: countBy(records, (record) => record.source.registryId),
+    invalidRecordsByReason: countBy(
+      invalid.flatMap((entry) => entry.reasons),
+      (reason) => reason,
+    ),
+    invalidRecordsByRegistry: countBy(invalid, (entry) => entry.record.source.registryId),
     staleSources: results
       .filter((result) => result.stale)
       .map((result) => result.sourceId)
@@ -167,12 +200,9 @@ function toStats(
   };
 }
 
-function countBy(
-  records: NormalizedRegistryRecord[],
-  selector: (record: NormalizedRegistryRecord) => string,
-) {
+function countBy<TItem>(items: TItem[], selector: (item: TItem) => string) {
   const counts: Record<string, number> = {};
-  for (const record of records) counts[selector(record)] = (counts[selector(record)] ?? 0) + 1;
+  for (const item of items) counts[selector(item)] = (counts[selector(item)] ?? 0) + 1;
   return Object.fromEntries(Object.entries(counts).sort(([a], [b]) => a.localeCompare(b)));
 }
 

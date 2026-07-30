@@ -1,15 +1,34 @@
-import type { NormalizedRegistryRecord } from "../domain/registry-record.js";
+import { emi3IdentifierReasons } from "../domain/emi3-identifier.js";
+import type {
+  InvalidRegistryRecordEntry,
+  NormalizedRegistryRecord,
+} from "../domain/registry-record.js";
 import type { ValidationIssue } from "../domain/validation-issue.js";
+
+const IDENTIFIER_REASON_MESSAGES = {
+  INVALID_COUNTRY: "Invalid country code.",
+  INVALID_PARTY_ID: "Party ID must be exactly three uppercase alphanumeric characters.",
+} as const;
+
+// Splits records on eMI3 identifier validity so the build can publish the valid
+// ones and report the rest as counters instead of registry entries.
+export function partitionRecordsByIdentifierValidity(records: NormalizedRegistryRecord[]) {
+  const valid: NormalizedRegistryRecord[] = [];
+  const invalid: InvalidRegistryRecordEntry[] = [];
+  for (const record of records) {
+    const reasons = emi3IdentifierReasons(record);
+    if (reasons.length === 0) valid.push(record);
+    else invalid.push({ reasons, record });
+  }
+  return { valid, invalid };
+}
 
 export function validateRecord(record: NormalizedRegistryRecord): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   if (!record.source.registryId)
     issues.push(error("EMPTY_REGISTRY", "Source registry is empty.", record.key));
-  if (!/^[A-Z]{2}$/.test(record.countryCode))
-    issues.push(error("INVALID_COUNTRY", "Invalid country code.", record.key));
-  if (!record.partyId) issues.push(error("EMPTY_PARTY_ID", "Party ID is empty.", record.key));
-  if (!/^[A-Z0-9]{2,8}$/.test(record.partyId)) {
-    issues.push(warn("UNCOMMON_PARTY_ID", "Party ID has uncommon syntax.", record.key));
+  for (const reason of emi3IdentifierReasons(record)) {
+    issues.push(error(reason, IDENTIFIER_REASON_MESSAGES[reason], record.key));
   }
   if (!record.organization.name)
     issues.push(error("EMPTY_ORGANIZATION", "Organization name is empty.", record.key));
@@ -31,8 +50,4 @@ export function validateRecord(record: NormalizedRegistryRecord): ValidationIssu
 
 function error(code: string, message: string, recordKey: string): ValidationIssue {
   return { severity: "error", code, message, recordKey };
-}
-
-function warn(code: string, message: string, recordKey: string): ValidationIssue {
-  return { severity: "warning", code, message, recordKey };
 }

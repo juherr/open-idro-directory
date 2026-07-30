@@ -1,4 +1,9 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
+import {
+  EMI3_COUNTRY_CODE_PATTERN,
+  EMI3_IDENTIFIER_PATTERN,
+  EMI3_PARTY_ID_PATTERN,
+} from "../domain/emi3-identifier.js";
 import type { NormalizedRegistryRecord } from "../domain/registry-record.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
 import { fromRoot } from "../infrastructure/filesystem/paths.js";
@@ -33,35 +38,76 @@ export async function writeSchemas() {
     fromRoot("schemas", "authority.schema.json"),
     `${JSON.stringify(authoritySchema, null, 2)}\n`,
   );
+  await writeFile(
+    fromRoot("schemas", "registry-invalid.schema.json"),
+    `${JSON.stringify(registryInvalidSchema, null, 2)}\n`,
+  );
 }
+
+const registryRecordSchema = {
+  type: "object",
+  required: [
+    "key",
+    "countryCode",
+    "partyId",
+    "eMobilityId",
+    "role",
+    "status",
+    "organization",
+    "source",
+    "metadata",
+  ],
+  properties: {
+    key: { type: "string" },
+    countryCode: { type: "string", pattern: EMI3_COUNTRY_CODE_PATTERN.source },
+    partyId: { type: "string", pattern: EMI3_PARTY_ID_PATTERN.source },
+    eMobilityId: { type: "string", pattern: EMI3_IDENTIFIER_PATTERN.source },
+    role: { enum: ["CPO", "CSO", "EMSP", "NSP", "HUB", "OTHER"] },
+    status: { enum: ["ACTIVE", "INACTIVE", "RESERVED", "REVOKED", "UNKNOWN"] },
+    organization: { type: "object" },
+    source: { type: "object" },
+    metadata: { type: "object" },
+  },
+};
 
 const registrySchema = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   title: "RegistryDataset",
   type: "array",
-  items: {
-    type: "object",
-    required: [
-      "key",
-      "countryCode",
-      "partyId",
-      "eMobilityId",
-      "role",
-      "status",
-      "organization",
-      "source",
-      "metadata",
-    ],
-    properties: {
-      key: { type: "string" },
-      countryCode: { type: "string", pattern: "^[A-Z]{2}$" },
-      partyId: { type: "string" },
-      eMobilityId: { type: "string" },
-      role: { enum: ["CPO", "CSO", "EMSP", "NSP", "HUB", "OTHER"] },
-      status: { enum: ["ACTIVE", "INACTIVE", "RESERVED", "REVOKED", "UNKNOWN"] },
-      organization: { type: "object" },
-      source: { type: "object" },
-      metadata: { type: "object" },
+  items: registryRecordSchema,
+};
+
+// Records excluded from the published datasets keep the registry record shape
+// minus the identifier patterns, since the identifier is exactly what is wrong.
+const registryInvalidSchema = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  title: "InvalidRegistryDataset",
+  type: "object",
+  required: ["generatedAt", "records"],
+  properties: {
+    generatedAt: { type: "string" },
+    records: {
+      type: "array",
+      items: {
+        type: "object",
+        required: ["reasons", "record"],
+        properties: {
+          reasons: {
+            type: "array",
+            minItems: 1,
+            items: { enum: ["INVALID_COUNTRY", "INVALID_PARTY_ID"] },
+          },
+          record: {
+            ...registryRecordSchema,
+            properties: {
+              ...registryRecordSchema.properties,
+              countryCode: { type: "string" },
+              partyId: { type: "string" },
+              eMobilityId: { type: "string" },
+            },
+          },
+        },
+      },
     },
   },
 };

@@ -24,10 +24,12 @@
         "pattern": "^[A-Z]{2}$"
       },
       "partyId": {
-        "type": "string"
+        "type": "string",
+        "pattern": "^[A-Z0-9]{3}$"
       },
       "eMobilityId": {
-        "type": "string"
+        "type": "string",
+        "pattern": "^[A-Z]{2}[A-Z0-9]{3}$"
       },
       "role": {
         "enum": [

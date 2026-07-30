@@ -228079,35 +228079,6 @@
     }
   },
   {
-    "key": "se-energimyndigheten:SE:ALEG:CPO",
-    "countryCode": "SE",
-    "partyId": "ALEG",
-    "eMobilityId": "SEALEG",
-    "role": "CPO",
-    "status": "INACTIVE",
-    "organization": {
-      "name": "Allego",
-      "legalName": "Allego",
-      "website": null
-    },
-    "source": {
-      "registryId": "se-energimyndigheten",
-      "official": true,
-      "sourceRecordId": "SEALEG",
-      "sourceUrl": "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
-      "sourceValue": "SEALEG",
-      "firstSeenAt": "2026-06-16T06:33:14.830Z",
-      "lastSeenAt": "2026-06-16T06:33:14.830Z",
-      "retrievedAt": "2026-07-27T06:43:40.739Z"
-    },
-    "metadata": {
-      "energimyndighetenCompanyName": "Allego",
-      "energimyndighetenSeparator": "",
-      "inactiveSince": "2026-06-22T18:59:43.853Z",
-      "inactiveReason": "missing-from-official-source"
-    }
-  },
-  {
     "key": "se-energimyndigheten:SE:ALL:CPO",
     "countryCode": "SE",
     "partyId": "ALL",
@@ -228132,35 +228103,6 @@
     "metadata": {
       "energimyndighetenCompanyName": "Allego",
       "energimyndighetenSeparator": "*"
-    }
-  },
-  {
-    "key": "se-energimyndigheten:SE:ALLE:CPO",
-    "countryCode": "SE",
-    "partyId": "ALLE",
-    "eMobilityId": "SEALLE",
-    "role": "CPO",
-    "status": "INACTIVE",
-    "organization": {
-      "name": "Allego",
-      "legalName": "Allego",
-      "website": null
-    },
-    "source": {
-      "registryId": "se-energimyndigheten",
-      "official": true,
-      "sourceRecordId": "SEALLE",
-      "sourceUrl": "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
-      "sourceValue": "SEALLE",
-      "firstSeenAt": "2026-06-16T06:33:14.830Z",
-      "lastSeenAt": "2026-06-16T06:33:14.830Z",
-      "retrievedAt": "2026-07-27T06:43:40.739Z"
-    },
-    "metadata": {
-      "energimyndighetenCompanyName": "Allego",
-      "energimyndighetenSeparator": "",
-      "inactiveSince": "2026-06-22T18:59:43.853Z",
-      "inactiveReason": "missing-from-official-source"
     }
   },
   {
@@ -229544,35 +229486,6 @@
     }
   },
   {
-    "key": "se-energimyndigheten:SE:QWCE:CPO",
-    "countryCode": "SE",
-    "partyId": "QWCE",
-    "eMobilityId": "SEQWCE",
-    "role": "CPO",
-    "status": "INACTIVE",
-    "organization": {
-      "name": "Qwello Sverige AB",
-      "legalName": "Qwello Sverige AB",
-      "website": null
-    },
-    "source": {
-      "registryId": "se-energimyndigheten",
-      "official": true,
-      "sourceRecordId": "SEQWCE",
-      "sourceUrl": "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
-      "sourceValue": "SEQWCE",
-      "firstSeenAt": "2026-06-16T06:33:14.830Z",
-      "lastSeenAt": "2026-06-16T06:33:14.830Z",
-      "retrievedAt": "2026-07-27T06:43:40.739Z"
-    },
-    "metadata": {
-      "energimyndighetenCompanyName": "Qwello Sverige AB",
-      "energimyndighetenSeparator": "",
-      "inactiveSince": "2026-06-22T18:59:43.853Z",
-      "inactiveReason": "missing-from-official-source"
-    }
-  },
-  {
     "key": "se-energimyndigheten:SE:REC:CPO",
     "countryCode": "SE",
     "partyId": "REC",
@@ -229792,35 +229705,6 @@
     "metadata": {
       "energimyndighetenCompanyName": "Virta Global Sweden",
       "energimyndighetenSeparator": "*",
-      "inactiveSince": "2026-06-22T18:59:43.853Z",
-      "inactiveReason": "missing-from-official-source"
-    }
-  },
-  {
-    "key": "se-energimyndigheten:SE:T124:CPO",
-    "countryCode": "SE",
-    "partyId": "T124",
-    "eMobilityId": "SET124",
-    "role": "CPO",
-    "status": "INACTIVE",
-    "organization": {
-      "name": "Kvikkjokk Stugor AB",
-      "legalName": "Kvikkjokk Stugor AB",
-      "website": null
-    },
-    "source": {
-      "registryId": "se-energimyndigheten",
-      "official": true,
-      "sourceRecordId": "SET124",
-      "sourceUrl": "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
-      "sourceValue": "SET124",
-      "firstSeenAt": "2026-06-16T06:33:14.830Z",
-      "lastSeenAt": "2026-06-16T06:33:14.830Z",
-      "retrievedAt": "2026-07-27T06:43:40.739Z"
-    },
-    "metadata": {
-      "energimyndighetenCompanyName": "Kvikkjokk Stugor AB",
-      "energimyndighetenSeparator": "",
       "inactiveSince": "2026-06-22T18:59:43.853Z",
       "inactiveReason": "missing-from-official-source"
     }

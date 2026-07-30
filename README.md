@@ -53,6 +53,8 @@ registry.
 - `data/registry.min.json`: minified JSON array.
 - `data/registry.ndjson`: one normalized record per line.
 - `data/registry.csv`: stable tabular export.
+- `data/registry-invalid.json`: records excluded from the published lists because
+  their eMI3 identifier is invalid, with the reason codes that rejected them.
 - `data/sources.json`: source configuration and health.
 - `data/stats.json`: aggregate counts.
 - `data/reports/non-idrr-additions.json`: complementary observations absent from the

@@ -1,5 +1,6 @@
 {
-  "totalRecords": 8066,
+  "totalRecords": 8062,
+  "totalInvalidRecords": 4,
   "recordsByCountry": {
     "AT": 1113,
     "BE": 362,
@@ -19,7 +20,7 @@
     "NL": 367,
     "PL": 844,
     "PT": 98,
-    "SE": 77,
+    "SE": 73,
     "SI": 56
   },
   "recordsByCountryRole": {
@@ -93,7 +94,7 @@
       "EMSP": 26
     },
     "SE": {
-      "CPO": 73,
+      "CPO": 69,
       "EMSP": 4
     },
     "SI": {
@@ -102,12 +103,12 @@
     }
   },
   "recordsByRole": {
-    "CPO": 5469,
+    "CPO": 5465,
     "EMSP": 2597
   },
   "recordsByStatus": {
     "ACTIVE": 7451,
-    "INACTIVE": 276,
+    "INACTIVE": 272,
     "RESERVED": 144,
     "UNKNOWN": 195
   },
@@ -128,8 +129,14 @@
     "lv-lvceli": 15,
     "pl-eipa": 844,
     "pt-mobie": 98,
-    "se-energimyndigheten": 77,
+    "se-energimyndigheten": 73,
     "si-nap": 56
+  },
+  "invalidRecordsByReason": {
+    "INVALID_PARTY_ID": 4
+  },
+  "invalidRecordsByRegistry": {
+    "se-energimyndigheten": 4
   },
   "staleSources": [],
   "generatedAt": "2026-07-27T06:44:15.562Z"

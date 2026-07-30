@@ -10,6 +10,7 @@ export default defineConfig({
       "data/registry.min.json",
       "data/registry.ndjson",
       "data/registry.csv",
+      "data/registry-invalid.json",
       "data/sources.json",
       "data/stats.json",
       "schemas/*.json",

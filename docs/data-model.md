@@ -10,6 +10,29 @@ registryId + ":" + countryCode + ":" + partyId + ":" + role
 
 Organizations are not used as identifiers. Similar names are not merged. Source-specific fields are preserved in `metadata`.
 
+## Identifier Validity
+
+A published record must carry a valid eMI3 identifier:
+
+- `countryCode` matches `^[A-Z]{2}$`;
+- `partyId` matches `^[A-Z0-9]{3}$` -- exactly three characters, as assigned by
+  eMI3 and ISO 15118;
+- `eMobilityId` matches `^[A-Z]{2}[A-Z0-9]{3}$`.
+
+These patterns live in `src/domain/emi3-identifier.ts` and are the single source
+of truth for the zod schemas, the record validator, and the generated JSON
+Schemas.
+
+Records that fail the rule are excluded from `data/registry.*` and collected in
+`data/registry-invalid.json` with their reason codes (`INVALID_COUNTRY`,
+`INVALID_PARTY_ID`). `data/stats.json` reports them as counters
+(`totalInvalidRecords`, `invalidRecordsByReason`, `invalidRecordsByRegistry`),
+never as entries. The file is regenerated on every build and is normally empty;
+a non-empty list signals an upstream or connector regression.
+
+The rule applies to the official registry pipeline only. Complementary
+observations use other identifier schemes with their own length rules.
+
 ## Authority, Registry, And Publication
 
 A source descriptor separates three identities that were previously conflated in

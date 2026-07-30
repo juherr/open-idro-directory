@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InvalidRegistryDataset",
+  "type": "object",
+  "required": [
+    "generatedAt",
+    "records"
+  ],
+  "properties": {
+    "generatedAt": {
+      "type": "string"
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "reasons",
+          "record"
+        ],
+        "properties": {
+          "reasons": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": [
+                "INVALID_COUNTRY",
+                "INVALID_PARTY_ID"
+              ]
+            }
+          },
+          "record": {
+            "type": "object",
+            "required": [
+              "key",
+              "countryCode",
+              "partyId",
+              "eMobilityId",
+              "role",
+              "status",
+              "organization",
+              "source",
+              "metadata"
+            ],
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "countryCode": {
+                "type": "string"
+              },
+              "partyId": {
+                "type": "string"
+              },
+              "eMobilityId": {
+                "type": "string"
+              },
+              "role": {
+                "enum": [
+                  "CPO",
+                  "CSO",
+                  "EMSP",
+                  "NSP",
+                  "HUB",
+                  "OTHER"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "ACTIVE",
+                  "INACTIVE",
+                  "RESERVED",
+                  "REVOKED",
+                  "UNKNOWN"
+                ]
+              },
+              "organization": {
+                "type": "object"
+              },
+              "source": {
+                "type": "object"
+              },
+              "metadata": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

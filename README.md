@@ -181,11 +181,11 @@ engineering note, not legal advice.
 
 ## Guidance For IDRO Organisations
 
-`docs/open-idro-best-practices.md` collects practical publication guidance for
-national IDRO services: authoritative-source notices, registry completeness,
+`docs/open-idro-recommended-practices.md` collects practical publication guidance
+for national IDRO services: authoritative-source notices, registry completeness,
 machine-readable exports, explicit reuse terms, data quality, and progressive
 maturity levels. It is derived from public feedback and from registers this
-project consumes; it is guidance, not a compliance standard.
+project consumes; it is a working draft, not a compliance standard.
 
 ## Contributing
 

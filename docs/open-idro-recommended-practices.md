@@ -1,9 +1,14 @@
-# Open IDRO Best Practices
+# Open IDRO Recommended Practices
 
 This document collects practical publication guidance for national ID Registration
 Organisation (IDRO) services. It consolidates what national IDRO organisations have
 stated publicly about their own registers, and what this project observes while
 consuming those registers.
+
+The title says "recommended practices" rather than "best practices" deliberately.
+The recommendations rest on a limited evidence base and have not been validated
+across the sector; the stronger label would claim a consensus that does not exist
+yet.
 
 Open IDRO Directory is an independent aggregation project. It does not issue
 e-mobility identifiers, does not appoint IDROs, and holds no regulatory mandate.

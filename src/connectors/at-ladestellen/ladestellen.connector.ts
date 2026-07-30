@@ -71,6 +71,7 @@ export class LadestellenConnector implements RegistryConnector<LadestellenOperat
           sourceId: input.source.id,
           code: "LADESTELLEN_MALFORMED_IDENTIFIER",
           message: `Unexpected Ladestellen.at operator ID syntax: ${sourceRecord.operatorId}`,
+          rejectedIdentifier: sourceRecord.operatorId,
         });
         continue;
       }

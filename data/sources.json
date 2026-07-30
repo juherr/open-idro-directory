@@ -938,7 +938,7 @@
     },
     "health": {
       "stale": false,
-      "recordCount": 77,
+      "recordCount": 73,
       "lastAttemptedRetrieval": "2026-07-27T06:43:40.739Z",
       "lastSuccessfulRetrieval": "2026-07-27T06:43:40.739Z",
       "checksum": "93d0b8668a019fafd0934d0440122dda728ccb4d113442f676271adeb78e791b",

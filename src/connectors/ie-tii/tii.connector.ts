@@ -95,6 +95,7 @@ export class TiiConnector implements RegistryConnector<TiiRow> {
             sourceId: input.source.id,
             code: "TII_MALFORMED_IDENTIFIER",
             message: `Unexpected Irish IDRO identifier syntax: ${identifier.sourceValue}`,
+            rejectedIdentifier: identifier.sourceValue,
           });
           continue;
         }

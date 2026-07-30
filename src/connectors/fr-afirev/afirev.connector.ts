@@ -83,6 +83,9 @@ export class AfirevConnector implements RegistryConnector<AfirevRecord> {
           sourceId: input.source.id,
           code: "AFIREV_MALFORMED_IDENTIFIER",
           message: `Unexpected AFIREV prefix syntax: ${prefix}`,
+          // The raw upstream value, not the trimmed one the regex saw, so the
+          // rejected row reproduces exactly what the register published.
+          rejectedIdentifier: sourceRecord.prefixId,
         });
         continue;
       }

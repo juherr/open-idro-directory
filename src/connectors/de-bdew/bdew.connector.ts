@@ -130,6 +130,7 @@ function normalizeCode(
       sourceId: input.source.id,
       code: "BDEW_MALFORMED_IDENTIFIER",
       message: `Unexpected BDEW identifier syntax: ${sourceRecord.Code}`,
+      rejectedIdentifier: sourceRecord.Code,
     });
     return;
   }

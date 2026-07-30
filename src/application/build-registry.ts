@@ -1,14 +1,24 @@
 import { readFile } from "node:fs/promises";
 import { createConnector } from "../connectors/index.js";
-import type { NormalizedRegistryRecord } from "../domain/registry-record.js";
+import type {
+  InvalidRegistryHistory,
+  InvalidRegistryRecordDetection,
+  NormalizedRegistryRecord,
+  RejectedSourceRowDetection,
+} from "../domain/registry-record.js";
 import type { SourceBuildResult } from "../domain/source-result.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
 import { readCurrentSnapshot } from "../infrastructure/filesystem/raw-snapshot.js";
 import { fromRoot } from "../infrastructure/filesystem/paths.js";
 import { writeDatasets } from "../infrastructure/serialization/serializers.js";
+import {
+  partitionRecordsByIdentifierValidity,
+  toRejectedSourceRows,
+} from "../validation/identifier-validator.js";
 import { validateRegistry } from "../validation/registry-validator.js";
 import { checkSafetyThresholds } from "../validation/safety-thresholds.js";
 import { mergeGeneratedRecords } from "./generated-record-merge.js";
+import { mergeInvalidRecordHistory } from "./invalid-record-history.js";
 import { applyOfficialStatusPolicy } from "./official-status-policy.js";
 
 export interface BuildOptions {
@@ -24,6 +34,8 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   );
   const results: SourceBuildResult[] = [];
   const records: NormalizedRegistryRecord[] = [];
+  const invalidRecords: InvalidRegistryRecordDetection[] = [];
+  const rejectedRows: RejectedSourceRowDetection[] = [];
   for (const source of selected) {
     const connector = createConnector(source);
     try {
@@ -48,19 +60,26 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
         snapshot.body,
       );
       const errors = [...parsed.errors, ...normalized.errors, ...safety];
-      const resultRecords = errors.some((issue) => issue.severity === "error")
-        ? previous
-        : mergeGeneratedRecords(
-            source,
-            previous,
-            normalized.records,
-            snapshot.metadata.retrievedAt,
-          );
-      records.push(...resultRecords);
+      const ingested = !errors.some((issue) => issue.severity === "error");
+      const resultRecords = ingested
+        ? mergeGeneratedRecords(source, previous, normalized.records, snapshot.metadata.retrievedAt)
+        : previous;
+      const warnings = [...parsed.warnings, ...normalized.warnings];
+      // Rows the connector could not turn into an identifier are only reported
+      // when this run was actually ingested. A failed source republishes its
+      // previous records, so its discarded rows would describe nothing.
+      if (ingested) rejectedRows.push(...toRejectedSourceRows(source.id, warnings));
+      // Partitioning after the merge also cleans records carried over from the
+      // previous dataset, which is where retained tombstones come from. Safety
+      // thresholds keep comparing unfiltered connector output, so an exclusion
+      // can never be mistaken for an upstream mass deletion.
+      const publishable = partitionRecordsByIdentifierValidity(resultRecords);
+      records.push(...publishable.valid);
+      invalidRecords.push(...publishable.invalid);
       results.push({
         sourceId: source.id,
-        records: resultRecords,
-        warnings: [...parsed.warnings, ...normalized.warnings],
+        records: publishable.valid,
+        warnings,
         errors,
         retrievedAt: snapshot.metadata.retrievedAt,
         checksum: snapshot.metadata.checksum,
@@ -69,10 +88,12 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
       });
     } catch (error) {
       const previous = await readPreviousGeneratedRecords(source.id);
-      records.push(...previous);
+      const publishable = partitionRecordsByIdentifierValidity(previous);
+      records.push(...publishable.valid);
+      invalidRecords.push(...publishable.invalid);
       results.push({
         sourceId: source.id,
-        records: previous,
+        records: publishable.valid,
         warnings: [],
         errors: [
           {
@@ -95,7 +116,19 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     records: result.records.map((record) => policyRecordByKey.get(record.key) ?? record),
   }));
   const registryIssues = validateRegistry(policyRecords, sources);
-  await writeDatasets(policyRecords, sources, policyResults, generatedAt, options.outputDir);
+  const invalidHistory = mergeInvalidRecordHistory(
+    await readPreviousInvalidHistory(),
+    { records: invalidRecords, rows: rejectedRows },
+    generatedAt,
+  );
+  await writeDatasets(
+    policyRecords,
+    sources,
+    policyResults,
+    generatedAt,
+    options.outputDir,
+    invalidHistory,
+  );
   if (registryIssues.some((issue) => issue.severity === "error")) {
     throw new Error(
       `Registry validation failed: ${registryIssues.map((issue) => issue.message).join("; ")}`,
@@ -109,7 +142,23 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
         .join("; ")}`,
     );
   }
-  return { records: policyRecords, results: policyResults, issues: registryIssues };
+  return {
+    records: policyRecords,
+    invalidHistory,
+    results: policyResults,
+    issues: registryIssues,
+  };
+}
+
+// Hand-written `supersededBy` annotations live in this file, so the build reads
+// it back rather than regenerating it from scratch.
+async function readPreviousInvalidHistory(): Promise<InvalidRegistryHistory | null> {
+  try {
+    const raw = await readFile(fromRoot("data", "registry-invalid.json"), "utf8");
+    return JSON.parse(raw) as InvalidRegistryHistory;
+  } catch {
+    return null;
+  }
 }
 
 async function readPreviousGeneratedRecords(sourceId: string): Promise<NormalizedRegistryRecord[]> {

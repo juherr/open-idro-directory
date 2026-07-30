@@ -77,6 +77,7 @@ export class EnergimyndighetenConnector implements RegistryConnector<Energimyndi
           sourceId: input.source.id,
           code: "ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER",
           message: `Unexpected Swedish Energy Agency identifier syntax: ${sourceRecord.sourceValue}`,
+          rejectedIdentifier: sourceRecord.sourceValue,
         });
         continue;
       }
@@ -153,7 +154,7 @@ async function fetchWorkbook(url: string, context: FetchContext) {
 }
 
 function parseEnergimyndighetenIdentifier(value: string) {
-  const match = /^(SE)\s*([*-]?)\s*([A-Za-z0-9]{3,5})$/i.exec(value.trim());
+  const match = /^(SE)\s*([*-]?)\s*([A-Za-z0-9]{3})$/i.exec(value.trim());
   if (!match) return null;
   return {
     countryCode: "SE",

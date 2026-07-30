@@ -78,6 +78,7 @@ export class EvroamConnector implements RegistryConnector<EvroamRegisterItem> {
             sourceId: input.source.id,
             code: "EVROAM_MALFORMED_IDENTIFIER",
             message: `Unexpected EV Roam ${identifier.field} syntax: ${identifier.sourceValue}`,
+            rejectedIdentifier: identifier.sourceValue,
           });
           continue;
         }

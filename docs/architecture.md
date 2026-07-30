@@ -16,6 +16,12 @@ AFIREV implementation plan:
 5. Preserve `data/raw/fr-afirev/current/body.json` and metadata.
 6. Parse rows with Zod, normalize roles/statuses, validate, and generate deterministic static datasets.
 
+The build partitions records on eMI3 identifier validity after merging them with
+the previous dataset, so records carried over from earlier runs are cleaned too.
+Safety thresholds keep comparing unfiltered connector output, so an exclusion is
+never mistaken for an upstream mass deletion. Excluded records go to
+`data/registry-invalid.json`; see `docs/data-model.md` for the rule.
+
 Raw retention keeps the current successful snapshot and the previous successful snapshot. Fixture snapshots used by tests are committed separately under `tests/fixtures`.
 
 Vite+ note: this repository uses the `vp` CLI and local `vite-plus` package. `vp check` replaces separate ESLint and Prettier commands for format, lint, and type-check validation.

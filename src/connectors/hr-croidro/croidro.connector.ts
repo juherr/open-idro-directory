@@ -97,6 +97,7 @@ export class CroIdroConnector implements RegistryConnector<CroIdroCsvRow> {
             sourceId: input.source.id,
             code: "CROIDRO_MALFORMED_IDENTIFIER",
             message: `Unexpected Croatian IDRO identifier syntax: ${identifier.sourceValue}`,
+            rejectedIdentifier: identifier.sourceValue,
           });
           continue;
         }

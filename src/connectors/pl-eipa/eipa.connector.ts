@@ -89,6 +89,7 @@ export class EipaConnector implements RegistryConnector<EipaCsvRow> {
             sourceId: input.source.id,
             code: "EIPA_MALFORMED_IDENTIFIER",
             message: `Unexpected EIPA identifier syntax: ${identifier.sourceValue}`,
+            rejectedIdentifier: identifier.sourceValue,
           });
           continue;
         }

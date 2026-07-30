@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InvalidRegistryDataset",
+  "type": "object",
+  "required": [
+    "generatedAt",
+    "records",
+    "rows"
+  ],
+  "properties": {
+    "generatedAt": {
+      "type": "string"
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "firstDetectedAt",
+          "lastDetectedAt",
+          "supersededBy",
+          "registryId",
+          "code",
+          "sourceValue",
+          "message"
+        ],
+        "properties": {
+          "firstDetectedAt": {
+            "type": "string"
+          },
+          "lastDetectedAt": {
+            "type": "string"
+          },
+          "supersededBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{2}[A-Z0-9]{3}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "registryId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "sourceValue": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "firstDetectedAt",
+          "lastDetectedAt",
+          "supersededBy",
+          "reasons",
+          "record"
+        ],
+        "properties": {
+          "firstDetectedAt": {
+            "type": "string"
+          },
+          "lastDetectedAt": {
+            "type": "string"
+          },
+          "supersededBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{2}[A-Z0-9]{3}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reasons": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": [
+                "INVALID_COUNTRY",
+                "INVALID_PARTY_ID"
+              ]
+            }
+          },
+          "record": {
+            "type": "object",
+            "required": [
+              "key",
+              "countryCode",
+              "partyId",
+              "eMobilityId",
+              "role",
+              "status",
+              "organization",
+              "source",
+              "metadata"
+            ],
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "countryCode": {
+                "type": "string"
+              },
+              "partyId": {
+                "type": "string"
+              },
+              "eMobilityId": {
+                "type": "string"
+              },
+              "role": {
+                "enum": [
+                  "CPO",
+                  "CSO",
+                  "EMSP",
+                  "NSP",
+                  "HUB",
+                  "OTHER"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "ACTIVE",
+                  "INACTIVE",
+                  "RESERVED",
+                  "REVOKED",
+                  "UNKNOWN"
+                ]
+              },
+              "organization": {
+                "type": "object"
+              },
+              "source": {
+                "type": "object"
+              },
+              "metadata": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

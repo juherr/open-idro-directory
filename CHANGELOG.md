@@ -9,6 +9,19 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
+- `data/registry-invalid.json`, an append-only history of everything the pipeline
+  excluded from the published datasets: `records` whose eMI3 identifier is
+  invalid, and `rows` a connector could not read as an identifier at all. Each
+  entry records when the problem was first and last seen, plus a hand-written
+  `supersededBy` naming the identifier that replaced it upstream -- or `null`
+  when nothing did, which is how an uncorrected identifier stays visible. Plus a
+  `schemas/registry-invalid.schema.json` contract.
+- `totalInvalidRecords`, `invalidRecordsByReason`, `invalidRecordsByRegistry`,
+  `totalRejectedRows`, and `rejectedRowsByRegistry` counters in
+  `data/stats.json`, describing only what the current run detected so a corrected
+  identifier stops being reported as a live problem. Rows a connector drops were
+  previously reported nowhere, so a source publishing malformed identifiers
+  shrank silently.
 - An authority catalog under `config/authorities/`. An appointed IDRO is now
   described once and referenced by every source it operates, so one organisation
   can back several registries without duplicated metadata.
@@ -25,6 +38,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Changed
 
+- **Breaking:** the published datasets now only contain valid eMI3 identifiers.
+  A party ID must be exactly three uppercase alphanumeric characters; the former
+  `UNCOMMON_PARTY_ID` warning accepted two to eight and let invalid records reach
+  `data/registry.*`. Invalid records are excluded and reported as counters
+  instead. Four inactive records leave the registry, the CSV, the NDJSON, and the
+  public API.
 - **Breaking:** source descriptors separate the appointed authority, the registry
   it operates, and the publication a connector consumes, instead of flattening
   all three into one object. Pre-existing flat descriptors are still accepted and
@@ -81,5 +100,11 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Commitlint Conventional Commits validation.
 - Local VitePlus Git hooks for pre-commit, commit-message, and pre-push checks.
 - Bun, mise, and VitePlus project configuration.
+
+### Fixed
+
+- One connector accepted party IDs of three to five characters, so overlong
+  source values were split into four-character party IDs and published. It now
+  matches every other connector and accepts exactly three.
 
 [unreleased]: https://github.com/OWNER/open-idro-directory/commits/HEAD

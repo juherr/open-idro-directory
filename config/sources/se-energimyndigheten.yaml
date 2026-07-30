@@ -15,8 +15,6 @@ publication:
   verifiedAt: null
   safety:
     acceptedDeletionKeys:
-      - se-energimyndigheten:SE:ALEG:CPO
-      - se-energimyndigheten:SE:ALLE:CPO
       - se-energimyndigheten:SE:APF:CPO
       - se-energimyndigheten:SE:CHS:CPO
       - se-energimyndigheten:SE:CLF:CPO
@@ -32,12 +30,10 @@ publication:
       - se-energimyndigheten:SE:MCK:CPO
       - se-energimyndigheten:SE:MIL:CPO
       - se-energimyndigheten:SE:MSK:CPO
-      - se-energimyndigheten:SE:QWCE:CPO
       - se-energimyndigheten:SE:REC:CPO
       - se-energimyndigheten:SE:SMB:CPO
       - se-energimyndigheten:SE:SOF:CPO
       - se-energimyndigheten:SE:SWE:CPO
-      - se-energimyndigheten:SE:T124:CPO
       - se-energimyndigheten:SE:VBK:CPO
       - se-energimyndigheten:SE:VIR:CPO
       - se-energimyndigheten:SE:VKK:CPO

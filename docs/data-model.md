@@ -10,6 +10,69 @@ registryId + ":" + countryCode + ":" + partyId + ":" + role
 
 Organizations are not used as identifiers. Similar names are not merged. Source-specific fields are preserved in `metadata`.
 
+## Identifier Validity
+
+A published record must carry a valid eMI3 identifier:
+
+- `countryCode` matches `^[A-Z]{2}$`;
+- `partyId` matches `^[A-Z0-9]{3}$` -- exactly three characters, as assigned by
+  eMI3 and ISO 15118;
+- `eMobilityId` matches `^[A-Z]{2}[A-Z0-9]{3}$`.
+
+These patterns live in `src/domain/emi3-identifier.ts` and are the single source
+of truth for the zod schemas, the record validator, and the generated JSON
+Schemas.
+
+A row can be refused at two stages, and `data/registry-invalid.json` reports
+both:
+
+- `records`: rows a connector normalized into a record whose identifier then
+  failed the rule, with their reason codes (`INVALID_COUNTRY`,
+  `INVALID_PARTY_ID`).
+- `rows`: raw upstream values a connector could not split into a country code
+  and a party ID at all, so they never became a record. Each carries its
+  `registryId`, the connector issue `code`, the rejected `sourceValue`, and the
+  message.
+
+The two are separate because they mean different things: a rejected row is
+upstream data the pipeline could not read, an invalid record is data it read and
+then refused. Rejected rows are only reported for sources whose run was actually
+ingested -- a source that fails its safety thresholds republishes its previous
+records, so its discarded rows would describe nothing.
+
+### History And Corrections
+
+The file is **append-only**. An identifier a source corrects or drops would
+otherwise vanish without trace, so every entry stays and carries:
+
+- `firstDetectedAt` and `lastDetectedAt`: the runs that first and last saw the
+  problem in a source snapshot;
+- `supersededBy`: the eMobility ID that replaced the rejected identifier
+  upstream, or `null` when nothing did.
+
+`supersededBy` is **written by hand** in `data/registry-invalid.json` and carried
+over by every later build. Nothing derives it. The replacement is an upstream
+re-assignment rather than a truncation, so it cannot be computed from the
+rejected identifier: two different rejected values may well map to the same
+corrected one. Matching on organisation names is not an option either, since
+organisations are not identifiers. A value that is not a valid eMobility ID
+fails the build.
+
+Editorial note: describe these entries by identifier and registry, as the data
+does. Do not single out a registry operator as having published bad data in
+prose -- the goal is a correct directory, not public blame.
+
+Excluded entries never appear in `data/registry.*`. The counters in
+`data/stats.json` (`totalInvalidRecords`, `invalidRecordsByReason`,
+`invalidRecordsByRegistry`, `totalRejectedRows`, `rejectedRowsByRegistry`)
+describe only what the **current** run detected, so a corrected identifier stops
+being reported as a live problem while staying in the history. An entry whose
+`lastDetectedAt` is older than `generatedAt` is one the sources no longer
+publish.
+
+The rule applies to the official registry pipeline only. Complementary
+observations use other identifier schemes with their own length rules.
+
 ## Authority, Registry, And Publication
 
 A source descriptor separates three identities that were previously conflated in

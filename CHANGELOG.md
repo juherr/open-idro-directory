@@ -22,6 +22,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   identifier stops being reported as a live problem. Rows a connector drops were
   previously reported nowhere, so a source publishing malformed identifiers
   shrank silently.
+- `docs/open-idro-best-practices.md`, a public reference for national IDRO
+  services covering authoritative publication, machine-readable access, reuse
+  terms, data quality, maturity levels, and the legal questions that remain
+  open. Linked from the README.
 - An authority catalog under `config/authorities/`. An appointed IDRO is now
   described once and referenced by every source it operates, so one organisation
   can back several registries without duplicated metadata.

@@ -86,9 +86,12 @@ individual is named; the table below cites organisations and public issue number
 | TII is the Irish IDRO under S.I. No. 52 of 2026 and publishes under CC BY 4.0           | [issue #45](https://github.com/juherr/open-idro-directory/issues/45) | Publish the appointing instrument and the exact attribution wording                                                   |
 | Authority, register, and publication were conflated in source metadata                  | [issue #46](https://github.com/juherr/open-idro-directory/issues/46) | Model and publish the three identities separately                                                                     |
 
-Counts quoted throughout this document describe the 20 sources configured in this
-repository at the time of writing. `data/sources.json` is the authoritative record of
-what the project currently consumes.
+Every count quoted in this document is a snapshot of the 20 sources configured in
+this repository as of the `data/sources.json` generated on 2026-07-27, and is not
+updated as the repository changes. Read `data/sources.json` for the current figures;
+it is the authoritative record of what the project consumes. Generating these counts
+instead of hand-writing them is tracked in
+[issue #74](https://github.com/juherr/open-idro-directory/issues/74).
 
 ## Core IDRO Information
 
@@ -200,9 +203,11 @@ Further recommendations:
   publicly accessible under documented, non-discriminatory conditions. Where
   authentication, quotas, or rate limits are needed for operational security or abuse
   prevention, access should not depend on a commercial relationship, a roaming
-  agreement, or a paid account, and the conditions should be published. CORS should
-  be enabled where browser-based reuse is an intended use case. A set of static
-  versioned exports is a legitimate alternative to an API.
+  agreement, or a paid account, and the conditions should be published. Where
+  browser-based reuse is an intended use case, the public read-only endpoint should
+  send `Access-Control-Allow-Origin: *` rather than reflecting the request's `Origin`
+  header, since the data is public and the endpoint carries no credentials. A set of
+  static versioned exports is a legitimate alternative to an API.
 - **Schema versioning** (`Advanced`): structured exports and APIs should publish a
   schema version. Prefer backward-compatible additions; a breaking change should take
   a new major version and should be announced before the previous one is withdrawn.
@@ -217,8 +222,14 @@ Further recommendations:
   does not bypass such controls; see [source-policy.md](source-policy.md).
 - **Integrity and authenticity** (`Reference implementation`): publish a checksum,
   such as SHA-256, for each snapshot, and link each snapshot to the one it replaces.
-  A detached signature or signed manifest additionally lets a consumer verify a copy
-  that has been mirrored or redistributed.
+  A checksum is only verifiable if its scope is stated, so publish what it covers --
+  which file or which fields -- and the exact byte serialization it is computed over,
+  including the character encoding and, where the digest lives inside the document it
+  covers, the fact that the digest field is excluded before hashing. Publishing the
+  digest of the export file, byte for byte as served, is the simplest scope to define
+  and the easiest for a consumer to reproduce. A detached signature or signed
+  manifest additionally lets a consumer verify a copy that has been mirrored or
+  redistributed.
 - **Embeddable view** (`Reference implementation`): an embeddable table or iframe
   must never be the only machine-readable route. This project tracks embedding work
   in [issue #27](https://github.com/juherr/open-idro-directory/issues/27),
@@ -249,7 +260,11 @@ A minimal register entry:
 ```
 
 A publication envelope carrying the provenance and integrity metadata described
-above:
+above. It references the export rather than embedding the entries, so that the
+checksum covers a byte sequence a consumer can fetch and hash directly. An envelope
+that embeds its entries has to define a canonical serialization first, and has to
+say that the digest field is excluded from its own input; referencing the export
+avoids both. Digest values below are placeholders, not real digests.
 
 ```json
 {
@@ -261,8 +276,16 @@ above:
   "generatedAt": "2026-05-02T10:15:00Z",
   "registryUrl": "https://example.test/id-register",
   "reuse": { "status": "licensed", "licence": "CC BY 4.0" },
-  "checksum": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "entries": []
+  "export": {
+    "url": "https://example.test/id-register/2026-05-02.json",
+    "mediaType": "application/json",
+    "encoding": "UTF-8",
+    "checksum": {
+      "algorithm": "sha256",
+      "covers": "the export bytes exactly as served at export.url",
+      "value": "<placeholder: hex sha256 digest>"
+    }
+  }
 }
 ```
 

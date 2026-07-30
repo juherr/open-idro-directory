@@ -1,9 +1,10 @@
 import { readFile } from "node:fs/promises";
 import { createConnector } from "../connectors/index.js";
 import type {
-  InvalidRegistryRecordEntry,
+  InvalidRegistryHistory,
+  InvalidRegistryRecordDetection,
   NormalizedRegistryRecord,
-  RejectedSourceRow,
+  RejectedSourceRowDetection,
 } from "../domain/registry-record.js";
 import type { SourceBuildResult } from "../domain/source-result.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
@@ -17,6 +18,7 @@ import {
 import { validateRegistry } from "../validation/registry-validator.js";
 import { checkSafetyThresholds } from "../validation/safety-thresholds.js";
 import { mergeGeneratedRecords } from "./generated-record-merge.js";
+import { mergeInvalidRecordHistory } from "./invalid-record-history.js";
 import { applyOfficialStatusPolicy } from "./official-status-policy.js";
 
 export interface BuildOptions {
@@ -32,8 +34,8 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   );
   const results: SourceBuildResult[] = [];
   const records: NormalizedRegistryRecord[] = [];
-  const invalidRecords: InvalidRegistryRecordEntry[] = [];
-  const rejectedRows: RejectedSourceRow[] = [];
+  const invalidRecords: InvalidRegistryRecordDetection[] = [];
+  const rejectedRows: RejectedSourceRowDetection[] = [];
   for (const source of selected) {
     const connector = createConnector(source);
     try {
@@ -114,14 +116,18 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     records: result.records.map((record) => policyRecordByKey.get(record.key) ?? record),
   }));
   const registryIssues = validateRegistry(policyRecords, sources);
+  const invalidHistory = mergeInvalidRecordHistory(
+    await readPreviousInvalidHistory(),
+    { records: invalidRecords, rows: rejectedRows },
+    generatedAt,
+  );
   await writeDatasets(
     policyRecords,
     sources,
     policyResults,
     generatedAt,
     options.outputDir,
-    invalidRecords,
-    rejectedRows,
+    invalidHistory,
   );
   if (registryIssues.some((issue) => issue.severity === "error")) {
     throw new Error(
@@ -138,11 +144,21 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   }
   return {
     records: policyRecords,
-    invalidRecords,
-    rejectedRows,
+    invalidHistory,
     results: policyResults,
     issues: registryIssues,
   };
+}
+
+// Hand-written `supersededBy` annotations live in this file, so the build reads
+// it back rather than regenerating it from scratch.
+async function readPreviousInvalidHistory(): Promise<InvalidRegistryHistory | null> {
+  try {
+    const raw = await readFile(fromRoot("data", "registry-invalid.json"), "utf8");
+    return JSON.parse(raw) as InvalidRegistryHistory;
+  } catch {
+    return null;
+  }
 }
 
 async function readPreviousGeneratedRecords(sourceId: string): Promise<NormalizedRegistryRecord[]> {

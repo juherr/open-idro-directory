@@ -1,8 +1,8 @@
 import { emi3IdentifierReasons } from "../domain/emi3-identifier.js";
 import type {
-  InvalidRegistryRecordEntry,
+  InvalidRegistryRecordDetection,
   NormalizedRegistryRecord,
-  RejectedSourceRow,
+  RejectedSourceRowDetection,
 } from "../domain/registry-record.js";
 import type { ValidationIssue } from "../domain/validation-issue.js";
 
@@ -15,7 +15,7 @@ const IDENTIFIER_REASON_MESSAGES = {
 // ones and report the rest as counters instead of registry entries.
 export function partitionRecordsByIdentifierValidity(records: NormalizedRegistryRecord[]) {
   const valid: NormalizedRegistryRecord[] = [];
-  const invalid: InvalidRegistryRecordEntry[] = [];
+  const invalid: InvalidRegistryRecordDetection[] = [];
   for (const record of records) {
     const reasons = emi3IdentifierReasons(record);
     if (reasons.length === 0) valid.push(record);
@@ -29,7 +29,7 @@ export function partitionRecordsByIdentifierValidity(records: NormalizedRegistry
 export function toRejectedSourceRows(
   registryId: string,
   issues: ValidationIssue[],
-): RejectedSourceRow[] {
+): RejectedSourceRowDetection[] {
   return issues
     .filter((issue) => issue.rejectedIdentifier !== undefined)
     .map((issue) => ({

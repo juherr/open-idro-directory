@@ -2,6 +2,7 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { describe, expect, it } from "vitest";
+import { mergeInvalidRecordHistory } from "../../src/application/invalid-record-history.js";
 import type { NormalizedRegistryRecord } from "../../src/domain/registry-record.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
 import { writeDatasets } from "../../src/infrastructure/serialization/serializers.js";
@@ -55,13 +56,28 @@ describe("invalid identifier handling", () => {
         [],
         "2026-06-14T00:00:00.000Z",
         outputDir,
-        partitionRecordsByIdentifierValidity([sampleRecord("ALEG")]).invalid,
+        mergeInvalidRecordHistory(
+          null,
+          {
+            records: partitionRecordsByIdentifierValidity([sampleRecord("ALEG")]).invalid,
+            rows: [],
+          },
+          "2026-06-14T00:00:00.000Z",
+        ),
       );
 
       const invalid = JSON.parse(await readFile(join(outputDir, "registry-invalid.json"), "utf8"));
       expect(invalid).toEqual({
         generatedAt: "2026-06-14T00:00:00.000Z",
-        records: [{ reasons: ["INVALID_PARTY_ID"], record: sampleRecord("ALEG") }],
+        records: [
+          {
+            reasons: ["INVALID_PARTY_ID"],
+            firstDetectedAt: "2026-06-14T00:00:00.000Z",
+            lastDetectedAt: "2026-06-14T00:00:00.000Z",
+            supersededBy: null,
+            record: sampleRecord("ALEG"),
+          },
+        ],
         rows: [],
       });
 
@@ -148,21 +164,27 @@ describe("invalid identifier handling", () => {
         [],
         "2026-06-14T00:00:00.000Z",
         outputDir,
-        [],
-        [
+        mergeInvalidRecordHistory(
+          null,
           {
-            registryId: "se-energimyndigheten",
-            code: "ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER",
-            sourceValue: "SEQWCE",
-            message: "Unexpected Swedish Energy Agency identifier syntax: SEQWCE",
+            records: [],
+            rows: [
+              {
+                registryId: "se-energimyndigheten",
+                code: "ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER",
+                sourceValue: "SEQWCE",
+                message: "Unexpected Swedish Energy Agency identifier syntax: SEQWCE",
+              },
+              {
+                registryId: "se-energimyndigheten",
+                code: "ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER",
+                sourceValue: "SEALLE",
+                message: "Unexpected Swedish Energy Agency identifier syntax: SEALLE",
+              },
+            ],
           },
-          {
-            registryId: "se-energimyndigheten",
-            code: "ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER",
-            sourceValue: "SEALLE",
-            message: "Unexpected Swedish Energy Agency identifier syntax: SEALLE",
-          },
-        ],
+          "2026-06-14T00:00:00.000Z",
+        ),
       );
 
       const invalid = JSON.parse(await readFile(join(outputDir, "registry-invalid.json"), "utf8"));
@@ -177,6 +199,45 @@ describe("invalid identifier handling", () => {
         totalInvalidRecords: 0,
         totalRejectedRows: 2,
         rejectedRowsByRegistry: { "se-energimyndigheten": 2 },
+      });
+    } finally {
+      await rm(outputDir, { recursive: true, force: true });
+    }
+  });
+
+  it("keeps historical entries out of the counters", async () => {
+    const outputDir = await mkdtemp(join(tmpdir(), "open-idro-history-"));
+    const source = await loadSourceDefinition("se-energimyndigheten");
+    try {
+      const detection = {
+        records: partitionRecordsByIdentifierValidity([sampleRecord("ALEG")]).invalid,
+        rows: [],
+      };
+      const previous = mergeInvalidRecordHistory(null, detection, "2026-06-14T00:00:00.000Z");
+      // The source has stopped publishing it, so the next run detects nothing.
+      const history = mergeInvalidRecordHistory(
+        previous,
+        { records: [], rows: [] },
+        "2026-07-27T00:00:00.000Z",
+      );
+
+      await writeDatasets(
+        [sampleRecord("AIM")],
+        [source],
+        [],
+        "2026-07-27T00:00:00.000Z",
+        outputDir,
+        history,
+      );
+
+      const invalid = JSON.parse(await readFile(join(outputDir, "registry-invalid.json"), "utf8"));
+      expect(invalid.records).toHaveLength(1);
+
+      const stats = JSON.parse(await readFile(join(outputDir, "stats.json"), "utf8"));
+      expect(stats).toMatchObject({
+        totalInvalidRecords: 0,
+        invalidRecordsByReason: {},
+        invalidRecordsByRegistry: {},
       });
     } finally {
       await rm(outputDir, { recursive: true, force: true });

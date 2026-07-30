@@ -47,7 +47,7 @@ export type NormalizedRegistryRecord = z.infer<typeof normalizedRegistryRecordSc
 
 // Records whose identifier is not a valid eMI3 assignment are excluded from the
 // published datasets and collected in `data/registry-invalid.json` instead.
-export interface InvalidRegistryRecordEntry {
+export interface InvalidRegistryRecordDetection {
   reasons: Emi3ValidityReason[];
   record: NormalizedRegistryRecord;
 }
@@ -56,11 +56,30 @@ export interface InvalidRegistryRecordEntry {
 // not be split into a country code and a party ID at all. They never become a
 // record, so they are reported next to the invalid records rather than among
 // them.
-export interface RejectedSourceRow {
+export interface RejectedSourceRowDetection {
   registryId: string;
   code: string;
   sourceValue: string;
   message: string;
+}
+
+// Detections are accumulated rather than replaced: an identifier a source has
+// stopped publishing stays on record so the correction it received (or the
+// absence of one) remains traceable. `supersededBy` is the eMobility ID that
+// replaced it upstream, filled in by hand and preserved across builds.
+interface HistoryEntry {
+  firstDetectedAt: string;
+  lastDetectedAt: string;
+  supersededBy: string | null;
+}
+
+export type InvalidRegistryRecordEntry = InvalidRegistryRecordDetection & HistoryEntry;
+export type RejectedSourceRow = RejectedSourceRowDetection & HistoryEntry;
+
+export interface InvalidRegistryHistory {
+  generatedAt: string;
+  records: InvalidRegistryRecordEntry[];
+  rows: RejectedSourceRow[];
 }
 
 export function makeRegistryKey(

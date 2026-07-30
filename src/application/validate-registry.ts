@@ -77,6 +77,20 @@ const registrySchema = {
   items: registryRecordSchema,
 };
 
+// The history is append-only, so every entry records when it was first and last
+// detected. `supersededBy` is written by hand and must name a valid eMobility
+// ID, or null when nothing replaced the identifier.
+const historyFields = {
+  required: ["firstDetectedAt", "lastDetectedAt", "supersededBy"],
+  properties: {
+    firstDetectedAt: { type: "string" },
+    lastDetectedAt: { type: "string" },
+    supersededBy: {
+      anyOf: [{ type: "string", pattern: EMI3_IDENTIFIER_PATTERN.source }, { type: "null" }],
+    },
+  },
+};
+
 // Records excluded from the published datasets keep the registry record shape
 // minus the identifier patterns, since the identifier is exactly what is wrong.
 const registryInvalidSchema = {
@@ -90,8 +104,9 @@ const registryInvalidSchema = {
       type: "array",
       items: {
         type: "object",
-        required: ["registryId", "code", "sourceValue", "message"],
+        required: [...historyFields.required, "registryId", "code", "sourceValue", "message"],
         properties: {
+          ...historyFields.properties,
           registryId: { type: "string" },
           code: { type: "string" },
           sourceValue: { type: "string" },
@@ -103,8 +118,9 @@ const registryInvalidSchema = {
       type: "array",
       items: {
         type: "object",
-        required: ["reasons", "record"],
+        required: [...historyFields.required, "reasons", "record"],
         properties: {
+          ...historyFields.properties,
           reasons: {
             type: "array",
             minItems: 1,

@@ -28,24 +28,42 @@ both:
 
 - `records`: rows a connector normalized into a record whose identifier then
   failed the rule, with their reason codes (`INVALID_COUNTRY`,
-  `INVALID_PARTY_ID`). Counted by `totalInvalidRecords`,
-  `invalidRecordsByReason`, and `invalidRecordsByRegistry`.
+  `INVALID_PARTY_ID`).
 - `rows`: raw upstream values a connector could not split into a country code
   and a party ID at all, so they never became a record. Each carries its
   `registryId`, the connector issue `code`, the rejected `sourceValue`, and the
-  message. Counted by `totalRejectedRows` and `rejectedRowsByRegistry`.
+  message.
 
-The two are counted separately because they mean different things: a rejected
-row is upstream data the pipeline could not read, an invalid record is data it
-read and then refused. Rejected rows are only reported for sources whose run was
-actually ingested -- a source that fails its safety thresholds republishes its
-previous records, so its discarded rows would describe nothing.
+The two are separate because they mean different things: a rejected row is
+upstream data the pipeline could not read, an invalid record is data it read and
+then refused. Rejected rows are only reported for sources whose run was actually
+ingested -- a source that fails its safety thresholds republishes its previous
+records, so its discarded rows would describe nothing.
 
-Excluded entries never appear in `data/registry.*`. The file reports what the
-latest build refused, not a history of past exclusions: it is regenerated from
-scratch every run, so an identifier the source has stopped publishing simply
-disappears from it instead of being counted forever. A non-empty list means the
-current upstream data still carries the problem.
+### History And Corrections
+
+The file is **append-only**. An identifier a source corrects or drops would
+otherwise vanish without trace, so every entry stays and carries:
+
+- `firstDetectedAt` and `lastDetectedAt`: the runs that first and last saw the
+  problem in a source snapshot;
+- `supersededBy`: the eMobility ID that replaced the rejected identifier
+  upstream, or `null` when nothing did.
+
+`supersededBy` is **written by hand** in `data/registry-invalid.json` and carried
+over by every later build. Nothing derives it: the replacement is an upstream
+re-assignment, not a truncation -- the Swedish register replaced both `SEALEG`
+and `SEALLE` with `SEALL` -- and organisations are not identifiers, so matching
+on their names is not an option either. A value that is not a valid eMobility ID
+fails the build.
+
+Excluded entries never appear in `data/registry.*`. The counters in
+`data/stats.json` (`totalInvalidRecords`, `invalidRecordsByReason`,
+`invalidRecordsByRegistry`, `totalRejectedRows`, `rejectedRowsByRegistry`)
+describe only what the **current** run detected, so a corrected identifier stops
+being reported as a live problem while staying in the history. An entry whose
+`lastDetectedAt` is older than `generatedAt` is one the sources no longer
+publish.
 
 The rule applies to the official registry pipeline only. Complementary
 observations use other identifier schemes with their own length rules.

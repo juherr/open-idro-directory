@@ -16,12 +16,32 @@
       "items": {
         "type": "object",
         "required": [
+          "firstDetectedAt",
+          "lastDetectedAt",
+          "supersededBy",
           "registryId",
           "code",
           "sourceValue",
           "message"
         ],
         "properties": {
+          "firstDetectedAt": {
+            "type": "string"
+          },
+          "lastDetectedAt": {
+            "type": "string"
+          },
+          "supersededBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{2}[A-Z0-9]{3}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "registryId": {
             "type": "string"
           },
@@ -42,10 +62,30 @@
       "items": {
         "type": "object",
         "required": [
+          "firstDetectedAt",
+          "lastDetectedAt",
+          "supersededBy",
           "reasons",
           "record"
         ],
         "properties": {
+          "firstDetectedAt": {
+            "type": "string"
+          },
+          "lastDetectedAt": {
+            "type": "string"
+          },
+          "supersededBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{2}[A-Z0-9]{3}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "reasons": {
             "type": "array",
             "minItems": 1,

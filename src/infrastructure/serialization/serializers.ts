@@ -2,9 +2,8 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { fromRoot } from "../filesystem/paths.js";
 import { isValidEmi3Identifier } from "../../domain/emi3-identifier.js";
 import type {
-  InvalidRegistryRecordEntry,
+  InvalidRegistryHistory,
   NormalizedRegistryRecord,
-  RejectedSourceRow,
 } from "../../domain/registry-record.js";
 import type { SourceBuildResult } from "../../domain/source-result.js";
 import {
@@ -35,8 +34,7 @@ export async function writeDatasets(
   results: SourceBuildResult[],
   generatedAt: string,
   outputDir = fromRoot("data"),
-  invalid: InvalidRegistryRecordEntry[] = [],
-  rejected: RejectedSourceRow[] = [],
+  invalid: InvalidRegistryHistory = { generatedAt, records: [], rows: [] },
 ) {
   await mkdir(outputDir, { recursive: true });
   const sorted = sortRecords(records);
@@ -53,37 +51,19 @@ export async function writeDatasets(
     sorted.map((record) => JSON.stringify(record)).join("\n") + "\n",
   );
   await writeFile(`${outputDir}/registry.csv`, toCsv(sorted));
-  const sortedInvalid = sortInvalidRecords(invalid);
-  const sortedRejected = sortRejectedRows(rejected);
-  await writeFile(
-    `${outputDir}/registry-invalid.json`,
-    `${JSON.stringify({ generatedAt, records: sortedInvalid, rows: sortedRejected }, null, 2)}\n`,
-  );
+  await writeFile(`${outputDir}/registry-invalid.json`, `${JSON.stringify(invalid, null, 2)}\n`);
   await writeFile(
     `${outputDir}/sources.json`,
     `${JSON.stringify(toSourcesSummary(sources, results), null, 2)}\n`,
   );
   await writeFile(
     `${outputDir}/stats.json`,
-    `${JSON.stringify(toStats(sorted, sortedInvalid, sortedRejected, results, generatedAt), null, 2)}\n`,
+    `${JSON.stringify(toStats(sorted, invalid, results, generatedAt), null, 2)}\n`,
   );
 }
 
 export function sortRecords(records: NormalizedRegistryRecord[]) {
   return [...records].sort(compareRecords);
-}
-
-export function sortInvalidRecords(entries: InvalidRegistryRecordEntry[]) {
-  return [...entries].sort((a, b) => compareRecords(a.record, b.record));
-}
-
-export function sortRejectedRows(rows: RejectedSourceRow[]) {
-  return [...rows].sort(
-    (a, b) =>
-      a.registryId.localeCompare(b.registryId) ||
-      a.sourceValue.localeCompare(b.sourceValue) ||
-      a.code.localeCompare(b.code),
-  );
 }
 
 function compareRecords(a: NormalizedRegistryRecord, b: NormalizedRegistryRecord) {
@@ -189,26 +169,30 @@ export function toSourceMetadata(source: SourceDefinition) {
 
 function toStats(
   records: NormalizedRegistryRecord[],
-  invalid: InvalidRegistryRecordEntry[],
-  rejected: RejectedSourceRow[],
+  invalid: InvalidRegistryHistory,
   results: SourceBuildResult[],
   generatedAt: string,
 ): GeneratedStats {
+  // The history keeps every identifier ever refused; the counters describe only
+  // what the sources still publish, so a corrected identifier stops being
+  // reported as a current problem.
+  const currentRecords = invalid.records.filter((entry) => entry.lastDetectedAt === generatedAt);
+  const currentRows = invalid.rows.filter((entry) => entry.lastDetectedAt === generatedAt);
   return {
     totalRecords: records.length,
-    totalInvalidRecords: invalid.length,
-    totalRejectedRows: rejected.length,
+    totalInvalidRecords: currentRecords.length,
+    totalRejectedRows: currentRows.length,
     recordsByCountry: countBy(records, (record) => record.countryCode),
     recordsByCountryRole: countByCountryRole(records),
     recordsByRole: countBy(records, (record) => record.role),
     recordsByStatus: countBy(records, (record) => record.status),
     recordsByRegistry: countBy(records, (record) => record.source.registryId),
     invalidRecordsByReason: countBy(
-      invalid.flatMap((entry) => entry.reasons),
+      currentRecords.flatMap((entry) => entry.reasons),
       (reason) => reason,
     ),
-    invalidRecordsByRegistry: countBy(invalid, (entry) => entry.record.source.registryId),
-    rejectedRowsByRegistry: countBy(rejected, (row) => row.registryId),
+    invalidRecordsByRegistry: countBy(currentRecords, (entry) => entry.record.source.registryId),
+    rejectedRowsByRegistry: countBy(currentRows, (row) => row.registryId),
     staleSources: results
       .filter((result) => result.stale)
       .map((result) => result.sourceId)

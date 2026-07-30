@@ -51,11 +51,16 @@ otherwise vanish without trace, so every entry stays and carries:
   upstream, or `null` when nothing did.
 
 `supersededBy` is **written by hand** in `data/registry-invalid.json` and carried
-over by every later build. Nothing derives it: the replacement is an upstream
-re-assignment, not a truncation -- the Swedish register replaced both `SEALEG`
-and `SEALLE` with `SEALL` -- and organisations are not identifiers, so matching
-on their names is not an option either. A value that is not a valid eMobility ID
+over by every later build. Nothing derives it. The replacement is an upstream
+re-assignment rather than a truncation, so it cannot be computed from the
+rejected identifier: two different rejected values may well map to the same
+corrected one. Matching on organisation names is not an option either, since
+organisations are not identifiers. A value that is not a valid eMobility ID
 fails the build.
+
+Editorial note: describe these entries by identifier and registry, as the data
+does. Do not single out a registry operator as having published bad data in
+prose -- the goal is a correct directory, not public blame.
 
 Excluded entries never appear in `data/registry.*`. The counters in
 `data/stats.json` (`totalInvalidRecords`, `invalidRecordsByReason`,

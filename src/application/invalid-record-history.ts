@@ -63,7 +63,7 @@ function checkedSupersededBy(entry: HistoryFields | undefined) {
   const value = entry?.supersededBy ?? null;
   if (value !== null && !EMI3_IDENTIFIER_PATTERN.test(value)) {
     throw new Error(
-      `Invalid supersededBy value ${value} in data/registry-invalid.json: expected an eMobility ID such as SEALL.`,
+      `Invalid supersededBy value ${value} in data/registry-invalid.json: expected an eMobility ID, two country letters followed by a three-character party ID.`,
     );
   }
   return value;

@@ -31,7 +31,12 @@ describe("Swedish Energy Agency parser", () => {
     expect(result.errors).toHaveLength(0);
     expect(result.records).toEqual([
       { sourceValue: "SE*AIM", organizationName: "Aimo Charge", role: "CPO", sourceUrl: CPO_URL },
-      { sourceValue: "SEALLE", organizationName: "Allego", role: "CPO", sourceUrl: CPO_URL },
+      {
+        sourceValue: "SEWXYZ",
+        organizationName: "Example Operator",
+        role: "CPO",
+        sourceUrl: CPO_URL,
+      },
       { sourceValue: "SE*ESP", organizationName: "EasyPark", role: "EMSP", sourceUrl: EMSP_URL },
     ]);
   });
@@ -68,7 +73,12 @@ describe("Swedish Energy Agency parser", () => {
       records: [
         { sourceValue: "SE*AIM", organizationName: "Aimo Charge", role: "CPO", sourceUrl: CPO_URL },
         { sourceValue: "SE*ESP", organizationName: "EasyPark", role: "EMSP", sourceUrl: EMSP_URL },
-        { sourceValue: "SEALLE", organizationName: "Allego", role: "CPO", sourceUrl: CPO_URL },
+        {
+          sourceValue: "SEWXYZ",
+          organizationName: "Example Operator",
+          role: "CPO",
+          sourceUrl: CPO_URL,
+        },
       ],
     });
 
@@ -86,13 +96,18 @@ describe("Swedish Energy Agency parser", () => {
       source,
       retrievedAt: "2026-06-15T00:00:00.000Z",
       records: [
-        { sourceValue: "SEALLE", organizationName: "Allego", role: "CPO", sourceUrl: CPO_URL },
+        {
+          sourceValue: "SEWXYZ",
+          organizationName: "Example Operator",
+          role: "CPO",
+          sourceUrl: CPO_URL,
+        },
       ],
     });
 
     expect(result.records).toHaveLength(0);
     expect(result.warnings[0]?.code).toBe("ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER");
-    expect(result.warnings[0]?.rejectedIdentifier).toBe("SEALLE");
+    expect(result.warnings[0]?.rejectedIdentifier).toBe("SEWXYZ");
   });
 
   it("warns and skips non-Swedish identifiers", async () => {
@@ -103,8 +118,8 @@ describe("Swedish Energy Agency parser", () => {
       retrievedAt: "2026-06-15T00:00:00.000Z",
       records: [
         {
-          sourceValue: "SR*EVI",
-          organizationName: "Eviny Sverige",
+          sourceValue: "SR*ABC",
+          organizationName: "Example Operator",
           role: "CPO",
           sourceUrl: CPO_URL,
         },

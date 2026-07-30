@@ -15,21 +15,21 @@ import { validateRegistry } from "../../src/validation/registry-validator.js";
 describe("invalid identifier handling", () => {
   it("splits records on eMI3 validity and preserves order", () => {
     const records = [
-      sampleRecord("AIM"),
-      sampleRecord("ALEG"),
-      sampleRecord("ESP"),
-      sampleRecord("T124"),
+      sampleRecord("ABC"),
+      sampleRecord("WXYZ"),
+      sampleRecord("XYZ"),
+      sampleRecord("TUVW"),
     ];
 
     const { valid, invalid } = partitionRecordsByIdentifierValidity(records);
 
-    expect(valid.map((record) => record.partyId)).toEqual(["AIM", "ESP"]);
-    expect(invalid.map((entry) => entry.record.partyId)).toEqual(["ALEG", "T124"]);
+    expect(valid.map((record) => record.partyId)).toEqual(["ABC", "XYZ"]);
+    expect(invalid.map((entry) => entry.record.partyId)).toEqual(["WXYZ", "TUVW"]);
     expect(invalid[0]?.reasons).toEqual(["INVALID_PARTY_ID"]);
   });
 
   it("is idempotent", () => {
-    const records = [sampleRecord("AIM"), sampleRecord("ALEG")];
+    const records = [sampleRecord("ABC"), sampleRecord("WXYZ")];
     const once = partitionRecordsByIdentifierValidity(records);
     const twice = partitionRecordsByIdentifierValidity(once.valid);
 
@@ -39,11 +39,11 @@ describe("invalid identifier handling", () => {
 
   it("reports an invalid party ID as a registry error", async () => {
     const source = await loadSourceDefinition("se-energimyndigheten");
-    const issues = validateRegistry([sampleRecord("ALEG")], [source]);
+    const issues = validateRegistry([sampleRecord("WXYZ")], [source]);
 
     expect(issues.some((issue) => issue.code === "INVALID_PARTY_ID")).toBe(true);
     expect(issues.find((issue) => issue.code === "INVALID_PARTY_ID")?.severity).toBe("error");
-    expect(validateRegistry([sampleRecord("AIM")], [source])).toEqual([]);
+    expect(validateRegistry([sampleRecord("ABC")], [source])).toEqual([]);
   });
 
   it("writes the common invalid list and its counters instead of publishing the records", async () => {
@@ -51,7 +51,7 @@ describe("invalid identifier handling", () => {
     const source = await loadSourceDefinition("se-energimyndigheten");
     try {
       await writeDatasets(
-        [sampleRecord("AIM")],
+        [sampleRecord("ABC")],
         [source],
         [],
         "2026-06-14T00:00:00.000Z",
@@ -59,7 +59,7 @@ describe("invalid identifier handling", () => {
         mergeInvalidRecordHistory(
           null,
           {
-            records: partitionRecordsByIdentifierValidity([sampleRecord("ALEG")]).invalid,
+            records: partitionRecordsByIdentifierValidity([sampleRecord("WXYZ")]).invalid,
             rows: [],
           },
           "2026-06-14T00:00:00.000Z",
@@ -75,7 +75,7 @@ describe("invalid identifier handling", () => {
             firstDetectedAt: "2026-06-14T00:00:00.000Z",
             lastDetectedAt: "2026-06-14T00:00:00.000Z",
             supersededBy: null,
-            record: sampleRecord("ALEG"),
+            record: sampleRecord("WXYZ"),
           },
         ],
         rows: [],
@@ -97,7 +97,7 @@ describe("invalid identifier handling", () => {
         "registry.ndjson",
         "registry.csv",
       ]) {
-        await expect(readFile(join(outputDir, file), "utf8")).resolves.not.toContain("ALEG");
+        await expect(readFile(join(outputDir, file), "utf8")).resolves.not.toContain("WXYZ");
       }
     } finally {
       await rm(outputDir, { recursive: true, force: true });
@@ -109,7 +109,7 @@ describe("invalid identifier handling", () => {
     const source = await loadSourceDefinition("se-energimyndigheten");
     try {
       await writeDatasets(
-        [sampleRecord("AIM")],
+        [sampleRecord("ABC")],
         [source],
         [],
         "2026-06-14T00:00:00.000Z",
@@ -139,8 +139,8 @@ describe("invalid identifier handling", () => {
         severity: "warning",
         sourceId: "se-energimyndigheten",
         code: "ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER",
-        message: "Unexpected Swedish Energy Agency identifier syntax: SEALLE",
-        rejectedIdentifier: "SEALLE",
+        message: "Unexpected identifier syntax: SEWXYZ",
+        rejectedIdentifier: "SEWXYZ",
       },
     ]);
 
@@ -148,8 +148,8 @@ describe("invalid identifier handling", () => {
       {
         registryId: "se-energimyndigheten",
         code: "ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER",
-        sourceValue: "SEALLE",
-        message: "Unexpected Swedish Energy Agency identifier syntax: SEALLE",
+        sourceValue: "SEWXYZ",
+        message: "Unexpected identifier syntax: SEWXYZ",
       },
     ]);
   });
@@ -159,7 +159,7 @@ describe("invalid identifier handling", () => {
     const source = await loadSourceDefinition("se-energimyndigheten");
     try {
       await writeDatasets(
-        [sampleRecord("AIM")],
+        [sampleRecord("ABC")],
         [source],
         [],
         "2026-06-14T00:00:00.000Z",
@@ -172,14 +172,14 @@ describe("invalid identifier handling", () => {
               {
                 registryId: "se-energimyndigheten",
                 code: "ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER",
-                sourceValue: "SEQWCE",
-                message: "Unexpected Swedish Energy Agency identifier syntax: SEQWCE",
+                sourceValue: "SETUVW",
+                message: "Unexpected identifier syntax: SETUVW",
               },
               {
                 registryId: "se-energimyndigheten",
                 code: "ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER",
-                sourceValue: "SEALLE",
-                message: "Unexpected Swedish Energy Agency identifier syntax: SEALLE",
+                sourceValue: "SEWXYZ",
+                message: "Unexpected identifier syntax: SEWXYZ",
               },
             ],
           },
@@ -190,8 +190,8 @@ describe("invalid identifier handling", () => {
       const invalid = JSON.parse(await readFile(join(outputDir, "registry-invalid.json"), "utf8"));
       expect(invalid.records).toEqual([]);
       expect(invalid.rows.map((row: { sourceValue: string }) => row.sourceValue)).toEqual([
-        "SEALLE",
-        "SEQWCE",
+        "SETUVW",
+        "SEWXYZ",
       ]);
 
       const stats = JSON.parse(await readFile(join(outputDir, "stats.json"), "utf8"));
@@ -210,7 +210,7 @@ describe("invalid identifier handling", () => {
     const source = await loadSourceDefinition("se-energimyndigheten");
     try {
       const detection = {
-        records: partitionRecordsByIdentifierValidity([sampleRecord("ALEG")]).invalid,
+        records: partitionRecordsByIdentifierValidity([sampleRecord("WXYZ")]).invalid,
         rows: [],
       };
       const previous = mergeInvalidRecordHistory(null, detection, "2026-06-14T00:00:00.000Z");
@@ -222,7 +222,7 @@ describe("invalid identifier handling", () => {
       );
 
       await writeDatasets(
-        [sampleRecord("AIM")],
+        [sampleRecord("ABC")],
         [source],
         [],
         "2026-07-27T00:00:00.000Z",
@@ -249,8 +249,8 @@ describe("invalid identifier handling", () => {
     const source = await loadSourceDefinition("se-energimyndigheten");
     try {
       await expect(
-        writeDatasets([sampleRecord("ALEG")], [source], [], "2026-06-14T00:00:00.000Z", outputDir),
-      ).rejects.toThrow("se-energimyndigheten:SE:ALEG:CPO");
+        writeDatasets([sampleRecord("WXYZ")], [source], [], "2026-06-14T00:00:00.000Z", outputDir),
+      ).rejects.toThrow("se-energimyndigheten:SE:WXYZ:CPO");
     } finally {
       await rm(outputDir, { recursive: true, force: true });
     }

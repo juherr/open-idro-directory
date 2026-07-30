@@ -9,7 +9,7 @@ describe("invalid record history", () => {
   it("stamps a newly detected record with the current run", () => {
     const history = mergeInvalidRecordHistory(
       null,
-      { records: [detection("ALLE")], rows: [] },
+      { records: [detection("WXYZ")], rows: [] },
       FIRST_RUN,
     );
 
@@ -19,7 +19,7 @@ describe("invalid record history", () => {
         firstDetectedAt: FIRST_RUN,
         lastDetectedAt: FIRST_RUN,
         supersededBy: null,
-        record: sampleRecord("ALLE"),
+        record: sampleRecord("WXYZ"),
       },
     ]);
   });
@@ -27,29 +27,29 @@ describe("invalid record history", () => {
   it("keeps the first detection and the hand-written correction when re-detected", () => {
     const previous = mergeInvalidRecordHistory(
       null,
-      { records: [detection("ALLE")], rows: [] },
+      { records: [detection("WXYZ")], rows: [] },
       FIRST_RUN,
     );
     // Stands in for a maintainer editing the file.
-    previous.records[0]!.supersededBy = "SEALL";
+    previous.records[0]!.supersededBy = "SEQRS";
 
     const history = mergeInvalidRecordHistory(
       previous,
-      { records: [detection("ALLE")], rows: [] },
+      { records: [detection("WXYZ")], rows: [] },
       SECOND_RUN,
     );
 
     expect(history.records[0]).toMatchObject({
       firstDetectedAt: FIRST_RUN,
       lastDetectedAt: SECOND_RUN,
-      supersededBy: "SEALL",
+      supersededBy: "SEQRS",
     });
   });
 
   it("keeps entries the sources have stopped publishing", () => {
     const previous = mergeInvalidRecordHistory(
       null,
-      { records: [detection("ALLE")], rows: [] },
+      { records: [detection("WXYZ")], rows: [] },
       FIRST_RUN,
     );
 
@@ -66,24 +66,24 @@ describe("invalid record history", () => {
   it("accumulates rejected rows the same way", () => {
     const previous = mergeInvalidRecordHistory(
       null,
-      { records: [], rows: [row("SEALLE")] },
+      { records: [], rows: [row("SEWXYZ")] },
       FIRST_RUN,
     );
-    previous.rows[0]!.supersededBy = "SEALL";
+    previous.rows[0]!.supersededBy = "SEQRS";
 
     const history = mergeInvalidRecordHistory(
       previous,
-      { records: [], rows: [row("SEALLE"), row("SEQWCE")] },
+      { records: [], rows: [row("SEWXYZ"), row("SETUVW")] },
       SECOND_RUN,
     );
 
     expect(history.rows).toHaveLength(2);
-    expect(history.rows.find((entry) => entry.sourceValue === "SEALLE")).toMatchObject({
+    expect(history.rows.find((entry) => entry.sourceValue === "SEWXYZ")).toMatchObject({
       firstDetectedAt: FIRST_RUN,
       lastDetectedAt: SECOND_RUN,
-      supersededBy: "SEALL",
+      supersededBy: "SEQRS",
     });
-    expect(history.rows.find((entry) => entry.sourceValue === "SEQWCE")).toMatchObject({
+    expect(history.rows.find((entry) => entry.sourceValue === "SETUVW")).toMatchObject({
       firstDetectedAt: SECOND_RUN,
       supersededBy: null,
     });
@@ -92,11 +92,11 @@ describe("invalid record history", () => {
   it("refreshes the stored record so the entry reflects the latest snapshot", () => {
     const previous = mergeInvalidRecordHistory(
       null,
-      { records: [detection("ALLE")], rows: [] },
+      { records: [detection("WXYZ")], rows: [] },
       FIRST_RUN,
     );
-    const renamed = detection("ALLE");
-    renamed.record.organization.name = "Allego Sverige AB";
+    const renamed = detection("WXYZ");
+    renamed.record.organization.name = "Example Operator AB";
 
     const history = mergeInvalidRecordHistory(
       previous,
@@ -104,13 +104,13 @@ describe("invalid record history", () => {
       SECOND_RUN,
     );
 
-    expect(history.records[0]?.record.organization.name).toBe("Allego Sverige AB");
+    expect(history.records[0]?.record.organization.name).toBe("Example Operator AB");
   });
 
   it("rejects a hand-written correction that is not a valid eMobility ID", () => {
     const previous = mergeInvalidRecordHistory(
       null,
-      { records: [detection("ALLE")], rows: [] },
+      { records: [detection("WXYZ")], rows: [] },
       FIRST_RUN,
     );
     previous.records[0]!.supersededBy = "SE-ALL";
@@ -124,14 +124,14 @@ describe("invalid record history", () => {
     const history = mergeInvalidRecordHistory(
       null,
       {
-        records: [detection("T124"), detection("ALLE")],
-        rows: [row("SEQWCE"), row("SEALLE")],
+        records: [detection("WXYZ"), detection("TUVW")],
+        rows: [row("SEWXYZ"), row("SETUVW")],
       },
       FIRST_RUN,
     );
 
-    expect(history.records.map((entry) => entry.record.partyId)).toEqual(["ALLE", "T124"]);
-    expect(history.rows.map((entry) => entry.sourceValue)).toEqual(["SEALLE", "SEQWCE"]);
+    expect(history.records.map((entry) => entry.record.partyId)).toEqual(["TUVW", "WXYZ"]);
+    expect(history.rows.map((entry) => entry.sourceValue)).toEqual(["SETUVW", "SEWXYZ"]);
   });
 });
 
@@ -144,7 +144,7 @@ function row(sourceValue: string) {
     registryId: "se-energimyndigheten",
     code: "ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER",
     sourceValue,
-    message: `Unexpected Swedish Energy Agency identifier syntax: ${sourceValue}`,
+    message: `Unexpected identifier syntax: ${sourceValue}`,
   };
 }
 
@@ -156,7 +156,7 @@ function sampleRecord(partyId: string): NormalizedRegistryRecord {
     eMobilityId: `SE${partyId}`,
     role: "CPO",
     status: "INACTIVE",
-    organization: { name: "Allego", legalName: "Allego", website: null },
+    organization: { name: "Example Operator", legalName: "Example Operator", website: null },
     source: {
       registryId: "se-energimyndigheten",
       official: true,

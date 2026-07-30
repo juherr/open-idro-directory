@@ -42,8 +42,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   A party ID must be exactly three uppercase alphanumeric characters; the former
   `UNCOMMON_PARTY_ID` warning accepted two to eight and let invalid records reach
   `data/registry.*`. Invalid records are excluded and reported as counters
-  instead. Four inactive Swedish records (`SE-ALEG`, `SE-ALLE`, `SE-QWCE`,
-  `SE-T124`) leave the registry, the CSV, the NDJSON, and the public API.
+  instead. Four inactive records leave the registry, the CSV, the NDJSON, and the
+  public API.
 - **Breaking:** source descriptors separate the appointed authority, the registry
   it operates, and the publication a connector consumes, instead of flattening
   all three into one object. Pre-existing flat descriptors are still accepted and
@@ -103,9 +103,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Fixed
 
-- The Swedish Energy Agency connector accepted party IDs of three to five
-  characters, so `SEALEG`-style workbook rows were split into four-character
-  party IDs and published. It now matches every other connector and accepts
-  exactly three.
+- One connector accepted party IDs of three to five characters, so overlong
+  source values were split into four-character party IDs and published. It now
+  matches every other connector and accepts exactly three.
 
 [unreleased]: https://github.com/OWNER/open-idro-directory/commits/HEAD

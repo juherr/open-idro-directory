@@ -590,6 +590,26 @@ covers a collaboration surface operated by Open IDRO Directory for verified IDRO
 representatives; the console described here would be operated by an IDRO for its own
 register.
 
+## Feedback
+
+These recommendations are intended to evolve through public discussion and
+practical experience.
+
+Feedback from national IDRO organisations, competent authorities, National Access
+Point operators, implementers, and data consumers is welcome. Disagreement with a
+recommendation, a report that a maturity level is impractical in a national context,
+and a correction to what this project records about a register are equally useful;
+an issue in this repository is the place for all three.
+
+Several recommendations in this document exist because IDRO organisations corrected
+this project's understanding of their own registers. Public feedback is reflected in
+the [Evidence Base](#evidence-base), so the reasoning behind each recommendation
+stays traceable to what was actually said.
+
+The goal is not to define a European standard. It is to write down publication
+approaches that work, so that the next register to be published does not have to
+rediscover them.
+
 ## Related Documentation
 
 - [current-landscape.md](current-landscape.md) -- what the registers this project

@@ -48,11 +48,19 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   // republish what the other sources published last time, or writing the
   // datasets would drop them from the registry.
   const selectedIds = new Set(selected.map((source) => source.id));
+  // Only a source that is still published but was filtered out of this run is
+  // carried. Disabling a source, or removing its descriptor, must keep removing
+  // its records from the datasets.
+  const carriedIds = new Set(
+    sources
+      .filter((source) => source.publication.enabled && !selectedIds.has(source.id))
+      .map((source) => source.id),
+  );
   const previousHealth = await readPreviousSourceHealth(dataDir);
   const carriedBySource = new Map<string, NormalizedRegistryRecord[]>();
   for (const record of await readGeneratedRecords(dataDir)) {
     const registryId = record.source.registryId;
-    if (selectedIds.has(registryId)) continue;
+    if (!carriedIds.has(registryId)) continue;
     records.push(record);
     carriedBySource.set(registryId, [...(carriedBySource.get(registryId) ?? []), record]);
   }
@@ -151,7 +159,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   // Sources this run did not rebuild keep the health they were last published
   // with, so a filtered run does not report them as empty and never retrieved.
   for (const source of sources) {
-    if (selectedIds.has(source.id)) continue;
+    if (!carriedIds.has(source.id)) continue;
     const health = previousHealth[source.id];
     results.push({
       sourceId: source.id,

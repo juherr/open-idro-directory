@@ -49,6 +49,31 @@ describe("buildRegistry", () => {
     });
   });
 
+  it("drops the records of a source that is no longer published", async () => {
+    await withWorkspace(async ({ sources, dataDir, outputDir }) => {
+      // Disabling a source is how an operator removes it from the datasets, so
+      // carrying unrebuilt sources must not resurrect it.
+      const disabled = sources.map((source) =>
+        source.id === "dk-fstyr"
+          ? { ...source, publication: { ...source.publication, enabled: false } }
+          : source,
+      );
+      const result = await buildRegistry(disabled, {
+        sourceId: "fr-afirev",
+        dataDir,
+        outputDir,
+        generatedAt: GENERATED_AT,
+        createConnector: connectorReturning([sampleRecord("fr-afirev", "FR", "AAA")]),
+      });
+
+      expect(result.records.map((record) => record.key)).toEqual(["fr-afirev:FR:AAA:CPO"]);
+      expect(await readHealth(outputDir, "dk-fstyr")).toMatchObject({
+        recordCount: 0,
+        freshness: "disabled",
+      });
+    });
+  });
+
   it("republishes a source that could not be fetched and reports it as stale", async () => {
     await withWorkspace(async ({ sources, dataDir, outputDir }) => {
       const result = await buildRegistry(sources, {

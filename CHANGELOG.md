@@ -112,6 +112,9 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Fixed
 
+- Relocating a source no longer looks like an upstream mass change. Change
+  safety comparisons ignore `source.sourceUrl`, which comes from the source
+  descriptor rather than from the registry.
 - One connector accepted party IDs of three to five characters, so overlong
   source values were split into four-character party IDs and published. It now
   matches every other connector and accepts exactly three.

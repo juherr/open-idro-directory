@@ -56,11 +56,15 @@ export function checkSafetyThresholds(
   return issues;
 }
 
+// Timestamps move on every run, and `sourceUrl` is copied from our own source
+// descriptor: relocating a registry would otherwise rewrite every record at
+// once and be reported as upstream mass change.
 function stableRecord(record: NormalizedRegistryRecord) {
   return {
     ...record,
     source: {
       ...record.source,
+      sourceUrl: "",
       firstSeenAt: "",
       lastSeenAt: "",
       retrievedAt: "",

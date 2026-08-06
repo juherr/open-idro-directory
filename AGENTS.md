@@ -23,7 +23,7 @@ Use Bun as the package manager.
 - `bun run check`: run VitePlus format/lint/type checks, tests, and registry validation.
 - `bun run directory fetch --source <id>`: fetch one source snapshot.
 - `bun run directory build`: normalize enabled sources and write `data/`.
-- `bun run directory update --source <id>`: fetch, build, validate, and write a change report.
+- `bun run directory update --source <id>`: fetch, build, validate, and write a change report. The sources the run did not rebuild keep their published records and health.
 - `bun run directory validate`: validate generated registry data.
 
 The Irish `ie-tii` connector parses a PDF register and requires `pdftotext`

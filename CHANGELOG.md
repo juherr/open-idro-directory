@@ -112,6 +112,15 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Fixed
 
+- A run restricted to one source no longer strips every other source from the
+  published datasets. The `--source` option of `directory update` and
+  `directory build` filters what is rebuilt, but both write global files, so
+  they now republish the records and the health of the sources they left alone.
+- A single unreachable registry no longer aborts the whole update. Each source
+  is fetched independently, a source that failed keeps the records it was last
+  published with and is reported as stale with the date it last answered, and
+  the change summary lists the failures first. The run still fails when registry
+  validation reports an error or when every selected source failed.
 - The Swiss register stopped updating: SuisseEnergie replaced its Gatsby site,
   which removed the `page-data` JSON endpoint the connector read and moved the
   register page. The connector now reads the identifiers from the register

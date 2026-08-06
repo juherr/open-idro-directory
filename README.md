@@ -168,7 +168,7 @@ without explicit alias evidence.
 
 ## Provenance And Freshness
 
-Every normalized value keeps the originating registry ID, source URL, exact source value, retrieval timestamp, and raw snapshot checksum. A failed source does not erase previously generated records; it is marked stale in `sources.json`.
+Every normalized value keeps the originating registry ID, source URL, exact source value, retrieval timestamp, and raw snapshot checksum. A failed source does not erase previously generated records and does not stop the other sources from being published; it keeps its previous records, is marked stale in `sources.json` with the error and the date it last answered, and is listed as a failed source in the change summary.
 
 ## Reuse Warning
 

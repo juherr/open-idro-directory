@@ -133,7 +133,10 @@ function toSourcesSummary(sources: SourceDefinition[], results: SourceBuildResul
         stale: result?.stale ?? !source.publication.enabled,
         recordCount: result?.records.length ?? 0,
         lastAttemptedRetrieval: result?.retrievedAt ?? null,
-        lastSuccessfulRetrieval: result && !result.latestError ? result.retrievedAt : null,
+        lastSuccessfulRetrieval:
+          result && !result.latestError
+            ? result.retrievedAt
+            : (result?.lastSuccessfulRetrieval ?? null),
         checksum: result?.checksum ?? null,
         freshness: result?.stale ? "stale" : source.publication.enabled ? "current" : "disabled",
         latestErrorSummary: result?.latestError ?? null,

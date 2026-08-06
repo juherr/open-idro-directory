@@ -14,8 +14,12 @@ export interface RawSnapshotMetadata {
   checksum: string;
 }
 
-export async function preserveRawSnapshot(result: FetchResult) {
-  const sourceDir = fromRoot("data", "raw", result.sourceId);
+export function rawSnapshotRoot() {
+  return fromRoot("data", "raw");
+}
+
+export async function preserveRawSnapshot(result: FetchResult, rawDir = rawSnapshotRoot()) {
+  const sourceDir = path.join(rawDir, result.sourceId);
   const current = path.join(sourceDir, "current");
   const previous = path.join(sourceDir, "previous");
   await mkdir(sourceDir, { recursive: true });
@@ -71,8 +75,8 @@ function isJsonBody(body: string, contentType: string | null): boolean {
   return start === "{" || start === "[";
 }
 
-export async function readCurrentSnapshot(sourceId: string) {
-  const dir = fromRoot("data", "raw", sourceId, "current");
+export async function readCurrentSnapshot(sourceId: string, rawDir = rawSnapshotRoot()) {
+  const dir = path.join(rawDir, sourceId, "current");
   const body = await readFile(path.join(dir, "body.json"), "utf8");
   const metadata = JSON.parse(
     await readFile(path.join(dir, "metadata.json"), "utf8"),

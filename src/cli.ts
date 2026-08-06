@@ -2,7 +2,11 @@
 import { readFile } from "node:fs/promises";
 import { Command } from "@commander-js/extra-typings";
 import { buildRegistry } from "./application/build-registry.js";
-import { fetchSources } from "./application/fetch-sources.js";
+import {
+  fetchSources,
+  isFetchFailure,
+  type SourceFetchFailure,
+} from "./application/fetch-sources.js";
 import { validateGeneratedRegistry } from "./application/validate-registry.js";
 import { diffAgainstGit, writeChangeReport } from "./application/change-report.js";
 import { buildNonIdrrReports } from "./application/non-idrr-reports.js";
@@ -25,11 +29,13 @@ program
   .action(async (options) =>
     run(async () => {
       const sources = await loadSourceDefinitions();
-      const results = await fetchSources(
+      const outcomes = await fetchSources(
         sources,
         compactOptions({ sourceId: options.source, owner: options.owner }),
       );
-      console.log(`Fetched ${results.length} source(s).`);
+      const failures = outcomes.filter(isFetchFailure);
+      reportFetchFailures(failures);
+      console.log(`Fetched ${outcomes.length - failures.length} of ${outcomes.length} source(s).`);
     }),
   );
 
@@ -61,14 +67,33 @@ program
   .action(async (options) =>
     run(async () => {
       const sources = await loadSourceDefinitions();
-      await fetchSources(
+      const outcomes = await fetchSources(
         sources,
         compactOptions({ sourceId: options.source, owner: options.owner }),
       );
-      const result = await buildRegistry(sources, compactOptions({ sourceId: options.source }));
+      const fetchErrors = Object.fromEntries(
+        outcomes.filter(isFetchFailure).map((failure) => [failure.sourceId, failure.error]),
+      );
+      const result = await buildRegistry(sources, {
+        ...compactOptions({ sourceId: options.source }),
+        fetchErrors,
+      });
       await validateGeneratedRegistry(sources);
-      await writeChangeReport(result.results.map((source) => source.sourceId));
-      console.log(`Updated ${result.records.length} normalized record(s).`);
+      // A source that failed keeps its previous records, so the datasets are
+      // published either way and the report is what makes the failure visible.
+      const failures = result.results
+        .filter((source) => source.errors.length > 0)
+        .map((source) => ({ sourceId: source.sourceId, error: source.latestError ?? "unknown" }));
+      await writeChangeReport(
+        options.source ? [options.source] : result.results.map((source) => source.sourceId),
+        failures,
+      );
+      for (const failure of failures) {
+        console.error(`Source ${failure.sourceId} failed: ${failure.error}`);
+      }
+      console.log(
+        `Updated ${result.records.length} normalized record(s), ${failures.length} source(s) failed.`,
+      );
     }),
   );
 
@@ -135,6 +160,12 @@ async function run(action: () => Promise<void>) {
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
+  }
+}
+
+function reportFetchFailures(failures: SourceFetchFailure[]) {
+  for (const failure of failures) {
+    console.error(`Source ${failure.sourceId} could not be fetched: ${failure.error}`);
   }
 }
 

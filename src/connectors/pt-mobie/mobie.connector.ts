@@ -15,6 +15,7 @@ import {
 } from "../../domain/registry-record.js";
 import { getBinary, sha256 } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseMobieSnapshot } from "./mobie.parser.js";
 import type { MobieRow } from "./mobie.types.js";
 
@@ -90,13 +91,13 @@ export class MobieConnector implements RegistryConnector<MobieRow> {
       for (const identifier of identifiers) {
         const parsed = parseMobieIdentifier(identifier.sourceValue);
         if (!parsed) {
-          warnings.push({
-            severity: "warning",
-            sourceId: input.source.id,
-            code: "MOBIE_MALFORMED_IDENTIFIER",
-            message: `Unexpected MOBI.E identifier syntax: ${identifier.sourceValue}`,
-            rejectedIdentifier: identifier.sourceValue,
-          });
+          warnings.push(
+            rejectedIdentifierWarning(input.source, {
+              codePrefix: "MOBIE",
+              subject: "MOBI.E identifier",
+              value: identifier.sourceValue,
+            }),
+          );
           continue;
         }
 

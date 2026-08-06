@@ -11,6 +11,7 @@ import type {
 import { makeRegistryKey, type NormalizedRegistryRecord } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseElectrokinisiHtml } from "./electrokinisi.parser.js";
 import type { ElectrokinisiHtmlRow } from "./electrokinisi.types.js";
 
@@ -80,13 +81,13 @@ export class ElectrokinisiConnector implements RegistryConnector<ElectrokinisiHt
       if (sourceRecord.role === "OTHER") continue;
       const parsed = parseElectrokinisiIdentifier(sourceRecord.sourceValue);
       if (!parsed) {
-        warnings.push({
-          severity: "warning",
-          sourceId: input.source.id,
-          code: "ELECTROKINISI_MALFORMED_IDENTIFIER",
-          message: `Unexpected Greek IDRO identifier syntax: ${sourceRecord.sourceValue}`,
-          rejectedIdentifier: sourceRecord.sourceValue,
-        });
+        warnings.push(
+          rejectedIdentifierWarning(input.source, {
+            codePrefix: "ELECTROKINISI",
+            subject: "Greek IDRO identifier",
+            value: sourceRecord.sourceValue,
+          }),
+        );
         continue;
       }
 

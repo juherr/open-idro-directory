@@ -11,6 +11,7 @@ import type {
 import { makeRegistryKey, type NormalizedRegistryRecord } from "../../domain/registry-record.js";
 import { getBinary, sha256 } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseEnergimyndighetenSnapshot } from "./energimyndigheten.parser.js";
 import type { EnergimyndighetenRow } from "./energimyndigheten.types.js";
 
@@ -72,13 +73,13 @@ export class EnergimyndighetenConnector implements RegistryConnector<Energimyndi
     for (const sourceRecord of input.records) {
       const parsed = parseEnergimyndighetenIdentifier(sourceRecord.sourceValue);
       if (!parsed) {
-        warnings.push({
-          severity: "warning",
-          sourceId: input.source.id,
-          code: "ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER",
-          message: `Unexpected Swedish Energy Agency identifier syntax: ${sourceRecord.sourceValue}`,
-          rejectedIdentifier: sourceRecord.sourceValue,
-        });
+        warnings.push(
+          rejectedIdentifierWarning(input.source, {
+            codePrefix: "ENERGIMYNDIGHETEN",
+            subject: "Swedish Energy Agency identifier",
+            value: sourceRecord.sourceValue,
+          }),
+        );
         continue;
       }
 

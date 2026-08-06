@@ -15,6 +15,7 @@ import {
 } from "../../domain/registry-record.js";
 import { getText, sha256 } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseBdewJson } from "./bdew.parser.js";
 import { bdewApiResponseSchema, type BdewApiCode, type BdewSnapshot } from "./bdew.types.js";
 
@@ -125,13 +126,13 @@ function normalizeCode(
 ) {
   const parsed = parseBdewIdentifier(sourceRecord.Code);
   if (!parsed) {
-    warnings.push({
-      severity: "warning",
-      sourceId: input.source.id,
-      code: "BDEW_MALFORMED_IDENTIFIER",
-      message: `Unexpected BDEW identifier syntax: ${sourceRecord.Code}`,
-      rejectedIdentifier: sourceRecord.Code,
-    });
+    warnings.push(
+      rejectedIdentifierWarning(input.source, {
+        codePrefix: "BDEW",
+        subject: "BDEW identifier",
+        value: sourceRecord.Code,
+      }),
+    );
     return;
   }
 

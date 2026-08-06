@@ -15,6 +15,7 @@ import {
 } from "../../domain/registry-record.js";
 import { getBinary, sha256 } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseTiiSnapshot } from "./tii.parser.js";
 import type { TiiRow } from "./tii.types.js";
 
@@ -90,13 +91,13 @@ export class TiiConnector implements RegistryConnector<TiiRow> {
       for (const identifier of identifiers) {
         const parsed = parseIrishIdentifier(identifier.sourceValue);
         if (!parsed) {
-          warnings.push({
-            severity: "warning",
-            sourceId: input.source.id,
-            code: "TII_MALFORMED_IDENTIFIER",
-            message: `Unexpected Irish IDRO identifier syntax: ${identifier.sourceValue}`,
-            rejectedIdentifier: identifier.sourceValue,
-          });
+          warnings.push(
+            rejectedIdentifierWarning(input.source, {
+              codePrefix: "TII",
+              subject: "Irish IDRO identifier",
+              value: identifier.sourceValue,
+            }),
+          );
           continue;
         }
 

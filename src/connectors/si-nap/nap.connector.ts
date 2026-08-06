@@ -15,6 +15,7 @@ import {
 } from "../../domain/registry-record.js";
 import { getBinary, sha256 } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseNapSnapshot } from "./nap.parser.js";
 import type { NapRow } from "./nap.types.js";
 
@@ -88,13 +89,13 @@ export class NapConnector implements RegistryConnector<NapRow> {
       for (const identifier of identifiers) {
         const parsed = parseNapIdentifier(identifier.sourceValue);
         if (!parsed) {
-          warnings.push({
-            severity: "warning",
-            sourceId: input.source.id,
-            code: "NAP_MALFORMED_IDENTIFIER",
-            message: `Unexpected Slovenian NAP identifier syntax: ${identifier.sourceValue}`,
-            rejectedIdentifier: identifier.sourceValue,
-          });
+          warnings.push(
+            rejectedIdentifierWarning(input.source, {
+              codePrefix: "NAP",
+              subject: "Slovenian NAP identifier",
+              value: identifier.sourceValue,
+            }),
+          );
           continue;
         }
 

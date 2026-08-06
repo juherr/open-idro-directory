@@ -15,6 +15,7 @@ import {
 } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseLvceliJson } from "./lvceli.parser.js";
 import type { LvceliRow } from "./lvceli.types.js";
 
@@ -81,13 +82,13 @@ export class LvceliConnector implements RegistryConnector<LvceliRow> {
       for (const identifier of identifiers) {
         const parsed = parseLatvianIdentifier(identifier.sourceValue);
         if (!parsed) {
-          warnings.push({
-            severity: "warning",
-            sourceId: input.source.id,
-            code: "LVCELI_MALFORMED_IDENTIFIER",
-            message: `Unexpected Latvian IDRO identifier syntax: ${identifier.sourceValue}`,
-            rejectedIdentifier: identifier.sourceValue,
-          });
+          warnings.push(
+            rejectedIdentifierWarning(input.source, {
+              codePrefix: "LVCELI",
+              subject: "Latvian IDRO identifier",
+              value: identifier.sourceValue,
+            }),
+          );
           continue;
         }
         const key = makeRegistryKey(

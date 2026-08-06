@@ -15,6 +15,7 @@ import {
 } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseCroIdroCsv } from "./croidro.parser.js";
 import type { CroIdroCsvRow } from "./croidro.types.js";
 
@@ -92,13 +93,13 @@ export class CroIdroConnector implements RegistryConnector<CroIdroCsvRow> {
       for (const identifier of identifiers) {
         const parsed = parseCroIdroIdentifier(identifier.sourceValue);
         if (!parsed) {
-          warnings.push({
-            severity: "warning",
-            sourceId: input.source.id,
-            code: "CROIDRO_MALFORMED_IDENTIFIER",
-            message: `Unexpected Croatian IDRO identifier syntax: ${identifier.sourceValue}`,
-            rejectedIdentifier: identifier.sourceValue,
-          });
+          warnings.push(
+            rejectedIdentifierWarning(input.source, {
+              codePrefix: "CROIDRO",
+              subject: "Croatian IDRO identifier",
+              value: identifier.sourceValue,
+            }),
+          );
           continue;
         }
 

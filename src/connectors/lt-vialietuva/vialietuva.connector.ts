@@ -11,6 +11,7 @@ import type {
 import { makeRegistryKey, type NormalizedRegistryRecord } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseVialietuvaLocations } from "./vialietuva.parser.js";
 import type { VialietuvaLocation } from "./vialietuva.types.js";
 
@@ -78,13 +79,13 @@ export class VialietuvaConnector implements RegistryConnector<VialietuvaLocation
     for (const sourceRecord of input.records) {
       const parsed = parseLithuanianIdentifier(sourceRecord.country_code, sourceRecord.party_id);
       if (!parsed) {
-        warnings.push({
-          severity: "warning",
-          sourceId: input.source.id,
-          code: "VIALIETUVA_MALFORMED_IDENTIFIER",
-          message: `Unexpected Via Lietuva identifier syntax: ${sourceRecord.country_code}-${sourceRecord.party_id}`,
-          rejectedIdentifier: `${sourceRecord.country_code}-${sourceRecord.party_id}`,
-        });
+        warnings.push(
+          rejectedIdentifierWarning(input.source, {
+            codePrefix: "VIALIETUVA",
+            subject: "Via Lietuva identifier",
+            value: `${sourceRecord.country_code}-${sourceRecord.party_id}`,
+          }),
+        );
         continue;
       }
 

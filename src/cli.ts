@@ -2,16 +2,13 @@
 import { readFile } from "node:fs/promises";
 import { Command } from "@commander-js/extra-typings";
 import { buildRegistry } from "./application/build-registry.js";
-import {
-  fetchSources,
-  isFetchFailure,
-  type SourceFetchFailure,
-} from "./application/fetch-sources.js";
+import { fetchSources, isFetchFailure } from "./application/fetch-sources.js";
 import { validateGeneratedRegistry } from "./application/validate-registry.js";
 import { diffAgainstGit, writeChangeReport } from "./application/change-report.js";
 import { buildNonIdrrReports } from "./application/non-idrr-reports.js";
 import { updateCountryRoleHistory } from "./application/stats-history.js";
 import { refreshSourceMetadata } from "./application/refresh-source-metadata.js";
+import type { SourceBuildResult } from "./domain/source-result.js";
 import { loadSourceDefinitions } from "./infrastructure/filesystem/source-loader.js";
 import { fromRoot } from "./infrastructure/filesystem/paths.js";
 
@@ -34,8 +31,14 @@ program
         compactOptions({ sourceId: options.source, owner: options.owner }),
       );
       const failures = outcomes.filter(isFetchFailure);
-      reportFetchFailures(failures);
+      for (const failure of failures) {
+        console.error(`Source ${failure.sourceId} could not be fetched: ${failure.error}`);
+      }
       console.log(`Fetched ${outcomes.length - failures.length} of ${outcomes.length} source(s).`);
+      // Nothing was retrieved, so the command did not do what it was asked to.
+      if (outcomes.length > 0 && failures.length === outcomes.length) {
+        throw new Error(`Every selected source failed to fetch.`);
+      }
     }),
   );
 
@@ -46,7 +49,10 @@ program
     run(async () => {
       const sources = await loadSourceDefinitions();
       const result = await buildRegistry(sources, compactOptions({ sourceId: options.source }));
-      console.log(`Built ${result.records.length} normalized record(s).`);
+      const failures = reportSourceFailures(result.results);
+      console.log(
+        `Built ${result.records.length} normalized record(s), ${failures.length} source(s) failed.`,
+      );
     }),
   );
 
@@ -81,16 +87,11 @@ program
       await validateGeneratedRegistry(sources);
       // A source that failed keeps its previous records, so the datasets are
       // published either way and the report is what makes the failure visible.
-      const failures = result.results
-        .filter((source) => source.errors.length > 0)
-        .map((source) => ({ sourceId: source.sourceId, error: source.latestError ?? "unknown" }));
+      const failures = reportSourceFailures(result.results);
       await writeChangeReport(
         options.source ? [options.source] : result.results.map((source) => source.sourceId),
         failures,
       );
-      for (const failure of failures) {
-        console.error(`Source ${failure.sourceId} failed: ${failure.error}`);
-      }
       console.log(
         `Updated ${result.records.length} normalized record(s), ${failures.length} source(s) failed.`,
       );
@@ -163,10 +164,15 @@ async function run(action: () => Promise<void>) {
   }
 }
 
-function reportFetchFailures(failures: SourceFetchFailure[]) {
+/** Prints the sources that failed and returns them for the change report. */
+function reportSourceFailures(results: SourceBuildResult[]) {
+  const failures = results
+    .filter((result) => result.errors.length > 0)
+    .map((result) => ({ sourceId: result.sourceId, error: result.latestError ?? "unknown" }));
   for (const failure of failures) {
-    console.error(`Source ${failure.sourceId} could not be fetched: ${failure.error}`);
+    console.error(`Source ${failure.sourceId} failed: ${failure.error}`);
   }
+  return failures;
 }
 
 function compactOptions<T extends Record<string, string | undefined>>(options: T) {

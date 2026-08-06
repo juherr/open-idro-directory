@@ -74,6 +74,22 @@ describe("buildRegistry", () => {
     });
   });
 
+  it("refuses a filter that matches no enabled source", async () => {
+    await withWorkspace(async ({ sources, dataDir, outputDir }) => {
+      // Otherwise the run rebuilds nothing, republishes everything, and reports
+      // success, which reads as "the source was updated".
+      await expect(
+        buildRegistry(sources, {
+          sourceId: "ch-typo",
+          dataDir,
+          outputDir,
+          generatedAt: GENERATED_AT,
+          createConnector: connectorReturning([]),
+        }),
+      ).rejects.toThrow(/no enabled source matches ch-typo/i);
+    });
+  });
+
   it("republishes a source that could not be fetched and reports it as stale", async () => {
     await withWorkspace(async ({ sources, dataDir, outputDir }) => {
       const result = await buildRegistry(sources, {

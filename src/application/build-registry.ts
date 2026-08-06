@@ -39,6 +39,12 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   const selected = sources.filter(
     (source) => source.publication.enabled && (!options.sourceId || source.id === options.sourceId),
   );
+  // Without this, a mistyped or disabled `--source` rebuilds nothing, republishes
+  // everything, and reports success: the run looks like it did the work it was
+  // asked for.
+  if (options.sourceId && selected.length === 0) {
+    throw new Error(`No enabled source matches ${options.sourceId}.`);
+  }
   const createSourceConnector = options.createConnector ?? createConnector;
   const results: SourceBuildResult[] = [];
   const records: NormalizedRegistryRecord[] = [];
@@ -57,8 +63,17 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
       .map((source) => source.id),
   );
   const previousHealth = await readPreviousSourceHealth(dataDir);
+  // `registry.json` is several megabytes: read and parse it once for the whole
+  // build rather than once per source.
+  const publishedRecords = await readGeneratedRecords(dataDir);
+  const publishedBySource = new Map<string, NormalizedRegistryRecord[]>();
+  for (const record of publishedRecords) {
+    const registryId = record.source.registryId;
+    publishedBySource.set(registryId, [...(publishedBySource.get(registryId) ?? []), record]);
+  }
+  const previousRecordsOf = (sourceId: string) => publishedBySource.get(sourceId) ?? [];
   const carriedBySource = new Map<string, NormalizedRegistryRecord[]>();
-  for (const record of await readGeneratedRecords(dataDir)) {
+  for (const record of publishedRecords) {
     const registryId = record.source.registryId;
     if (!carriedIds.has(registryId)) continue;
     records.push(record);
@@ -72,7 +87,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     message: string,
     code: string,
   ): Promise<SourceBuildResult> {
-    const previous = await readPreviousGeneratedRecords(sourceId, dataDir);
+    const previous = previousRecordsOf(sourceId);
     const publishable = partitionRecordsByIdentifierValidity(previous);
     records.push(...publishable.valid);
     invalidRecords.push(...publishable.invalid);
@@ -110,7 +125,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
         records: parsed.records,
         retrievedAt: snapshot.metadata.retrievedAt,
       });
-      const previous = await readPreviousGeneratedRecords(source.id, dataDir);
+      const previous = previousRecordsOf(source.id);
       const safetyPrevious = filterSourcePresentRecords(previous);
       const safety = checkSafetyThresholds(
         source,
@@ -238,14 +253,6 @@ async function readGeneratedRecords(dataDir: string): Promise<NormalizedRegistry
   } catch {
     return [];
   }
-}
-
-async function readPreviousGeneratedRecords(
-  sourceId: string,
-  dataDir: string,
-): Promise<NormalizedRegistryRecord[]> {
-  const records = await readGeneratedRecords(dataDir);
-  return records.filter((record) => record.source.registryId === sourceId);
 }
 
 interface PublishedSourceHealth {

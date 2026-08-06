@@ -115,7 +115,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - The Swiss register stopped updating: SuisseEnergie replaced its Gatsby site,
   which removed the `page-data` JSON endpoint the connector read and moved the
   register page. The connector now reads the identifiers from the register
-  page's embedded Astro island payload, where one organization may hold several
+  page's embedded Astro island payload, where one organisation may hold several
   identifiers with their own CPO and EMP flags.
 - Relocating a source no longer looks like an upstream mass change. Change
   safety comparisons ignore `source.sourceUrl`, which comes from the source

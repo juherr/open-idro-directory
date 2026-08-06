@@ -125,7 +125,7 @@ function findRegisterElement(value: unknown): Record<string, unknown> | null {
 
 /**
  * Astro serializes every prop as a `[type, value]` pair. This payload only uses
- * plain values (`0`) and arrays (`1`); richer types (Date, Map, …) are handed
+ * plain values (`0`) and arrays (`1`); richer types (Date, Map, ...) are handed
  * back as-is so the schema rejects them instead of the parser guessing.
  */
 function decodeAstroProps(value: unknown): unknown {

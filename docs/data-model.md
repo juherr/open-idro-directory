@@ -42,10 +42,13 @@ records, so its discarded rows would describe nothing. The same value published
 twice in one run is one problem, so it is recorded once.
 
 A third case is neither: a register listing a well-formed identifier of a
-country it does not administer. Every source declares the jurisdictions it
-covers in `registry.jurisdictions`, a connector publishes no identifier outside
-them, and such a value is reported as `<CONNECTOR>_OUT_OF_JURISDICTION_IDENTIFIER`
-rather than as a rejected row. Nothing is wrong with the value, so counting it
+country it does not administer. A source covers its authority's jurisdictions,
+which the optional `registry.jurisdictions` may narrow when the register serves
+less than the authority does. A connector publishes no identifier outside that
+coverage, and such a value is reported as
+`<CONNECTOR>_OUT_OF_JURISDICTION_IDENTIFIER` rather than as a rejected row. A
+prefix naming no country at all, such as `ZZ`, stays a rejected row: it is
+unreadable, not foreign. Nothing is wrong with the value, so counting it
 as unreadable would send a maintainer looking for a parser bug that does not
 exist -- and would bury the values that genuinely are unreadable. A register
 that legitimately covers several countries, such as EV Roam for `GB` and `IE`,

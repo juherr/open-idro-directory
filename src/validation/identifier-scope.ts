@@ -1,3 +1,4 @@
+import { isAssignedCountryCode } from "../domain/country-code.js";
 import { sourceJurisdictions, type SourceDefinition } from "../domain/source-definition.js";
 import type { ValidationIssue } from "../domain/validation-issue.js";
 
@@ -72,6 +73,10 @@ function outOfJurisdiction(
 
 function foreignCountryOf(source: SourceDefinition, value: string) {
   const countryCode = ANY_IDENTIFIER.exec(value.trim())?.[1]?.toUpperCase();
-  if (!countryCode || coversJurisdiction(source, countryCode)) return null;
+  // A prefix naming no country, such as `ZZ`, is not another register's
+  // identifier: it is a value nobody can resolve, and the rejection report is
+  // where it belongs.
+  if (!countryCode || !isAssignedCountryCode(countryCode)) return null;
+  if (coversJurisdiction(source, countryCode)) return null;
   return countryCode;
 }

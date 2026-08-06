@@ -48,6 +48,18 @@ describe("identifier scope", () => {
     expect(warning.code).toBe("EIPA_MALFORMED_IDENTIFIER");
   });
 
+  it("treats a prefix that names no country as unreadable", async () => {
+    const source = await loadSourceDefinition("pl-eipa");
+
+    // ZZ, XX and the user-assigned ranges resolve to no register at all, so
+    // calling them another country's identifier would hide a broken value.
+    for (const value of ["ZZ*123", "XX-ABC", "UK*ABC"]) {
+      const warning = rejectedIdentifierWarning(source, { ...REJECTION, value });
+      expect(warning.code, value).toBe("EIPA_MALFORMED_IDENTIFIER");
+      expect(warning.rejectedIdentifier, value).toBe(value);
+    }
+  });
+
   it("treats a homoglyph as unreadable rather than foreign", async () => {
     const source = await loadSourceDefinition("gr-electrokinisi");
 

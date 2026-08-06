@@ -38,7 +38,19 @@ The two are separate because they mean different things: a rejected row is
 upstream data the pipeline could not read, an invalid record is data it read and
 then refused. Rejected rows are only reported for sources whose run was actually
 ingested -- a source that fails its safety thresholds republishes its previous
-records, so its discarded rows would describe nothing.
+records, so its discarded rows would describe nothing. The same value published
+twice in one run is one problem, so it is recorded once.
+
+A third case is neither: a register listing a well-formed identifier of a
+country it does not administer. Every source declares the jurisdictions it
+covers in `registry.jurisdictions`, a connector publishes no identifier outside
+them, and such a value is reported as `<CONNECTOR>_OUT_OF_JURISDICTION_IDENTIFIER`
+rather than as a rejected row. Nothing is wrong with the value, so counting it
+as unreadable would send a maintainer looking for a parser bug that does not
+exist -- and would bury the values that genuinely are unreadable. A register
+that legitimately covers several countries, such as EV Roam for `GB` and `IE`,
+declares them and keeps publishing them; the appointed-registry policy is what
+decides whether those records are authoritative.
 
 ### History And Corrections
 

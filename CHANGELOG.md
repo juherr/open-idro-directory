@@ -112,6 +112,20 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Fixed
 
+- An identifier of another country is no longer reported as unreadable. Ten of
+  the fourteen values in the first published rejection report were well-formed
+  identifiers that a national register happens to list -- Dutch, French and
+  German ones in the Polish register, a Danish one in the Swedish register --
+  which read as parser failures. Connectors now check the value against the
+  jurisdictions the source declares and report
+  `<CONNECTOR>_OUT_OF_JURISDICTION_IDENTIFIER` separately, leaving the rejection
+  report to the values that genuinely could not be read.
+- No connector publishes an identifier outside the jurisdictions its source
+  declares. The three connectors that accept any country only enforced it
+  implicitly, so a foreign identifier appearing upstream would have been
+  attributed to the wrong register.
+- A value a register publishes twice in one run is recorded once in the
+  rejection history instead of appearing twice.
 - A run restricted to one source no longer strips every other source from the
   published datasets. The `--source` option of `directory update` and
   `directory build` filters what is rebuilt, but both write global files, so

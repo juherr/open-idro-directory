@@ -12,6 +12,20 @@ import {
   type SourceDefinition,
 } from "../../domain/source-definition.js";
 
+/**
+ * The health block of `data/sources.json`, declared once so that a later run
+ * reading what was published cannot drift from what this module writes.
+ */
+export interface PublishedSourceHealth {
+  stale: boolean;
+  recordCount: number;
+  lastAttemptedRetrieval: string | null;
+  lastSuccessfulRetrieval: string | null;
+  checksum: string | null;
+  freshness: string;
+  latestErrorSummary: string | null;
+}
+
 export interface GeneratedStats {
   totalRecords: number;
   totalInvalidRecords: number;
@@ -127,18 +141,16 @@ function toSourcesSummary(sources: SourceDefinition[], results: SourceBuildResul
   const resultById = new Map(results.map((result) => [result.sourceId, result]));
   return sources.map((source) => {
     const result = resultById.get(source.id);
-    return {
-      ...toSourceMetadata(source),
-      health: {
-        stale: result?.stale ?? !source.publication.enabled,
-        recordCount: result?.records.length ?? 0,
-        lastAttemptedRetrieval: result?.retrievedAt ?? null,
-        lastSuccessfulRetrieval: result && !result.latestError ? result.retrievedAt : null,
-        checksum: result?.checksum ?? null,
-        freshness: result?.stale ? "stale" : source.publication.enabled ? "current" : "disabled",
-        latestErrorSummary: result?.latestError ?? null,
-      },
+    const health: PublishedSourceHealth = {
+      stale: result?.stale ?? !source.publication.enabled,
+      recordCount: result?.records.length ?? 0,
+      lastAttemptedRetrieval: result?.retrievedAt ?? null,
+      lastSuccessfulRetrieval: result?.lastSuccessfulRetrieval ?? null,
+      checksum: result?.checksum ?? null,
+      freshness: result?.stale ? "stale" : source.publication.enabled ? "current" : "disabled",
+      latestErrorSummary: result?.latestError ?? null,
     };
+    return { ...toSourceMetadata(source), health };
   });
 }
 

@@ -10,4 +10,9 @@ export interface SourceBuildResult {
   checksum: string | null;
   stale: boolean;
   latestError: string | null;
+  /**
+   * When the source last answered. A run that failed carries the published
+   * value over, because it still has to say when the registry was reachable.
+   */
+  lastSuccessfulRetrieval: string | null;
 }

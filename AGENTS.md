@@ -23,7 +23,7 @@ Use Bun as the package manager.
 - `bun run check`: run VitePlus format/lint/type checks, tests, and registry validation.
 - `bun run directory fetch --source <id>`: fetch one source snapshot.
 - `bun run directory build`: normalize enabled sources and write `data/`.
-- `bun run directory update --source <id>`: fetch, build, validate, and write a change report.
+- `bun run directory update --source <id>`: fetch, build, validate, and write a change report. The sources the run did not rebuild keep their published records and health.
 - `bun run directory validate`: validate generated registry data.
 
 The Irish `ie-tii` connector parses a PDF register and requires `pdftotext`
@@ -40,6 +40,8 @@ Run `bunx vp check --fix` or `bun run format` before committing when formatting 
 
 Tests use Vitest. Add focused unit tests for every parser and normalizer, with fixtures under `tests/fixtures/<source-id>/`. Cover malformed rows, duplicate identifiers, role mapping, source URLs, and generated key formats. Run `bun run test` for tests only, or `bun run check` before finalizing.
 
+A fixture captured verbatim from an upstream response must be listed in `fmt.ignorePatterns` in `vite.config.ts`. Formatting rewrites escaping and quoting, so a formatted capture stops matching what the source actually serves and the parser is then tested against something that does not exist.
+
 ## Commit & Pull Request Guidelines
 
 Commits must follow Conventional Commits, enforced by commitlint. Use messages such as `feat: add Danish IDRO registry support` or `fix: preserve registry source URLs`.
@@ -47,5 +49,7 @@ Commits must follow Conventional Commits, enforced by commitlint. Use messages s
 Pull requests should describe the source, provenance URL, data format, generated record counts, safety implications, and validation results. Link related issues when available. Include screenshots only for UI changes.
 
 ## Source & Data Safety
+
+The generated datasets in `data/` are published by the scheduled update workflow, not by hand: a code or connector change should not carry a full `data/` rebuild, whose diff is dominated by refreshed timestamps. When a change alters a source descriptor, run `bun run directory sources` to refresh `data/sources.json` metadata without rebuilding records, and let the next scheduled run republish the datasets.
 
 Prefer official APIs or downloads before HTML parsing. Preserve upstream provenance in each record. Do not weaken safety thresholds to bypass failures; investigate stale sources, mass changes, and fallback pages. Read `docs/adding-a-source.md` and `docs/source-policy.md` before adding a new registry.

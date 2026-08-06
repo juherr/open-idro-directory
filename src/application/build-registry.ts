@@ -1,5 +1,7 @@
 import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { createConnector } from "../connectors/index.js";
+import type { ConnectorFactory } from "../connectors/connector.js";
 import type {
   InvalidRegistryHistory,
   InvalidRegistryRecordDetection,
@@ -8,9 +10,12 @@ import type {
 } from "../domain/registry-record.js";
 import type { SourceBuildResult } from "../domain/source-result.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
-import { readCurrentSnapshot } from "../infrastructure/filesystem/raw-snapshot.js";
+import { rawSnapshotDir, readCurrentSnapshot } from "../infrastructure/filesystem/raw-snapshot.js";
 import { fromRoot } from "../infrastructure/filesystem/paths.js";
-import { writeDatasets } from "../infrastructure/serialization/serializers.js";
+import {
+  writeDatasets,
+  type PublishedSourceHealth,
+} from "../infrastructure/serialization/serializers.js";
 import {
   partitionRecordsByIdentifierValidity,
   toRejectedSourceRows,
@@ -25,21 +30,87 @@ export interface BuildOptions {
   sourceId?: string;
   generatedAt?: string;
   outputDir?: string;
+  dataDir?: string;
+  /** Sources whose fetch failed this run, by source id, with the reported reason. */
+  fetchErrors?: Record<string, string>;
+  createConnector?: ConnectorFactory;
 }
 
 export async function buildRegistry(sources: SourceDefinition[], options: BuildOptions = {}) {
   const generatedAt = options.generatedAt ?? new Date().toISOString();
+  const dataDir = options.dataDir ?? fromRoot("data");
+  const outputDir = options.outputDir ?? dataDir;
   const selected = sources.filter(
     (source) => source.publication.enabled && (!options.sourceId || source.id === options.sourceId),
   );
+  // Without this, a mistyped or disabled `--source` rebuilds nothing, republishes
+  // everything, and reports success: the run looks like it did the work it was
+  // asked for.
+  if (options.sourceId && selected.length === 0) {
+    throw new Error(`No enabled source matches ${options.sourceId}.`);
+  }
+  const createSourceConnector = options.createConnector ?? createConnector;
   const results: SourceBuildResult[] = [];
   const records: NormalizedRegistryRecord[] = [];
   const invalidRecords: InvalidRegistryRecordDetection[] = [];
   const rejectedRows: RejectedSourceRowDetection[] = [];
+  // The datasets are global. A run restricted to one source must therefore
+  // republish what the other sources published last time, or writing the
+  // datasets would drop them from the registry.
+  const selectedIds = new Set(selected.map((source) => source.id));
+  // Only a source that is still published but was filtered out of this run is
+  // carried. Disabling a source, or removing its descriptor, must keep removing
+  // its records from the datasets.
+  const carriedIds = new Set(
+    sources
+      .filter((source) => source.publication.enabled && !selectedIds.has(source.id))
+      .map((source) => source.id),
+  );
+  const previousHealth = await readPreviousSourceHealth(dataDir);
+  // `registry.json` is several megabytes: read, parse, and group it once for the
+  // whole build rather than once per source.
+  const publishedBySource = Map.groupBy(
+    await readGeneratedRecords(dataDir),
+    (record) => record.source.registryId,
+  );
+  const previousRecordsOf = (sourceId: string) => publishedBySource.get(sourceId) ?? [];
+  for (const sourceId of carriedIds) records.push(...previousRecordsOf(sourceId));
+
+  // Republishing a source keeps its previously generated records and reports the
+  // reason, rather than dropping it from the datasets.
+  function carryPreviousRecords(
+    sourceId: string,
+    message: string,
+    code: string,
+  ): SourceBuildResult {
+    const previous = previousRecordsOf(sourceId);
+    const publishable = partitionRecordsByIdentifierValidity(previous);
+    records.push(...publishable.valid);
+    invalidRecords.push(...publishable.invalid);
+    return {
+      sourceId,
+      records: publishable.valid,
+      warnings: [],
+      errors: [{ severity: "error", code, message }],
+      retrievedAt: generatedAt,
+      checksum: previousHealth[sourceId]?.checksum ?? null,
+      stale: true,
+      latestError: message,
+      lastSuccessfulRetrieval: previousHealth[sourceId]?.lastSuccessfulRetrieval ?? null,
+    };
+  }
+
   for (const source of selected) {
-    const connector = createConnector(source);
+    const fetchError = options.fetchErrors?.[source.id];
+    if (fetchError) {
+      // A source we could not reach must not be re-ingested from its previous
+      // snapshot as if it were fresh: it keeps its records and is reported stale.
+      results.push(carryPreviousRecords(source.id, fetchError, "SOURCE_FETCH_FAILED"));
+      continue;
+    }
+    const connector = createSourceConnector(source);
     try {
-      const snapshot = await readCurrentSnapshot(source.id);
+      const snapshot = await readCurrentSnapshot(source.id, rawSnapshotDir(dataDir));
       const parsed = await connector.parse({
         source,
         body: snapshot.body,
@@ -50,7 +121,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
         records: parsed.records,
         retrievedAt: snapshot.metadata.retrievedAt,
       });
-      const previous = await readPreviousGeneratedRecords(source.id);
+      const previous = previousRecordsOf(source.id);
       const safetyPrevious = filterSourcePresentRecords(previous);
       const safety = checkSafetyThresholds(
         source,
@@ -85,30 +156,32 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
         checksum: snapshot.metadata.checksum,
         stale: errors.length > 0,
         latestError: errors[0]?.message ?? null,
+        // The registry answered: the snapshot is this run's. A build that failed
+        // afterwards keeps saying so through `stale` and `latestError`.
+        lastSuccessfulRetrieval: snapshot.metadata.retrievedAt,
       });
     } catch (error) {
-      const previous = await readPreviousGeneratedRecords(source.id);
-      const publishable = partitionRecordsByIdentifierValidity(previous);
-      records.push(...publishable.valid);
-      invalidRecords.push(...publishable.invalid);
-      results.push({
-        sourceId: source.id,
-        records: publishable.valid,
-        warnings: [],
-        errors: [
-          {
-            severity: "error",
-            code: "SOURCE_BUILD_FAILED",
-            message: error instanceof Error ? error.message : String(error),
-          },
-        ],
-        retrievedAt: null,
-        checksum: null,
-        stale: true,
-        latestError: error instanceof Error ? error.message : String(error),
-      });
+      const message = error instanceof Error ? error.message : String(error);
+      results.push(carryPreviousRecords(source.id, message, "SOURCE_BUILD_FAILED"));
     }
   }
+  // Sources this run did not rebuild keep the health they were last published
+  // with, so a filtered run does not report them as empty and never retrieved.
+  for (const sourceId of carriedIds) {
+    const health = previousHealth[sourceId];
+    results.push({
+      sourceId,
+      records: previousRecordsOf(sourceId),
+      warnings: [],
+      errors: [],
+      retrievedAt: health?.lastAttemptedRetrieval ?? null,
+      checksum: health?.checksum ?? null,
+      stale: health?.stale ?? false,
+      latestError: health?.latestErrorSummary ?? null,
+      lastSuccessfulRetrieval: health?.lastSuccessfulRetrieval ?? null,
+    });
+  }
+
   const policyRecords = applyOfficialStatusPolicy(records);
   const policyRecordByKey = new Map(policyRecords.map((record) => [record.key, record]));
   const policyResults = results.map((result) => ({
@@ -117,7 +190,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   }));
   const registryIssues = validateRegistry(policyRecords, sources);
   const invalidHistory = mergeInvalidRecordHistory(
-    await readPreviousInvalidHistory(),
+    await readPreviousInvalidHistory(dataDir),
     { records: invalidRecords, rows: rejectedRows },
     generatedAt,
   );
@@ -126,7 +199,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     sources,
     policyResults,
     generatedAt,
-    options.outputDir,
+    outputDir,
     invalidHistory,
   );
   if (registryIssues.some((issue) => issue.severity === "error")) {
@@ -134,11 +207,16 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
       `Registry validation failed: ${registryIssues.map((issue) => issue.message).join("; ")}`,
     );
   }
-  if (results.some((result) => result.errors.length > 0)) {
+  // A single registry being down is reported, not fatal: the datasets are still
+  // published, the failing source stays stale with its previous records, and the
+  // caller surfaces it. Only losing every selected source means this run
+  // produced nothing worth trusting.
+  const rebuilt = policyResults.filter((result) => selectedIds.has(result.sourceId));
+  const failed = rebuilt.filter((result) => result.errors.length > 0);
+  if (rebuilt.length > 0 && failed.length === rebuilt.length) {
     throw new Error(
-      `One or more sources failed: ${results
-        .map((result) => result.latestError)
-        .filter(Boolean)
+      `Every selected source failed: ${failed
+        .map((result) => `${result.sourceId}: ${result.latestError}`)
         .join("; ")}`,
     );
   }
@@ -147,27 +225,39 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     invalidHistory,
     results: policyResults,
     issues: registryIssues,
+    rebuiltSourceIds: [...selectedIds],
   };
 }
 
 // Hand-written `supersededBy` annotations live in this file, so the build reads
 // it back rather than regenerating it from scratch.
-async function readPreviousInvalidHistory(): Promise<InvalidRegistryHistory | null> {
+async function readPreviousInvalidHistory(dataDir: string): Promise<InvalidRegistryHistory | null> {
   try {
-    const raw = await readFile(fromRoot("data", "registry-invalid.json"), "utf8");
+    const raw = await readFile(path.join(dataDir, "registry-invalid.json"), "utf8");
     return JSON.parse(raw) as InvalidRegistryHistory;
   } catch {
     return null;
   }
 }
 
-async function readPreviousGeneratedRecords(sourceId: string): Promise<NormalizedRegistryRecord[]> {
+async function readGeneratedRecords(dataDir: string): Promise<NormalizedRegistryRecord[]> {
   try {
-    const raw = await readFile(fromRoot("data", "registry.json"), "utf8");
-    const records = JSON.parse(raw) as NormalizedRegistryRecord[];
-    return records.filter((record) => record.source.registryId === sourceId);
+    const raw = await readFile(path.join(dataDir, "registry.json"), "utf8");
+    return JSON.parse(raw) as NormalizedRegistryRecord[];
   } catch {
     return [];
+  }
+}
+
+async function readPreviousSourceHealth(
+  dataDir: string,
+): Promise<Record<string, PublishedSourceHealth>> {
+  try {
+    const raw = await readFile(path.join(dataDir, "sources.json"), "utf8");
+    const summaries = JSON.parse(raw) as { id: string; health: PublishedSourceHealth }[];
+    return Object.fromEntries(summaries.map((summary) => [summary.id, summary.health]));
+  } catch {
+    return {};
   }
 }
 

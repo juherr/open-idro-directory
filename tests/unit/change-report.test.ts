@@ -38,6 +38,38 @@ describe("change report rendering", () => {
     expect(prBody).not.toContain("fr-afirev:FR:ABC:CPO");
   });
 
+  it("reports failed sources first, in both the full report and the PR body", () => {
+    const { full, prBody } = renderChangeReports(
+      [
+        {
+          sourceId: "fr-afirev",
+          diff: { previous: 1, current: 1, added: [], updated: [], removed: [], unchanged: 1 },
+        },
+      ],
+      [{ sourceId: "ch-suisseenergie", error: "HTTP 404 while fetching https://example.test/" }],
+    );
+
+    for (const report of [full, prBody]) {
+      expect(report).toContain("## Failed sources");
+      expect(report).toContain(
+        "| ch-suisseenergie | HTTP 404 while fetching https://example.test/ |",
+      );
+      expect(report.indexOf("## Failed sources")).toBeLessThan(report.indexOf("## fr-afirev"));
+    }
+  });
+
+  it("omits the failure section when every source answered", () => {
+    const { full, prBody } = renderChangeReports([
+      {
+        sourceId: "fr-afirev",
+        diff: { previous: 1, current: 1, added: [], updated: [], removed: [], unchanged: 1 },
+      },
+    ]);
+
+    expect(full).not.toContain("Failed sources");
+    expect(prBody).not.toContain("Failed sources");
+  });
+
   it("caps the PR body well under GitHub's 65,536-character body limit", () => {
     const added = Array.from({ length: 5000 }, (_, index) =>
       sampleRecord("2026-06-15T00:00:00.000Z", `fr-afirev:FR:${index}:CPO`),

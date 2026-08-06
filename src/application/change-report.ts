@@ -53,6 +53,11 @@ export interface ChangeReportEntry {
   diff: RegistryDiff;
 }
 
+export interface SourceFailure {
+  sourceId: string;
+  error: string;
+}
+
 export interface RenderedChangeReport {
   /** Full report: per-source counts plus the record-level tables. */
   full: string;
@@ -60,20 +65,34 @@ export interface RenderedChangeReport {
   prBody: string;
 }
 
-export async function writeChangeReport(sourceIds: string[]) {
+export async function writeChangeReport(sourceIds: string[], failures: SourceFailure[] = []) {
   await mkdir(fromRoot("build"), { recursive: true });
-  const entries: ChangeReportEntry[] = [];
-  for (const sourceId of sourceIds) {
-    entries.push({ sourceId, diff: await diffAgainstGit(sourceId) });
-  }
-  const { full, prBody } = renderChangeReports(entries);
+  // The registry weighs several megabytes and reading it from git spawns a
+  // subprocess: load both sides once and diff each source from memory.
+  const current = groupBySource(await readCurrent());
+  const previous = groupBySource(await readFromGit());
+  const entries: ChangeReportEntry[] = sourceIds.map((sourceId) => ({
+    sourceId,
+    diff: diffRecords(previous.get(sourceId) ?? [], current.get(sourceId) ?? []),
+  }));
+  const { full, prBody } = renderChangeReports(entries, failures);
   await writeFile(fromRoot("build", "change-summary.md"), full);
   await writeFile(fromRoot("build", "change-summary-pr.md"), prBody);
 }
 
-export function renderChangeReports(entries: ChangeReportEntry[]): RenderedChangeReport {
+export function renderChangeReports(
+  entries: ChangeReportEntry[],
+  failures: SourceFailure[] = [],
+): RenderedChangeReport {
   const fullSections = [];
   const summarySections = [];
+  // Failures lead both reports: a source that kept its previous records shows no
+  // change at all, so nothing below would reveal that it is not being updated.
+  if (failures.length > 0) {
+    const section = `${renderFailureSection(failures)}\n`;
+    fullSections.push(section);
+    summarySections.push(section);
+  }
   for (const { sourceId, diff } of entries) {
     const summary = renderSummarySection(sourceId, diff);
     fullSections.push(`${summary}\n\n${renderDetailsSection(diff)}\n`);
@@ -83,6 +102,17 @@ export function renderChangeReports(entries: ChangeReportEntry[]): RenderedChang
     full: `${REPORT_HEADING}\n\n${fullSections.join("\n")}`,
     prBody: truncateForPrBody(`${REPORT_HEADING}\n\n${summarySections.join("\n")}`),
   };
+}
+
+function renderFailureSection(failures: SourceFailure[]) {
+  return `## Failed sources
+
+These sources kept the records they were last published with. Investigate before
+treating their data as current.
+
+| Source | Error |
+| --- | --- |
+${failures.map((failure) => `| ${failure.sourceId} | ${failure.error} |`).join("\n")}`;
 }
 
 function renderSummarySection(sourceId: string, diff: RegistryDiff) {
@@ -158,6 +188,10 @@ function isMissingFromGit(error: unknown): boolean {
   return /does not exist|exists on disk, but not in|unknown revision|ambiguous argument/i.test(
     stderr,
   );
+}
+
+function groupBySource(records: NormalizedRegistryRecord[]) {
+  return Map.groupBy(records, (record) => record.source.registryId);
 }
 
 function filter(records: NormalizedRegistryRecord[], sourceId?: string) {

@@ -26,6 +26,21 @@ Design implications:
 - Avoid runtime scraping and dynamic export generation.
 - Cache public GET responses with dataset-versioned ETags.
 
+## Partial Source Failures
+
+A registry that cannot be fetched or parsed no longer stops the run. The failing
+source keeps the records it was last published with, is marked `stale` in
+`data/sources.json` with the reported error and the date it last answered, and is
+listed under "Failed sources" at the top of `build/change-summary.md` and of the
+pull request body. The sources that answered are still published.
+
+The run only fails when registry validation reports an error, or when every
+selected source failed: the two cases where the published result cannot be
+trusted.
+
+A stale source is an outage to investigate, not an accepted state. Its records
+keep their previous retrieval timestamps and grow older with every run.
+
 ## Source Metadata Only
 
 Run `bun run directory sources` after changing source authority, provenance,

@@ -15,6 +15,7 @@ import {
 } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseSuisseEnergieHtml } from "./suisseenergie.parser.js";
 import type { SuisseEnergieProvider } from "./suisseenergie.types.js";
 
@@ -85,13 +86,13 @@ export class SuisseEnergieConnector implements RegistryConnector<SuisseEnergiePr
     for (const sourceRecord of preferredLocaleRecords(input.records)) {
       const parsed = parseSuisseEnergieIdentifier(sourceRecord.digitId);
       if (!parsed) {
-        warnings.push({
-          severity: "warning",
-          sourceId: input.source.id,
-          code: "SUISSEENERGIE_MALFORMED_IDENTIFIER",
-          message: `Unexpected SuisseEnergie identifier syntax: ${sourceRecord.digitId}`,
-          rejectedIdentifier: sourceRecord.digitId,
-        });
+        warnings.push(
+          rejectedIdentifierWarning(input.source, {
+            codePrefix: "SUISSEENERGIE",
+            subject: "SuisseEnergie identifier",
+            value: sourceRecord.digitId,
+          }),
+        );
         continue;
       }
 

@@ -15,6 +15,11 @@ import {
   type RegistryStatus,
 } from "../../domain/registry-record.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import {
+  coversJurisdiction,
+  outOfJurisdictionWarning,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { parseAfirevJson } from "./afirev.parser.js";
 import type { AfirevRecord } from "./afirev.types.js";
 
@@ -78,19 +83,32 @@ export class AfirevConnector implements RegistryConnector<AfirevRecord> {
     for (const sourceRecord of input.records) {
       const prefix = sourceRecord.prefixId.trim();
       if (!/^[A-Za-z]{2}[A-Za-z0-9]{3}$/.test(prefix)) {
-        warnings.push({
-          severity: "warning",
-          sourceId: input.source.id,
-          code: "AFIREV_MALFORMED_IDENTIFIER",
-          message: `Unexpected AFIREV prefix syntax: ${prefix}`,
-          // The raw upstream value, not the trimmed one the regex saw, so the
-          // rejected row reproduces exactly what the register published.
-          rejectedIdentifier: sourceRecord.prefixId,
-        });
+        warnings.push(
+          rejectedIdentifierWarning(input.source, {
+            codePrefix: "AFIREV",
+            subject: "AFIREV prefix",
+            value: prefix,
+            // The raw upstream value, not the trimmed one the regex saw, so the
+            // rejected row reproduces exactly what the register published.
+            reported: sourceRecord.prefixId,
+          }),
+        );
         continue;
       }
       const countryCode = prefix.slice(0, 2).toUpperCase();
       const partyId = prefix.slice(2).toUpperCase();
+      // The register may list prefixes it does not administer. Publishing them
+      // would attribute another country's identifier to this source.
+      if (!coversJurisdiction(input.source, countryCode)) {
+        warnings.push(
+          outOfJurisdictionWarning(
+            input.source,
+            { codePrefix: "AFIREV", subject: "AFIREV prefix", value: prefix },
+            countryCode,
+          ),
+        );
+        continue;
+      }
       const roles = TYPE_TO_ROLES[sourceRecord.type] ?? ["OTHER"];
       if (!TYPE_TO_ROLES[sourceRecord.type]) {
         warnings.push({

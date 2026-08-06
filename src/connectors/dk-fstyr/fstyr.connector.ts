@@ -15,6 +15,7 @@ import {
 } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseFstyrHtml } from "./fstyr.parser.js";
 import type { FstyrHtmlRow } from "./fstyr.types.js";
 
@@ -91,13 +92,13 @@ export class FstyrConnector implements RegistryConnector<FstyrHtmlRow> {
       for (const identifier of identifiers) {
         const parsed = parseFstyrIdentifier(identifier.sourceValue);
         if (!parsed) {
-          warnings.push({
-            severity: "warning",
-            sourceId: input.source.id,
-            code: "FSTYR_MALFORMED_IDENTIFIER",
-            message: `Unexpected Danish IDRO identifier syntax: ${identifier.sourceValue}`,
-            rejectedIdentifier: identifier.sourceValue,
-          });
+          warnings.push(
+            rejectedIdentifierWarning(input.source, {
+              codePrefix: "FSTYR",
+              subject: "Danish IDRO identifier",
+              value: identifier.sourceValue,
+            }),
+          );
           continue;
         }
 

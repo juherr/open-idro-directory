@@ -127,7 +127,10 @@ describe("Swedish Energy Agency parser", () => {
     });
 
     expect(result.records).toHaveLength(0);
-    expect(result.warnings[0]?.code).toBe("ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER");
+    // Well formed, but another country's register administers it: reporting it
+    // as unreadable would send a maintainer after a parser bug that is not there.
+    expect(result.warnings[0]?.code).toBe("ENERGIMYNDIGHETEN_OUT_OF_JURISDICTION_IDENTIFIER");
+    expect(result.warnings[0]?.rejectedIdentifier).toBeUndefined();
   });
 });
 

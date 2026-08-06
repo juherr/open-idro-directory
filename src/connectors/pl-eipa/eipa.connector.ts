@@ -15,6 +15,7 @@ import {
 } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseEipaCsv } from "./eipa.parser.js";
 import type { EipaCsvRow } from "./eipa.types.js";
 
@@ -84,13 +85,13 @@ export class EipaConnector implements RegistryConnector<EipaCsvRow> {
       for (const identifier of identifiers) {
         const parsed = parseEipaIdentifier(identifier.sourceValue);
         if (!parsed) {
-          warnings.push({
-            severity: "warning",
-            sourceId: input.source.id,
-            code: "EIPA_MALFORMED_IDENTIFIER",
-            message: `Unexpected EIPA identifier syntax: ${identifier.sourceValue}`,
-            rejectedIdentifier: identifier.sourceValue,
-          });
+          warnings.push(
+            rejectedIdentifierWarning(input.source, {
+              codePrefix: "EIPA",
+              subject: "EIPA identifier",
+              value: identifier.sourceValue,
+            }),
+          );
           continue;
         }
 

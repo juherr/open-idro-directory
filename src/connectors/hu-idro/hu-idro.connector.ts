@@ -11,6 +11,7 @@ import type {
 import { makeRegistryKey, type NormalizedRegistryRecord } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseHuIdroHtml } from "./hu-idro.parser.js";
 import type { HuIdroHtmlRow } from "./hu-idro.types.js";
 
@@ -79,13 +80,13 @@ export class HuIdroConnector implements RegistryConnector<HuIdroHtmlRow> {
     for (const sourceRecord of input.records) {
       const parsed = parseHuIdroIdentifier(sourceRecord.sourceValue);
       if (!parsed) {
-        warnings.push({
-          severity: "warning",
-          sourceId: input.source.id,
-          code: "HU_IDRO_MALFORMED_IDENTIFIER",
-          message: `Unexpected Hungarian IDRO identifier syntax: ${sourceRecord.sourceValue}`,
-          rejectedIdentifier: sourceRecord.sourceValue,
-        });
+        warnings.push(
+          rejectedIdentifierWarning(input.source, {
+            codePrefix: "HU_IDRO",
+            subject: "Hungarian IDRO identifier",
+            value: sourceRecord.sourceValue,
+          }),
+        );
         continue;
       }
 

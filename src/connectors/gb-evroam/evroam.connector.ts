@@ -14,6 +14,11 @@ import {
   type RegistryRole,
 } from "../../domain/registry-record.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import {
+  coversJurisdiction,
+  outOfJurisdictionWarning,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import { parseEvroamRegister } from "./evroam.parser.js";
 import type { EvroamRegisterItem } from "./evroam.types.js";
@@ -73,13 +78,30 @@ export class EvroamConnector implements RegistryConnector<EvroamRegisterItem> {
       for (const identifier of identifiers) {
         const parsed = parseIdentifier(identifier.sourceValue, identifier.countryCode);
         if (!parsed) {
-          warnings.push({
-            severity: "warning",
-            sourceId: input.source.id,
-            code: "EVROAM_MALFORMED_IDENTIFIER",
-            message: `Unexpected EV Roam ${identifier.field} syntax: ${identifier.sourceValue}`,
-            rejectedIdentifier: identifier.sourceValue,
-          });
+          warnings.push(
+            rejectedIdentifierWarning(input.source, {
+              codePrefix: "EVROAM",
+              subject: `EV Roam ${identifier.field}`,
+              value: identifier.sourceValue,
+            }),
+          );
+          continue;
+        }
+
+        // The register may list identifiers it does not administer. Publishing
+        // them would attribute another country's identifier to this source.
+        if (!coversJurisdiction(input.source, parsed.countryCode)) {
+          warnings.push(
+            outOfJurisdictionWarning(
+              input.source,
+              {
+                codePrefix: "EVROAM",
+                subject: "EV Roam identifier",
+                value: identifier.sourceValue,
+              },
+              parsed.countryCode,
+            ),
+          );
           continue;
         }
 

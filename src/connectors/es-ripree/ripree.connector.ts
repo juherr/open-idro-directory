@@ -15,6 +15,7 @@ import {
 } from "../../domain/registry-record.js";
 import { postText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseRipreeXml } from "./ripree.parser.js";
 import type { RipreeXmlRow } from "./ripree.types.js";
 
@@ -77,13 +78,13 @@ export class RipreeConnector implements RegistryConnector<RipreeXmlRow> {
     for (const sourceRecord of input.records) {
       const parsed = parseRipreeIdentifier(sourceRecord.sourceValue);
       if (!parsed) {
-        warnings.push({
-          severity: "warning",
-          sourceId: input.source.id,
-          code: "RIPREE_MALFORMED_IDENTIFIER",
-          message: `Unexpected Spanish RIPREE identifier syntax: ${sourceRecord.sourceValue}`,
-          rejectedIdentifier: sourceRecord.sourceValue,
-        });
+        warnings.push(
+          rejectedIdentifierWarning(input.source, {
+            codePrefix: "RIPREE",
+            subject: "Spanish RIPREE identifier",
+            value: sourceRecord.sourceValue,
+          }),
+        );
         continue;
       }
 

@@ -11,6 +11,7 @@ import type {
 import { makeRegistryKey } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseLadestellenJson } from "./ladestellen.parser.js";
 import type { LadestellenOperator } from "./ladestellen.types.js";
 
@@ -66,13 +67,13 @@ export class LadestellenConnector implements RegistryConnector<LadestellenOperat
     for (const sourceRecord of input.records) {
       const partyId = sourceRecord.operatorId.trim().toUpperCase();
       if (!/^[A-Z0-9]{3}$/.test(partyId)) {
-        warnings.push({
-          severity: "warning",
-          sourceId: input.source.id,
-          code: "LADESTELLEN_MALFORMED_IDENTIFIER",
-          message: `Unexpected Ladestellen.at operator ID syntax: ${sourceRecord.operatorId}`,
-          rejectedIdentifier: sourceRecord.operatorId,
-        });
+        warnings.push(
+          rejectedIdentifierWarning(input.source, {
+            codePrefix: "LADESTELLEN",
+            subject: "Ladestellen.at operator ID",
+            value: sourceRecord.operatorId,
+          }),
+        );
         continue;
       }
       const countryCode = "AT";

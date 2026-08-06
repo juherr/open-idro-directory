@@ -42,7 +42,13 @@ function merge<TDetection>(
   generatedAt: string,
 ): (TDetection & HistoryFields)[] {
   const previousByKey = new Map(previous.map((entry) => [keyOf(entry), entry]));
-  const merged = detections.map((detection) => {
+  // A register can publish the same unreadable value more than once -- in a CPO
+  // list and an EMSP list, or simply twice. It is one problem to fix, so the
+  // history records it once.
+  const unique = [
+    ...new Map(detections.map((detection) => [keyOf(detection), detection])).values(),
+  ];
+  const merged = unique.map((detection) => {
     const existing = previousByKey.get(keyOf(detection));
     previousByKey.delete(keyOf(detection));
     return {

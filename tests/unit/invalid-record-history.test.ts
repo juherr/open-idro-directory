@@ -133,6 +133,18 @@ describe("invalid record history", () => {
     expect(history.records.map((entry) => entry.record.partyId)).toEqual(["TUVW", "WXYZ"]);
     expect(history.rows.map((entry) => entry.sourceValue)).toEqual(["SETUVW", "SEWXYZ"]);
   });
+  it("records a value the register publishes twice as one problem", () => {
+    const row = {
+      registryId: "pl-eipa",
+      code: "EIPA_MALFORMED_IDENTIFIER",
+      sourceValue: "37",
+      message: "Unexpected EIPA identifier syntax: 37",
+    };
+
+    const history = mergeInvalidRecordHistory(null, { records: [], rows: [row, row] }, FIRST_RUN);
+
+    expect(history.rows).toHaveLength(1);
+  });
 });
 
 function detection(partyId: string) {

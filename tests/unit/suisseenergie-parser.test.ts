@@ -52,60 +52,31 @@ describe("SuisseEnergie parser", () => {
   });
 
   it("skips identifiers whose role flags are missing", () => {
-    const props = JSON.stringify({
-      fields: [
-        0,
+    const result = parseSuisseEnergieHtml(
+      registerPage([
         {
-          content: [
-            0,
-            {
-              references: [
-                1,
-                [
-                  [
-                    0,
-                    {
-                      frontendElementName: [0, "DigitIDRegister"],
-                      node_locale: [0, "fr"],
-                      toolData: [
-                        0,
-                        {
-                          providers: [
-                            1,
-                            [
-                              [
-                                0,
-                                {
-                                  company: [0, "Incomplete SA"],
-                                  website: [0, null],
-                                  ID: [
-                                    1,
-                                    [
-                                      [0, "CH INC"],
-                                      [0, "CH OMP"],
-                                    ],
-                                  ],
-                                  CPO: [1, [[0, true]]],
-                                  EMP: [1, [[0, true]]],
-                                },
-                              ],
-                            ],
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                ],
-              ],
-            },
-          ],
+          company: "Incomplete SA",
+          website: null,
+          ID: ["CH INC", "CH OMP"],
+          CPO: [true],
+          EMP: [true],
         },
-      ],
-    }).replaceAll('"', "&quot;");
-    const result = parseSuisseEnergieHtml(`<astro-island props="${props}"></astro-island>`);
+      ]),
+    );
 
     expect(result.records.map((record) => record.digitId)).toEqual(["CH INC"]);
     expect(result.warnings[0]?.code).toBe("SUISSEENERGIE_MISSING_ROLE_FLAGS");
+  });
+
+  it("reports a provider row that does not match the published shape", () => {
+    const result = parseSuisseEnergieHtml(
+      registerPage([
+        { company: "Malformed SA", website: null, ID: "CH BAD", CPO: true, EMP: true },
+      ]),
+    );
+
+    expect(result.records).toHaveLength(0);
+    expect(result.errors[0]?.code).toBe("SUISSEENERGIE_INVALID_PAYLOAD");
   });
 
   it("normalizes CPO and EMP roles after locale deduplication", async () => {
@@ -174,4 +145,57 @@ describe("SuisseEnergie parser", () => {
     expect(result.records).toHaveLength(0);
     expect(result.warnings[0]?.code).toBe("SUISSEENERGIE_IDENTIFIER_WITHOUT_ROLE");
   });
+
+  it("keeps one record when the same identifier and role is published twice", async () => {
+    const source = await loadSourceDefinition("ch-suisseenergie");
+    const connector = new SuisseEnergieConnector();
+    const provider = {
+      node_locale: "fr",
+      digitId: "CH MOV",
+      CPO: true,
+      EMP: false,
+      organization: { companyName: "MOVE Mobility SA", website: "https://move.ch/" },
+    };
+    const result = await connector.normalize({
+      source,
+      retrievedAt: "2026-06-15T00:00:00.000Z",
+      records: [provider, { ...provider, digitId: "CH*MOV" }],
+    });
+
+    expect(result.records.map((record) => record.key)).toEqual(["ch-suisseenergie:CH:MOV:CPO"]);
+    expect(result.warnings[0]?.code).toBe("SUISSEENERGIE_DUPLICATE_IDENTIFIER");
+  });
 });
+
+/**
+ * Rebuilds the page around a register, with the same Astro encoding as the
+ * published payload: every value is a `[type, value]` pair.
+ */
+function registerPage(providers: unknown[], locale = "fr") {
+  const encode = (value: unknown): unknown => {
+    if (Array.isArray(value)) return [1, value.map(encode)];
+    if (typeof value === "object" && value !== null) {
+      return [
+        0,
+        Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, encode(entry)])),
+      ];
+    }
+    return [0, value];
+  };
+  // Only the members of the props root carry the encoding, the root itself is
+  // a plain object.
+  const props = JSON.stringify({
+    fields: encode({
+      content: {
+        references: [
+          {
+            frontendElementName: "DigitIDRegister",
+            node_locale: locale,
+            toolData: { providers },
+          },
+        ],
+      },
+    }),
+  }).replaceAll('"', "&quot;");
+  return `<astro-island props="${props}"></astro-island>`;
+}

@@ -15,7 +15,7 @@ import {
 } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { parseSuisseEnergieJson } from "./suisseenergie.parser.js";
+import { parseSuisseEnergieHtml } from "./suisseenergie.parser.js";
 import type { SuisseEnergieProvider } from "./suisseenergie.types.js";
 
 const SOURCE_HOSTS = ["www.suisseenergie.ch"];
@@ -34,11 +34,11 @@ export class SuisseEnergieConnector implements RegistryConnector<SuisseEnergiePr
       {
         timeoutMs: 30_000,
         retries: 2,
-        maxBytes: 2_000_000,
+        maxBytes: 4_000_000,
         allowedHosts: SOURCE_HOSTS,
         userAgent: context.userAgent,
         headers: {
-          Accept: "application/json,*/*",
+          Accept: "text/html,*/*",
           Referer: context.source.authority.homepageUrl,
         },
       },
@@ -60,7 +60,7 @@ export class SuisseEnergieConnector implements RegistryConnector<SuisseEnergiePr
 
   async parse(input: ParseInput): Promise<ParseOutput<SuisseEnergieProvider>> {
     try {
-      return parseSuisseEnergieJson(input.body);
+      return parseSuisseEnergieHtml(input.body);
     } catch (error) {
       return {
         records: [],
@@ -68,7 +68,7 @@ export class SuisseEnergieConnector implements RegistryConnector<SuisseEnergiePr
         errors: [
           {
             severity: "error",
-            code: "SUISSEENERGIE_INVALID_JSON",
+            code: "SUISSEENERGIE_INVALID_PAYLOAD",
             message: error instanceof Error ? error.message : String(error),
           },
         ],

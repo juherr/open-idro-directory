@@ -110,10 +110,10 @@
       "jurisdictions": [
         "CH"
       ],
-      "homepageUrl": "https://www.suisseenergie.ch/programmes/infrastructure-de-recharge/outils/identifiant-pour-les-cpo-et-les-emp/registre-suisse-des-identifiants/"
+      "homepageUrl": "https://www.suisseenergie.ch/infrastructure-de-recharge/outils/identifiant-pour-les-cpo-et-les-emp/registre-suisse-des-identifiants/"
     },
     "registry": {
-      "url": "https://www.suisseenergie.ch/page-data/sq/d/3887988665.json",
+      "url": "https://www.suisseenergie.ch/infrastructure-de-recharge/outils/identifiant-pour-les-cpo-et-les-emp/registre-suisse-des-identifiants/",
       "observationType": "OFFICIAL_ASSIGNMENT",
       "supportedRoles": [
         "CPO",
@@ -125,7 +125,7 @@
     },
     "publication": {
       "connector": "ch-suisseenergie",
-      "machineReadableUrl": "https://www.suisseenergie.ch/page-data/sq/d/3887988665.json",
+      "machineReadableUrl": "https://www.suisseenergie.ch/infrastructure-de-recharge/outils/identifiant-pour-les-cpo-et-les-emp/registre-suisse-des-identifiants/",
       "refreshSchedule": "weekly",
       "enabled": true,
       "verifiedAt": null

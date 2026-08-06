@@ -15,6 +15,9 @@ export default defineConfig({
       "data/stats.json",
       "schemas/*.json",
       "tests/fixtures/fr-afirev/public-prefixes.json",
+      // Formatting rewrites the escaped Astro island payload, so the captured
+      // page would stop matching what SuisseEnergie actually serves.
+      "tests/fixtures/ch-suisseenergie/register.html",
       "build/change-summary.md",
     ],
   },

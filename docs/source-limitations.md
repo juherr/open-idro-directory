@@ -31,7 +31,7 @@ connectors that aggregate multiple resources.
 | ---------------------- | ----------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `at-ladestellen`       | Public JSON API               | Austrian CPO identifiers                                              | The public application supplies an API key from its client bundle. The connector depends on that public access pattern remaining available.                                                            |
 | `benelux-idro`         | CSV export                    | CPO and EMSP identifiers for Belgium, the Netherlands, and Luxembourg | The export does not provide a normalized lifecycle status, so current rows are `ACTIVE`.                                                                                                               |
-| `ch-suisseenergie`     | Gatsby page-data JSON         | Swiss CPO and EMP identifiers                                         | The connector depends on a generated Gatsby JSON path. It deduplicates locale copies by identifier.                                                                                                    |
+| `ch-suisseenergie`     | HTML page with Astro island   | Swiss CPO and EMP identifiers                                         | The connector reads the register from the page's embedded Astro island payload, so a redesign of the page can break it. It deduplicates locale copies by identifier.                                   |
 | `cy-ems`               | HTML page                     | No published identifiers                                              | The source is disabled. No public machine-readable CPO or MSP identifier register has been identified.                                                                                                 |
 | `de-bdew`              | Paginated JSON API            | Active German CPO and EMSP identifiers                                | The connector performs separate role queries and pagination. `machineReadableUrl` exposes only the shared endpoint.                                                                                    |
 | `dk-fstyr`             | HTML table                    | Danish CPO and MSP identifiers                                        | The connector parses page markup because no public registry export has been identified. Markup changes can break extraction.                                                                           |
@@ -77,9 +77,10 @@ different sources retain separate source records and provenance.
 ## Operational Dependencies
 
 The Irish and Portuguese connectors require Poppler `pdftotext`. Binary and
-generated resource URLs, including PDF, XLSX, and Gatsby page-data paths, can
-change without a redirect even when the human-facing registry page remains
-stable.
+generated resource URLs, including PDF, XLSX, and framework-generated data
+paths, can change without a redirect even when the human-facing registry page
+remains stable. Connectors that read data embedded in a page share the same
+exposure to upstream redesigns.
 
 Safety thresholds stop publication when a source produces unexpectedly large
 deletions, changes, or parse-error ratios. Operators must investigate those

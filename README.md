@@ -33,7 +33,7 @@ registry.
 | MOBI.E IDACS (`pt-mobie`) | Supported: 🇵🇹 | Public PDF register | Undetermined |
 | RIPREE (`es-ripree`) | Supported: 🇪🇸 | Public XML export from the company register export page | Statutory - [Spanish Law 37/2007 on reuse of public-sector information](https://www.boe.es/eli/es/l/2007/11/16/37/con) |
 | Slovenian NAP IDRO (`si-nap`) | Supported: 🇸🇮 | Public XLSX national repository from NAP | Undetermined |
-| SuisseEnergie Swiss ID register (`ch-suisseenergie`) | Supported: 🇨🇭 (Non-EU) | Public Gatsby page-data JSON endpoint | Undetermined |
+| SuisseEnergie Swiss ID register (`ch-suisseenergie`) | Supported: 🇨🇭 (Non-EU) | Public register page with an embedded Astro island payload | Undetermined |
 | Swedish Energy Agency IDRO (`se-energimyndigheten`) | Supported: 🇸🇪 | Public XLSX registers for CPO and EMSP identifiers | Undetermined |
 | EV Roam (`gb-evroam`) | Supported: 🇬🇧 (Non-EU) | Public JSON API with official GB and cross-register IE identifiers | Undetermined |
 | Bulgaria | Coming soon: 🇧🇬 | Awaiting IDRR data | Not applicable - source pending |

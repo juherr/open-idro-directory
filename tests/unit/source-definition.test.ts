@@ -282,7 +282,8 @@ describe("the published source catalog", () => {
     expect(machineReadableUrls).toEqual({
       "at-ladestellen": "https://admin.ladestellen.at/api/countries/AT/operators/basic",
       "benelux-idro": "https://www.benelux-idro.eu/en/id-register/export",
-      "ch-suisseenergie": "https://www.suisseenergie.ch/page-data/sq/d/3887988665.json",
+      "ch-suisseenergie":
+        "https://www.suisseenergie.ch/infrastructure-de-recharge/outils/identifiant-pour-les-cpo-et-les-emp/registre-suisse-des-identifiants/",
       "de-bdew": "https://bdew-codes.de/Codenumbers/EMobilityId/GetActiveCodes",
       "es-ripree": "https://energia.serviciosmin.gob.es/Ripree/ExportarEmpresas/GenerarXml",
       "fr-afirev": "https://api.afirev.fr/public/prefixes",

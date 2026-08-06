@@ -104,7 +104,7 @@ const SOURCE_PRESENTATIONS: SourcePresentation[] = [
   {
     id: "ch-suisseenergie",
     coverage: "Supported: 🇨🇭 (Non-EU)",
-    mechanism: "Public Gatsby page-data JSON endpoint",
+    mechanism: "Public register page with an embedded Astro island payload",
   },
   {
     id: "se-energimyndigheten",

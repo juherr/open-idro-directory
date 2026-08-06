@@ -2,14 +2,14 @@ id: ch-suisseenergie
 name: SuisseEnergie Swiss ID register
 authorityId: ch-bfe
 registry:
-  url: https://www.suisseenergie.ch/page-data/sq/d/3887988665.json
+  url: https://www.suisseenergie.ch/infrastructure-de-recharge/outils/identifiant-pour-les-cpo-et-les-emp/registre-suisse-des-identifiants/
   observationType: OFFICIAL_ASSIGNMENT
   supportedRoles:
     - CPO
     - EMSP
 publication:
   connector: ch-suisseenergie
-  machineReadableUrl: https://www.suisseenergie.ch/page-data/sq/d/3887988665.json
+  machineReadableUrl: https://www.suisseenergie.ch/infrastructure-de-recharge/outils/identifiant-pour-les-cpo-et-les-emp/registre-suisse-des-identifiants/
   refreshSchedule: weekly
   enabled: true
   verifiedAt: null
@@ -21,5 +21,7 @@ reuse:
   redistributionAllowed: null
   notes: No explicit reuse terms have been identified.
 notes: >
-  Uses the public Gatsby page-data JSON that powers SuisseEnergie's Swiss register of
-  valid CPO and EMP identifiers. Locale duplicates are deduplicated by identifier.
+  Uses the public register page of SuisseEnergie, whose Astro island payload embeds the
+  Swiss register of valid CPO and EMP identifiers. An organization may hold several
+  identifiers, each with its own CPO and EMP flags. Locale duplicates are deduplicated
+  by identifier.

@@ -81,6 +81,33 @@ describe("validation", () => {
     expect(issues.some((issue) => issue.code === "MASS_DELETION")).toBe(false);
   });
 
+  // `sourceUrl` is copied from our own source descriptor, so moving a registry
+  // to a new address rewrites every record at once. That is a configuration
+  // change, not upstream drift, and must not trip the change guard.
+  it("ignores source URL rewrites in change safety comparisons", async () => {
+    const source = await loadSourceDefinition("fr-afirev");
+    const previous = ["A", "B", "C", "D"].map((partyId) => sampleRecord(partyId));
+    const current = previous.map((record) => ({
+      ...record,
+      source: { ...record.source, sourceUrl: "https://afirev.fr/annuaire/" },
+    }));
+    const issues = checkSafetyThresholds(source, previous, current, 0, '{"data":[]}');
+
+    expect(issues.some((issue) => issue.code === "MASS_CHANGE")).toBe(false);
+  });
+
+  it("still detects mass changes in upstream data", async () => {
+    const source = await loadSourceDefinition("fr-afirev");
+    const previous = ["A", "B", "C", "D"].map((partyId) => sampleRecord(partyId));
+    const current = previous.map((record) => ({
+      ...record,
+      organization: { ...record.organization, name: "Renamed" },
+    }));
+    const issues = checkSafetyThresholds(source, previous, current, 0, '{"data":[]}');
+
+    expect(issues.some((issue) => issue.code === "MASS_CHANGE")).toBe(true);
+  });
+
   it("allows HTML source pages when they are the expected registry format", async () => {
     const source = await loadSourceDefinition("dk-fstyr");
     const current = [sampleRecord("ABC", "dk-fstyr", "DK")];

@@ -1,11 +1,10 @@
-import path from "node:path";
 import { createConnector as createRegistryConnector } from "../connectors/index.js";
-import type { FetchResult, RegistryConnector } from "../connectors/connector.js";
+import type { ConnectorFactory, FetchResult } from "../connectors/connector.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
-import { fromRoot } from "../infrastructure/filesystem/paths.js";
 import {
   preserveRawSnapshot,
-  readCurrentSnapshot,
+  rawSnapshotDir,
+  readCurrentSnapshotMetadata,
 } from "../infrastructure/filesystem/raw-snapshot.js";
 
 export interface SourceFetchFailure {
@@ -20,7 +19,7 @@ export interface FetchSourcesOptions {
   sourceId?: string;
   owner?: string;
   dataDir?: string;
-  createConnector?: (source: SourceDefinition) => RegistryConnector;
+  createConnector?: ConnectorFactory;
 }
 
 export function isFetchFailure(outcome: SourceFetchOutcome): outcome is SourceFetchFailure {
@@ -32,21 +31,19 @@ export async function fetchSources(sources: SourceDefinition[], options: FetchSo
   const selected = sources.filter(
     (source) => source.publication.enabled && (!options.sourceId || source.id === options.sourceId),
   );
-  const rawDir = path.join(options.dataDir ?? fromRoot("data"), "raw");
+  const rawDir = rawSnapshotDir(options.dataDir);
   const createConnector = options.createConnector ?? createRegistryConnector;
   const userAgent = `open-idro-directory/0.1 (+https://github.com/${options.owner ?? "OWNER"}/open-idro-directory)`;
   const results: SourceFetchOutcome[] = [];
   for (const source of selected) {
     const connector = createConnector(source);
-    const previous = await readCurrentSnapshot(source.id, rawDir).catch(() => null);
+    const previous = await readCurrentSnapshotMetadata(source.id, rawDir).catch(() => null);
     const context = {
       source,
       retrievedAt,
       userAgent,
-      ...(previous?.metadata.etag ? { previousEtag: previous.metadata.etag } : {}),
-      ...(previous?.metadata.lastModified
-        ? { previousLastModified: previous.metadata.lastModified }
-        : {}),
+      ...(previous?.etag ? { previousEtag: previous.etag } : {}),
+      ...(previous?.lastModified ? { previousLastModified: previous.lastModified } : {}),
     };
     // One registry being unreachable is an outage of that registry, not of the
     // run: the remaining sources are still fetched, and the build decides what
@@ -63,7 +60,7 @@ export async function fetchSources(sources: SourceDefinition[], options: FetchSo
       continue;
     }
     const unchangedByChecksum =
-      result.status === "changed" && previous?.metadata.checksum === result.checksum;
+      result.status === "changed" && previous?.checksum === result.checksum;
     if (result.status === "changed" && !unchangedByChecksum)
       await preserveRawSnapshot(result, rawDir);
     results.push(unchangedByChecksum ? { ...result, status: "unchanged" as const } : result);

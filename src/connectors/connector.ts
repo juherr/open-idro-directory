@@ -48,6 +48,9 @@ export interface NormalizeOutput {
   errors: ValidationIssue[];
 }
 
+/** The composition root's port to the connector adapters. */
+export type ConnectorFactory = (source: SourceDefinition) => RegistryConnector;
+
 export interface RegistryConnector<TRecord = unknown> {
   readonly sourceId: string;
   fetch(context: FetchContext): Promise<FetchResult>;

@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { describe, expect, it } from "vitest";
-import { buildRegistry } from "../../src/application/build-registry.js";
+import { buildRegistry, type BuildOptions } from "../../src/application/build-registry.js";
 import type { RegistryConnector } from "../../src/connectors/connector.js";
 import type { NormalizedRegistryRecord } from "../../src/domain/registry-record.js";
 import type { SourceDefinition } from "../../src/domain/source-definition.js";
@@ -10,14 +10,8 @@ import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source
 
 describe("buildRegistry", () => {
   it("keeps the records of the sources a filtered run did not rebuild", async () => {
-    await withWorkspace(async ({ sources, dataDir, outputDir }) => {
-      const result = await buildRegistry(sources, {
-        sourceId: "fr-afirev",
-        dataDir,
-        outputDir,
-        generatedAt: GENERATED_AT,
-        createConnector: connectorReturning([sampleRecord("fr-afirev", "FR", "AAA")]),
-      });
+    await withWorkspace(async ({ build, outputDir }) => {
+      const result = await build({ sourceId: "fr-afirev" });
 
       expect(result.records.map((record) => record.key).toSorted()).toEqual([
         "dk-fstyr:DK:BBB:CPO",
@@ -31,14 +25,8 @@ describe("buildRegistry", () => {
   });
 
   it("keeps the health of the sources a filtered run did not rebuild", async () => {
-    await withWorkspace(async ({ sources, dataDir, outputDir }) => {
-      await buildRegistry(sources, {
-        sourceId: "fr-afirev",
-        dataDir,
-        outputDir,
-        generatedAt: GENERATED_AT,
-        createConnector: connectorReturning([sampleRecord("fr-afirev", "FR", "AAA")]),
-      });
+    await withWorkspace(async ({ build, outputDir }) => {
+      await build({ sourceId: "fr-afirev" });
 
       expect(await readHealth(outputDir, "dk-fstyr")).toMatchObject({
         recordCount: 1,
@@ -50,20 +38,16 @@ describe("buildRegistry", () => {
   });
 
   it("drops the records of a source that is no longer published", async () => {
-    await withWorkspace(async ({ sources, dataDir, outputDir }) => {
+    await withWorkspace(async ({ build, outputDir, sources }) => {
       // Disabling a source is how an operator removes it from the datasets, so
       // carrying unrebuilt sources must not resurrect it.
-      const disabled = sources.map((source) =>
-        source.id === "dk-fstyr"
-          ? { ...source, publication: { ...source.publication, enabled: false } }
-          : source,
-      );
-      const result = await buildRegistry(disabled, {
+      const result = await build({
         sourceId: "fr-afirev",
-        dataDir,
-        outputDir,
-        generatedAt: GENERATED_AT,
-        createConnector: connectorReturning([sampleRecord("fr-afirev", "FR", "AAA")]),
+        sources: sources.map((source) =>
+          source.id === "dk-fstyr"
+            ? { ...source, publication: { ...source.publication, enabled: false } }
+            : source,
+        ),
       });
 
       expect(result.records.map((record) => record.key)).toEqual(["fr-afirev:FR:AAA:CPO"]);
@@ -75,29 +59,19 @@ describe("buildRegistry", () => {
   });
 
   it("refuses a filter that matches no enabled source", async () => {
-    await withWorkspace(async ({ sources, dataDir, outputDir }) => {
+    await withWorkspace(async ({ build }) => {
       // Otherwise the run rebuilds nothing, republishes everything, and reports
       // success, which reads as "the source was updated".
-      await expect(
-        buildRegistry(sources, {
-          sourceId: "ch-typo",
-          dataDir,
-          outputDir,
-          generatedAt: GENERATED_AT,
-          createConnector: connectorReturning([]),
-        }),
-      ).rejects.toThrow(/no enabled source matches ch-typo/i);
+      await expect(build({ sourceId: "ch-typo" })).rejects.toThrow(
+        /no enabled source matches ch-typo/i,
+      );
     });
   });
 
   it("republishes a source that could not be fetched and reports it as stale", async () => {
-    await withWorkspace(async ({ sources, dataDir, outputDir }) => {
-      const result = await buildRegistry(sources, {
-        dataDir,
-        outputDir,
-        generatedAt: GENERATED_AT,
+    await withWorkspace(async ({ build, outputDir }) => {
+      const result = await build({
         fetchErrors: { "dk-fstyr": "HTTP 404 while fetching https://example.test/" },
-        createConnector: connectorReturning([sampleRecord("fr-afirev", "FR", "AAA")]),
       });
 
       const failed = result.results.find((entry) => entry.sourceId === "dk-fstyr");
@@ -115,17 +89,13 @@ describe("buildRegistry", () => {
   });
 
   it("throws when every selected source failed", async () => {
-    await withWorkspace(async ({ sources, dataDir, outputDir }) => {
+    await withWorkspace(async ({ build }) => {
       await expect(
-        buildRegistry(sources, {
-          dataDir,
-          outputDir,
-          generatedAt: GENERATED_AT,
+        build({
           fetchErrors: {
             "fr-afirev": "HTTP 500 while fetching https://example.test/",
             "dk-fstyr": "HTTP 404 while fetching https://example.test/",
           },
-          createConnector: connectorReturning([]),
         }),
       ).rejects.toThrow(/every selected source failed/i);
     });
@@ -135,11 +105,17 @@ describe("buildRegistry", () => {
 const GENERATED_AT = "2026-06-15T00:00:00.000Z";
 const PREVIOUS_RETRIEVAL = "2026-06-14T00:00:00.000Z";
 
+/**
+ * Runs the assertions against a throwaway data directory holding two published
+ * sources, and hands them a `build` that only needs what the case varies.
+ */
 async function withWorkspace(
   assertions: (workspace: {
     sources: SourceDefinition[];
-    dataDir: string;
     outputDir: string;
+    build: (
+      overrides?: BuildOptions & { sources?: SourceDefinition[] },
+    ) => ReturnType<typeof buildRegistry>;
   }) => Promise<void>,
 ) {
   const dataDir = await mkdtemp(join(tmpdir(), "open-idro-build-data-"));
@@ -150,7 +126,18 @@ async function withWorkspace(
       await loadSourceDefinition("dk-fstyr"),
     ];
     await writeWorkspace(dataDir, sources);
-    await assertions({ sources, dataDir, outputDir });
+    const build = ({
+      sources: override,
+      ...options
+    }: BuildOptions & { sources?: SourceDefinition[] } = {}) =>
+      buildRegistry(override ?? sources, {
+        dataDir,
+        outputDir,
+        generatedAt: GENERATED_AT,
+        createConnector: connectorReturning([sampleRecord("fr-afirev", "FR", "AAA")]),
+        ...options,
+      });
+    await assertions({ sources, outputDir, build });
   } finally {
     await rm(dataDir, { recursive: true, force: true });
     await rm(outputDir, { recursive: true, force: true });

@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { createConnector } from "../connectors/index.js";
-import type { RegistryConnector } from "../connectors/connector.js";
+import type { ConnectorFactory } from "../connectors/connector.js";
 import type {
   InvalidRegistryHistory,
   InvalidRegistryRecordDetection,
@@ -10,9 +10,12 @@ import type {
 } from "../domain/registry-record.js";
 import type { SourceBuildResult } from "../domain/source-result.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
-import { readCurrentSnapshot } from "../infrastructure/filesystem/raw-snapshot.js";
+import { rawSnapshotDir, readCurrentSnapshot } from "../infrastructure/filesystem/raw-snapshot.js";
 import { fromRoot } from "../infrastructure/filesystem/paths.js";
-import { writeDatasets } from "../infrastructure/serialization/serializers.js";
+import {
+  writeDatasets,
+  type PublishedSourceHealth,
+} from "../infrastructure/serialization/serializers.js";
 import {
   partitionRecordsByIdentifierValidity,
   toRejectedSourceRows,
@@ -30,12 +33,13 @@ export interface BuildOptions {
   dataDir?: string;
   /** Sources whose fetch failed this run, by source id, with the reported reason. */
   fetchErrors?: Record<string, string>;
-  createConnector?: (source: SourceDefinition) => RegistryConnector;
+  createConnector?: ConnectorFactory;
 }
 
 export async function buildRegistry(sources: SourceDefinition[], options: BuildOptions = {}) {
   const generatedAt = options.generatedAt ?? new Date().toISOString();
   const dataDir = options.dataDir ?? fromRoot("data");
+  const outputDir = options.outputDir ?? dataDir;
   const selected = sources.filter(
     (source) => source.publication.enabled && (!options.sourceId || source.id === options.sourceId),
   );
@@ -63,30 +67,22 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
       .map((source) => source.id),
   );
   const previousHealth = await readPreviousSourceHealth(dataDir);
-  // `registry.json` is several megabytes: read and parse it once for the whole
-  // build rather than once per source.
-  const publishedRecords = await readGeneratedRecords(dataDir);
-  const publishedBySource = new Map<string, NormalizedRegistryRecord[]>();
-  for (const record of publishedRecords) {
-    const registryId = record.source.registryId;
-    publishedBySource.set(registryId, [...(publishedBySource.get(registryId) ?? []), record]);
-  }
+  // `registry.json` is several megabytes: read, parse, and group it once for the
+  // whole build rather than once per source.
+  const publishedBySource = Map.groupBy(
+    await readGeneratedRecords(dataDir),
+    (record) => record.source.registryId,
+  );
   const previousRecordsOf = (sourceId: string) => publishedBySource.get(sourceId) ?? [];
-  const carriedBySource = new Map<string, NormalizedRegistryRecord[]>();
-  for (const record of publishedRecords) {
-    const registryId = record.source.registryId;
-    if (!carriedIds.has(registryId)) continue;
-    records.push(record);
-    carriedBySource.set(registryId, [...(carriedBySource.get(registryId) ?? []), record]);
-  }
+  for (const sourceId of carriedIds) records.push(...previousRecordsOf(sourceId));
 
   // Republishing a source keeps its previously generated records and reports the
   // reason, rather than dropping it from the datasets.
-  async function carryPreviousRecords(
+  function carryPreviousRecords(
     sourceId: string,
     message: string,
     code: string,
-  ): Promise<SourceBuildResult> {
+  ): SourceBuildResult {
     const previous = previousRecordsOf(sourceId);
     const publishable = partitionRecordsByIdentifierValidity(previous);
     records.push(...publishable.valid);
@@ -109,12 +105,12 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     if (fetchError) {
       // A source we could not reach must not be re-ingested from its previous
       // snapshot as if it were fresh: it keeps its records and is reported stale.
-      results.push(await carryPreviousRecords(source.id, fetchError, "SOURCE_FETCH_FAILED"));
+      results.push(carryPreviousRecords(source.id, fetchError, "SOURCE_FETCH_FAILED"));
       continue;
     }
     const connector = createSourceConnector(source);
     try {
-      const snapshot = await readCurrentSnapshot(source.id, path.join(dataDir, "raw"));
+      const snapshot = await readCurrentSnapshot(source.id, rawSnapshotDir(dataDir));
       const parsed = await connector.parse({
         source,
         body: snapshot.body,
@@ -160,30 +156,27 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
         checksum: snapshot.metadata.checksum,
         stale: errors.length > 0,
         latestError: errors[0]?.message ?? null,
+        // The registry answered: the snapshot is this run's. A build that failed
+        // afterwards keeps saying so through `stale` and `latestError`.
+        lastSuccessfulRetrieval: snapshot.metadata.retrievedAt,
       });
     } catch (error) {
-      results.push(
-        await carryPreviousRecords(
-          source.id,
-          error instanceof Error ? error.message : String(error),
-          "SOURCE_BUILD_FAILED",
-        ),
-      );
+      const message = error instanceof Error ? error.message : String(error);
+      results.push(carryPreviousRecords(source.id, message, "SOURCE_BUILD_FAILED"));
     }
   }
   // Sources this run did not rebuild keep the health they were last published
   // with, so a filtered run does not report them as empty and never retrieved.
-  for (const source of sources) {
-    if (!carriedIds.has(source.id)) continue;
-    const health = previousHealth[source.id];
+  for (const sourceId of carriedIds) {
+    const health = previousHealth[sourceId];
     results.push({
-      sourceId: source.id,
-      records: carriedBySource.get(source.id) ?? [],
+      sourceId,
+      records: previousRecordsOf(sourceId),
       warnings: [],
       errors: [],
       retrievedAt: health?.lastAttemptedRetrieval ?? null,
       checksum: health?.checksum ?? null,
-      stale: health?.stale ?? !source.publication.enabled,
+      stale: health?.stale ?? false,
       latestError: health?.latestErrorSummary ?? null,
       lastSuccessfulRetrieval: health?.lastSuccessfulRetrieval ?? null,
     });
@@ -206,7 +199,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     sources,
     policyResults,
     generatedAt,
-    options.outputDir,
+    outputDir,
     invalidHistory,
   );
   if (registryIssues.some((issue) => issue.severity === "error")) {
@@ -232,6 +225,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     invalidHistory,
     results: policyResults,
     issues: registryIssues,
+    rebuiltSourceIds: [...selectedIds],
   };
 }
 
@@ -253,14 +247,6 @@ async function readGeneratedRecords(dataDir: string): Promise<NormalizedRegistry
   } catch {
     return [];
   }
-}
-
-interface PublishedSourceHealth {
-  stale: boolean;
-  lastAttemptedRetrieval: string | null;
-  lastSuccessfulRetrieval: string | null;
-  checksum: string | null;
-  latestErrorSummary: string | null;
 }
 
 async function readPreviousSourceHealth(

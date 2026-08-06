@@ -11,8 +11,8 @@ export interface SourceBuildResult {
   stale: boolean;
   latestError: string | null;
   /**
-   * When the source last answered, carried over from the published summary. A
-   * run that failed still has to say when the registry was last reachable.
+   * When the source last answered. A run that failed carries the published
+   * value over, because it still has to say when the registry was reachable.
    */
-  lastSuccessfulRetrieval?: string | null;
+  lastSuccessfulRetrieval: string | null;
 }

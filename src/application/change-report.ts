@@ -67,10 +67,14 @@ export interface RenderedChangeReport {
 
 export async function writeChangeReport(sourceIds: string[], failures: SourceFailure[] = []) {
   await mkdir(fromRoot("build"), { recursive: true });
-  const entries: ChangeReportEntry[] = [];
-  for (const sourceId of sourceIds) {
-    entries.push({ sourceId, diff: await diffAgainstGit(sourceId) });
-  }
+  // The registry weighs several megabytes and reading it from git spawns a
+  // subprocess: load both sides once and diff each source from memory.
+  const current = groupBySource(await readCurrent());
+  const previous = groupBySource(await readFromGit());
+  const entries: ChangeReportEntry[] = sourceIds.map((sourceId) => ({
+    sourceId,
+    diff: diffRecords(previous.get(sourceId) ?? [], current.get(sourceId) ?? []),
+  }));
   const { full, prBody } = renderChangeReports(entries, failures);
   await writeFile(fromRoot("build", "change-summary.md"), full);
   await writeFile(fromRoot("build", "change-summary-pr.md"), prBody);
@@ -184,6 +188,10 @@ function isMissingFromGit(error: unknown): boolean {
   return /does not exist|exists on disk, but not in|unknown revision|ambiguous argument/i.test(
     stderr,
   );
+}
+
+function groupBySource(records: NormalizedRegistryRecord[]) {
+  return Map.groupBy(records, (record) => record.source.registryId);
 }
 
 function filter(records: NormalizedRegistryRecord[], sourceId?: string) {

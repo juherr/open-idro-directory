@@ -14,11 +14,12 @@ export interface RawSnapshotMetadata {
   checksum: string;
 }
 
-export function rawSnapshotRoot() {
-  return fromRoot("data", "raw");
+/** Where snapshots live for a given data directory. */
+export function rawSnapshotDir(dataDir = fromRoot("data")) {
+  return path.join(dataDir, "raw");
 }
 
-export async function preserveRawSnapshot(result: FetchResult, rawDir = rawSnapshotRoot()) {
+export async function preserveRawSnapshot(result: FetchResult, rawDir = rawSnapshotDir()) {
   const sourceDir = path.join(rawDir, result.sourceId);
   const current = path.join(sourceDir, "current");
   const previous = path.join(sourceDir, "previous");
@@ -75,13 +76,19 @@ function isJsonBody(body: string, contentType: string | null): boolean {
   return start === "{" || start === "[";
 }
 
-export async function readCurrentSnapshot(sourceId: string, rawDir = rawSnapshotRoot()) {
+export async function readCurrentSnapshot(sourceId: string, rawDir = rawSnapshotDir()) {
   const dir = path.join(rawDir, sourceId, "current");
   const body = await readFile(path.join(dir, "body.json"), "utf8");
-  const metadata = JSON.parse(
-    await readFile(path.join(dir, "metadata.json"), "utf8"),
-  ) as RawSnapshotMetadata;
-  return { body, metadata };
+  return { body, metadata: await readCurrentSnapshotMetadata(sourceId, rawDir) };
+}
+
+/**
+ * Conditional requests only need the previous headers and checksum, and snapshot
+ * bodies weigh megabytes across all sources.
+ */
+export async function readCurrentSnapshotMetadata(sourceId: string, rawDir = rawSnapshotDir()) {
+  const raw = await readFile(path.join(rawDir, sourceId, "current", "metadata.json"), "utf8");
+  return JSON.parse(raw) as RawSnapshotMetadata;
 }
 
 export async function readPreviousSnapshot(sourceId: string) {

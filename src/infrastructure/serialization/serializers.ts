@@ -1,4 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
+import { buildOutOfJurisdictionReport } from "../../application/out-of-jurisdiction-report.js";
 import { fromRoot } from "../filesystem/paths.js";
 import { isValidEmi3Identifier } from "../../domain/emi3-identifier.js";
 import type {
@@ -76,6 +77,13 @@ export async function writeDatasets(
   await writeFile(
     `${outputDir}/stats.json`,
     `${JSON.stringify(toStats(sorted, invalid, results, generatedAt), null, 2)}\n`,
+  );
+  // Grouped by the register to write to, so the findings are actionable without
+  // cross-referencing the dataset by hand.
+  await mkdir(`${outputDir}/reports`, { recursive: true });
+  await writeFile(
+    `${outputDir}/reports/out-of-jurisdiction.json`,
+    `${JSON.stringify(buildOutOfJurisdictionReport(invalid, sources, generatedAt), null, 2)}\n`,
   );
 }
 

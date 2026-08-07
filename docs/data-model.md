@@ -61,7 +61,9 @@ publishing them; the appointed-registry policy is what decides whether those
 records are authoritative.
 
 `outOfJurisdictionByRegistry` says who to tell; `outOfJurisdictionByCountry`
-says whose identifiers they are.
+says whose identifiers they are. `data/reports/out-of-jurisdiction.json` turns
+the same findings into an actionable list, grouped by the register to contact --
+see `docs/operations.md`.
 
 ### History And Corrections
 

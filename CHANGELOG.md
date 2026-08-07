@@ -16,6 +16,11 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   told, and they can be filtered by register or by country. Counted in
   `data/stats.json` as `totalOutOfJurisdictionRows`,
   `outOfJurisdictionByRegistry`, and `outOfJurisdictionByCountry`.
+- `data/reports/out-of-jurisdiction.json`, the same findings grouped by the
+  register to contact: the appointed organisation and its landing page for each
+  register, and, for every identifier, the registry appointed for the country it
+  belongs to. It describes the current run, so a register that corrects its
+  export drops out of the report while staying in the history.
 - `data/registry-invalid.json`, an append-only history of everything the pipeline
   excluded from the published datasets: `records` whose eMI3 identifier is
   invalid, and `rows` a connector could not read as an identifier at all. Each

@@ -6,6 +6,7 @@ import type {
   InvalidRegistryHistory,
   InvalidRegistryRecordDetection,
   NormalizedRegistryRecord,
+  OutOfJurisdictionDetection,
   RejectedSourceRowDetection,
 } from "../domain/registry-record.js";
 import type { SourceBuildResult } from "../domain/source-result.js";
@@ -18,6 +19,7 @@ import {
 } from "../infrastructure/serialization/serializers.js";
 import {
   partitionRecordsByIdentifierValidity,
+  toOutOfJurisdictionRows,
   toRejectedSourceRows,
 } from "../validation/identifier-validator.js";
 import { validateRegistry } from "../validation/registry-validator.js";
@@ -54,6 +56,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   const records: NormalizedRegistryRecord[] = [];
   const invalidRecords: InvalidRegistryRecordDetection[] = [];
   const rejectedRows: RejectedSourceRowDetection[] = [];
+  const outOfJurisdiction: OutOfJurisdictionDetection[] = [];
   // The datasets are global. A run restricted to one source must therefore
   // republish what the other sources published last time, or writing the
   // datasets would drop them from the registry.
@@ -139,7 +142,10 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
       // Rows the connector could not turn into an identifier are only reported
       // when this run was actually ingested. A failed source republishes its
       // previous records, so its discarded rows would describe nothing.
-      if (ingested) rejectedRows.push(...toRejectedSourceRows(source.id, warnings));
+      if (ingested) {
+        rejectedRows.push(...toRejectedSourceRows(source.id, warnings));
+        outOfJurisdiction.push(...toOutOfJurisdictionRows(source.id, warnings));
+      }
       // Partitioning after the merge also cleans records carried over from the
       // previous dataset, which is where retained tombstones come from. Safety
       // thresholds keep comparing unfiltered connector output, so an exclusion
@@ -191,7 +197,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   const registryIssues = validateRegistry(policyRecords, sources);
   const invalidHistory = mergeInvalidRecordHistory(
     await readPreviousInvalidHistory(dataDir),
-    { records: invalidRecords, rows: rejectedRows },
+    { records: invalidRecords, rows: rejectedRows, outOfJurisdiction },
     generatedAt,
   );
   await writeDatasets(

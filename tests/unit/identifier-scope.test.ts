@@ -7,7 +7,10 @@ import {
   outOfJurisdictionWarning,
   rejectedIdentifierWarning,
 } from "../../src/validation/identifier-scope.js";
-import { toRejectedSourceRows } from "../../src/validation/identifier-validator.js";
+import {
+  toOutOfJurisdictionRows,
+  toRejectedSourceRows,
+} from "../../src/validation/identifier-validator.js";
 
 const REJECTION = { codePrefix: "EIPA", subject: "EIPA identifier" };
 
@@ -85,6 +88,26 @@ describe("identifier scope", () => {
     });
 
     expect(warning.rejectedIdentifier).toBe("raw-prefix-id");
+  });
+
+  it("keeps an out-of-jurisdiction identifier with the country it belongs to", async () => {
+    const source = await loadSourceDefinition("pl-eipa");
+    const warnings = [
+      rejectedIdentifierWarning(source, { ...REJECTION, value: "NL*TNM" }),
+      rejectedIdentifierWarning(source, { ...REJECTION, value: "37" }),
+    ];
+
+    // Filterable by register and by country, which is what turns the finding
+    // into something an operator can act on.
+    expect(toOutOfJurisdictionRows("pl-eipa", warnings)).toEqual([
+      {
+        registryId: "pl-eipa",
+        code: "EIPA_OUT_OF_JURISDICTION_IDENTIFIER",
+        sourceValue: "NL*TNM",
+        countryCode: "NL",
+        message: warnings[0]?.message,
+      },
+    ]);
   });
 
   it("excludes out-of-jurisdiction warnings from the rejected rows", async () => {

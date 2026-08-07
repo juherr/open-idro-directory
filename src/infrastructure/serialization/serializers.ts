@@ -30,6 +30,7 @@ export interface GeneratedStats {
   totalRecords: number;
   totalInvalidRecords: number;
   totalRejectedRows: number;
+  totalOutOfJurisdictionRows: number;
   recordsByCountry: Record<string, number>;
   recordsByCountryRole: Record<string, Record<string, number>>;
   recordsByRole: Record<string, number>;
@@ -38,6 +39,8 @@ export interface GeneratedStats {
   invalidRecordsByReason: Record<string, number>;
   invalidRecordsByRegistry: Record<string, number>;
   rejectedRowsByRegistry: Record<string, number>;
+  outOfJurisdictionByRegistry: Record<string, number>;
+  outOfJurisdictionByCountry: Record<string, number>;
   staleSources: string[];
   generatedAt: string;
 }
@@ -48,7 +51,7 @@ export async function writeDatasets(
   results: SourceBuildResult[],
   generatedAt: string,
   outputDir = fromRoot("data"),
-  invalid: InvalidRegistryHistory = { generatedAt, records: [], rows: [] },
+  invalid: InvalidRegistryHistory = { generatedAt, records: [], rows: [], outOfJurisdiction: [] },
 ) {
   await mkdir(outputDir, { recursive: true });
   const sorted = sortRecords(records);
@@ -190,10 +193,14 @@ function toStats(
   // reported as a current problem.
   const currentRecords = invalid.records.filter((entry) => entry.lastDetectedAt === generatedAt);
   const currentRows = invalid.rows.filter((entry) => entry.lastDetectedAt === generatedAt);
+  const currentForeign = invalid.outOfJurisdiction.filter(
+    (entry) => entry.lastDetectedAt === generatedAt,
+  );
   return {
     totalRecords: records.length,
     totalInvalidRecords: currentRecords.length,
     totalRejectedRows: currentRows.length,
+    totalOutOfJurisdictionRows: currentForeign.length,
     recordsByCountry: countBy(records, (record) => record.countryCode),
     recordsByCountryRole: countByCountryRole(records),
     recordsByRole: countBy(records, (record) => record.role),
@@ -205,6 +212,10 @@ function toStats(
     ),
     invalidRecordsByRegistry: countBy(currentRecords, (entry) => entry.record.source.registryId),
     rejectedRowsByRegistry: countBy(currentRows, (row) => row.registryId),
+    // Grouped by register to know who to tell, and by country to know which
+    // appointed registry the identifier actually belongs to.
+    outOfJurisdictionByRegistry: countBy(currentForeign, (row) => row.registryId),
+    outOfJurisdictionByCountry: countBy(currentForeign, (row) => row.countryCode),
     staleSources: results
       .filter((result) => result.stale)
       .map((result) => result.sourceId)

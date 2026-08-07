@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { createConnector } from "../connectors/index.js";
 import type { ConnectorFactory } from "../connectors/connector.js";
@@ -6,6 +6,7 @@ import type {
   InvalidRegistryHistory,
   InvalidRegistryRecordDetection,
   NormalizedRegistryRecord,
+  OutOfJurisdictionDetection,
   RejectedSourceRowDetection,
 } from "../domain/registry-record.js";
 import type { SourceBuildResult } from "../domain/source-result.js";
@@ -18,11 +19,13 @@ import {
 } from "../infrastructure/serialization/serializers.js";
 import {
   partitionRecordsByIdentifierValidity,
+  toOutOfJurisdictionRows,
   toRejectedSourceRows,
 } from "../validation/identifier-validator.js";
 import { validateRegistry } from "../validation/registry-validator.js";
 import { checkSafetyThresholds } from "../validation/safety-thresholds.js";
 import { mergeGeneratedRecords } from "./generated-record-merge.js";
+import { buildOutOfJurisdictionReport } from "./out-of-jurisdiction-report.js";
 import { mergeInvalidRecordHistory } from "./invalid-record-history.js";
 import { applyOfficialStatusPolicy } from "./official-status-policy.js";
 
@@ -54,6 +57,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   const records: NormalizedRegistryRecord[] = [];
   const invalidRecords: InvalidRegistryRecordDetection[] = [];
   const rejectedRows: RejectedSourceRowDetection[] = [];
+  const outOfJurisdiction: OutOfJurisdictionDetection[] = [];
   // The datasets are global. A run restricted to one source must therefore
   // republish what the other sources published last time, or writing the
   // datasets would drop them from the registry.
@@ -139,7 +143,10 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
       // Rows the connector could not turn into an identifier are only reported
       // when this run was actually ingested. A failed source republishes its
       // previous records, so its discarded rows would describe nothing.
-      if (ingested) rejectedRows.push(...toRejectedSourceRows(source.id, warnings));
+      if (ingested) {
+        rejectedRows.push(...toRejectedSourceRows(source.id, warnings));
+        outOfJurisdiction.push(...toOutOfJurisdictionRows(source.id, warnings));
+      }
       // Partitioning after the merge also cleans records carried over from the
       // previous dataset, which is where retained tombstones come from. Safety
       // thresholds keep comparing unfiltered connector output, so an exclusion
@@ -191,7 +198,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   const registryIssues = validateRegistry(policyRecords, sources);
   const invalidHistory = mergeInvalidRecordHistory(
     await readPreviousInvalidHistory(dataDir),
-    { records: invalidRecords, rows: rejectedRows },
+    { records: invalidRecords, rows: rejectedRows, outOfJurisdiction },
     generatedAt,
   );
   await writeDatasets(
@@ -202,6 +209,11 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     outputDir,
     invalidHistory,
   );
+  // A filtered run only refreshes its own source's findings, so writing the
+  // report would drop every other register from a global artifact.
+  if (!options.sourceId) {
+    await writeOutOfJurisdictionReport(outputDir, invalidHistory, sources, generatedAt);
+  }
   if (registryIssues.some((issue) => issue.severity === "error")) {
     throw new Error(
       `Registry validation failed: ${registryIssues.map((issue) => issue.message).join("; ")}`,
@@ -227,6 +239,20 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     issues: registryIssues,
     rebuiltSourceIds: [...selectedIds],
   };
+}
+
+async function writeOutOfJurisdictionReport(
+  outputDir: string,
+  invalid: InvalidRegistryHistory,
+  sources: SourceDefinition[],
+  generatedAt: string,
+) {
+  const reportsDir = path.join(outputDir, "reports");
+  await mkdir(reportsDir, { recursive: true });
+  await writeFile(
+    path.join(reportsDir, "out-of-jurisdiction.json"),
+    `${JSON.stringify(buildOutOfJurisdictionReport(invalid, sources, generatedAt), null, 2)}\n`,
+  );
 }
 
 // Hand-written `supersededBy` annotations live in this file, so the build reads

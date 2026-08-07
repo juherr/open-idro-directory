@@ -41,6 +41,21 @@ trusted.
 A stale source is an outage to investigate, not an accepted state. Its records
 keep their previous retrieval timestamps and grow older with every run.
 
+## Out-Of-Jurisdiction Findings
+
+`data/reports/out-of-jurisdiction.json` lists the identifiers each register
+publishes for a country it does not administer, grouped by the register to
+contact. Every group carries the appointed organisation and its landing page,
+and every identifier names the registry appointed for that country, so a finding
+can be verified from both ends before it is raised.
+
+The report describes the current run only. A register that corrects its export
+drops out of it, while `data/registry-invalid.json` keeps the entry with an
+older `lastDetectedAt` -- which is how a correction stays visible.
+
+When raising one of these with a registry operator, describe the identifier and
+the registers concerned, not the quality of the organisation's work.
+
 ## Source Metadata Only
 
 Run `bun run directory sources` after changing source authority, provenance,

@@ -63,6 +63,19 @@ export interface RejectedSourceRowDetection {
   message: string;
 }
 
+/**
+ * A well-formed identifier a register publishes for a country it does not
+ * administer. Kept so that the registers concerned can be told about it, and so
+ * that a correction -- or the lack of one -- stays visible across builds.
+ */
+export interface OutOfJurisdictionDetection {
+  registryId: string;
+  code: string;
+  sourceValue: string;
+  countryCode: string;
+  message: string;
+}
+
 // Detections are accumulated rather than replaced: an identifier a source has
 // stopped publishing stays on record so the correction it received (or the
 // absence of one) remains traceable. `supersededBy` is the eMobility ID that
@@ -75,11 +88,13 @@ interface HistoryEntry {
 
 export type InvalidRegistryRecordEntry = InvalidRegistryRecordDetection & HistoryEntry;
 export type RejectedSourceRow = RejectedSourceRowDetection & HistoryEntry;
+export type OutOfJurisdictionRow = OutOfJurisdictionDetection & HistoryEntry;
 
 export interface InvalidRegistryHistory {
   generatedAt: string;
   records: InvalidRegistryRecordEntry[];
   rows: RejectedSourceRow[];
+  outOfJurisdiction: OutOfJurisdictionRow[];
 }
 
 export function makeRegistryKey(

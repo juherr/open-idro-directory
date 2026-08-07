@@ -68,6 +68,9 @@ function outOfJurisdiction(
     sourceId: source.id,
     code: `${rejection.codePrefix}_OUT_OF_JURISDICTION_IDENTIFIER`,
     message: `${rejection.subject} ${rejection.value} belongs to ${countryCode}, outside the jurisdictions this register covers (${sourceJurisdictions(source).join(", ")}).`,
+    // Reported verbatim, like the unreadable values: the register's own
+    // spelling is the provenance.
+    outOfJurisdictionIdentifier: { value: rejection.value, countryCode },
   };
 }
 

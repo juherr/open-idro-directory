@@ -61,6 +61,7 @@ describe("invalid identifier handling", () => {
           {
             records: partitionRecordsByIdentifierValidity([sampleRecord("WXYZ")]).invalid,
             rows: [],
+            outOfJurisdiction: [],
           },
           "2026-06-14T00:00:00.000Z",
         ),
@@ -79,6 +80,7 @@ describe("invalid identifier handling", () => {
           },
         ],
         rows: [],
+        outOfJurisdiction: [],
       });
 
       const stats = JSON.parse(await readFile(join(outputDir, "stats.json"), "utf8"));
@@ -121,6 +123,7 @@ describe("invalid identifier handling", () => {
         generatedAt: "2026-06-14T00:00:00.000Z",
         records: [],
         rows: [],
+        outOfJurisdiction: [],
       });
     } finally {
       await rm(outputDir, { recursive: true, force: true });
@@ -182,6 +185,7 @@ describe("invalid identifier handling", () => {
                 message: "Unexpected identifier syntax: SEWXYZ",
               },
             ],
+            outOfJurisdiction: [],
           },
           "2026-06-14T00:00:00.000Z",
         ),
@@ -212,12 +216,13 @@ describe("invalid identifier handling", () => {
       const detection = {
         records: partitionRecordsByIdentifierValidity([sampleRecord("WXYZ")]).invalid,
         rows: [],
+        outOfJurisdiction: [],
       };
       const previous = mergeInvalidRecordHistory(null, detection, "2026-06-14T00:00:00.000Z");
       // The source has stopped publishing it, so the next run detects nothing.
       const history = mergeInvalidRecordHistory(
         previous,
-        { records: [], rows: [] },
+        { records: [], rows: [], outOfJurisdiction: [] },
         "2026-07-27T00:00:00.000Z",
       );
 

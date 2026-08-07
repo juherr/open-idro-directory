@@ -23,8 +23,8 @@ These patterns live in `src/domain/emi3-identifier.ts` and are the single source
 of truth for the zod schemas, the record validator, and the generated JSON
 Schemas.
 
-A row can be refused at two stages, and `data/registry-invalid.json` reports
-both:
+A row can be kept out of the datasets for three different reasons, and
+`data/registry-invalid.json` reports all three:
 
 - `records`: rows a connector normalized into a record whose identifier then
   failed the rule, with their reason codes (`INVALID_COUNTRY`,
@@ -33,27 +33,37 @@ both:
   and a party ID at all, so they never became a record. Each carries its
   `registryId`, the connector issue `code`, the rejected `sourceValue`, and the
   message.
+- `outOfJurisdiction`: well-formed identifiers a register publishes for a
+  country it does not administer. Each carries its `registryId`, `code`,
+  `sourceValue`, the `countryCode` it belongs to, and the message, so the
+  entries can be filtered by register or by country and taken back to the
+  registries concerned.
 
-The two are separate because they mean different things: a rejected row is
-upstream data the pipeline could not read, an invalid record is data it read and
-then refused. Rejected rows are only reported for sources whose run was actually
-ingested -- a source that fails its safety thresholds republishes its previous
-records, so its discarded rows would describe nothing. The same value published
-twice in one run is one problem, so it is recorded once.
+The first two mean different things: a rejected row is upstream data the
+pipeline could not read, an invalid record is data it read and then refused.
+Both are only reported for sources whose run was actually ingested -- a source
+that fails its safety thresholds republishes its previous records, so its
+discarded rows would describe nothing. The same value published twice in one run
+is one problem, so it is recorded once.
 
-A third case is neither: a register listing a well-formed identifier of a
-country it does not administer. A source covers its authority's jurisdictions,
-which the optional `registry.jurisdictions` may narrow when the register serves
-less than the authority does. A connector publishes no identifier outside that
-coverage, and such a value is reported as
-`<CONNECTOR>_OUT_OF_JURISDICTION_IDENTIFIER` rather than as a rejected row. A
-prefix naming no country at all, such as `ZZ`, stays a rejected row: it is
-unreadable, not foreign. Nothing is wrong with the value, so counting it
-as unreadable would send a maintainer looking for a parser bug that does not
-exist -- and would bury the values that genuinely are unreadable. A register
-that legitimately covers several countries, such as EV Roam for `GB` and `IE`,
-declares them and keeps publishing them; the appointed-registry policy is what
-decides whether those records are authoritative.
+The third is neither a defect nor a publication, but a finding to raise with the
+register that published it. A source covers its authority's jurisdictions, which
+the optional `registry.jurisdictions` may narrow when the register serves less
+than the authority does. A connector publishes no identifier outside that
+coverage, and reports the value as
+`<CONNECTOR>_OUT_OF_JURISDICTION_IDENTIFIER`. Nothing is wrong with the value
+itself, so counting it as unreadable would send a maintainer looking for a
+parser bug that does not exist -- and would bury the values that genuinely are
+unreadable. A prefix naming no country at all, such as `ZZ`, is a rejected row
+instead: it is unreadable, not foreign. A register that legitimately covers
+several countries, such as EV Roam for `GB` and `IE`, declares them and keeps
+publishing them; the appointed-registry policy is what decides whether those
+records are authoritative.
+
+`outOfJurisdictionByRegistry` says who to tell; `outOfJurisdictionByCountry`
+says whose identifiers they are. `data/reports/out-of-jurisdiction.json` turns
+the same findings into an actionable list, grouped by the register to contact --
+see `docs/operations.md`.
 
 ### History And Corrections
 
@@ -79,7 +89,9 @@ prose -- the goal is a correct directory, not public blame.
 
 Excluded entries never appear in `data/registry.*`. The counters in
 `data/stats.json` (`totalInvalidRecords`, `invalidRecordsByReason`,
-`invalidRecordsByRegistry`, `totalRejectedRows`, `rejectedRowsByRegistry`)
+`invalidRecordsByRegistry`, `totalRejectedRows`, `rejectedRowsByRegistry`,
+`totalOutOfJurisdictionRows`, `outOfJurisdictionByRegistry`,
+`outOfJurisdictionByCountry`)
 describe only what the **current** run detected, so a corrected identifier stops
 being reported as a live problem while staying in the history. An entry whose
 `lastDetectedAt` is older than `generatedAt` is one the sources no longer

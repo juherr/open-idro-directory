@@ -9,6 +9,7 @@ import {
   writeChangeReport,
   type SourceFailure,
 } from "./application/change-report.js";
+import { currentDetections } from "./application/invalid-record-history.js";
 import { buildNonIdrrReports } from "./application/non-idrr-reports.js";
 import { updateCountryRoleHistory } from "./application/stats-history.js";
 import { refreshSourceMetadata } from "./application/refresh-source-metadata.js";
@@ -94,7 +95,11 @@ program
       // A source that failed keeps its previous records, so the datasets are
       // published either way and the report is what makes the failure visible.
       const failures = reportSourceFailures(result.results);
-      await writeChangeReport(result.rebuiltSourceIds, failures);
+      await writeChangeReport(
+        result.rebuiltSourceIds,
+        failures,
+        currentDetections(result.invalidHistory),
+      );
       console.log(
         `Updated ${result.records.length} normalized record(s), ${failures.length} source(s) failed.`,
       );

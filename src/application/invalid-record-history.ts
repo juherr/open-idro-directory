@@ -40,6 +40,20 @@ export function mergeInvalidRecordHistory(
   };
 }
 
+/**
+ * What the current run still detects. The history keeps every entry ever
+ * refused, so a corrected identifier has to stop being reported as live.
+ */
+export function currentDetections(history: InvalidRegistryHistory) {
+  const isCurrent = (entry: { lastDetectedAt: string }) =>
+    entry.lastDetectedAt === history.generatedAt;
+  return {
+    records: history.records.filter(isCurrent),
+    rows: history.rows.filter(isCurrent),
+    outOfJurisdiction: history.outOfJurisdiction.filter(isCurrent),
+  };
+}
+
 function merge<TDetection>(
   previous: (TDetection & HistoryFields)[],
   detections: TDetection[],

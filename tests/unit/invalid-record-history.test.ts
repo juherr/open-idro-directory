@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { mergeInvalidRecordHistory } from "../../src/application/invalid-record-history.js";
+import {
+  mergeInvalidRecordHistory,
+  type InvalidDetections,
+} from "../../src/application/invalid-record-history.js";
 import type { NormalizedRegistryRecord } from "../../src/domain/registry-record.js";
 
 const FIRST_RUN = "2026-06-16T00:00:00.000Z";
@@ -9,7 +12,7 @@ describe("invalid record history", () => {
   it("stamps a newly detected record with the current run", () => {
     const history = mergeInvalidRecordHistory(
       null,
-      { records: [detection("WXYZ")], rows: [], outOfJurisdiction: [] },
+      detections({ records: [detection("WXYZ")] }),
       FIRST_RUN,
     );
 
@@ -27,7 +30,7 @@ describe("invalid record history", () => {
   it("keeps the first detection and the hand-written correction when re-detected", () => {
     const previous = mergeInvalidRecordHistory(
       null,
-      { records: [detection("WXYZ")], rows: [], outOfJurisdiction: [] },
+      detections({ records: [detection("WXYZ")] }),
       FIRST_RUN,
     );
     // Stands in for a maintainer editing the file.
@@ -35,7 +38,7 @@ describe("invalid record history", () => {
 
     const history = mergeInvalidRecordHistory(
       previous,
-      { records: [detection("WXYZ")], rows: [], outOfJurisdiction: [] },
+      detections({ records: [detection("WXYZ")] }),
       SECOND_RUN,
     );
 
@@ -49,15 +52,11 @@ describe("invalid record history", () => {
   it("keeps entries the sources have stopped publishing", () => {
     const previous = mergeInvalidRecordHistory(
       null,
-      { records: [detection("WXYZ")], rows: [], outOfJurisdiction: [] },
+      detections({ records: [detection("WXYZ")] }),
       FIRST_RUN,
     );
 
-    const history = mergeInvalidRecordHistory(
-      previous,
-      { records: [], rows: [], outOfJurisdiction: [] },
-      SECOND_RUN,
-    );
+    const history = mergeInvalidRecordHistory(previous, detections({}), SECOND_RUN);
 
     expect(history.records).toHaveLength(1);
     expect(history.records[0]).toMatchObject({
@@ -70,14 +69,14 @@ describe("invalid record history", () => {
   it("accumulates rejected rows the same way", () => {
     const previous = mergeInvalidRecordHistory(
       null,
-      { records: [], rows: [row("SEWXYZ")], outOfJurisdiction: [] },
+      detections({ rows: [row("SEWXYZ")] }),
       FIRST_RUN,
     );
     previous.rows[0]!.supersededBy = "SEQRS";
 
     const history = mergeInvalidRecordHistory(
       previous,
-      { records: [], rows: [row("SEWXYZ"), row("SETUVW")], outOfJurisdiction: [] },
+      detections({ rows: [row("SEWXYZ"), row("SETUVW")] }),
       SECOND_RUN,
     );
 
@@ -96,7 +95,7 @@ describe("invalid record history", () => {
   it("refreshes the stored record so the entry reflects the latest snapshot", () => {
     const previous = mergeInvalidRecordHistory(
       null,
-      { records: [detection("WXYZ")], rows: [], outOfJurisdiction: [] },
+      detections({ records: [detection("WXYZ")] }),
       FIRST_RUN,
     );
     const renamed = detection("WXYZ");
@@ -104,7 +103,7 @@ describe("invalid record history", () => {
 
     const history = mergeInvalidRecordHistory(
       previous,
-      { records: [renamed], rows: [], outOfJurisdiction: [] },
+      detections({ records: [renamed] }),
       SECOND_RUN,
     );
 
@@ -114,28 +113,21 @@ describe("invalid record history", () => {
   it("rejects a hand-written correction that is not a valid eMobility ID", () => {
     const previous = mergeInvalidRecordHistory(
       null,
-      { records: [detection("WXYZ")], rows: [], outOfJurisdiction: [] },
+      detections({ records: [detection("WXYZ")] }),
       FIRST_RUN,
     );
     previous.records[0]!.supersededBy = "SE-ALL";
 
-    expect(() =>
-      mergeInvalidRecordHistory(
-        previous,
-        { records: [], rows: [], outOfJurisdiction: [] },
-        SECOND_RUN,
-      ),
-    ).toThrow("SE-ALL");
+    expect(() => mergeInvalidRecordHistory(previous, detections({}), SECOND_RUN)).toThrow("SE-ALL");
   });
 
   it("sorts records and rows deterministically", () => {
     const history = mergeInvalidRecordHistory(
       null,
-      {
+      detections({
         records: [detection("WXYZ"), detection("TUVW")],
         rows: [row("SEWXYZ"), row("SETUVW")],
-        outOfJurisdiction: [],
-      },
+      }),
       FIRST_RUN,
     );
 
@@ -150,11 +142,7 @@ describe("invalid record history", () => {
       message: "Unexpected EIPA identifier syntax: 37",
     };
 
-    const history = mergeInvalidRecordHistory(
-      null,
-      { records: [], rows: [row, row], outOfJurisdiction: [] },
-      FIRST_RUN,
-    );
+    const history = mergeInvalidRecordHistory(null, detections({ rows: [row, row] }), FIRST_RUN);
 
     expect(history.rows).toHaveLength(1);
   });
@@ -169,15 +157,11 @@ describe("invalid record history", () => {
 
     const first = mergeInvalidRecordHistory(
       null,
-      { records: [], rows: [], outOfJurisdiction: [observation] },
+      detections({ outOfJurisdiction: [observation] }),
       FIRST_RUN,
     );
     // The register stopped publishing it, and the entry stays on record.
-    const second = mergeInvalidRecordHistory(
-      first,
-      { records: [], rows: [], outOfJurisdiction: [] },
-      SECOND_RUN,
-    );
+    const second = mergeInvalidRecordHistory(first, detections({}), SECOND_RUN);
 
     expect(first.outOfJurisdiction).toEqual([
       { ...observation, firstDetectedAt: FIRST_RUN, lastDetectedAt: FIRST_RUN, supersededBy: null },
@@ -185,6 +169,10 @@ describe("invalid record history", () => {
     expect(second.outOfJurisdiction[0]?.lastDetectedAt).toBe(FIRST_RUN);
   });
 });
+
+function detections(partial: Partial<InvalidDetections> = {}): InvalidDetections {
+  return { records: [], rows: [], outOfJurisdiction: [], ...partial };
+}
 
 function detection(partyId: string) {
   return { reasons: ["INVALID_PARTY_ID" as const], record: sampleRecord(partyId) };

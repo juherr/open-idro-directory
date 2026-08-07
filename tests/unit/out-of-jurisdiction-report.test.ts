@@ -14,10 +14,10 @@ describe("out-of-jurisdiction report", () => {
 
     const register = report.registers[0];
     expect(register?.registryId).toBe("pl-eipa");
-    expect(register?.contact.authorityName).toBe("Urząd Dozoru Technicznego");
-    expect(register?.contact.homepageUrl).toMatch(/^https:\/\//);
+    expect(register?.authority.name).toBe("Urząd Dozoru Technicznego");
+    expect(register?.authority.homepageUrl).toMatch(/^https:\/\//);
     expect(register?.jurisdictions).toEqual(["PL"]);
-    expect(register?.identifierCount).toBe(1);
+    expect(register?.identifiers).toHaveLength(1);
   });
 
   it("names the registry appointed for the country the identifier belongs to", async () => {
@@ -27,7 +27,7 @@ describe("out-of-jurisdiction report", () => {
 
     // Knowing who administers NL is what makes the finding verifiable.
     expect(report.registers[0]?.identifiers[0]?.administeredBy).toMatchObject({
-      sourceId: "benelux-idro",
+      registryId: "benelux-idro",
     });
   });
 

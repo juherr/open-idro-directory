@@ -4,8 +4,6 @@ import type {
   InvalidRegistryRecordDetection,
   InvalidRegistryRecordEntry,
   OutOfJurisdictionDetection,
-  OutOfJurisdictionRow,
-  RejectedSourceRow,
   RejectedSourceRowDetection,
 } from "../domain/registry-record.js";
 
@@ -35,6 +33,7 @@ export function mergeInvalidRecordHistory(
       merge(previous?.records ?? [], detections.records, recordKey, generatedAt),
     ),
     rows: sortRows(merge(previous?.rows ?? [], detections.rows, rowKey, generatedAt)),
+    // `previous` is parsed from a file that may predate this bucket.
     outOfJurisdiction: sortRows(
       merge(previous?.outOfJurisdiction ?? [], detections.outOfJurisdiction, rowKey, generatedAt),
     ),
@@ -105,7 +104,9 @@ function sortRecords(entries: InvalidRegistryRecordEntry[]) {
   );
 }
 
-function sortRows<TRow extends RejectedSourceRow | OutOfJurisdictionRow>(entries: TRow[]) {
+function sortRows<TRow extends { registryId: string; sourceValue: string; code: string }>(
+  entries: TRow[],
+) {
   return [...entries].sort(
     (a, b) =>
       a.registryId.localeCompare(b.registryId) ||

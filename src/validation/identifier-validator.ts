@@ -31,14 +31,18 @@ export function toRejectedSourceRows(
   registryId: string,
   issues: ValidationIssue[],
 ): RejectedSourceRowDetection[] {
-  return issues
-    .filter((issue) => issue.rejectedIdentifier !== undefined)
-    .map((issue) => ({
-      registryId,
-      code: issue.code,
-      sourceValue: issue.rejectedIdentifier ?? "",
-      message: issue.message,
-    }));
+  return issues.flatMap((issue) =>
+    issue.rejectedIdentifier === undefined
+      ? []
+      : [
+          {
+            registryId,
+            code: issue.code,
+            sourceValue: issue.rejectedIdentifier,
+            message: issue.message,
+          },
+        ],
+  );
 }
 
 // A register publishing another country's identifier is a finding to raise with
@@ -48,15 +52,19 @@ export function toOutOfJurisdictionRows(
   registryId: string,
   issues: ValidationIssue[],
 ): OutOfJurisdictionDetection[] {
-  return issues
-    .filter((issue) => issue.outOfJurisdictionIdentifier !== undefined)
-    .map((issue) => ({
-      registryId,
-      code: issue.code,
-      sourceValue: issue.outOfJurisdictionIdentifier?.value ?? "",
-      countryCode: issue.outOfJurisdictionIdentifier?.countryCode ?? "",
-      message: issue.message,
-    }));
+  return issues.flatMap((issue) =>
+    issue.outOfJurisdictionIdentifier === undefined
+      ? []
+      : [
+          {
+            registryId,
+            code: issue.code,
+            sourceValue: issue.outOfJurisdictionIdentifier.value,
+            countryCode: issue.outOfJurisdictionIdentifier.countryCode,
+            message: issue.message,
+          },
+        ],
+  );
 }
 
 export function validateRecord(record: NormalizedRegistryRecord): ValidationIssue[] {

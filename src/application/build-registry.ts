@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { createConnector } from "../connectors/index.js";
 import type { ConnectorFactory } from "../connectors/connector.js";
@@ -25,6 +25,7 @@ import {
 import { validateRegistry } from "../validation/registry-validator.js";
 import { checkSafetyThresholds } from "../validation/safety-thresholds.js";
 import { mergeGeneratedRecords } from "./generated-record-merge.js";
+import { buildOutOfJurisdictionReport } from "./out-of-jurisdiction-report.js";
 import { mergeInvalidRecordHistory } from "./invalid-record-history.js";
 import { applyOfficialStatusPolicy } from "./official-status-policy.js";
 
@@ -208,6 +209,11 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     outputDir,
     invalidHistory,
   );
+  // A filtered run only refreshes its own source's findings, so writing the
+  // report would drop every other register from a global artifact.
+  if (!options.sourceId) {
+    await writeOutOfJurisdictionReport(outputDir, invalidHistory, sources, generatedAt);
+  }
   if (registryIssues.some((issue) => issue.severity === "error")) {
     throw new Error(
       `Registry validation failed: ${registryIssues.map((issue) => issue.message).join("; ")}`,
@@ -233,6 +239,20 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     issues: registryIssues,
     rebuiltSourceIds: [...selectedIds],
   };
+}
+
+async function writeOutOfJurisdictionReport(
+  outputDir: string,
+  invalid: InvalidRegistryHistory,
+  sources: SourceDefinition[],
+  generatedAt: string,
+) {
+  const reportsDir = path.join(outputDir, "reports");
+  await mkdir(reportsDir, { recursive: true });
+  await writeFile(
+    path.join(reportsDir, "out-of-jurisdiction.json"),
+    `${JSON.stringify(buildOutOfJurisdictionReport(invalid, sources, generatedAt), null, 2)}\n`,
+  );
 }
 
 // Hand-written `supersededBy` annotations live in this file, so the build reads

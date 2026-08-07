@@ -13,6 +13,10 @@ export default defineConfig({
       "data/registry-invalid.json",
       "data/sources.json",
       "data/stats.json",
+      // Generated like the datasets above. `JSON.stringify` always expands
+      // arrays, the formatter collapses the short ones, and neither is worth a
+      // formatting pass over an artifact nobody edits by hand.
+      "data/reports/**",
       "schemas/*.json",
       "tests/fixtures/fr-afirev/public-prefixes.json",
       // Formatting rewrites the escaped Astro island payload, so the captured

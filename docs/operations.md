@@ -41,6 +41,19 @@ trusted.
 A stale source is an outage to investigate, not an accepted state. Its records
 keep their previous retrieval timestamps and grow older with every run.
 
+## Reading The Change Summary
+
+`build/change-summary.md` reports, per source, what the run changed and what it
+refused: `Unreadable values` counts the raw values no connector could read, and
+`Out-of-jurisdiction identifiers` counts the well-formed identifiers the register
+publishes for a country it does not administer. Both are zero for a healthy
+source. The values themselves are listed in the per-source details block; the
+pull-request body keeps the counts only, so it stays within GitHub's size limit.
+
+A refused value never becomes a record, so nothing in the added/updated/removed
+counts would otherwise mention it -- a register could start publishing unreadable
+rows and the summary would report no change at all.
+
 ## Out-Of-Jurisdiction Findings
 
 `data/reports/out-of-jurisdiction.json` lists the identifiers each register

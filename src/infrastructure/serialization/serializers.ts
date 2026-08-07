@@ -1,4 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
+import { currentDetections } from "../../application/invalid-record-history.js";
 import { fromRoot } from "../filesystem/paths.js";
 import { isValidEmi3Identifier } from "../../domain/emi3-identifier.js";
 import type {
@@ -191,11 +192,11 @@ function toStats(
   // The history keeps every identifier ever refused; the counters describe only
   // what the sources still publish, so a corrected identifier stops being
   // reported as a current problem.
-  const currentRecords = invalid.records.filter((entry) => entry.lastDetectedAt === generatedAt);
-  const currentRows = invalid.rows.filter((entry) => entry.lastDetectedAt === generatedAt);
-  const currentForeign = invalid.outOfJurisdiction.filter(
-    (entry) => entry.lastDetectedAt === generatedAt,
-  );
+  const {
+    records: currentRecords,
+    rows: currentRows,
+    outOfJurisdiction: currentForeign,
+  } = currentDetections(invalid);
   return {
     totalRecords: records.length,
     totalInvalidRecords: currentRecords.length,

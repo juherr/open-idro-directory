@@ -59,6 +59,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Changed
 
+- `build/change-summary.md` and the update pull-request body report, per source,
+  the values the run refused: `Unreadable values` and
+  `Out-of-jurisdiction identifiers`, with the values themselves listed in the
+  per-source details block. They replace a `Warnings` line that was hardcoded to
+  zero. A refused value never becomes a record, so the added/updated/removed
+  counts could not reveal it.
 - **Breaking:** the published datasets now only contain valid eMI3 identifiers.
   A party ID must be exactly three uppercase alphanumeric characters; the former
   `UNCOMMON_PARTY_ID` warning accepted two to eight and let invalid records reach

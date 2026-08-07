@@ -38,6 +38,45 @@ describe("change report rendering", () => {
     expect(prBody).not.toContain("fr-afirev:FR:ABC:CPO");
   });
 
+  it("counts what each source published that could not be used", () => {
+    const { full, prBody } = renderChangeReports([
+      {
+        sourceId: "pl-eipa",
+        diff: { previous: 1, current: 1, added: [], updated: [], removed: [], unchanged: 1 },
+        findings: {
+          unreadable: [{ sourceValue: "37" }],
+          outOfJurisdiction: [
+            { sourceValue: "NL*TNM", countryCode: "NL" },
+            { sourceValue: "DE-QWC", countryCode: "DE" },
+          ],
+        },
+      },
+    ]);
+
+    for (const report of [full, prBody]) {
+      expect(report).toContain("- Unreadable values: 1");
+      expect(report).toContain("- Out-of-jurisdiction identifiers: 2");
+    }
+    // The values themselves belong to the full report, next to the record-level
+    // changes; the PR body stays a summary.
+    expect(full).toContain("| Out of jurisdiction | NL*TNM | NL |");
+    expect(full).toContain("| Unreadable | 37 | n/a |");
+    expect(prBody).not.toContain("NL*TNM");
+  });
+
+  it("reports a source with nothing to flag as zero", () => {
+    const { full } = renderChangeReports([
+      {
+        sourceId: "fr-afirev",
+        diff: { previous: 1, current: 1, added: [], updated: [], removed: [], unchanged: 1 },
+      },
+    ]);
+
+    expect(full).toContain("- Unreadable values: 0");
+    expect(full).toContain("- Out-of-jurisdiction identifiers: 0");
+    expect(full).not.toContain("Warnings:");
+  });
+
   it("reports failed sources first, in both the full report and the PR body", () => {
     const { full, prBody } = renderChangeReports(
       [

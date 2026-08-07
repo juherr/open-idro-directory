@@ -6,6 +6,7 @@ import {
   type SourceDefinition,
 } from "../domain/source-definition.js";
 import { coversJurisdiction } from "../validation/identifier-scope.js";
+import { currentDetections } from "./invalid-record-history.js";
 
 interface OutOfJurisdictionFinding {
   sourceValue: string;
@@ -45,8 +46,8 @@ export function buildOutOfJurisdictionReport(
   generatedAt: string,
 ): OutOfJurisdictionReport {
   const sourceById = new Map(sources.map((source) => [source.id, source]));
-  const current = invalid.outOfJurisdiction.filter(
-    (entry) => entry.lastDetectedAt === generatedAt && sourceById.has(entry.registryId),
+  const current = currentDetections(invalid).outOfJurisdiction.filter((entry) =>
+    sourceById.has(entry.registryId),
   );
   const registers = [...Map.groupBy(current, (entry) => entry.registryId)]
     .map(([registryId, entries]) => {

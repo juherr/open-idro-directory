@@ -48,9 +48,24 @@ export function diffRecords(
 const PR_BODY_MAX_CHARS = 60_000;
 const REPORT_HEADING = "# Registry Change Summary";
 
+/** What the run refused, across every source, as the history records it. */
+export interface RunFindings {
+  rows: { registryId: string; sourceValue: string }[];
+  outOfJurisdiction: { registryId: string; sourceValue: string; countryCode: string }[];
+}
+
+/** What a source published that the run could not use, this run. */
+export interface SourceFindings {
+  unreadable: { sourceValue: string }[];
+  outOfJurisdiction: { sourceValue: string; countryCode: string }[];
+}
+
+const NO_FINDINGS: SourceFindings = { unreadable: [], outOfJurisdiction: [] };
+
 export interface ChangeReportEntry {
   sourceId: string;
   diff: RegistryDiff;
+  findings?: SourceFindings;
 }
 
 export interface SourceFailure {
@@ -65,7 +80,13 @@ export interface RenderedChangeReport {
   prBody: string;
 }
 
-export async function writeChangeReport(sourceIds: string[], failures: SourceFailure[] = []) {
+export async function writeChangeReport(
+  sourceIds: string[],
+  failures: SourceFailure[] = [],
+  findings: RunFindings = { rows: [], outOfJurisdiction: [] },
+) {
+  const unreadableBySource = Map.groupBy(findings.rows, (row) => row.registryId);
+  const foreignBySource = Map.groupBy(findings.outOfJurisdiction, (row) => row.registryId);
   await mkdir(fromRoot("build"), { recursive: true });
   // The registry weighs several megabytes and reading it from git spawns a
   // subprocess: load both sides once and diff each source from memory.
@@ -74,6 +95,10 @@ export async function writeChangeReport(sourceIds: string[], failures: SourceFai
   const entries: ChangeReportEntry[] = sourceIds.map((sourceId) => ({
     sourceId,
     diff: diffRecords(previous.get(sourceId) ?? [], current.get(sourceId) ?? []),
+    findings: {
+      unreadable: unreadableBySource.get(sourceId) ?? [],
+      outOfJurisdiction: foreignBySource.get(sourceId) ?? [],
+    },
   }));
   const { full, prBody } = renderChangeReports(entries, failures);
   await writeFile(fromRoot("build", "change-summary.md"), full);
@@ -93,9 +118,9 @@ export function renderChangeReports(
     fullSections.push(section);
     summarySections.push(section);
   }
-  for (const { sourceId, diff } of entries) {
-    const summary = renderSummarySection(sourceId, diff);
-    fullSections.push(`${summary}\n\n${renderDetailsSection(diff)}\n`);
+  for (const { sourceId, diff, findings = NO_FINDINGS } of entries) {
+    const summary = renderSummarySection(sourceId, diff, findings);
+    fullSections.push(`${summary}\n\n${renderDetailsSection(diff, findings)}\n`);
     summarySections.push(`${summary}\n`);
   }
   return {
@@ -115,7 +140,7 @@ treating their data as current.
 ${failures.map((failure) => `| ${failure.sourceId} | ${failure.error} |`).join("\n")}`;
 }
 
-function renderSummarySection(sourceId: string, diff: RegistryDiff) {
+function renderSummarySection(sourceId: string, diff: RegistryDiff, findings: SourceFindings) {
   return `## ${sourceId}
 
 - Previous records: ${diff.previous}
@@ -124,20 +149,27 @@ function renderSummarySection(sourceId: string, diff: RegistryDiff) {
 - Updated: ${diff.updated.length}
 - Removed: ${diff.removed.length}
 - Unchanged: ${diff.unchanged}
-- Warnings: 0`;
+- Unreadable values: ${findings.unreadable.length}
+- Out-of-jurisdiction identifiers: ${findings.outOfJurisdiction.length}`;
 }
 
-function renderDetailsSection(diff: RegistryDiff) {
+function renderDetailsSection(diff: RegistryDiff, findings: SourceFindings) {
   return `<details>
 <summary>Record-level changes</summary>
 
-| Change | Key | Removal interpretation |
+| Change | Key | Note |
 | --- | --- | --- |
 ${
   [
     ...diff.added.map((record) => `| Added | ${record.key} | n/a |`),
     ...diff.updated.map((record) => `| Updated | ${record.key} | n/a |`),
     ...diff.removed.map((record) => `| Removed | ${record.key} | no longer present in source |`),
+    // The values the source published but the run could not use are listed
+    // here too: they never became records, so no diff line would mention them.
+    ...findings.unreadable.map((row) => `| Unreadable | ${row.sourceValue} | n/a |`),
+    ...findings.outOfJurisdiction.map(
+      (row) => `| Out of jurisdiction | ${row.sourceValue} | ${row.countryCode} |`,
+    ),
   ].join("\n") || "| None | n/a | n/a |"
 }
 

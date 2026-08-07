@@ -5,7 +5,8 @@
   "required": [
     "generatedAt",
     "records",
-    "rows"
+    "rows",
+    "outOfJurisdiction"
   ],
   "properties": {
     "generatedAt": {
@@ -53,6 +54,57 @@
           },
           "message": {
             "type": "string"
+          }
+        }
+      }
+    },
+    "outOfJurisdiction": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "firstDetectedAt",
+          "lastDetectedAt",
+          "supersededBy",
+          "registryId",
+          "code",
+          "sourceValue",
+          "message",
+          "countryCode"
+        ],
+        "properties": {
+          "firstDetectedAt": {
+            "type": "string"
+          },
+          "lastDetectedAt": {
+            "type": "string"
+          },
+          "supersededBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{2}[A-Z0-9]{3}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "registryId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "sourceValue": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
           }
         }
       }

@@ -93,24 +93,41 @@ const historyFields = {
 
 // Records excluded from the published datasets keep the registry record shape
 // minus the identifier patterns, since the identifier is exactly what is wrong.
+// Shared by the two row buckets: what was refused, and by which register.
+const rowFields = {
+  required: ["registryId", "code", "sourceValue", "message"],
+  properties: {
+    registryId: { type: "string" },
+    code: { type: "string" },
+    sourceValue: { type: "string" },
+    message: { type: "string" },
+  },
+};
+
 const registryInvalidSchema = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   title: "InvalidRegistryDataset",
   type: "object",
-  required: ["generatedAt", "records", "rows"],
+  required: ["generatedAt", "records", "rows", "outOfJurisdiction"],
   properties: {
     generatedAt: { type: "string" },
     rows: {
       type: "array",
       items: {
         type: "object",
-        required: [...historyFields.required, "registryId", "code", "sourceValue", "message"],
+        required: [...historyFields.required, ...rowFields.required],
+        properties: { ...historyFields.properties, ...rowFields.properties },
+      },
+    },
+    outOfJurisdiction: {
+      type: "array",
+      items: {
+        type: "object",
+        required: [...historyFields.required, ...rowFields.required, "countryCode"],
         properties: {
           ...historyFields.properties,
-          registryId: { type: "string" },
-          code: { type: "string" },
-          sourceValue: { type: "string" },
-          message: { type: "string" },
+          ...rowFields.properties,
+          countryCode: { type: "string", pattern: EMI3_COUNTRY_CODE_PATTERN.source },
         },
       },
     },

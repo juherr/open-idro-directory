@@ -90,9 +90,11 @@ async function workbookRows(content: Buffer) {
  * file actually contains.
  *
  * Version 9.3 drops the declaration itself, which would make this step
- * unnecessary -- but it also fails on a workbook that stores its text inline
- * and therefore carries no shared-string table, which the Swedish registers
- * exercise. Drop this once that is fixed upstream.
+ * unnecessary -- but its rewritten parser also fails on a workbook that carries
+ * no shared-string table, which is how a file storing its text inline is
+ * written and what the Swedish registers exercise. That support was added
+ * deliberately in 4.0.7 (catamphetamine/read-excel-file#85) and lost again in
+ * 9.3.0. Drop this step once it is back.
  */
 function withoutDeclaredDimensions(content: Buffer) {
   const files = unzipSync(new Uint8Array(content));

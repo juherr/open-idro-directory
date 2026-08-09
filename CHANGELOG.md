@@ -130,6 +130,13 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Fixed
 
+- The Slovenian NAP connector read the cell that follows an empty one as the
+  empty cell's value. Excel writes an empty cell as `<c r="B5" s="2"/>`, and the
+  pattern matching cells consumed the self-closing element together with its
+  neighbour, reporting the neighbour's shared-string index as a value. The
+  register leaves the MSP column empty for CPO-only operators, so one CPO
+  identifier was lost, one address was truncated, and two shared-string indexes
+  were reported as unreadable values that appear nowhere in the register.
 - An identifier of another country is no longer reported as unreadable. Ten of
   the fourteen values in the first published rejection report were well-formed
   identifiers that a national register happens to list -- Dutch, French and

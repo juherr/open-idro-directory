@@ -87,10 +87,11 @@ function workbookRows(content: Buffer) {
 
   return [...sheetXml.matchAll(/<row\b[^>]*>([\s\S]*?)<\/row>/g)].map((rowMatch) => {
     const cells: string[] = [];
-    for (const cellMatch of (rowMatch[1] ?? "").matchAll(
-      /<c\b([^>]*)>([\s\S]*?)<\/c>|<c\b([^>]*)\/>/g,
-    )) {
-      const attributes = cellMatch[1] ?? cellMatch[3] ?? "";
+    // The attributes are matched lazily up to `/>` or `>`: an empty cell, which
+    // Excel writes as `<c r="B5" s="2"/>`, would otherwise swallow the cell that
+    // follows it and report that cell's shared-string index as a value.
+    for (const cellMatch of (rowMatch[1] ?? "").matchAll(/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g)) {
+      const attributes = cellMatch[1] ?? "";
       const columnIndex = columnToIndex(/r="([A-Z]+)\d+"/.exec(attributes)?.[1] ?? "A");
       while (cells.length < columnIndex) cells.push("");
       const value = /<v>([\s\S]*?)<\/v>/.exec(cellMatch[2] ?? "")?.[1];

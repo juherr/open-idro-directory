@@ -27,6 +27,27 @@ describe("Slovenian NAP parser", () => {
     });
   });
 
+  it("reads the cells that follow an empty one", () => {
+    // Excel writes an empty cell as `<c r="B5" s="2"/>`. The register leaves the
+    // MSP column empty for CPO-only operators, so this is the common shape.
+    const result = parseNapSnapshot(
+      JSON.stringify({
+        contentBase64: workbookBase64([
+          ["Naziv", "MSP ID koda", "CPO ID koda", "Naslov", "Hišna št.", "Pošta", "Kraj", "Država"],
+          ["Allego d.o.o.", "", "SI*ALL", "Bleiweisova cesta", "30", "1000", "Ljubljana", "SI"],
+        ]),
+      }),
+    );
+
+    expect(result.records[0]).toMatchObject({
+      organizationName: "Allego d.o.o.",
+      emspId: null,
+      cpoId: "SI*ALL",
+      address: "Bleiweisova cesta 30",
+      city: "Ljubljana",
+    });
+  });
+
   it("normalizes CPO and EMSP identifiers", async () => {
     const source = await loadSourceDefinition("si-nap");
     const connector = new NapConnector();
@@ -94,6 +115,7 @@ function rowXml(row: string[], rowIndex: number, sharedStrings: string[]) {
   return `<row r="${rowIndex + 1}">${row
     .map((cell, columnIndex) => {
       const reference = `${String.fromCharCode(65 + columnIndex)}${rowIndex + 1}`;
+      if (cell === "") return `<c r="${reference}" s="2"/>`;
       const valueIndex = sharedStrings.indexOf(cell);
       return `<c r="${reference}" t="s"><v>${valueIndex}</v></c>`;
     })

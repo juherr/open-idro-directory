@@ -1,11 +1,12 @@
-import { strFromU8, unzipSync } from "fflate";
+import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
+import { readSheet } from "read-excel-file/node";
 import type { ParseOutput } from "../connector.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
 import { napRowSchema, type NapRow } from "./nap.types.js";
 
 const EXPECTED_HEADERS = ["Naziv", "MSP ID koda", "CPO ID koda"];
 
-export function parseNapSnapshot(body: string): ParseOutput<NapRow> {
+export async function parseNapSnapshot(body: string): Promise<ParseOutput<NapRow>> {
   const warnings: ValidationIssue[] = [];
   const errors: ValidationIssue[] = [];
   const parsed = JSON.parse(body) as { contentBase64?: string };
@@ -23,7 +24,7 @@ export function parseNapSnapshot(body: string): ParseOutput<NapRow> {
     };
   }
 
-  const rows = workbookRows(Buffer.from(parsed.contentBase64, "base64"));
+  const rows = await workbookRows(Buffer.from(parsed.contentBase64, "base64"));
   const headers = rows.find((row) => row[0] === EXPECTED_HEADERS[0]);
   if (!headers || !EXPECTED_HEADERS.every((header, index) => headers[index] === header)) {
     return {
@@ -73,58 +74,30 @@ export function parseNapSnapshot(body: string): ParseOutput<NapRow> {
   return { records, warnings, errors };
 }
 
-function workbookRows(content: Buffer) {
+async function workbookRows(content: Buffer) {
+  const rows = await readSheet(withoutDeclaredDimensions(content));
+  // The schemas below read text; a numeric cell would otherwise arrive as a
+  // number and fail them for a reason that has nothing to do with the register.
+  return rows.map((row) => row.map((cell) => (cell === null ? "" : String(cell))));
+}
+
+/**
+ * The register publishes a workbook that declares `<dimension ref="A1"/>` -- "this
+ * sheet holds a single cell" -- for a sheet holding hundreds. `read-excel-file`
+ * honours that declaration and returns the first row alone, silently losing the
+ * register; its own source notes the same default in Apache POI. Without the
+ * element it reconstructs the range from the cells it finds, which is what the
+ * file actually contains.
+ */
+function withoutDeclaredDimensions(content: Buffer) {
   const files = unzipSync(new Uint8Array(content));
-  const sharedStringsXml = readZipText(files, "xl/sharedStrings.xml");
-  const sheetXml = readZipText(files, "xl/worksheets/sheet1.xml");
-  const sharedStrings = [...sharedStringsXml.matchAll(/<si>([\s\S]*?)<\/si>/g)].map((match) =>
-    decodeXml(
-      [...(match[1] ?? "").matchAll(/<t(?: [^>]*)?>([\s\S]*?)<\/t>/g)]
-        .map((textMatch) => textMatch[1] ?? "")
-        .join(""),
-    ),
-  );
-
-  return [...sheetXml.matchAll(/<row\b[^>]*>([\s\S]*?)<\/row>/g)].map((rowMatch) => {
-    const cells: string[] = [];
-    // The attributes are matched lazily up to `/>` or `>`: an empty cell, which
-    // Excel writes as `<c r="B5" s="2"/>`, would otherwise swallow the cell that
-    // follows it and report that cell's shared-string index as a value.
-    for (const cellMatch of (rowMatch[1] ?? "").matchAll(/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g)) {
-      const attributes = cellMatch[1] ?? "";
-      const columnIndex = columnToIndex(/r="([A-Z]+)\d+"/.exec(attributes)?.[1] ?? "A");
-      while (cells.length < columnIndex) cells.push("");
-      const value = /<v>([\s\S]*?)<\/v>/.exec(cellMatch[2] ?? "")?.[1];
-      cells[columnIndex] =
-        attributes.includes('t="s"') && value !== undefined
-          ? (sharedStrings[Number(value)] ?? "")
-          : decodeXml(value ?? "");
-    }
-    return cells;
-  });
-}
-
-function readZipText(files: Record<string, Uint8Array>, path: string) {
-  const file = files[path];
-  if (!file) throw new Error(`Missing ${path} in Slovenian NAP workbook.`);
-  return strFromU8(file);
-}
-
-function columnToIndex(column: string) {
-  let index = 0;
-  for (let position = 0; position < column.length; position++) {
-    index = index * 26 + column.charCodeAt(position) - 64;
+  for (const [path, file] of Object.entries(files)) {
+    if (!path.startsWith("xl/worksheets/")) continue;
+    files[path] = strToU8(
+      strFromU8(file).replace(/<dimension\b[^>]*\/>|<dimension\b[^>]*>[\s\S]*?<\/dimension>/g, ""),
+    );
   }
-  return index - 1;
-}
-
-function decodeXml(value: string) {
-  return value
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&");
+  return Buffer.from(zipSync(files));
 }
 
 function clean(value: string | null | undefined) {

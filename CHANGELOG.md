@@ -59,6 +59,13 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Changed
 
+- The Slovenian NAP connector reads its workbook with `read-excel-file`, the
+  library the pipeline already uses for the Swedish registers, instead of
+  matching the sheet XML by hand. The register declares
+  `<dimension ref="A1"/>` -- a single cell -- for a sheet holding hundreds of
+  rows, and the reader honours that unless the element is dropped, which is why
+  the connector had its own reader in the first place; that workaround is now
+  one documented step instead of a parser.
 - `build/change-summary.md` and the update pull-request body report, per source,
   the values the run refused: `Unreadable values` and
   `Out-of-jurisdiction identifiers`, with the values themselves listed in the

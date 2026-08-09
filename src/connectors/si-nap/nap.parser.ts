@@ -88,6 +88,11 @@ async function workbookRows(content: Buffer) {
  * register; its own source notes the same default in Apache POI. Without the
  * element it reconstructs the range from the cells it finds, which is what the
  * file actually contains.
+ *
+ * Version 9.3 drops the declaration itself, which would make this step
+ * unnecessary -- but it also fails on a workbook that stores its text inline
+ * and therefore carries no shared-string table, which the Swedish registers
+ * exercise. Drop this once that is fixed upstream.
  */
 function withoutDeclaredDimensions(content: Buffer) {
   const files = unzipSync(new Uint8Array(content));

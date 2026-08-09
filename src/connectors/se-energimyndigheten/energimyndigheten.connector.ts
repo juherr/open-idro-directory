@@ -1,4 +1,4 @@
-import { isAuthoritative } from "../../domain/source-definition.js";
+import { isAuthoritative, type SourceDefinition } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -16,19 +16,33 @@ import { parseEnergimyndighetenSnapshot } from "./energimyndigheten.parser.js";
 import type { EnergimyndighetenRow } from "./energimyndigheten.types.js";
 
 const SOURCE_HOSTS = ["www.energimyndigheten.se"];
-const CPO_URL =
-  "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx";
+/**
+ * The register only publishes the EMSP workbook through its landing page, so
+ * unlike the CPO one it has no descriptor field to come from.
+ */
 const EMSP_URL =
-  "https://www.energimyndigheten.se/49656a/globalassets/klimat/laddinfrastruktur/register-for-emsp.xlsx";
+  "https://www.energimyndigheten.se/globalassets/klimat/laddinfrastruktur/register-for-emsp.xlsx";
 const MAX_WORKBOOK_BYTES = 5_000_000;
+
+/**
+ * The landing page links both workbooks through a cache-busting segment the CMS
+ * regenerates on every upload -- `/4ac461/` and `/49656a/` became `/49d640/` and
+ * `/49dc9c/` in August 2026 -- while serving the same bytes under the plain
+ * `/globalassets/` path. Pinning the hash would make the pipeline chase a value
+ * that changes whenever the agency edits the register.
+ */
+export function energimyndighetenWorkbookUrls(source: SourceDefinition) {
+  return { cpo: source.registry.url, emsp: EMSP_URL };
+}
 
 export class EnergimyndighetenConnector implements RegistryConnector<EnergimyndighetenRow> {
   readonly sourceId = "se-energimyndigheten";
 
   async fetch(context: FetchContext): Promise<FetchResult> {
+    const urls = energimyndighetenWorkbookUrls(context.source);
     const [cpo, emsp] = await Promise.all([
-      fetchWorkbook(CPO_URL, context),
-      fetchWorkbook(EMSP_URL, context),
+      fetchWorkbook(urls.cpo, context),
+      fetchWorkbook(urls.emsp, context),
     ]);
     const body = JSON.stringify({ cpo, emsp });
 

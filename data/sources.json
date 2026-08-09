@@ -910,7 +910,7 @@
       "homepageUrl": "https://www.energimyndigheten.se/klimat/transporter/laddinfrastruktur/identification-registration-organisation-idro/"
     },
     "registry": {
-      "url": "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
+      "url": "https://www.energimyndigheten.se/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
       "observationType": "OFFICIAL_ASSIGNMENT",
       "supportedRoles": [
         "CPO",
@@ -922,7 +922,7 @@
     },
     "publication": {
       "connector": "se-energimyndigheten",
-      "machineReadableUrl": "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
+      "machineReadableUrl": "https://www.energimyndigheten.se/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
       "refreshSchedule": "weekly",
       "enabled": true,
       "verifiedAt": null

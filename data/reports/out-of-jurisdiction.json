@@ -1,0 +1,172 @@
+{
+  "generatedAt": "2026-08-09T21:07:06.522Z",
+  "totalIdentifiers": 7,
+  "registers": [
+    {
+      "registryId": "pl-eipa",
+      "registryName": "EIPA",
+      "jurisdictions": [
+        "PL"
+      ],
+      "authority": {
+        "id": "pl-udt",
+        "name": "Urząd Dozoru Technicznego",
+        "level": "AUTHORITATIVE",
+        "jurisdictions": [
+          "PL"
+        ],
+        "homepageUrl": "https://eipa.udt.gov.pl/list"
+      },
+      "identifiers": [
+        {
+          "sourceValue": "AT-HTB",
+          "countryCode": "AT",
+          "firstDetectedAt": "2026-08-09T21:07:06.522Z",
+          "lastDetectedAt": "2026-08-09T21:07:06.522Z",
+          "administeredBy": {
+            "registryId": "at-ladestellen",
+            "authority": {
+              "id": "at-econtrol",
+              "name": "E-Control Austria",
+              "level": "AUTHORITATIVE",
+              "jurisdictions": [
+                "AT"
+              ],
+              "homepageUrl": "https://admin.ladestellen.at/#/registrierte-ids"
+            }
+          }
+        },
+        {
+          "sourceValue": "DE-QWC",
+          "countryCode": "DE",
+          "firstDetectedAt": "2026-08-09T21:07:06.522Z",
+          "lastDetectedAt": "2026-08-09T21:07:06.522Z",
+          "administeredBy": {
+            "registryId": "de-bdew",
+            "authority": {
+              "id": "de-bdew",
+              "name": "BDEW",
+              "level": "AUTHORITATIVE",
+              "jurisdictions": [
+                "DE"
+              ],
+              "homepageUrl": "https://bdew-codes.de/"
+            }
+          }
+        },
+        {
+          "sourceValue": "FR-FLB",
+          "countryCode": "FR",
+          "firstDetectedAt": "2026-08-09T21:07:06.522Z",
+          "lastDetectedAt": "2026-08-09T21:07:06.522Z",
+          "administeredBy": {
+            "registryId": "fr-afirev",
+            "authority": {
+              "id": "fr-afirev",
+              "name": "AFIREV / Avere-France",
+              "level": "AUTHORITATIVE",
+              "jurisdictions": [
+                "FR"
+              ],
+              "homepageUrl": "https://afirev.fr/prefixes/consulter-l-annuaire/"
+            }
+          }
+        },
+        {
+          "sourceValue": "LT*IBG",
+          "countryCode": "LT",
+          "firstDetectedAt": "2026-08-09T21:07:06.522Z",
+          "lastDetectedAt": "2026-08-09T21:07:06.522Z",
+          "administeredBy": {
+            "registryId": "lt-vialietuva",
+            "authority": {
+              "id": "lt-vialietuva",
+              "name": "Via Lietuva",
+              "level": "AUTHORITATIVE",
+              "jurisdictions": [
+                "LT"
+              ],
+              "homepageUrl": "https://lakd.lt/viesuju-elektromobiliu-ikrovimo-prieigu-registravimas"
+            }
+          }
+        },
+        {
+          "sourceValue": "NL-505",
+          "countryCode": "NL",
+          "firstDetectedAt": "2026-08-09T21:07:06.522Z",
+          "lastDetectedAt": "2026-08-09T21:07:06.522Z",
+          "administeredBy": {
+            "registryId": "benelux-idro",
+            "authority": {
+              "id": "benelux-idro",
+              "name": "Benelux IDRO",
+              "level": "AUTHORITATIVE",
+              "jurisdictions": [
+                "BE",
+                "NL",
+                "LU"
+              ],
+              "homepageUrl": "https://www.benelux-idro.eu/"
+            }
+          }
+        },
+        {
+          "sourceValue": "NL*TNM",
+          "countryCode": "NL",
+          "firstDetectedAt": "2026-08-09T21:07:06.522Z",
+          "lastDetectedAt": "2026-08-09T21:07:06.522Z",
+          "administeredBy": {
+            "registryId": "benelux-idro",
+            "authority": {
+              "id": "benelux-idro",
+              "name": "Benelux IDRO",
+              "level": "AUTHORITATIVE",
+              "jurisdictions": [
+                "BE",
+                "NL",
+                "LU"
+              ],
+              "homepageUrl": "https://www.benelux-idro.eu/"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "registryId": "se-energimyndigheten",
+      "registryName": "Swedish Energy Agency IDRO",
+      "jurisdictions": [
+        "SE"
+      ],
+      "authority": {
+        "id": "se-energimyndigheten",
+        "name": "Swedish Energy Agency",
+        "level": "AUTHORITATIVE",
+        "jurisdictions": [
+          "SE"
+        ],
+        "homepageUrl": "https://www.energimyndigheten.se/klimat/transporter/laddinfrastruktur/identification-registration-organisation-idro/"
+      },
+      "identifiers": [
+        {
+          "sourceValue": "DK*MON",
+          "countryCode": "DK",
+          "firstDetectedAt": "2026-08-09T21:07:06.522Z",
+          "lastDetectedAt": "2026-08-09T21:07:06.522Z",
+          "administeredBy": {
+            "registryId": "dk-fstyr",
+            "authority": {
+              "id": "dk-fstyr",
+              "name": "Danish Road Traffic Authority",
+              "level": "AUTHORITATIVE",
+              "jurisdictions": [
+                "DK"
+              ],
+              "homepageUrl": "https://www.danishroadtrafficauthority.dk/afir/idro-registration"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

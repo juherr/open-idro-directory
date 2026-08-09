@@ -2,14 +2,14 @@ id: se-energimyndigheten
 name: Swedish Energy Agency IDRO
 authorityId: se-energimyndigheten
 registry:
-  url: https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx
+  url: https://www.energimyndigheten.se/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx
   observationType: OFFICIAL_ASSIGNMENT
   supportedRoles:
     - CPO
     - EMSP
 publication:
   connector: se-energimyndigheten
-  machineReadableUrl: https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx
+  machineReadableUrl: https://www.energimyndigheten.se/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx
   refreshSchedule: weekly
   enabled: true
   verifiedAt: null

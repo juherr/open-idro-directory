@@ -10,7 +10,7 @@ describe("Slovenian NAP parser", () => {
     const rows = JSON.parse(
       await readFile("tests/fixtures/si-nap/workbook-rows.json", "utf8"),
     ) as string[][];
-    const result = parseNapSnapshot(
+    const result = await parseNapSnapshot(
       JSON.stringify({
         contentBase64: workbookBase64(rows),
       }),
@@ -25,6 +25,43 @@ describe("Slovenian NAP parser", () => {
       city: "Koper",
       website: "www.marjeticakoper.si",
     });
+  });
+
+  it("reads the cells that follow an empty one", async () => {
+    // Excel writes an empty cell as `<c r="B5" s="2"/>`. The register leaves the
+    // MSP column empty for CPO-only operators, so this is the common shape.
+    const result = await parseNapSnapshot(
+      JSON.stringify({
+        contentBase64: workbookBase64([
+          ["Naziv", "MSP ID koda", "CPO ID koda", "Naslov", "Hišna št.", "Pošta", "Kraj", "Država"],
+          ["Allego d.o.o.", "", "SI*ALL", "Bleiweisova cesta", "30", "1000", "Ljubljana", "SI"],
+        ]),
+      }),
+    );
+
+    expect(result.records[0]).toMatchObject({
+      organizationName: "Allego d.o.o.",
+      emspId: null,
+      cpoId: "SI*ALL",
+      address: "Bleiweisova cesta 30",
+      city: "Ljubljana",
+    });
+  });
+
+  it("reads a workbook that declares a single-cell dimension", async () => {
+    // The register's workbook declares `<dimension ref="A1"/>` for a sheet
+    // holding hundreds of rows, which the reader honours unless it is dropped.
+    const result = await parseNapSnapshot(
+      JSON.stringify({
+        contentBase64: workbookBase64([
+          ["Naziv", "MSP ID koda", "CPO ID koda"],
+          ["MARJETICA KOPER d.o.o.", "SI*011", "SI*010"],
+        ]),
+      }),
+    );
+
+    expect(result.errors).toHaveLength(0);
+    expect(result.records).toHaveLength(1);
   });
 
   it("normalizes CPO and EMSP identifiers", async () => {
@@ -72,6 +109,7 @@ function workbookBase64(rows: string[][]) {
     "xl/_rels/workbook.xml.rels": xml(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>
 </Relationships>`),
     "xl/workbook.xml": xml(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
@@ -94,6 +132,7 @@ function rowXml(row: string[], rowIndex: number, sharedStrings: string[]) {
   return `<row r="${rowIndex + 1}">${row
     .map((cell, columnIndex) => {
       const reference = `${String.fromCharCode(65 + columnIndex)}${rowIndex + 1}`;
+      if (cell === "") return `<c r="${reference}" s="2"/>`;
       const valueIndex = sharedStrings.indexOf(cell);
       return `<c r="${reference}" t="s"><v>${valueIndex}</v></c>`;
     })

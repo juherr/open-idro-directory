@@ -59,6 +59,13 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Changed
 
+- The Slovenian NAP connector reads its workbook with `read-excel-file`, the
+  library the pipeline already uses for the Swedish registers, instead of
+  matching the sheet XML by hand. The register declares
+  `<dimension ref="A1"/>` -- a single cell -- for a sheet holding hundreds of
+  rows, and the reader honours that unless the element is dropped, which is why
+  the connector had its own reader in the first place; that workaround is now
+  one documented step instead of a parser.
 - `build/change-summary.md` and the update pull-request body report, per source,
   the values the run refused: `Unreadable values` and
   `Out-of-jurisdiction identifiers`, with the values themselves listed in the
@@ -130,6 +137,13 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Fixed
 
+- The Slovenian NAP connector read the cell that follows an empty one as the
+  empty cell's value. Excel writes an empty cell as `<c r="B5" s="2"/>`, and the
+  pattern matching cells consumed the self-closing element together with its
+  neighbour, reporting the neighbour's shared-string index as a value. The
+  register leaves the MSP column empty for CPO-only operators, so one CPO
+  identifier was lost, one address was truncated, and two shared-string indexes
+  were reported as unreadable values that appear nowhere in the register.
 - The Swedish registers are no longer fetched through a URL that expires. The
   agency's CMS prefixes every asset link with a cache-busting segment it
   regenerates on each upload -- `/4ac461/` and `/49656a/` became `/49d640/` and

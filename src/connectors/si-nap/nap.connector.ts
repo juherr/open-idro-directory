@@ -56,7 +56,7 @@ export class NapConnector implements RegistryConnector<NapRow> {
 
   async parse(input: ParseInput): Promise<ParseOutput<NapRow>> {
     try {
-      return parseNapSnapshot(input.body);
+      return await parseNapSnapshot(input.body);
     } catch (error) {
       return {
         records: [],

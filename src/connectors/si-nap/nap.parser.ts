@@ -94,7 +94,8 @@ async function workbookRows(content: Buffer) {
  * no shared-string table, which is how a file storing its text inline is
  * written and what the Swedish registers exercise. That support was added
  * deliberately in 4.0.7 (catamphetamine/read-excel-file#85) and lost again in
- * 9.3.0. Drop this step once it is back.
+ * 9.3.0, reported as catamphetamine/read-excel-file#124. Drop this step once
+ * that is released.
  */
 function withoutDeclaredDimensions(content: Buffer) {
   const files = unzipSync(new Uint8Array(content));

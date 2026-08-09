@@ -293,7 +293,7 @@ describe("the published source catalog", () => {
       "lv-lvceli": "https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json",
       "pl-eipa": "https://eipa.udt.gov.pl/list/csv",
       "se-energimyndigheten":
-        "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
+        "https://www.energimyndigheten.se/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
       "si-nap": "https://www.ncup.si/dc/prometej.register-cpo-msp",
     });
   });

@@ -276,7 +276,7 @@ function sampleRecord(partyId: string): NormalizedRegistryRecord {
       official: true,
       sourceRecordId: `SE${partyId}`,
       sourceUrl:
-        "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
+        "https://www.energimyndigheten.se/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx",
       sourceValue: `SE${partyId}`,
       firstSeenAt: "2026-06-14T00:00:00.000Z",
       lastSeenAt: "2026-06-14T00:00:00.000Z",

@@ -130,6 +130,13 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Fixed
 
+- The Swedish registers are no longer fetched through a URL that expires. The
+  agency's CMS prefixes every asset link with a cache-busting segment it
+  regenerates on each upload -- `/4ac461/` and `/49656a/` became `/49d640/` and
+  `/49dc9c/` -- so the pinned URLs would eventually stop resolving. Both
+  workbooks are now read from the plain `/globalassets/` path, which serves the
+  same bytes and does not move, and the CPO workbook comes from the source
+  descriptor instead of being repeated in the connector.
 - An identifier of another country is no longer reported as unreadable. Ten of
   the fourteen values in the first published rejection report were well-formed
   identifiers that a national register happens to list -- Dutch, French and

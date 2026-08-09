@@ -1,14 +1,36 @@
 import { readFile } from "node:fs/promises";
 import { strToU8, zipSync } from "fflate";
 import { describe, expect, it } from "vitest";
-import { EnergimyndighetenConnector } from "../../src/connectors/se-energimyndigheten/energimyndigheten.connector.js";
+import {
+  EnergimyndighetenConnector,
+  energimyndighetenWorkbookUrls,
+} from "../../src/connectors/se-energimyndigheten/energimyndigheten.connector.js";
 import { parseEnergimyndighetenSnapshot } from "../../src/connectors/se-energimyndigheten/energimyndigheten.parser.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
 
 const CPO_URL =
-  "https://www.energimyndigheten.se/4ac461/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx";
+  "https://www.energimyndigheten.se/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx";
 const EMSP_URL =
-  "https://www.energimyndigheten.se/49656a/globalassets/klimat/laddinfrastruktur/register-for-emsp.xlsx";
+  "https://www.energimyndigheten.se/globalassets/klimat/laddinfrastruktur/register-for-emsp.xlsx";
+
+describe("Swedish Energy Agency workbook URLs", () => {
+  it("takes the CPO workbook from the source descriptor", async () => {
+    const source = await loadSourceDefinition("se-energimyndigheten");
+
+    expect(energimyndighetenWorkbookUrls(source).cpo).toBe(source.registry.url);
+  });
+
+  // The register page rewrites the asset hash on every upload, so a URL that
+  // carries one is a URL that will stop matching the page it was copied from.
+  it("pins both workbooks to the path that outlives the rotating asset hash", async () => {
+    const source = await loadSourceDefinition("se-energimyndigheten");
+    const urls = energimyndighetenWorkbookUrls(source);
+
+    for (const url of [urls.cpo, urls.emsp]) {
+      expect(new URL(url).pathname).toMatch(/^\/globalassets\//);
+    }
+  });
+});
 
 describe("Swedish Energy Agency parser", () => {
   it("parses CPO and EMSP workbook snapshots", async () => {

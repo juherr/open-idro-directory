@@ -595,10 +595,10 @@
     {
       "prefixId": "FRAUT",
       "name": "Evota",
-      "amenageurName": "",
+      "amenageurName": "EVOTA NETHERLANDS B.V.",
       "exploitantName": "",
       "type": "BOTH",
-      "status": "SUSPENDED"
+      "status": "AWAITING_PAYMENT"
     },
     {
       "prefixId": "FRAVE",
@@ -619,10 +619,10 @@
     {
       "prefixId": "FRAVS",
       "name": "ARVAL",
-      "amenageurName": "",
+      "amenageurName": "ARVAL SERVICE LEASE",
       "exploitantName": "",
       "type": "MOBILITY",
-      "status": "INACTIVE"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRAW8",
@@ -750,7 +750,7 @@
       "amenageurName": "BLIXT Services",
       "exploitantName": "BLIXT Services",
       "type": "MOBILITY",
-      "status": "AWAITING_PAYMENT"
+      "status": "SUSPENDED"
     },
     {
       "prefixId": "FRBMP",
@@ -859,23 +859,23 @@
     {
       "prefixId": "FRC2A",
       "name": "CAR2PLUG",
-      "amenageurName": "",
+      "amenageurName": "CLICSYSTEME / CAR2PLU",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRC2N",
       "name": "CAR2PLUG",
-      "amenageurName": "",
+      "amenageurName": "CLICSYSTEME / CAR2PLU",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRC2P",
       "name": "CAR2PLUG",
-      "amenageurName": "",
+      "amenageurName": "CLICSYSTEME / CAR2PLU",
       "exploitantName": "",
       "type": "BOTH",
       "status": "SUSPENDED"
@@ -910,7 +910,7 @@
       "amenageurName": "COGELUM IDF (CITEOS)",
       "exploitantName": "COGELUM IDF (CITEOS)",
       "type": "MOBILITY",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRCAR",
@@ -2427,10 +2427,10 @@
     {
       "prefixId": "FRKPS",
       "name": "KiwhiPass Solution",
-      "amenageurName": "",
+      "amenageurName": "FULLI - MOBILIS",
       "exploitantName": "",
       "type": "MOBILITY",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRKV2",
@@ -2455,6 +2455,14 @@
       "exploitantName": "",
       "type": "CHARGE",
       "status": "INACTIVE"
+    },
+    {
+      "prefixId": "FRLBB",
+      "name": "Le Bois Basalte",
+      "amenageurName": "LE BOIS BASALTE",
+      "exploitantName": "LE BOIS BASALTE",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
     },
     {
       "prefixId": "FRLDL",
@@ -2742,7 +2750,7 @@
       "amenageurName": "SAS LOAD STATIONS",
       "exploitantName": "SAS LOAD STATIONS",
       "type": "MOBILITY",
-      "status": "AWAITING_PAYMENT"
+      "status": "SUSPENDED"
     },
     {
       "prefixId": "FRMBX",
@@ -2905,6 +2913,14 @@
       "status": "ACTIVE"
     },
     {
+      "prefixId": "FRNDA",
+      "name": "SDE2A",
+      "amenageurName": "SAS LOAD STATIONS",
+      "exploitantName": "SAS LOAD STATIONS",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
+    },
+    {
       "prefixId": "FRNGE",
       "name": "NGE",
       "amenageurName": "NGE ENERGIES SOLUTIONS",
@@ -3046,7 +3062,7 @@
       "amenageurName": "PARAGON MOBILITY",
       "exploitantName": "PARAGON MOBILITY",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRPAN",
@@ -3326,7 +3342,7 @@
       "amenageurName": "BOUYGUES ENERGIES & SERVICES",
       "exploitantName": "BOUYGUES ENERGIES & SERVICES",
       "type": "MOBILITY",
-      "status": "AWAITING_PAYMENT"
+      "status": "SUSPENDED"
     },
     {
       "prefixId": "FRRIR",
@@ -3373,6 +3389,14 @@
       "name": "Rossini Energy",
       "amenageurName": "ROSSINI ENERGY",
       "exploitantName": "ROSSINI ENERGY",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
+    },
+    {
+      "prefixId": "FRROY",
+      "name": "Boreal Mobility",
+      "amenageurName": "Boréal Energy",
+      "exploitantName": "Boréal Energy",
       "type": "CHARGE",
       "status": "AWAITING_PAYMENT"
     },
@@ -3654,7 +3678,7 @@
       "amenageurName": "Territoire d'Energie Loire Atlantique (TE44)",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRS46",
@@ -3974,7 +3998,7 @@
       "amenageurName": "SAEMES",
       "exploitantName": "BOUYGUES ENERGIES & SERVICES",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "SUSPENDED"
     },
     {
       "prefixId": "FRSCA",
@@ -3998,7 +4022,7 @@
       "amenageurName": "Syndicat Départemental d’Energies du Calvados (SDEC ENERGIE)",
       "exploitantName": "SAS LOAD STATIONS",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "SUSPENDED"
     },
     {
       "prefixId": "FRSDF",
@@ -4526,7 +4550,7 @@
       "amenageurName": "ULYS MOBILITE SERVICES",
       "exploitantName": "",
       "type": "MOBILITY",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRURW",
@@ -5409,5 +5433,5 @@
       "status": "ACTIVE"
     }
   ],
-  "total": 676
+  "total": 679
 }

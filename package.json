@@ -40,7 +40,7 @@
     "commander": "^15.0.0",
     "fflate": "^0.8.3",
     "hono": "^4.12.27",
-    "read-excel-file": "^9.2.0",
+    "read-excel-file": "^9.3.9",
     "yaml": "^2.9.0",
     "zod": "^4.4.3"
   },

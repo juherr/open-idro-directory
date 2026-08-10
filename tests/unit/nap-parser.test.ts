@@ -49,8 +49,10 @@ describe("Slovenian NAP parser", () => {
   });
 
   it("reads a workbook that declares a single-cell dimension", async () => {
-    // The register's workbook declares `<dimension ref="A1"/>` for a sheet
-    // holding hundreds of rows, which the reader honours unless it is dropped.
+    // The register's workbook declares `<dimension ref="A1"/>` -- "this sheet
+    // holds a single cell" -- for a sheet holding hundreds of rows. The reader
+    // ignores that advisory element and reconstructs the range from the cells it
+    // finds; a version that honoured it would return the header row alone.
     const result = await parseNapSnapshot(
       JSON.stringify({
         contentBase64: workbookBase64([

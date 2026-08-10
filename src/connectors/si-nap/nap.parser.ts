@@ -1,4 +1,3 @@
-import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import { readSheet } from "read-excel-file/node";
 import type { ParseOutput } from "../connector.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
@@ -75,37 +74,10 @@ export async function parseNapSnapshot(body: string): Promise<ParseOutput<NapRow
 }
 
 async function workbookRows(content: Buffer) {
-  const rows = await readSheet(withoutDeclaredDimensions(content));
+  const rows = await readSheet(content);
   // The schemas below read text; a numeric cell would otherwise arrive as a
   // number and fail them for a reason that has nothing to do with the register.
   return rows.map((row) => row.map((cell) => (cell === null ? "" : String(cell))));
-}
-
-/**
- * The register publishes a workbook that declares `<dimension ref="A1"/>` -- "this
- * sheet holds a single cell" -- for a sheet holding hundreds. `read-excel-file`
- * honours that declaration and returns the first row alone, silently losing the
- * register; its own source notes the same default in Apache POI. Without the
- * element it reconstructs the range from the cells it finds, which is what the
- * file actually contains.
- *
- * Version 9.3 drops the declaration itself, which would make this step
- * unnecessary -- but its rewritten parser also fails on a workbook that carries
- * no shared-string table, which is how a file storing its text inline is
- * written and what the Swedish registers exercise. That support was added
- * deliberately in 4.0.7 (catamphetamine/read-excel-file#85) and lost again in
- * 9.3.0, reported as catamphetamine/read-excel-file#124. Drop this step once
- * that is released.
- */
-function withoutDeclaredDimensions(content: Buffer) {
-  const files = unzipSync(new Uint8Array(content));
-  for (const [path, file] of Object.entries(files)) {
-    if (!path.startsWith("xl/worksheets/")) continue;
-    files[path] = strToU8(
-      strFromU8(file).replace(/<dimension\b[^>]*\/>|<dimension\b[^>]*>[\s\S]*?<\/dimension>/g, ""),
-    );
-  }
-  return Buffer.from(zipSync(files));
 }
 
 function clean(value: string | null | undefined) {

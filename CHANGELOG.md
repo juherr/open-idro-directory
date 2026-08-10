@@ -61,11 +61,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 - The Slovenian NAP connector reads its workbook with `read-excel-file`, the
   library the pipeline already uses for the Swedish registers, instead of
-  matching the sheet XML by hand. The register declares
-  `<dimension ref="A1"/>` -- a single cell -- for a sheet holding hundreds of
-  rows, and the reader honours that unless the element is dropped, which is why
-  the connector had its own reader in the first place; that workaround is now
-  one documented step instead of a parser.
+  matching the sheet XML by hand.
 - `read-excel-file` moves to 9.3.9. The reader was held back on 9.2 because
   9.3.0 could not read a workbook that stores its text inline rather than in a
   shared-string table -- which is how the Swedish registers publish theirs. That

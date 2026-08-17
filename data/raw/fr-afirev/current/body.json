@@ -1038,7 +1038,7 @@
       "amenageurName": "CHARGEPOINT NETWORK (FRANCE) SAS",
       "exploitantName": "CHARGEPOINT NETWORK (FRANCE) SAS",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRCPN",
@@ -1467,10 +1467,10 @@
     {
       "prefixId": "FREMO",
       "name": "E-MOTUM",
-      "amenageurName": "",
+      "amenageurName": "E-MOTUM",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FREMP",
@@ -2403,7 +2403,7 @@
     {
       "prefixId": "FRJBA",
       "name": "E-MOTUM",
-      "amenageurName": "",
+      "amenageurName": "E-MOTUM",
       "exploitantName": "",
       "type": "CHARGE",
       "status": "INACTIVE"
@@ -2598,7 +2598,7 @@
       "amenageurName": "SAS LOAD STATIONS",
       "exploitantName": "SAS LOAD STATIONS",
       "type": "BOTH",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRLUM",
@@ -2883,8 +2883,8 @@
     {
       "prefixId": "FRMPS",
       "name": "MOBILYPASS",
-      "amenageurName": "MOBILYGREEN",
-      "exploitantName": "MOBILYGREEN",
+      "amenageurName": "PARERA MOBILITE",
+      "exploitantName": "PARERA MOBILITE",
       "type": "MOBILITY",
       "status": "ACTIVE"
     },
@@ -2899,8 +2899,8 @@
     {
       "prefixId": "FRMW1",
       "name": "MOBILYWEB",
-      "amenageurName": "MOBILYGREEN",
-      "exploitantName": "MOBILYGREEN",
+      "amenageurName": "PARERA MOBILITE",
+      "exploitantName": "PARERA MOBILITE",
       "type": "CHARGE",
       "status": "ACTIVE"
     },
@@ -2918,7 +2918,7 @@
       "amenageurName": "SAS LOAD STATIONS",
       "exploitantName": "SAS LOAD STATIONS",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRNGE",

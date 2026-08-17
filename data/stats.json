@@ -1,5 +1,5 @@
 {
-  "totalRecords": 8095,
+  "totalRecords": 8106,
   "totalInvalidRecords": 0,
   "totalRejectedRows": 2,
   "totalOutOfJurisdictionRows": 7,
@@ -7,9 +7,9 @@
     "AT": 1113,
     "BE": 366,
     "CH": 164,
-    "DE": 3122,
-    "DK": 86,
-    "ES": 325,
+    "DE": 3129,
+    "DK": 87,
+    "ES": 327,
     "FI": 45,
     "FR": 736,
     "GB": 208,
@@ -20,7 +20,7 @@
     "LU": 225,
     "LV": 15,
     "NL": 369,
-    "PL": 847,
+    "PL": 848,
     "PT": 98,
     "SE": 73,
     "SI": 57
@@ -38,16 +38,16 @@
       "EMSP": 71
     },
     "DE": {
-      "CPO": 1669,
-      "EMSP": 1453
+      "CPO": 1673,
+      "EMSP": 1456
     },
     "DK": {
-      "CPO": 58,
+      "CPO": 59,
       "EMSP": 28
     },
     "ES": {
-      "CPO": 245,
-      "EMSP": 80
+      "CPO": 246,
+      "EMSP": 81
     },
     "FI": {
       "CPO": 26,
@@ -88,7 +88,7 @@
       "EMSP": 166
     },
     "PL": {
-      "CPO": 723,
+      "CPO": 724,
       "EMSP": 124
     },
     "PT": {
@@ -105,22 +105,22 @@
     }
   },
   "recordsByRole": {
-    "CPO": 5488,
-    "EMSP": 2607
+    "CPO": 5495,
+    "EMSP": 2611
   },
   "recordsByStatus": {
-    "ACTIVE": 7444,
-    "INACTIVE": 312,
-    "RESERVED": 140,
-    "UNKNOWN": 199
+    "ACTIVE": 7453,
+    "INACTIVE": 319,
+    "RESERVED": 136,
+    "UNKNOWN": 198
   },
   "recordsByRegistry": {
     "at-ladestellen": 1113,
     "benelux-idro": 960,
     "ch-suisseenergie": 164,
-    "de-bdew": 3122,
-    "dk-fstyr": 86,
-    "es-ripree": 325,
+    "de-bdew": 3129,
+    "dk-fstyr": 87,
+    "es-ripree": 327,
     "fi-traficom": 45,
     "fr-afirev": 736,
     "gb-evroam": 278,
@@ -129,7 +129,7 @@
     "ie-tii": 26,
     "lt-vialietuva": 14,
     "lv-lvceli": 15,
-    "pl-eipa": 847,
+    "pl-eipa": 848,
     "pt-mobie": 98,
     "se-energimyndigheten": 73,
     "si-nap": 57
@@ -153,5 +153,5 @@
     "NL": 2
   },
   "staleSources": [],
-  "generatedAt": "2026-08-09T21:07:06.522Z"
+  "generatedAt": "2026-08-17T04:04:25.080Z"
 }

@@ -332,7 +332,7 @@
       "prefixId": "FRABA",
       "name": "CCVBA",
       "amenageurName": "Communauté des communes Vallée des Baux-Alpilles",
-      "exploitantName": "",
+      "exploitantName": "SMEG DEVELOPPEMENT",
       "type": "CHARGE",
       "status": "AWAITING_PAYMENT"
     },
@@ -3718,7 +3718,7 @@
       "amenageurName": "Syndicat Départemental d'Énergies de la Manche (SDEM50)",
       "exploitantName": "ZUNDER France",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRS51",

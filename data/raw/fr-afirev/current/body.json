@@ -598,7 +598,7 @@
       "amenageurName": "EVOTA NETHERLANDS B.V.",
       "exploitantName": "",
       "type": "BOTH",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRAVE",
@@ -611,10 +611,10 @@
     {
       "prefixId": "FRAVI",
       "name": "AVIA",
-      "amenageurName": "",
+      "amenageurName": "Thevenin & Ducrot",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRAVS",
@@ -4118,7 +4118,7 @@
       "amenageurName": "SGA INDUSTRIES",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRSHE",

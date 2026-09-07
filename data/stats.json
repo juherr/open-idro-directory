@@ -1,5 +1,5 @@
 {
-  "totalRecords": 8158,
+  "totalRecords": 8174,
   "totalInvalidRecords": 0,
   "totalRejectedRows": 2,
   "totalOutOfJurisdictionRows": 7,
@@ -7,20 +7,20 @@
     "AT": 1114,
     "BE": 373,
     "CH": 164,
-    "DE": 3156,
+    "DE": 3166,
     "DK": 87,
     "ES": 328,
     "FI": 45,
     "FR": 736,
-    "GB": 212,
+    "GB": 213,
     "GR": 135,
     "HU": 1,
     "IE": 98,
     "LT": 14,
     "LU": 227,
     "LV": 17,
-    "NL": 371,
-    "PL": 849,
+    "NL": 373,
+    "PL": 852,
     "PT": 98,
     "SE": 76,
     "SI": 57
@@ -38,8 +38,8 @@
       "EMSP": 71
     },
     "DE": {
-      "CPO": 1691,
-      "EMSP": 1465
+      "CPO": 1698,
+      "EMSP": 1468
     },
     "DK": {
       "CPO": 59,
@@ -58,7 +58,7 @@
       "EMSP": 149
     },
     "GB": {
-      "CPO": 109,
+      "CPO": 110,
       "EMSP": 103
     },
     "GR": {
@@ -84,11 +84,11 @@
       "EMSP": 7
     },
     "NL": {
-      "CPO": 204,
-      "EMSP": 167
+      "CPO": 205,
+      "EMSP": 168
     },
     "PL": {
-      "CPO": 725,
+      "CPO": 728,
       "EMSP": 124
     },
     "PT": {
@@ -105,31 +105,31 @@
     }
   },
   "recordsByRole": {
-    "CPO": 5528,
-    "EMSP": 2630
+    "CPO": 5540,
+    "EMSP": 2634
   },
   "recordsByStatus": {
-    "ACTIVE": 7495,
-    "INACTIVE": 332,
-    "RESERVED": 132,
-    "UNKNOWN": 199
+    "ACTIVE": 7479,
+    "INACTIVE": 367,
+    "RESERVED": 127,
+    "UNKNOWN": 201
   },
   "recordsByRegistry": {
     "at-ladestellen": 1114,
-    "benelux-idro": 971,
+    "benelux-idro": 973,
     "ch-suisseenergie": 164,
-    "de-bdew": 3156,
+    "de-bdew": 3166,
     "dk-fstyr": 87,
     "es-ripree": 328,
     "fi-traficom": 45,
     "fr-afirev": 736,
-    "gb-evroam": 284,
+    "gb-evroam": 285,
     "gr-electrokinisi": 135,
     "hu-idro": 1,
     "ie-tii": 26,
     "lt-vialietuva": 14,
     "lv-lvceli": 17,
-    "pl-eipa": 849,
+    "pl-eipa": 852,
     "pt-mobie": 98,
     "se-energimyndigheten": 76,
     "si-nap": 57
@@ -153,5 +153,5 @@
     "NL": 2
   },
   "staleSources": [],
-  "generatedAt": "2026-08-31T09:48:05.617Z"
+  "generatedAt": "2026-09-07T08:21:21.841Z"
 }

@@ -2,12 +2,12 @@
 
 ## at-ladestellen
 
-- Previous records: 1113
+- Previous records: 1114
 - Current records: 1114
-- Added: 1
+- Added: 0
 - Updated: 0
 - Removed: 0
-- Unchanged: 1113
+- Unchanged: 1114
 - Unreadable values: 0
 - Out-of-jurisdiction identifiers: 0
 
@@ -16,18 +16,18 @@
 
 | Change | Key | Note |
 | --- | --- | --- |
-| Added | at-ladestellen:AT:VEL:CPO | n/a |
+| None | n/a | n/a |
 
 </details>
 
 ## benelux-idro
 
-- Previous records: 962
-- Current records: 971
-- Added: 9
-- Updated: 1
+- Previous records: 971
+- Current records: 973
+- Added: 2
+- Updated: 3
 - Removed: 0
-- Unchanged: 961
+- Unchanged: 968
 - Unreadable values: 1
 - Out-of-jurisdiction identifiers: 0
 
@@ -36,16 +36,11 @@
 
 | Change | Key | Note |
 | --- | --- | --- |
-| Added | benelux-idro:BE:CR8:CPO | n/a |
-| Added | benelux-idro:BE:CR8:EMSP | n/a |
-| Added | benelux-idro:BE:LUK:CPO | n/a |
-| Added | benelux-idro:BE:LUK:EMSP | n/a |
-| Added | benelux-idro:BE:SIM:CPO | n/a |
-| Added | benelux-idro:LU:LUK:CPO | n/a |
-| Added | benelux-idro:LU:LUK:EMSP | n/a |
-| Added | benelux-idro:NL:LUK:CPO | n/a |
-| Added | benelux-idro:NL:LUK:EMSP | n/a |
-| Updated | benelux-idro:NL:VLN:CPO | n/a |
+| Added | benelux-idro:NL:VOL:CPO | n/a |
+| Added | benelux-idro:NL:VOL:EMSP | n/a |
+| Updated | benelux-idro:BE:MIL:CPO | n/a |
+| Updated | benelux-idro:LU:MIL:CPO | n/a |
+| Updated | benelux-idro:NL:MIL:CPO | n/a |
 | Unreadable | ABC | n/a |
 
 </details>
@@ -72,12 +67,12 @@
 
 ## de-bdew
 
-- Previous records: 3135
-- Current records: 3156
-- Added: 21
-- Updated: 10
+- Previous records: 3156
+- Current records: 3166
+- Added: 10
+- Updated: 0
 - Removed: 0
-- Unchanged: 3125
+- Unchanged: 3156
 - Unreadable values: 0
 - Out-of-jurisdiction identifiers: 0
 
@@ -86,37 +81,16 @@
 
 | Change | Key | Note |
 | --- | --- | --- |
-| Added | de-bdew:DE:113:EMSP | n/a |
-| Added | de-bdew:DE:311:CPO | n/a |
-| Added | de-bdew:DE:ADH:CPO | n/a |
-| Added | de-bdew:DE:ADH:EMSP | n/a |
-| Added | de-bdew:DE:ART:CPO | n/a |
-| Added | de-bdew:DE:ART:EMSP | n/a |
-| Added | de-bdew:DE:HRA:CPO | n/a |
-| Added | de-bdew:DE:HRA:EMSP | n/a |
-| Added | de-bdew:DE:HW1:CPO | n/a |
-| Added | de-bdew:DE:JAS:CPO | n/a |
-| Added | de-bdew:DE:LHS:CPO | n/a |
-| Added | de-bdew:DE:MBE:CPO | n/a |
-| Added | de-bdew:DE:MBE:EMSP | n/a |
-| Added | de-bdew:DE:RIC:CPO | n/a |
-| Added | de-bdew:DE:RIC:EMSP | n/a |
-| Added | de-bdew:DE:ROX:CPO | n/a |
-| Added | de-bdew:DE:STG:CPO | n/a |
-| Added | de-bdew:DE:TIK:CPO | n/a |
-| Added | de-bdew:DE:TIK:EMSP | n/a |
-| Added | de-bdew:DE:UWS:CPO | n/a |
-| Added | de-bdew:DE:UWS:EMSP | n/a |
-| Updated | de-bdew:DE:122:CPO | n/a |
-| Updated | de-bdew:DE:122:EMSP | n/a |
-| Updated | de-bdew:DE:212:CPO | n/a |
-| Updated | de-bdew:DE:212:EMSP | n/a |
-| Updated | de-bdew:DE:CPO:CPO | n/a |
-| Updated | de-bdew:DE:CPO:EMSP | n/a |
-| Updated | de-bdew:DE:NOR:CPO | n/a |
-| Updated | de-bdew:DE:NOR:EMSP | n/a |
-| Updated | de-bdew:DE:Q1B:CPO | n/a |
-| Updated | de-bdew:DE:Q1B:EMSP | n/a |
+| Added | de-bdew:DE:423:CPO | n/a |
+| Added | de-bdew:DE:423:EMSP | n/a |
+| Added | de-bdew:DE:AMT:CPO | n/a |
+| Added | de-bdew:DE:DSG:EMSP | n/a |
+| Added | de-bdew:DE:ELP:CPO | n/a |
+| Added | de-bdew:DE:LEM:CPO | n/a |
+| Added | de-bdew:DE:MRO:CPO | n/a |
+| Added | de-bdew:DE:OSB:CPO | n/a |
+| Added | de-bdew:DE:X4E:CPO | n/a |
+| Added | de-bdew:DE:X4E:EMSP | n/a |
 
 </details>
 
@@ -142,12 +116,12 @@
 
 ## es-ripree
 
-- Previous records: 327
+- Previous records: 328
 - Current records: 328
-- Added: 1
+- Added: 0
 - Updated: 0
 - Removed: 0
-- Unchanged: 327
+- Unchanged: 328
 - Unreadable values: 0
 - Out-of-jurisdiction identifiers: 0
 
@@ -156,7 +130,7 @@
 
 | Change | Key | Note |
 | --- | --- | --- |
-| Added | es-ripree:ES:189:CPO | n/a |
+| None | n/a | n/a |
 
 </details>
 
@@ -185,9 +159,9 @@
 - Previous records: 736
 - Current records: 736
 - Added: 0
-- Updated: 4
+- Updated: 5
 - Removed: 0
-- Unchanged: 732
+- Unchanged: 731
 - Unreadable values: 0
 - Out-of-jurisdiction identifiers: 0
 
@@ -196,19 +170,20 @@
 
 | Change | Key | Note |
 | --- | --- | --- |
-| Updated | fr-afirev:FR:AUT:CPO | n/a |
-| Updated | fr-afirev:FR:AUT:EMSP | n/a |
-| Updated | fr-afirev:FR:AVI:CPO | n/a |
-| Updated | fr-afirev:FR:SGA:CPO | n/a |
+| Updated | fr-afirev:FR:KV2:CPO | n/a |
+| Updated | fr-afirev:FR:KV2:EMSP | n/a |
+| Updated | fr-afirev:FR:MBB:CPO | n/a |
+| Updated | fr-afirev:FR:S84:CPO | n/a |
+| Updated | fr-afirev:FR:UBR:EMSP | n/a |
 
 </details>
 
 ## gb-evroam
 
-- Previous records: 283
-- Current records: 284
+- Previous records: 284
+- Current records: 285
 - Added: 1
-- Updated: 0
+- Updated: 1
 - Removed: 0
 - Unchanged: 283
 - Unreadable values: 0
@@ -219,7 +194,8 @@
 
 | Change | Key | Note |
 | --- | --- | --- |
-| Added | gb-evroam:GB:ZEV:EMSP | n/a |
+| Added | gb-evroam:GB:UFC:CPO | n/a |
+| Updated | gb-evroam:GB:ZAP:EMSP | n/a |
 
 </details>
 
@@ -319,18 +295,18 @@
 
 | Change | Key | Note |
 | --- | --- | --- |
-| Updated | lt-vialietuva:LT:E85:CPO | n/a |
+| Updated | lt-vialietuva:LT:IGN:CPO | n/a |
 
 </details>
 
 ## lv-lvceli
 
-- Previous records: 15
+- Previous records: 17
 - Current records: 17
-- Added: 2
+- Added: 0
 - Updated: 0
 - Removed: 0
-- Unchanged: 15
+- Unchanged: 17
 - Unreadable values: 0
 - Out-of-jurisdiction identifiers: 0
 
@@ -339,19 +315,18 @@
 
 | Change | Key | Note |
 | --- | --- | --- |
-| Added | lv-lvceli:LV:HOV:CPO | n/a |
-| Added | lv-lvceli:LV:HOV:EMSP | n/a |
+| None | n/a | n/a |
 
 </details>
 
 ## pl-eipa
 
 - Previous records: 849
-- Current records: 849
-- Added: 0
-- Updated: 12
+- Current records: 852
+- Added: 3
+- Updated: 37
 - Removed: 0
-- Unchanged: 837
+- Unchanged: 812
 - Unreadable values: 0
 - Out-of-jurisdiction identifiers: 6
 
@@ -360,18 +335,46 @@
 
 | Change | Key | Note |
 | --- | --- | --- |
-| Updated | pl-eipa:PL:8U9:CPO | n/a |
-| Updated | pl-eipa:PL:9QQ:CPO | n/a |
-| Updated | pl-eipa:PL:ANW:CPO | n/a |
-| Updated | pl-eipa:PL:ANW:EMSP | n/a |
-| Updated | pl-eipa:PL:MBX:CPO | n/a |
-| Updated | pl-eipa:PL:NUN:CPO | n/a |
-| Updated | pl-eipa:PL:NXA:CPO | n/a |
-| Updated | pl-eipa:PL:PC7:CPO | n/a |
-| Updated | pl-eipa:PL:RMM:CPO | n/a |
-| Updated | pl-eipa:PL:X4H:CPO | n/a |
-| Updated | pl-eipa:PL:YGR:CPO | n/a |
-| Updated | pl-eipa:PL:YGR:EMSP | n/a |
+| Added | pl-eipa:PL:8WX:CPO | n/a |
+| Added | pl-eipa:PL:NHY:CPO | n/a |
+| Added | pl-eipa:PL:UAU:CPO | n/a |
+| Updated | pl-eipa:PL:1EE:CPO | n/a |
+| Updated | pl-eipa:PL:1NQ:CPO | n/a |
+| Updated | pl-eipa:PL:29A:CPO | n/a |
+| Updated | pl-eipa:PL:2HT:CPO | n/a |
+| Updated | pl-eipa:PL:2HT:EMSP | n/a |
+| Updated | pl-eipa:PL:3CZ:CPO | n/a |
+| Updated | pl-eipa:PL:4ZB:CPO | n/a |
+| Updated | pl-eipa:PL:6XY:CPO | n/a |
+| Updated | pl-eipa:PL:7CC:CPO | n/a |
+| Updated | pl-eipa:PL:7Z6:CPO | n/a |
+| Updated | pl-eipa:PL:AFB:CPO | n/a |
+| Updated | pl-eipa:PL:AXX:CPO | n/a |
+| Updated | pl-eipa:PL:BJ4:CPO | n/a |
+| Updated | pl-eipa:PL:CBG:CPO | n/a |
+| Updated | pl-eipa:PL:D3D:CPO | n/a |
+| Updated | pl-eipa:PL:ES3:CPO | n/a |
+| Updated | pl-eipa:PL:FPK:CPO | n/a |
+| Updated | pl-eipa:PL:GC7:CPO | n/a |
+| Updated | pl-eipa:PL:GPF:CPO | n/a |
+| Updated | pl-eipa:PL:H1G:CPO | n/a |
+| Updated | pl-eipa:PL:HA6:CPO | n/a |
+| Updated | pl-eipa:PL:HFH:CPO | n/a |
+| Updated | pl-eipa:PL:K31:CPO | n/a |
+| Updated | pl-eipa:PL:M1H:CPO | n/a |
+| Updated | pl-eipa:PL:P1U:CPO | n/a |
+| Updated | pl-eipa:PL:PGE:CPO | n/a |
+| Updated | pl-eipa:PL:PUJ:CPO | n/a |
+| Updated | pl-eipa:PL:QGB:CPO | n/a |
+| Updated | pl-eipa:PL:RFW:CPO | n/a |
+| Updated | pl-eipa:PL:RX8:CPO | n/a |
+| Updated | pl-eipa:PL:SE7:CPO | n/a |
+| Updated | pl-eipa:PL:SZZ:CPO | n/a |
+| Updated | pl-eipa:PL:TEO:CPO | n/a |
+| Updated | pl-eipa:PL:TTP:CPO | n/a |
+| Updated | pl-eipa:PL:WEN:CPO | n/a |
+| Updated | pl-eipa:PL:Z1G:CPO | n/a |
+| Updated | pl-eipa:PL:Z63:CPO | n/a |
 | Out of jurisdiction | AT-HTB | AT |
 | Out of jurisdiction | DE-QWC | DE |
 | Out of jurisdiction | FR-FLB | FR |

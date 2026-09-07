@@ -2438,7 +2438,7 @@
       "amenageurName": "KOLEKTIVOLT",
       "exploitantName": "KOLEKTIVOLT",
       "type": "BOTH",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRLAF",
@@ -2726,7 +2726,7 @@
       "amenageurName": "SAS ELEK",
       "exploitantName": "SAS ELEK",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "SUSPENDED"
     },
     {
       "prefixId": "FRMBI",
@@ -3918,7 +3918,7 @@
       "amenageurName": "Syndicat d'Energie Vauclusien (SEV)",
       "exploitantName": "COGELUM IDF (CITEOS)",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRS85",
@@ -4534,7 +4534,7 @@
       "amenageurName": "Uber Charging SAS",
       "exploitantName": "Uber Charging SAS",
       "type": "MOBILITY",
-      "status": "AWAITING_PAYMENT"
+      "status": "SUSPENDED"
     },
     {
       "prefixId": "FRULY",

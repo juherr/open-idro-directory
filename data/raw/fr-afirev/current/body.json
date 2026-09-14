@@ -169,6 +169,14 @@
       "status": "ACTIVE"
     },
     {
+      "prefixId": "FR62B",
+      "name": "Transports BRAY MERICOURT 1",
+      "amenageurName": "SAS BRAY TRANSPORTS",
+      "exploitantName": "SAS BRAY TRANSPORTS",
+      "type": "CHARGE",
+      "status": "ACTIVE"
+    },
+    {
       "prefixId": "FR730",
       "name": "MAIRIE DE MARCK",
       "amenageurName": "",
@@ -1633,6 +1641,14 @@
       "status": "ACTIVE"
     },
     {
+      "prefixId": "FREVG",
+      "name": "EVERGREEN TRUCKS",
+      "amenageurName": "EVERGREEN MOBILITY",
+      "exploitantName": "EVERGREEN MOBILITY",
+      "type": "CHARGE",
+      "status": "ACTIVE"
+    },
+    {
       "prefixId": "FREVM",
       "name": "WELLBORNE EV MAP",
       "amenageurName": "EV MAP",
@@ -1734,7 +1750,7 @@
       "amenageurName": "Freshmile",
       "exploitantName": "Freshmile",
       "type": "CHARGE",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRFR2",
@@ -1782,7 +1798,7 @@
       "amenageurName": "Freshmile",
       "exploitantName": "Freshmile",
       "type": "MOBILITY",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRFRS",
@@ -1857,6 +1873,14 @@
       "status": "SUSPENDED"
     },
     {
+      "prefixId": "FRG17",
+      "name": "CHARG17",
+      "amenageurName": "EL CV 03",
+      "exploitantName": "BOUYGUES ENERGIES & SERVICES",
+      "type": "CHARGE",
+      "status": "ACTIVE"
+    },
+    {
       "prefixId": "FRG29",
       "name": "Immo Mousquetaires",
       "amenageurName": "",
@@ -1903,6 +1927,14 @@
       "exploitantName": "Elli Mobility GmbH",
       "type": "CHARGE",
       "status": "ACTIVE"
+    },
+    {
+      "prefixId": "FRGER",
+      "name": "GERASOL",
+      "amenageurName": "SAS",
+      "exploitantName": "SAS",
+      "type": "MOBILITY",
+      "status": "AWAITING_PAYMENT"
     },
     {
       "prefixId": "FRGF1",
@@ -2555,10 +2587,10 @@
     {
       "prefixId": "FRLOD",
       "name": "LODMI",
-      "amenageurName": "",
+      "amenageurName": "LODMI",
       "exploitantName": "",
       "type": "BOTH",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRLPA",
@@ -5433,5 +5465,5 @@
       "status": "ACTIVE"
     }
   ],
-  "total": 679
+  "total": 683
 }

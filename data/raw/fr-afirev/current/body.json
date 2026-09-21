@@ -123,10 +123,10 @@
     {
       "prefixId": "FR505",
       "name": "50five",
-      "amenageurName": "",
+      "amenageurName": "50FIVE CHARGING SOLUTIONS FRANCE",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "INACTIVE"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FR515",
@@ -606,6 +606,14 @@
       "amenageurName": "EVOTA NETHERLANDS B.V.",
       "exploitantName": "",
       "type": "BOTH",
+      "status": "ACTIVE"
+    },
+    {
+      "prefixId": "FRAV1",
+      "name": "AVIA VOLT -  Thevenin & Ducrot",
+      "amenageurName": "Thevenin & Ducrot",
+      "exploitantName": "Thevenin & Ducrot",
+      "type": "CHARGE",
       "status": "ACTIVE"
     },
     {
@@ -1433,6 +1441,14 @@
       "status": "AWAITING_PAYMENT"
     },
     {
+      "prefixId": "FRELN",
+      "name": "Réseau de recharge public ELEC’CONNECT",
+      "amenageurName": "ELEC'CONNECT",
+      "exploitantName": "ELEC'CONNECT",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
+    },
+    {
       "prefixId": "FRELS",
       "name": "Electus",
       "amenageurName": "PLUGNDEBUG",
@@ -1919,6 +1935,14 @@
       "exploitantName": "",
       "type": "CHARGE",
       "status": "SUSPENDED"
+    },
+    {
+      "prefixId": "FRGAR",
+      "name": "GARDIEN TRANSPORTS",
+      "amenageurName": "GARDIEN TRANSPORTS",
+      "exploitantName": "GARDIEN TRANSPORTS",
+      "type": "CHARGE",
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRGCE",
@@ -5465,5 +5489,5 @@
       "status": "ACTIVE"
     }
   ],
-  "total": 683
+  "total": 686
 }

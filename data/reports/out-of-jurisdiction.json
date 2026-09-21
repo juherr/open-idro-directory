@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-14T08:58:11.566Z",
-  "totalIdentifiers": 7,
+  "generatedAt": "2026-09-21T08:59:36.712Z",
+  "totalIdentifiers": 6,
   "registers": [
     {
       "registryId": "pl-eipa",
@@ -22,7 +22,7 @@
           "sourceValue": "AT-HTB",
           "countryCode": "AT",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-09-14T08:58:11.566Z",
+          "lastDetectedAt": "2026-09-21T08:59:36.712Z",
           "administeredBy": {
             "registryId": "at-ladestellen",
             "authority": {
@@ -37,28 +37,10 @@
           }
         },
         {
-          "sourceValue": "DE-QWC",
-          "countryCode": "DE",
-          "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-09-14T08:58:11.566Z",
-          "administeredBy": {
-            "registryId": "de-bdew",
-            "authority": {
-              "id": "de-bdew",
-              "name": "BDEW",
-              "level": "AUTHORITATIVE",
-              "jurisdictions": [
-                "DE"
-              ],
-              "homepageUrl": "https://bdew-codes.de/"
-            }
-          }
-        },
-        {
           "sourceValue": "FR-FLB",
           "countryCode": "FR",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-09-14T08:58:11.566Z",
+          "lastDetectedAt": "2026-09-21T08:59:36.712Z",
           "administeredBy": {
             "registryId": "fr-afirev",
             "authority": {
@@ -76,7 +58,7 @@
           "sourceValue": "LT*IBG",
           "countryCode": "LT",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-09-14T08:58:11.566Z",
+          "lastDetectedAt": "2026-09-21T08:59:36.712Z",
           "administeredBy": {
             "registryId": "lt-vialietuva",
             "authority": {
@@ -94,7 +76,7 @@
           "sourceValue": "NL-505",
           "countryCode": "NL",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-09-14T08:58:11.566Z",
+          "lastDetectedAt": "2026-09-21T08:59:36.712Z",
           "administeredBy": {
             "registryId": "benelux-idro",
             "authority": {
@@ -114,7 +96,7 @@
           "sourceValue": "NL*TNM",
           "countryCode": "NL",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-09-14T08:58:11.566Z",
+          "lastDetectedAt": "2026-09-21T08:59:36.712Z",
           "administeredBy": {
             "registryId": "benelux-idro",
             "authority": {
@@ -152,7 +134,7 @@
           "sourceValue": "DK*MON",
           "countryCode": "DK",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-09-14T08:58:11.566Z",
+          "lastDetectedAt": "2026-09-21T08:59:36.712Z",
           "administeredBy": {
             "registryId": "dk-fstyr",
             "authority": {

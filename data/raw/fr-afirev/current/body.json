@@ -1038,7 +1038,7 @@
       "amenageurName": "Codetics",
       "exploitantName": "Codetics",
       "type": "MOBILITY",
-      "status": "AWAITING_PAYMENT"
+      "status": "SUSPENDED"
     },
     {
       "prefixId": "FRCPB",
@@ -2973,7 +2973,7 @@
       "name": "SDE2A",
       "amenageurName": "SAS LOAD STATIONS",
       "exploitantName": "SAS LOAD STATIONS",
-      "type": "CHARGE",
+      "type": "BOTH",
       "status": "ACTIVE"
     },
     {
@@ -3023,6 +3023,14 @@
       "exploitantName": "SPIE CITYNETWORKS",
       "type": "CHARGE",
       "status": "AWAITING_PAYMENT"
+    },
+    {
+      "prefixId": "FROCP",
+      "name": "OCPPLab",
+      "amenageurName": "OCPPLab",
+      "exploitantName": "OCPPLab",
+      "type": "MOBILITY",
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRONE",
@@ -3455,6 +3463,14 @@
       "exploitantName": "Boréal Energy",
       "type": "CHARGE",
       "status": "AWAITING_PAYMENT"
+    },
+    {
+      "prefixId": "FRRPL",
+      "name": "Recharge+",
+      "amenageurName": "RECHARGE +",
+      "exploitantName": "RECHARGE +",
+      "type": "CHARGE",
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRRSE",
@@ -4747,10 +4763,10 @@
     {
       "prefixId": "FRVEV",
       "name": "VEV Services Limited",
-      "amenageurName": "",
+      "amenageurName": "VEV PLATFORM SERVICES FRANCE",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "INACTIVE"
+      "status": "SUSPENDED"
     },
     {
       "prefixId": "FRVGF",
@@ -5489,5 +5505,5 @@
       "status": "ACTIVE"
     }
   ],
-  "total": 686
+  "total": 688
 }

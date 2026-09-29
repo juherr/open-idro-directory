@@ -22,6 +22,7 @@ export default defineConfig({
       // Formatting rewrites the escaped Astro island payload, so the captured
       // page would stop matching what SuisseEnergie actually serves.
       "tests/fixtures/ch-suisseenergie/register.html",
+      "tests/fixtures/dk-fstyr/idro-registration-2026-09.html",
       "build/change-summary.md",
       "build/change-summary-pr.md",
     ],

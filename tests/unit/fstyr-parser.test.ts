@@ -19,6 +19,26 @@ describe("Danish Road Traffic Authority parser", () => {
     });
   });
 
+  it("parses the register after its columns were renamed", async () => {
+    // Captured on 2026-09-29: the headers turned bilingual and "CPO-ID nummer"
+    // became "CPO-ID", which made the previous table lookup miss the register.
+    const body = await readFile("tests/fixtures/dk-fstyr/idro-registration-2026-09.html", "utf8");
+    const result = parseFstyrHtml(body);
+
+    expect(result.errors).toHaveLength(0);
+    expect(result.records).toHaveLength(5);
+    expect(result.records[0]).toEqual({
+      cvr: "46268008",
+      companyName: "50five Denmark ApS",
+      cpoIds: ["DK-505"],
+      emspIds: ["DK-505"],
+    });
+    expect(result.records[2]).toMatchObject({ cpoIds: ["DK-ALL"], emspIds: [] });
+    expect(
+      result.records.filter((record) => record.cvr === "40107584").map((record) => record.cpoIds),
+    ).toEqual([["DK-UFC"], ["DK-UFV"]]);
+  });
+
   it("reports a missing registry table", () => {
     const result = parseFstyrHtml(
       "<html><body><table><tr><td>Other</td></tr></table></body></html>",

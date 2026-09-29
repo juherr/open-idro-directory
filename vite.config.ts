@@ -23,6 +23,7 @@ export default defineConfig({
       // page would stop matching what SuisseEnergie actually serves.
       "tests/fixtures/ch-suisseenergie/register.html",
       "build/change-summary.md",
+      "build/change-summary-pr.md",
     ],
   },
   lint: {

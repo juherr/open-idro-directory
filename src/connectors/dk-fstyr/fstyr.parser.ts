@@ -62,9 +62,7 @@ function findRegistryTable(body: string) {
       .map((match) => match[0] ?? "")
       .find(
         (table) =>
-          table.includes("Virksomhed") &&
-          table.includes("CPO-ID nummer") &&
-          table.includes("MSP-ID"),
+          table.includes("Virksomhed") && table.includes("CPO-ID") && table.includes("MSP-ID"),
       ) ?? null
   );
 }

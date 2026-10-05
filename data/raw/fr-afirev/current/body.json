@@ -185,6 +185,14 @@
       "status": "INACTIVE"
     },
     {
+      "prefixId": "FR771",
+      "name": "STATION LIEUSANT STARHAR",
+      "amenageurName": "PARKINVOLT",
+      "exploitantName": "PARKINVOLT",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
+    },
+    {
       "prefixId": "FR777",
       "name": "BE GREEN MOBILITY",
       "amenageurName": "",
@@ -902,6 +910,14 @@
       "amenageurName": "Syndicat Départemental d'Energies de l'Indre (SDEI)",
       "exploitantName": "Syndicat Départemental d'Energies de l'Indre (SDEI)",
       "type": "BOTH",
+      "status": "ACTIVE"
+    },
+    {
+      "prefixId": "FRC4E",
+      "name": "C4Energies",
+      "amenageurName": "C4Energies",
+      "exploitantName": "C4Energies",
+      "type": "CHARGE",
       "status": "ACTIVE"
     },
     {
@@ -5505,5 +5521,5 @@
       "status": "ACTIVE"
     }
   ],
-  "total": 688
+  "total": 690
 }

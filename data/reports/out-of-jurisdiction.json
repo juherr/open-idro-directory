@@ -1,7 +1,43 @@
 {
-  "generatedAt": "2026-09-29T20:21:05.598Z",
-  "totalIdentifiers": 6,
+  "generatedAt": "2026-10-05T10:30:17.800Z",
+  "totalIdentifiers": 7,
   "registers": [
+    {
+      "registryId": "es-ripree",
+      "registryName": "RIPREE",
+      "jurisdictions": [
+        "ES"
+      ],
+      "authority": {
+        "id": "es-miteco",
+        "name": "Ministerio para la Transición Ecológica y el Reto Demográfico",
+        "level": "AUTHORITATIVE",
+        "jurisdictions": [
+          "ES"
+        ],
+        "homepageUrl": "https://energia.serviciosmin.gob.es/RIPREE"
+      },
+      "identifiers": [
+        {
+          "sourceValue": "SE*VGC",
+          "countryCode": "SE",
+          "firstDetectedAt": "2026-10-05T10:30:17.800Z",
+          "lastDetectedAt": "2026-10-05T10:30:17.800Z",
+          "administeredBy": {
+            "registryId": "se-energimyndigheten",
+            "authority": {
+              "id": "se-energimyndigheten",
+              "name": "Swedish Energy Agency",
+              "level": "AUTHORITATIVE",
+              "jurisdictions": [
+                "SE"
+              ],
+              "homepageUrl": "https://www.energimyndigheten.se/klimat/transporter/laddinfrastruktur/identification-registration-organisation-idro/"
+            }
+          }
+        }
+      ]
+    },
     {
       "registryId": "pl-eipa",
       "registryName": "EIPA",
@@ -22,7 +58,7 @@
           "sourceValue": "AT-HTB",
           "countryCode": "AT",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-09-29T20:21:05.598Z",
+          "lastDetectedAt": "2026-10-05T10:30:17.800Z",
           "administeredBy": {
             "registryId": "at-ladestellen",
             "authority": {
@@ -40,7 +76,7 @@
           "sourceValue": "FR-FLB",
           "countryCode": "FR",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-09-29T20:21:05.598Z",
+          "lastDetectedAt": "2026-10-05T10:30:17.800Z",
           "administeredBy": {
             "registryId": "fr-afirev",
             "authority": {
@@ -58,7 +94,7 @@
           "sourceValue": "LT*IBG",
           "countryCode": "LT",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-09-29T20:21:05.598Z",
+          "lastDetectedAt": "2026-10-05T10:30:17.800Z",
           "administeredBy": {
             "registryId": "lt-vialietuva",
             "authority": {
@@ -76,7 +112,7 @@
           "sourceValue": "NL-505",
           "countryCode": "NL",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-09-29T20:21:05.598Z",
+          "lastDetectedAt": "2026-10-05T10:30:17.800Z",
           "administeredBy": {
             "registryId": "benelux-idro",
             "authority": {
@@ -96,7 +132,7 @@
           "sourceValue": "NL*TNM",
           "countryCode": "NL",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-09-29T20:21:05.598Z",
+          "lastDetectedAt": "2026-10-05T10:30:17.800Z",
           "administeredBy": {
             "registryId": "benelux-idro",
             "authority": {
@@ -134,7 +170,7 @@
           "sourceValue": "DK*MON",
           "countryCode": "DK",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-09-29T20:21:05.598Z",
+          "lastDetectedAt": "2026-10-05T10:30:17.800Z",
           "administeredBy": {
             "registryId": "dk-fstyr",
             "authority": {

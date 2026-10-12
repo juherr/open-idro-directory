@@ -201,6 +201,14 @@
       "status": "SUSPENDED"
     },
     {
+      "prefixId": "FR861",
+      "name": "STATION POITIERS OGEC",
+      "amenageurName": "PARKINVOLT",
+      "exploitantName": "PARKINVOLT",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
+    },
+    {
       "prefixId": "FR911",
       "name": "Porsche Sales & Marketplace GmbH",
       "amenageurName": "PORSCHE SALES & MARKETPLACE GMBH",
@@ -935,6 +943,14 @@
       "exploitantName": "E-TOTEM INFRASTRUCTURES 2",
       "type": "CHARGE",
       "status": "ACTIVE"
+    },
+    {
+      "prefixId": "FRCAG",
+      "name": "Réseau Connect&go",
+      "amenageurName": "Usine d'Électricité de Metz",
+      "exploitantName": "Usine d'Électricité de Metz",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
     },
     {
       "prefixId": "FRCAI",
@@ -2473,6 +2489,14 @@
       "status": "ACTIVE"
     },
     {
+      "prefixId": "FRJ0M",
+      "name": "Rave Pays de Loire - Thouaré sur Loire",
+      "amenageurName": "RAVE PAYS DE LOIRE",
+      "exploitantName": "RAVE PAYS DE LOIRE",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
+    },
+    {
       "prefixId": "FRJBA",
       "name": "E-MOTUM",
       "amenageurName": "E-MOTUM",
@@ -2985,6 +3009,14 @@
       "status": "ACTIVE"
     },
     {
+      "prefixId": "FRNAO",
+      "name": "NaoVolt",
+      "amenageurName": "NaoVolt",
+      "exploitantName": "NaoVolt",
+      "type": "CHARGE",
+      "status": "ACTIVE"
+    },
+    {
       "prefixId": "FRNDA",
       "name": "SDE2A",
       "amenageurName": "SAS LOAD STATIONS",
@@ -3158,7 +3190,7 @@
       "amenageurName": "Petite Borne",
       "exploitantName": "Petite Borne",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "SUSPENDED"
     },
     {
       "prefixId": "FRPD1",
@@ -4622,7 +4654,15 @@
       "amenageurName": "Uber Charging SAS",
       "exploitantName": "Uber Charging SAS",
       "type": "MOBILITY",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
+    },
+    {
+      "prefixId": "FRUEM",
+      "name": "Usine d'électricité de Metz (UEM)",
+      "amenageurName": "Usine d'Électricité de Metz",
+      "exploitantName": "Freshmile",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
     },
     {
       "prefixId": "FRULY",
@@ -5521,5 +5561,5 @@
       "status": "ACTIVE"
     }
   ],
-  "total": 690
+  "total": 695
 }

@@ -1,29 +1,33 @@
 import type { ParseOutput } from "../connector.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { croIdroCsvRowSchema, type CroIdroCsvRow } from "./croidro.types.js";
+import { croIdroHtmlRowSchema, type CroIdroHtmlRow } from "./croidro.types.js";
 
-const EXPECTED_HEADERS = ["Naziv tvrtke/osobe", "CPO ID", "MSP ID"];
-const ALTERNATE_COMPANY_HEADERS = new Set(["Naziv tvrtke/osobe", "Naziv tvrtke / osobe"]);
+const COMPANY_HEADERS = new Set(["Naziv tvrtke / osobe", "Naziv tvrtke/osobe"]);
+const IDENTIFIER_HEADERS = ["CPO ID", "MSP ID"];
+const COLUMN_COUNT = 1 + IDENTIFIER_HEADERS.length;
 
-export function parseCroIdroCsv(body: string): ParseOutput<CroIdroCsvRow> {
+export function parseCroIdroHtml(body: string): ParseOutput<CroIdroHtmlRow> {
   const warnings: ValidationIssue[] = [];
   const errors: ValidationIssue[] = [];
-  const rows = parseCsv(body);
-  if (rows.length === 0) {
+  const table = findRegistryTable(body);
+  if (!table) {
     return {
       records: [],
       warnings,
       errors: [
         {
           severity: "error",
-          code: "CROIDRO_EMPTY_CSV",
-          message: "Croatian IDRO export is empty.",
+          code: "CROIDRO_TABLE_NOT_FOUND",
+          message: "Croatian IDRO registry table was not found in the search page.",
         },
       ],
     };
   }
 
-  const headers = rows[0] ?? [];
+  const rows = matchAll(table, /<tr\b[^>]*>([\s\S]*?)<\/tr>/gi).map((match) => match[1] ?? "");
+  const headers = rows.flatMap((row) =>
+    matchAll(row, /<th\b[^>]*>([\s\S]*?)<\/th>/gi).map((match) => htmlText(match[1] ?? "")),
+  );
   if (!hasExpectedHeaders(headers)) {
     return {
       records: [],
@@ -32,105 +36,107 @@ export function parseCroIdroCsv(body: string): ParseOutput<CroIdroCsvRow> {
         {
           severity: "error",
           code: "CROIDRO_UNEXPECTED_HEADERS",
-          message: `Unexpected Croatian IDRO CSV headers: ${headers.join(", ")}`,
+          message: `Unexpected Croatian IDRO table headers: ${headers.join(", ")}`,
         },
       ],
     };
   }
 
-  const records: CroIdroCsvRow[] = [];
-  rows.slice(1).forEach((row, index) => {
-    if (row.length === 1 && clean(row[0]) === null) return;
-    if (row.length !== EXPECTED_HEADERS.length) {
+  const records: CroIdroHtmlRow[] = [];
+  let dataRows = 0;
+  for (const [index, rowHtml] of rows.entries()) {
+    const cells = matchAll(rowHtml, /<td\b[^>]*>([\s\S]*?)<\/td>/gi).map((match) =>
+      htmlText(match[1] ?? ""),
+    );
+    if (cells.length === 0) continue;
+    dataRows++;
+    if (cells.length !== COLUMN_COUNT) {
       errors.push({
         severity: "error",
         code: "CROIDRO_MALFORMED_ROW",
-        message: `Croatian IDRO row ${index + 2} has ${row.length} columns instead of ${EXPECTED_HEADERS.length}.`,
+        message: `Croatian IDRO row ${index + 1} has ${cells.length} columns instead of ${COLUMN_COUNT}.`,
       });
-      return;
+      continue;
     }
 
-    const record = croIdroCsvRowSchema.safeParse({
-      companyName: row[0],
-      cpoIds: parseIdentifierList(row[1]),
-      emspIds: parseIdentifierList(row[2]),
+    const record = croIdroHtmlRowSchema.safeParse({
+      companyName: cells[0],
+      cpoIds: parseIdentifierList(cells[1]),
+      emspIds: parseIdentifierList(cells[2]),
     });
     if (!record.success) {
       errors.push({
         severity: "error",
         code: "CROIDRO_MALFORMED_ROW",
-        message: `Croatian IDRO row ${index + 2} is malformed: ${record.error.message}`,
+        message: `Croatian IDRO row ${index + 1} is malformed: ${record.error.message}`,
       });
-      return;
+      continue;
     }
     records.push(record.data);
-  });
+  }
+
+  // The register is not empty: a table without rows means the page did not
+  // render it, and publishing that would read as every identifier withdrawn.
+  if (dataRows === 0) {
+    errors.push({
+      severity: "error",
+      code: "CROIDRO_EMPTY_TABLE",
+      message: "Croatian IDRO registry table has no rows.",
+    });
+  }
 
   return { records, warnings, errors };
 }
 
-function hasExpectedHeaders(headers: string[]) {
+function findRegistryTable(body: string) {
   return (
-    headers.length === EXPECTED_HEADERS.length &&
-    ALTERNATE_COMPANY_HEADERS.has(headers[0] ?? "") &&
-    headers[1] === EXPECTED_HEADERS[1] &&
-    headers[2] === EXPECTED_HEADERS[2]
+    matchAll(body, /<table\b[^>]*>[\s\S]*?<\/table>/gi)
+      .map((match) => match[0] ?? "")
+      .find((table) => IDENTIFIER_HEADERS.every((header) => table.includes(header))) ?? null
   );
 }
 
-function parseCsv(body: string) {
-  const rows: string[][] = [];
-  let row: string[] = [];
-  let cell = "";
-  let quoted = false;
-
-  for (let index = 0; index < body.length; index++) {
-    const char = body[index];
-    if (quoted) {
-      if (char === '"' && body[index + 1] === '"') {
-        cell += '"';
-        index++;
-      } else if (char === '"') {
-        quoted = false;
-      } else {
-        cell += char;
-      }
-      continue;
-    }
-
-    if (char === '"') {
-      quoted = true;
-    } else if (char === ",") {
-      row.push(cell);
-      cell = "";
-    } else if (char === "\n") {
-      row.push(cell);
-      rows.push(row);
-      row = [];
-      cell = "";
-    } else if (char !== "\r") {
-      cell += char;
-    }
-  }
-
-  if (quoted) throw new Error("Unterminated quoted CSV field.");
-  if (cell.length > 0 || row.length > 0) {
-    row.push(cell);
-    rows.push(row);
-  }
-  return rows;
+function hasExpectedHeaders(headers: string[]) {
+  return (
+    headers.length === COLUMN_COUNT &&
+    COMPANY_HEADERS.has(headers[0] ?? "") &&
+    IDENTIFIER_HEADERS.every((header, index) => headers[index + 1] === header)
+  );
 }
 
 function parseIdentifierList(value: string | undefined) {
   const cleaned = clean(value);
   if (!cleaned) return [];
   return cleaned
-    .split(/\s*[;|]\s*/)
+    .split(/[\s;|]+/)
     .map(clean)
     .filter((item): item is string => item !== null);
 }
 
-function clean(value: string | undefined) {
+function htmlText(value: string) {
+  return decodeEntities(value.replace(/<[^>]*>/g, " "))
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function decodeEntities(value: string) {
+  return value
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex: string) =>
+      String.fromCodePoint(Number.parseInt(hex, 16)),
+    )
+    .replace(/&#(\d+);/g, (_, code: string) => String.fromCodePoint(Number.parseInt(code, 10)))
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&quot;/gi, '"')
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&amp;/gi, "&");
+}
+
+function clean(value: string | null | undefined) {
   const trimmed = (value ?? "").trim();
   return trimmed.length > 0 ? trimmed : null;
+}
+
+function matchAll(value: string, pattern: RegExp) {
+  return [...value.matchAll(pattern)];
 }

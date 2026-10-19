@@ -562,7 +562,7 @@
       "homepageUrl": "https://pametnamobilnost.hr/idro/Pretraga"
     },
     "registry": {
-      "url": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "url": "https://pametnamobilnost.hr/idro/Pretraga",
       "observationType": "OFFICIAL_ASSIGNMENT",
       "supportedRoles": [
         "CPO",
@@ -574,7 +574,7 @@
     },
     "publication": {
       "connector": "hr-croidro",
-      "machineReadableUrl": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
+      "machineReadableUrl": null,
       "refreshSchedule": "weekly",
       "enabled": true,
       "verifiedAt": null

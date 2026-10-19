@@ -2,14 +2,14 @@ id: hr-croidro
 name: Croatian IDRO
 authorityId: hr-croidro
 registry:
-  url: https://pametnamobilnost.hr/idro/Home/IspisiCSV
+  url: https://pametnamobilnost.hr/idro/Pretraga
   observationType: OFFICIAL_ASSIGNMENT
   supportedRoles:
     - CPO
     - EMSP
 publication:
   connector: hr-croidro
-  machineReadableUrl: https://pametnamobilnost.hr/idro/Home/IspisiCSV
+  machineReadableUrl: null
   refreshSchedule: weekly
   enabled: true
   verifiedAt: null
@@ -26,4 +26,7 @@ reuse:
   notes: No explicit reuse terms have been identified.
 notes: >
   Official Croatian registry of Charge Point Operator and Mobility Service Provider
-  identifiers. The public search page exposes a CSV export endpoint.
+  identifiers, read from the table of the public search page. The page also links a
+  CSV export, which is not used: it returns its header row alone without the
+  page's session cookie, drops the HR- prefix of identifiers, and replaces every
+  non-ASCII letter of organization names with "?".

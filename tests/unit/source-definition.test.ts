@@ -288,7 +288,6 @@ describe("the published source catalog", () => {
       "es-ripree": "https://energia.serviciosmin.gob.es/Ripree/ExportarEmpresas/GenerarXml",
       "fr-afirev": "https://api.afirev.fr/public/prefixes",
       "gb-evroam": "https://evroam.org.uk/_functions/getRegister",
-      "hr-croidro": "https://pametnamobilnost.hr/idro/Home/IspisiCSV",
       "lt-vialietuva": "https://ev.vialietuva.lt/ocpi/2.3.0/locations",
       "lv-lvceli": "https://www.transportdata.gov.lv/api/v1/content/en/idro?_format=json",
       "pl-eipa": "https://eipa.udt.gov.pl/list/csv",

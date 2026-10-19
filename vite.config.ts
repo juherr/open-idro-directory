@@ -23,6 +23,7 @@ export default defineConfig({
       // page would stop matching what SuisseEnergie actually serves.
       "tests/fixtures/ch-suisseenergie/register.html",
       "tests/fixtures/dk-fstyr/idro-registration-2026-09.html",
+      "tests/fixtures/hr-croidro/pretraga-2026-10.html",
       "tests/fixtures/se-energimyndigheten/idro-landing-page-2026-10.html",
       "build/change-summary.md",
       "build/change-summary-pr.md",

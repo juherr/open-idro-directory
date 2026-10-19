@@ -34,7 +34,7 @@ const SOURCE_PRESENTATIONS: SourcePresentation[] = [
   {
     id: "hr-croidro",
     coverage: "Supported: 🇭🇷",
-    mechanism: "Public CSV export from the ID register",
+    mechanism: "Public HTML table from the ID register search page",
   },
   {
     id: "cy-ems",

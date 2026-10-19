@@ -19,7 +19,7 @@ registry.
 | Ladestellen.at (`at-ladestellen`) | Supported: 🇦🇹 | Public JSON endpoint used by Ladestellen.at's admin UI | Undetermined |
 | AFIREV (`fr-afirev`) | Supported: 🇫🇷 | Public JSON endpoint used by AFIREV's embedded directory | Undetermined |
 | Benelux IDRO (`benelux-idro`) | Supported: 🇧🇪, 🇳🇱; 🇱🇺 via regional source | Public CSV export from the ID register | Undetermined |
-| Croatian IDRO (`hr-croidro`) | Supported: 🇭🇷 | Public CSV export from the ID register | Undetermined |
+| Croatian IDRO (`hr-croidro`) | Supported: 🇭🇷 | Public HTML table from the ID register search page | Undetermined |
 | Cyprus EMS (`cy-ems`) | IDRO known; list unavailable: 🇨🇾 | Temporary EMS page; no identifier list found yet | Undetermined |
 | Danish Road Traffic Authority (`dk-fstyr`) | Supported: 🇩🇰 | Public HTML table from the IDRO registration page | Undetermined |
 | BDEW (`de-bdew`) | Supported: 🇩🇪 | Public paginated JSON endpoint | Undetermined |

@@ -16,12 +16,12 @@ import {
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
 import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
-import { parseCroIdroCsv } from "./croidro.parser.js";
-import type { CroIdroCsvRow } from "./croidro.types.js";
+import { parseCroIdroHtml } from "./croidro.parser.js";
+import type { CroIdroHtmlRow } from "./croidro.types.js";
 
 const SOURCE_HOSTS = ["pametnamobilnost.hr"];
 
-export class CroIdroConnector implements RegistryConnector<CroIdroCsvRow> {
+export class CroIdroConnector implements RegistryConnector<CroIdroHtmlRow> {
   readonly sourceId = "hr-croidro";
 
   async fetch(context: FetchContext): Promise<FetchResult> {
@@ -38,7 +38,7 @@ export class CroIdroConnector implements RegistryConnector<CroIdroCsvRow> {
         allowedHosts: SOURCE_HOSTS,
         userAgent: context.userAgent,
         headers: {
-          Accept: "text/csv,*/*",
+          Accept: "text/html,*/*",
           Referer: context.source.authority.homepageUrl,
         },
       },
@@ -58,9 +58,9 @@ export class CroIdroConnector implements RegistryConnector<CroIdroCsvRow> {
     };
   }
 
-  async parse(input: ParseInput): Promise<ParseOutput<CroIdroCsvRow>> {
+  async parse(input: ParseInput): Promise<ParseOutput<CroIdroHtmlRow>> {
     try {
-      return parseCroIdroCsv(input.body);
+      return parseCroIdroHtml(input.body);
     } catch (error) {
       return {
         records: [],
@@ -68,7 +68,7 @@ export class CroIdroConnector implements RegistryConnector<CroIdroCsvRow> {
         errors: [
           {
             severity: "error",
-            code: "CROIDRO_INVALID_CSV",
+            code: "CROIDRO_INVALID_HTML",
             message: error instanceof Error ? error.message : String(error),
           },
         ],
@@ -76,7 +76,7 @@ export class CroIdroConnector implements RegistryConnector<CroIdroCsvRow> {
     }
   }
 
-  async normalize(input: NormalizeInput<CroIdroCsvRow>): Promise<NormalizeOutput> {
+  async normalize(input: NormalizeInput<CroIdroHtmlRow>): Promise<NormalizeOutput> {
     const warnings: ValidationIssue[] = [];
     const errors: ValidationIssue[] = [];
     const records: NormalizedRegistryRecord[] = [];

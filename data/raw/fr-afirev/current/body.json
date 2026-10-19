@@ -169,6 +169,14 @@
       "status": "ACTIVE"
     },
     {
+      "prefixId": "FR5XG",
+      "name": "RAVE CROISSANCE",
+      "amenageurName": "RAVE PAYS DE LOIRE",
+      "exploitantName": "CHARGEPOLY",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
+    },
+    {
       "prefixId": "FR62B",
       "name": "Transports BRAY MERICOURT 1",
       "amenageurName": "SAS BRAY TRANSPORTS",
@@ -206,7 +214,7 @@
       "amenageurName": "PARKINVOLT",
       "exploitantName": "PARKINVOLT",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FR911",
@@ -415,6 +423,14 @@
       "exploitantName": "BOUYGUES ENERGIES & SERVICES",
       "type": "MOBILITY",
       "status": "AWAITING_PAYMENT"
+    },
+    {
+      "prefixId": "FRALA",
+      "name": "ALANTYS GREEN ENERGY",
+      "amenageurName": "ALANTYS GREEN ENERGY",
+      "exploitantName": "ALANTYS GREEN ENERGY",
+      "type": "MOBILITY",
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRALD",
@@ -948,7 +964,7 @@
       "prefixId": "FRCAG",
       "name": "Réseau Connect&go",
       "amenageurName": "Usine d'Électricité de Metz",
-      "exploitantName": "Usine d'Électricité de Metz",
+      "exploitantName": "Freshmile",
       "type": "CHARGE",
       "status": "AWAITING_PAYMENT"
     },
@@ -1038,7 +1054,7 @@
       "amenageurName": "SOCIETE DE PROMOTION CONSTRUCTION MG",
       "exploitantName": "PICOTY",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRCMP",
@@ -1599,6 +1615,14 @@
       "exploitantName": "ERANOVUM E-MOBILITY FRANCE",
       "type": "CHARGE",
       "status": "ACTIVE"
+    },
+    {
+      "prefixId": "FRERI",
+      "name": "Erinion SAS",
+      "amenageurName": "Erinion SAS",
+      "exploitantName": "Erinion SAS",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
     },
     {
       "prefixId": "FRESE",
@@ -3535,6 +3559,14 @@
       "exploitantName": "",
       "type": "MOBILITY",
       "status": "INACTIVE"
+    },
+    {
+      "prefixId": "FRRVC",
+      "name": "RAVE CROISSANCE",
+      "amenageurName": "RAVE CROISSANCE",
+      "exploitantName": "CHARGEPOLY",
+      "type": "CHARGE",
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRRVE",
@@ -5561,5 +5593,5 @@
       "status": "ACTIVE"
     }
   ],
-  "total": 695
+  "total": 699
 }

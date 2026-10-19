@@ -9,20 +9,31 @@ import type {
   RegistryConnector,
 } from "../connector.js";
 import { makeRegistryKey, type NormalizedRegistryRecord } from "../../domain/registry-record.js";
-import { getBinary, sha256 } from "../../infrastructure/http/http-client.js";
+import { getBinary, getText, sha256 } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
 import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { parseEnergimyndighetenSnapshot } from "./energimyndigheten.parser.js";
 import type { EnergimyndighetenRow } from "./energimyndigheten.types.js";
 
 const SOURCE_HOSTS = ["www.energimyndigheten.se"];
+const MAX_LANDING_PAGE_BYTES = 2_000_000;
+const MAX_WORKBOOK_BYTES = 5_000_000;
+/** Every XLSX workbook is a ZIP archive, which opens with a local file header. */
+const ZIP_SIGNATURE = Buffer.from([0x50, 0x4b, 0x03, 0x04]);
+
 /**
  * The register only publishes the EMSP workbook through its landing page, so
- * unlike the CPO one it has no descriptor field to come from.
+ * unlike the CPO one it has no descriptor field to come from. Its file name is
+ * not stable either: `register-for-emsp.xlsx` became
+ * `register-for-emsp-2026.xlsx` in October 2026, and the old path then served
+ * the site's 404 page with status 200.
  */
-const EMSP_URL =
-  "https://www.energimyndigheten.se/globalassets/klimat/laddinfrastruktur/register-for-emsp.xlsx";
-const MAX_WORKBOOK_BYTES = 5_000_000;
+export function energimyndighetenWorkbookUrls(source: SourceDefinition, landingPage: string) {
+  return {
+    cpo: source.registry.url,
+    emsp: findEnergimyndighetenEmspWorkbookUrl(landingPage, source.authority.homepageUrl),
+  };
+}
 
 /**
  * The landing page links both workbooks through a cache-busting segment the CMS
@@ -31,15 +42,35 @@ const MAX_WORKBOOK_BYTES = 5_000_000;
  * `/globalassets/` path. Pinning the hash would make the pipeline chase a value
  * that changes whenever the agency edits the register.
  */
-export function energimyndighetenWorkbookUrls(source: SourceDefinition) {
-  return { cpo: source.registry.url, emsp: EMSP_URL };
+export function findEnergimyndighetenEmspWorkbookUrl(landingPage: string, pageUrl: string) {
+  const href = /href="([^"]*\/register-for-emsp[^"/]*\.xlsx)"/i.exec(landingPage)?.[1];
+  if (!href) {
+    throw new Error(`No EMSP workbook link was found on ${pageUrl}.`);
+  }
+  const url = new URL(href, pageUrl);
+  url.pathname = url.pathname.replace(/^\/[0-9a-f]+\/globalassets\//i, "/globalassets/");
+  return url.toString();
+}
+
+export function assertEnergimyndighetenWorkbook(body: Buffer, url: string) {
+  if (!body.subarray(0, ZIP_SIGNATURE.length).equals(ZIP_SIGNATURE)) {
+    throw new Error(`${url} did not return an XLSX workbook.`);
+  }
 }
 
 export class EnergimyndighetenConnector implements RegistryConnector<EnergimyndighetenRow> {
   readonly sourceId = "se-energimyndigheten";
 
   async fetch(context: FetchContext): Promise<FetchResult> {
-    const urls = energimyndighetenWorkbookUrls(context.source);
+    const landingPage = await getText(context.source.authority.homepageUrl, {
+      timeoutMs: 30_000,
+      retries: 2,
+      maxBytes: MAX_LANDING_PAGE_BYTES,
+      allowedHosts: SOURCE_HOSTS,
+      userAgent: context.userAgent,
+      headers: { Accept: "text/html,*/*" },
+    });
+    const urls = energimyndighetenWorkbookUrls(context.source, landingPage.body);
     const [cpo, emsp] = await Promise.all([
       fetchWorkbook(urls.cpo, context),
       fetchWorkbook(urls.emsp, context),
@@ -161,6 +192,7 @@ async function fetchWorkbook(url: string, context: FetchContext) {
       Referer: context.source.authority.homepageUrl,
     },
   });
+  assertEnergimyndighetenWorkbook(response.body, response.finalUrl);
 
   return {
     url: response.finalUrl,

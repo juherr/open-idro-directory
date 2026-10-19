@@ -2,8 +2,10 @@ import { readFile } from "node:fs/promises";
 import { strToU8, zipSync } from "fflate";
 import { describe, expect, it } from "vitest";
 import {
+  assertEnergimyndighetenWorkbook,
   EnergimyndighetenConnector,
   energimyndighetenWorkbookUrls,
+  findEnergimyndighetenEmspWorkbookUrl,
 } from "../../src/connectors/se-energimyndigheten/energimyndigheten.connector.js";
 import { parseEnergimyndighetenSnapshot } from "../../src/connectors/se-energimyndigheten/energimyndigheten.parser.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
@@ -11,24 +13,66 @@ import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source
 const CPO_URL =
   "https://www.energimyndigheten.se/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx";
 const EMSP_URL =
-  "https://www.energimyndigheten.se/globalassets/klimat/laddinfrastruktur/register-for-emsp.xlsx";
+  "https://www.energimyndigheten.se/globalassets/klimat/laddinfrastruktur/register-for-emsp-2026.xlsx";
+const LANDING_PAGE_FIXTURE = "tests/fixtures/se-energimyndigheten/idro-landing-page-2026-10.html";
 
 describe("Swedish Energy Agency workbook URLs", () => {
+  const landingPageUrl =
+    "https://www.energimyndigheten.se/klimat/transporter/laddinfrastruktur/identification-registration-organisation-idro/";
+
   it("takes the CPO workbook from the source descriptor", async () => {
     const source = await loadSourceDefinition("se-energimyndigheten");
+    const landingPage = await readFile(LANDING_PAGE_FIXTURE, "utf8");
 
-    expect(energimyndighetenWorkbookUrls(source).cpo).toBe(source.registry.url);
+    expect(energimyndighetenWorkbookUrls(source, landingPage).cpo).toBe(source.registry.url);
+  });
+
+  // The EMSP workbook went from `register-for-emsp.xlsx` to
+  // `register-for-emsp-2026.xlsx` in October 2026: only the landing page knows
+  // its current name.
+  it("finds the EMSP workbook linked from the landing page", async () => {
+    const landingPage = await readFile(LANDING_PAGE_FIXTURE, "utf8");
+
+    expect(findEnergimyndighetenEmspWorkbookUrl(landingPage, landingPageUrl)).toBe(
+      "https://www.energimyndigheten.se/globalassets/klimat/laddinfrastruktur/register-for-emsp-2026.xlsx",
+    );
+  });
+
+  it("reports a landing page that no longer links an EMSP workbook", () => {
+    expect(() =>
+      findEnergimyndighetenEmspWorkbookUrl(
+        '<p><a href="/4a842b/globalassets/klimat/laddinfrastruktur/register-av-identifieringsdata.xlsx">CPO</a></p>',
+        landingPageUrl,
+      ),
+    ).toThrow(/EMSP workbook link/);
   });
 
   // The register page rewrites the asset hash on every upload, so a URL that
   // carries one is a URL that will stop matching the page it was copied from.
   it("pins both workbooks to the path that outlives the rotating asset hash", async () => {
     const source = await loadSourceDefinition("se-energimyndigheten");
-    const urls = energimyndighetenWorkbookUrls(source);
+    const landingPage = await readFile(LANDING_PAGE_FIXTURE, "utf8");
+    const urls = energimyndighetenWorkbookUrls(source, landingPage);
 
     for (const url of [urls.cpo, urls.emsp]) {
       expect(new URL(url).pathname).toMatch(/^\/globalassets\//);
     }
+  });
+});
+
+describe("Swedish Energy Agency workbook download", () => {
+  it("accepts an XLSX workbook", () => {
+    expect(() =>
+      assertEnergimyndighetenWorkbook(Buffer.from(workbookBase64([["ID"]]), "base64"), EMSP_URL),
+    ).not.toThrow();
+  });
+
+  // A removed workbook is answered with the site's HTML 404 page and status
+  // 200, which the XLSX reader then rejects without saying where it came from.
+  it("names the URL when a workbook URL serves something else", () => {
+    expect(() =>
+      assertEnergimyndighetenWorkbook(Buffer.from("<!DOCTYPE html><html></html>"), EMSP_URL),
+    ).toThrow(`${EMSP_URL} did not return an XLSX workbook`);
   });
 });
 

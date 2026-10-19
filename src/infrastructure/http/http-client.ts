@@ -101,7 +101,10 @@ export async function getText(
   if (lastError instanceof Error && lastError.name === "AbortError") {
     throw new HttpError(`Timeout while fetching ${url}`, "timeout");
   }
-  throw new HttpError(`Network error while fetching ${url}`, "network");
+  throw new HttpError(
+    `Network error while fetching ${url}${networkErrorDetail(lastError)}`,
+    "network",
+  );
 }
 
 export async function getBinary(
@@ -167,7 +170,10 @@ export async function getBinary(
   if (lastError instanceof Error && lastError.name === "AbortError") {
     throw new HttpError(`Timeout while fetching ${url}`, "timeout");
   }
-  throw new HttpError(`Network error while fetching ${url}`, "network");
+  throw new HttpError(
+    `Network error while fetching ${url}${networkErrorDetail(lastError)}`,
+    "network",
+  );
 }
 
 export async function postText(
@@ -229,7 +235,22 @@ export async function postText(
   if (lastError instanceof Error && lastError.name === "AbortError") {
     throw new HttpError(`Timeout while posting to ${url}`, "timeout");
   }
-  throw new HttpError(`Network error while posting to ${url}`, "network");
+  throw new HttpError(
+    `Network error while posting to ${url}${networkErrorDetail(lastError)}`,
+    "network",
+  );
+}
+
+/**
+ * Node's fetch rejects with a bare "fetch failed" and keeps the reason -- an
+ * expired certificate, a refused connection -- in `cause`, which a report that
+ * only shows the message would otherwise lose.
+ */
+function networkErrorDetail(error: unknown) {
+  if (!(error instanceof Error)) return "";
+  const detail = error.cause instanceof Error ? error.cause : error;
+  const code = (detail as { code?: unknown }).code;
+  return typeof code === "string" ? ` (${code}: ${detail.message})` : ` (${detail.message})`;
 }
 
 function validateUrl(rawUrl: string, allowedHosts: string[]) {

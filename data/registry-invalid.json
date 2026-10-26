@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-19T09:40:51.018Z",
+  "generatedAt": "2026-10-26T08:59:32.423Z",
   "records": [
     {
       "reasons": [
@@ -157,7 +157,16 @@
       "sourceValue": "ABC",
       "message": "Unexpected Benelux IDRO identifier syntax: ABC",
       "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-      "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+      "lastDetectedAt": "2026-10-26T08:59:32.423Z",
+      "supersededBy": null
+    },
+    {
+      "registryId": "dk-fstyr",
+      "code": "FSTYR_MALFORMED_IDENTIFIER",
+      "sourceValue": "KD-NSS",
+      "message": "Unexpected Danish IDRO identifier syntax: KD-NSS",
+      "firstDetectedAt": "2026-10-26T08:59:32.423Z",
+      "lastDetectedAt": "2026-10-26T08:59:32.423Z",
       "supersededBy": null
     },
     {
@@ -166,7 +175,7 @@
       "sourceValue": "GR * FRΤ",
       "message": "Unexpected Greek IDRO identifier syntax: GR * FRΤ",
       "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-      "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+      "lastDetectedAt": "2026-10-26T08:59:32.423Z",
       "supersededBy": null
     }
   ],
@@ -178,7 +187,7 @@
       "countryCode": "SE",
       "message": "Spanish RIPREE identifier SE*VGC belongs to SE, outside the jurisdictions this register covers (ES).",
       "firstDetectedAt": "2026-10-05T10:30:17.800Z",
-      "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+      "lastDetectedAt": "2026-10-26T08:59:32.423Z",
       "supersededBy": null
     },
     {
@@ -188,7 +197,7 @@
       "countryCode": "AT",
       "message": "EIPA identifier AT-HTB belongs to AT, outside the jurisdictions this register covers (PL).",
       "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-      "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+      "lastDetectedAt": "2026-10-26T08:59:32.423Z",
       "supersededBy": null
     },
     {
@@ -208,7 +217,7 @@
       "countryCode": "FR",
       "message": "EIPA identifier FR-FLB belongs to FR, outside the jurisdictions this register covers (PL).",
       "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-      "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+      "lastDetectedAt": "2026-10-26T08:59:32.423Z",
       "supersededBy": null
     },
     {
@@ -218,7 +227,7 @@
       "countryCode": "LT",
       "message": "EIPA identifier LT*IBG belongs to LT, outside the jurisdictions this register covers (PL).",
       "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-      "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+      "lastDetectedAt": "2026-10-26T08:59:32.423Z",
       "supersededBy": null
     },
     {
@@ -228,7 +237,7 @@
       "countryCode": "NL",
       "message": "EIPA identifier NL-505 belongs to NL, outside the jurisdictions this register covers (PL).",
       "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-      "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+      "lastDetectedAt": "2026-10-26T08:59:32.423Z",
       "supersededBy": null
     },
     {
@@ -238,7 +247,7 @@
       "countryCode": "NL",
       "message": "EIPA identifier NL*TNM belongs to NL, outside the jurisdictions this register covers (PL).",
       "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-      "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+      "lastDetectedAt": "2026-10-26T08:59:32.423Z",
       "supersededBy": null
     },
     {
@@ -248,7 +257,7 @@
       "countryCode": "DK",
       "message": "Swedish Energy Agency identifier DK*MON belongs to DK, outside the jurisdictions this register covers (SE).",
       "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-      "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+      "lastDetectedAt": "2026-10-26T08:59:32.423Z",
       "supersededBy": null
     }
   ]

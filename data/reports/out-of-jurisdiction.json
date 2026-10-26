@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-19T09:40:51.018Z",
+  "generatedAt": "2026-10-26T08:59:32.423Z",
   "totalIdentifiers": 7,
   "registers": [
     {
@@ -22,7 +22,7 @@
           "sourceValue": "SE*VGC",
           "countryCode": "SE",
           "firstDetectedAt": "2026-10-05T10:30:17.800Z",
-          "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+          "lastDetectedAt": "2026-10-26T08:59:32.423Z",
           "administeredBy": {
             "registryId": "se-energimyndigheten",
             "authority": {
@@ -58,7 +58,7 @@
           "sourceValue": "AT-HTB",
           "countryCode": "AT",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+          "lastDetectedAt": "2026-10-26T08:59:32.423Z",
           "administeredBy": {
             "registryId": "at-ladestellen",
             "authority": {
@@ -76,7 +76,7 @@
           "sourceValue": "FR-FLB",
           "countryCode": "FR",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+          "lastDetectedAt": "2026-10-26T08:59:32.423Z",
           "administeredBy": {
             "registryId": "fr-afirev",
             "authority": {
@@ -94,7 +94,7 @@
           "sourceValue": "LT*IBG",
           "countryCode": "LT",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+          "lastDetectedAt": "2026-10-26T08:59:32.423Z",
           "administeredBy": {
             "registryId": "lt-vialietuva",
             "authority": {
@@ -112,7 +112,7 @@
           "sourceValue": "NL-505",
           "countryCode": "NL",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+          "lastDetectedAt": "2026-10-26T08:59:32.423Z",
           "administeredBy": {
             "registryId": "benelux-idro",
             "authority": {
@@ -132,7 +132,7 @@
           "sourceValue": "NL*TNM",
           "countryCode": "NL",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+          "lastDetectedAt": "2026-10-26T08:59:32.423Z",
           "administeredBy": {
             "registryId": "benelux-idro",
             "authority": {
@@ -170,7 +170,7 @@
           "sourceValue": "DK*MON",
           "countryCode": "DK",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-10-19T09:40:51.018Z",
+          "lastDetectedAt": "2026-10-26T08:59:32.423Z",
           "administeredBy": {
             "registryId": "dk-fstyr",
             "authority": {

@@ -494,7 +494,7 @@
       "amenageurName": "ALTENSYS",
       "exploitantName": "ALTENSYS",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRALT",
@@ -502,7 +502,7 @@
       "amenageurName": "ALTENSYS",
       "exploitantName": "ALTENSYS",
       "type": "MOBILITY",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRALZ",
@@ -954,7 +954,7 @@
     },
     {
       "prefixId": "FRC4M",
-      "name": "ETI2",
+      "name": "C4M Infra",
       "amenageurName": "E-TOTEM INFRASTRUCTURES 2",
       "exploitantName": "E-TOTEM INFRASTRUCTURES 2",
       "type": "CHARGE",
@@ -1366,7 +1366,7 @@
       "amenageurName": "SPBR1",
       "exploitantName": "EASY CHARGE",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FREBO",
@@ -1382,7 +1382,7 @@
       "amenageurName": "EASY CHARGE",
       "exploitantName": "EASY CHARGE",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRECN",
@@ -4068,7 +4068,7 @@
       "prefixId": "FRS84",
       "name": "Syndicat d'Energie Vauclusien",
       "amenageurName": "Syndicat d'Energie Vauclusien (SEV)",
-      "exploitantName": "COGELUM IDF (CITEOS)",
+      "exploitantName": "SAS LOAD STATIONS",
       "type": "CHARGE",
       "status": "ACTIVE"
     },
@@ -4590,7 +4590,7 @@
       "amenageurName": "TDEC SERVICES",
       "exploitantName": "EASY CHARGE",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRTEC",
@@ -4654,7 +4654,7 @@
       "amenageurName": "TESLA FRANCE",
       "exploitantName": "TESLA FRANCE",
       "type": "BOTH",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRTYW",

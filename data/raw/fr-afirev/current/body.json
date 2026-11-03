@@ -169,6 +169,14 @@
       "status": "ACTIVE"
     },
     {
+      "prefixId": "FR5R2",
+      "name": "ENELYA",
+      "amenageurName": "ENELYA",
+      "exploitantName": "ENELYA",
+      "type": "MOBILITY",
+      "status": "ACTIVE"
+    },
+    {
       "prefixId": "FR5XG",
       "name": "RAVE CROISSANCE",
       "amenageurName": "RAVE PAYS DE LOIRE",
@@ -1521,6 +1529,14 @@
       "status": "ACTIVE"
     },
     {
+      "prefixId": "FREME",
+      "name": "E-MOBILITY EXPERT",
+      "amenageurName": "E-MOBILITY EXPERT",
+      "exploitantName": "E-MOBILITY EXPERT",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
+    },
+    {
       "prefixId": "FREMF",
       "name": "Edenred Mobility France",
       "amenageurName": "LA COMPAGNIE DES CARTES CARBURANT",
@@ -1567,6 +1583,14 @@
       "exploitantName": "",
       "type": "MOBILITY",
       "status": "INACTIVE"
+    },
+    {
+      "prefixId": "FRENP",
+      "name": "EnergyPass",
+      "amenageurName": "KANTICODE",
+      "exploitantName": "KANTICODE",
+      "type": "MOBILITY",
+      "status": "AWAITING_PAYMENT"
     },
     {
       "prefixId": "FRENR",
@@ -2878,7 +2902,7 @@
       "amenageurName": "Mercedes-Benz High Power Charging Europe GmbH",
       "exploitantName": "Mercedes-Benz High Power Charging Europe GmbH",
       "type": "CHARGE",
-      "status": "ACTIVE"
+      "status": "INACTIVE"
     },
     {
       "prefixId": "FRMBZ",
@@ -3534,7 +3558,7 @@
       "amenageurName": "Boréal Energy",
       "exploitantName": "Boréal Energy",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "SUSPENDED"
     },
     {
       "prefixId": "FRRPL",
@@ -4854,7 +4878,7 @@
       "amenageurName": "VEV PLATFORM SERVICES FRANCE",
       "exploitantName": "",
       "type": "CHARGE",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRVGF",
@@ -5593,5 +5617,5 @@
       "status": "ACTIVE"
     }
   ],
-  "total": 699
+  "total": 702
 }

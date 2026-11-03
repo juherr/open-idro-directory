@@ -39,10 +39,10 @@
     },
     "health": {
       "stale": false,
-      "recordCount": 1131,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
-      "checksum": "8278cd415cb564759f51589fa7dbd3f25f69d5ac44165a451a14e3eba9a54130",
+      "recordCount": 1132,
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
+      "checksum": "a75e66ae985117fe42ab1acaca1e14996e69d2f581ee38edf4a379c1336066c5",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -93,9 +93,9 @@
     "health": {
       "stale": false,
       "recordCount": 1051,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
-      "checksum": "750b002b18b283495d8503014027233d8c259a086abf29e93bd6200b66f1e107",
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
+      "checksum": "b3468868453f0d559f6c0d1bd28b395018f0e5b5218779ac6738ab812533360d",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -141,10 +141,10 @@
     },
     "health": {
       "stale": false,
-      "recordCount": 187,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
-      "checksum": "055898238c455794c7a97d2de79210287500d3dc6729f4fbe82a42cd964f029b",
+      "recordCount": 190,
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
+      "checksum": "314713a0cfbe6da15fdc507b4c11dc3738e0661009da8e4a56350ba2835e53d9",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -239,10 +239,10 @@
     },
     "health": {
       "stale": false,
-      "recordCount": 3281,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
-      "checksum": "3e1bea3e5294fe12698a9d0f082e45a2ea895f35e9c82d3ba687b06742632ead",
+      "recordCount": 3297,
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
+      "checksum": "e56606ec37d255cfb209995ecc9aec1474821da23b387425686b4f1c06ec6f91",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -289,9 +289,9 @@
     "health": {
       "stale": false,
       "recordCount": 93,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
-      "checksum": "d139afdaad91100f213b1a4a3fb63472ef6849e5a3d7e6980a812b90b95928e9",
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
+      "checksum": "b91a5c898b8f8b4a16efe72559989c6412421c4c95766c2fa9b0a72a929b849f",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -341,8 +341,8 @@
     "health": {
       "stale": false,
       "recordCount": 336,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
       "checksum": "1476b423382c72cf67fb83ef78e26bb6b8fbcca0dc327e29624b9aaaa6ba1182",
       "freshness": "current",
       "latestErrorSummary": null
@@ -393,9 +393,9 @@
     "health": {
       "stale": false,
       "recordCount": 46,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
-      "checksum": "b0c30ac2d51251e458fd9b33c2bc00ee09a5c6b0f44a715ea43e256039d25ef3",
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
+      "checksum": "9643192ac3dd0ab48afc8ef0a9c2914d1226c032c7271767dd4303ec4b26b680",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -441,10 +441,10 @@
     },
     "health": {
       "stale": false,
-      "recordCount": 757,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
-      "checksum": "9d7ea615eb3f0dec2605b208bec082cd874a7f53cac073d68db60a01177d032f",
+      "recordCount": 760,
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
+      "checksum": "41b12231d50a8d3188ea8fb4ffc0ddebc8b4bc1b84bbf0a06e90d3fd02daba74",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -493,9 +493,9 @@
     "health": {
       "stale": false,
       "recordCount": 293,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
-      "checksum": "fb5294a4ecae04f8aeede80e4b2ecc6809ec9155156b03ef8eaf606a1948921b",
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
+      "checksum": "e6e3fa457d68df6620109413b546493f76edc7d7c533fc6c914667c405a12121",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -542,8 +542,8 @@
     "health": {
       "stale": false,
       "recordCount": 142,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
       "checksum": "21cae666ccfa8a2ae61fd8c12328d17fe17345081982a8cdde023ff09f07fa8a",
       "freshness": "current",
       "latestErrorSummary": null
@@ -591,7 +591,7 @@
     "health": {
       "stale": true,
       "recordCount": 0,
-      "lastAttemptedRetrieval": "2026-10-26T08:59:32.423Z",
+      "lastAttemptedRetrieval": "2026-11-02T11:13:12.080Z",
       "lastSuccessfulRetrieval": "2026-09-29T20:20:34.825Z",
       "checksum": "d67225dd0ee5afcefad488d2f0b51ea62bf059d84a0cde585943c764d8f15822",
       "freshness": "stale",
@@ -640,9 +640,9 @@
     "health": {
       "stale": false,
       "recordCount": 1,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
-      "checksum": "364076bfc3959e38dc464e66306dc038a983053411de55b1ec348d7fbe6f4e8d",
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
+      "checksum": "1ec2f959a19fcd52e79575fc1e1ba7176f3f25ff874940ac3455da2a5d4311ca",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -692,8 +692,8 @@
     "health": {
       "stale": false,
       "recordCount": 26,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
       "checksum": "a1163cec0de0f12bc18c6669b7c5889997c8e90ffeaa91e37dde6bf57ef1e74b",
       "freshness": "current",
       "latestErrorSummary": null
@@ -743,9 +743,9 @@
     "health": {
       "stale": false,
       "recordCount": 14,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
-      "checksum": "7a165ecbeedb24abe942ca9f974c32daf0d2a9aaddc7469092be82ccb1ce0d76",
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
+      "checksum": "cc4d78749c6a459aad3a0fd7f0c391cc9c0c0492955cfe9b18325046be509bcf",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -792,8 +792,8 @@
     "health": {
       "stale": false,
       "recordCount": 19,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
       "checksum": "ddeab049bfab821ebcb8657f773ca7366a33ced7266ad74ec11d030f4fd82e3f",
       "freshness": "current",
       "latestErrorSummary": null
@@ -840,10 +840,10 @@
     },
     "health": {
       "stale": false,
-      "recordCount": 868,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
-      "checksum": "ce6b8d89f4a583d40b899070ba3343d6f9eddd59ae2c958e6daf7541b2099f3b",
+      "recordCount": 869,
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
+      "checksum": "f5f1085fc8c8e88d470d574aed1d2e5603b5c8b1591da9dae596084e92494563",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -890,8 +890,8 @@
     "health": {
       "stale": false,
       "recordCount": 98,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
       "checksum": "5609896209afce912b5d42024a774ae0f36b37bc881404faaf420c637f9b29ab",
       "freshness": "current",
       "latestErrorSummary": null
@@ -938,10 +938,10 @@
     },
     "health": {
       "stale": false,
-      "recordCount": 78,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
-      "checksum": "8b3342b800d63e56355dd51d8b6f948865c2438162d12082f1735b593c3659a3",
+      "recordCount": 79,
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
+      "checksum": "729a9b29a0cc79a8c2de6455fefc42969ba1855a61fb0ee93a8ff17f84dffc09",
       "freshness": "current",
       "latestErrorSummary": null
     }
@@ -988,9 +988,9 @@
     "health": {
       "stale": false,
       "recordCount": 59,
-      "lastAttemptedRetrieval": "2026-10-26T08:58:57.834Z",
-      "lastSuccessfulRetrieval": "2026-10-26T08:58:57.834Z",
-      "checksum": "07cbe7c92d813c98f77766bdd41e4e6e77af75f1ff5d76ab8e9a45dd197cd863",
+      "lastAttemptedRetrieval": "2026-11-02T11:12:44.201Z",
+      "lastSuccessfulRetrieval": "2026-11-02T11:12:44.201Z",
+      "checksum": "f1c7bd32d6bafa2eaf7d1513ac7825bc3c493e6d3bd71339c87ed5e79571b9ce",
       "freshness": "current",
       "latestErrorSummary": null
     }

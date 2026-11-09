@@ -1,69 +1,74 @@
 {
-  "totalRecords": 8505,
+  "totalRecords": 8644,
   "totalInvalidRecords": 0,
   "totalRejectedRows": 3,
-  "totalOutOfJurisdictionRows": 8,
+  "totalOutOfJurisdictionRows": 6,
   "recordsByCountry": {
-    "AT": 1132,
-    "BE": 402,
-    "CH": 190,
-    "DE": 3297,
+    "AT": 1135,
+    "BE": 406,
+    "CH": 191,
+    "DE": 3315,
     "DK": 93,
-    "ES": 336,
+    "ES": 339,
     "FI": 46,
-    "FR": 760,
-    "GB": 217,
-    "GR": 142,
+    "FR": 764,
+    "GB": 220,
+    "GR": 143,
+    "HR": 88,
     "HU": 1,
     "IE": 102,
     "LT": 14,
-    "LU": 244,
+    "LU": 246,
     "LV": 19,
-    "NL": 405,
-    "PL": 869,
+    "NL": 416,
+    "PL": 870,
     "PT": 98,
     "SE": 79,
     "SI": 59
   },
   "recordsByCountryRole": {
     "AT": {
-      "CPO": 1132
+      "CPO": 1135
     },
     "BE": {
-      "CPO": 228,
-      "EMSP": 174
+      "CPO": 230,
+      "EMSP": 176
     },
     "CH": {
-      "CPO": 107,
+      "CPO": 108,
       "EMSP": 83
     },
     "DE": {
-      "CPO": 1783,
-      "EMSP": 1514
+      "CPO": 1796,
+      "EMSP": 1519
     },
     "DK": {
       "CPO": 62,
       "EMSP": 31
     },
     "ES": {
-      "CPO": 252,
-      "EMSP": 84
+      "CPO": 254,
+      "EMSP": 85
     },
     "FI": {
       "CPO": 27,
       "EMSP": 19
     },
     "FR": {
-      "CPO": 605,
+      "CPO": 609,
       "EMSP": 155
     },
     "GB": {
-      "CPO": 112,
-      "EMSP": 105
+      "CPO": 114,
+      "EMSP": 106
     },
     "GR": {
-      "CPO": 89,
+      "CPO": 90,
       "EMSP": 53
+    },
+    "HR": {
+      "CPO": 46,
+      "EMSP": 42
     },
     "HU": {
       "EMSP": 1
@@ -76,19 +81,19 @@
       "CPO": 14
     },
     "LU": {
-      "CPO": 134,
-      "EMSP": 110
+      "CPO": 135,
+      "EMSP": 111
     },
     "LV": {
       "CPO": 11,
       "EMSP": 8
     },
     "NL": {
-      "CPO": 220,
-      "EMSP": 185
+      "CPO": 226,
+      "EMSP": 190
     },
     "PL": {
-      "CPO": 744,
+      "CPO": 745,
       "EMSP": 125
     },
     "PT": {
@@ -105,31 +110,32 @@
     }
   },
   "recordsByRole": {
-    "CPO": 5751,
-    "EMSP": 2754
+    "CPO": 5833,
+    "EMSP": 2811
   },
   "recordsByStatus": {
-    "ACTIVE": 7702,
-    "INACTIVE": 479,
-    "RESERVED": 125,
-    "UNKNOWN": 199
+    "ACTIVE": 7766,
+    "INACTIVE": 564,
+    "RESERVED": 116,
+    "UNKNOWN": 198
   },
   "recordsByRegistry": {
-    "at-ladestellen": 1132,
-    "benelux-idro": 1051,
-    "ch-suisseenergie": 190,
-    "de-bdew": 3297,
+    "at-ladestellen": 1135,
+    "benelux-idro": 1068,
+    "ch-suisseenergie": 191,
+    "de-bdew": 3315,
     "dk-fstyr": 93,
-    "es-ripree": 336,
+    "es-ripree": 339,
     "fi-traficom": 46,
-    "fr-afirev": 760,
-    "gb-evroam": 293,
-    "gr-electrokinisi": 142,
+    "fr-afirev": 764,
+    "gb-evroam": 296,
+    "gr-electrokinisi": 143,
+    "hr-croidro": 88,
     "hu-idro": 1,
     "ie-tii": 26,
     "lt-vialietuva": 14,
     "lv-lvceli": 19,
-    "pl-eipa": 869,
+    "pl-eipa": 870,
     "pt-mobie": 98,
     "se-energimyndigheten": 79,
     "si-nap": 59
@@ -143,19 +149,18 @@
   },
   "outOfJurisdictionByRegistry": {
     "es-ripree": 1,
-    "pl-eipa": 6,
+    "pl-eipa": 4,
     "se-energimyndigheten": 1
   },
   "outOfJurisdictionByCountry": {
     "AT": 1,
     "DK": 1,
-    "FR": 1,
     "LT": 1,
-    "NL": 3,
+    "NL": 2,
     "SE": 1
   },
   "staleSources": [
-    "hr-croidro"
+    "pt-mobie"
   ],
-  "generatedAt": "2026-11-02T11:13:12.080Z"
+  "generatedAt": "2026-11-09T11:36:50.558Z"
 }

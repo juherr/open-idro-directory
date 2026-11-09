@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-02T11:13:12.080Z",
-  "totalIdentifiers": 8,
+  "generatedAt": "2026-11-09T11:36:50.558Z",
+  "totalIdentifiers": 6,
   "registers": [
     {
       "registryId": "es-ripree",
@@ -22,7 +22,7 @@
           "sourceValue": "SE*VGC",
           "countryCode": "SE",
           "firstDetectedAt": "2026-10-05T10:30:17.800Z",
-          "lastDetectedAt": "2026-11-02T11:13:12.080Z",
+          "lastDetectedAt": "2026-11-09T11:36:50.558Z",
           "administeredBy": {
             "registryId": "se-energimyndigheten",
             "authority": {
@@ -58,7 +58,7 @@
           "sourceValue": "AT-HTB",
           "countryCode": "AT",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-11-02T11:13:12.080Z",
+          "lastDetectedAt": "2026-11-09T11:36:50.558Z",
           "administeredBy": {
             "registryId": "at-ladestellen",
             "authority": {
@@ -73,28 +73,10 @@
           }
         },
         {
-          "sourceValue": "FR-FLB",
-          "countryCode": "FR",
-          "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-11-02T11:13:12.080Z",
-          "administeredBy": {
-            "registryId": "fr-afirev",
-            "authority": {
-              "id": "fr-afirev",
-              "name": "AFIREV / Avere-France",
-              "level": "AUTHORITATIVE",
-              "jurisdictions": [
-                "FR"
-              ],
-              "homepageUrl": "https://afirev.fr/prefixes/consulter-l-annuaire/"
-            }
-          }
-        },
-        {
           "sourceValue": "LT*IBG",
           "countryCode": "LT",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-11-02T11:13:12.080Z",
+          "lastDetectedAt": "2026-11-09T11:36:50.558Z",
           "administeredBy": {
             "registryId": "lt-vialietuva",
             "authority": {
@@ -109,30 +91,10 @@
           }
         },
         {
-          "sourceValue": "NL-505",
-          "countryCode": "NL",
-          "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-11-02T11:13:12.080Z",
-          "administeredBy": {
-            "registryId": "benelux-idro",
-            "authority": {
-              "id": "benelux-idro",
-              "name": "Benelux IDRO",
-              "level": "AUTHORITATIVE",
-              "jurisdictions": [
-                "BE",
-                "NL",
-                "LU"
-              ],
-              "homepageUrl": "https://www.benelux-idro.eu/"
-            }
-          }
-        },
-        {
           "sourceValue": "NL-GFX",
           "countryCode": "NL",
           "firstDetectedAt": "2026-11-02T11:13:12.080Z",
-          "lastDetectedAt": "2026-11-02T11:13:12.080Z",
+          "lastDetectedAt": "2026-11-09T11:36:50.558Z",
           "administeredBy": {
             "registryId": "benelux-idro",
             "authority": {
@@ -152,7 +114,7 @@
           "sourceValue": "NL*TNM",
           "countryCode": "NL",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-11-02T11:13:12.080Z",
+          "lastDetectedAt": "2026-11-09T11:36:50.558Z",
           "administeredBy": {
             "registryId": "benelux-idro",
             "authority": {
@@ -190,7 +152,7 @@
           "sourceValue": "DK*MON",
           "countryCode": "DK",
           "firstDetectedAt": "2026-08-09T21:07:06.522Z",
-          "lastDetectedAt": "2026-11-02T11:13:12.080Z",
+          "lastDetectedAt": "2026-11-09T11:36:50.558Z",
           "administeredBy": {
             "registryId": "dk-fstyr",
             "authority": {

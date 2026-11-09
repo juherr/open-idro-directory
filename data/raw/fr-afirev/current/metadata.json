@@ -3,8 +3,8 @@
   "contentType": "application/json; charset=utf-8",
   "finalUrl": "https://api.afirev.fr/public/prefixes",
   "httpStatus": 200,
-  "retrievedAt": "2026-11-02T11:12:44.201Z",
-  "etag": "W/\"1904e-ZvydmC7+Lrr4BDPS2vFsBjW23aI\"",
+  "retrievedAt": "2026-11-09T11:36:09.012Z",
+  "etag": "W/\"19250-D9cQOw4L6RvvfvDxXhdzIZLqaIs\"",
   "lastModified": null,
-  "checksum": "41b12231d50a8d3188ea8fb4ffc0ddebc8b4bc1b84bbf0a06e90d3fd02daba74"
+  "checksum": "1c464f874452a5e2ace3224d312eb7a65d07973ae003771e7d8c86d259c8a2e7"
 }

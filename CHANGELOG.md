@@ -152,6 +152,9 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Fixed
 
+- The API reported a disabled source, such as Cyprus, with health status
+  `stale`, because a source that is never retrieved is always flagged stale.
+  It now reports `disabled`.
 - The Slovenian NAP connector read the cell that follows an empty one as the
   empty cell's value. Excel writes an empty cell as `<c r="B5" s="2"/>`, and the
   pattern matching cells consumed the self-closing element together with its

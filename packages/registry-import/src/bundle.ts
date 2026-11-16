@@ -374,11 +374,13 @@ function toSources(sources: SourceSummary[], datasetReleaseId: string) {
             ? 1
             : 0,
       reuse_notes: source.reuse.notes,
-      health_status: source.health.stale
-        ? "stale"
-        : source.publication.enabled
-          ? "current"
-          : "disabled",
+      // A disabled source is never retrieved, so it is always flagged stale too;
+      // disabled is the more accurate status.
+      health_status: !source.publication.enabled
+        ? "disabled"
+        : source.health.stale
+          ? "stale"
+          : "current",
       record_count: source.health.recordCount,
       last_attempted_at: source.health.lastAttemptedRetrieval,
       last_successful_at: source.health.lastSuccessfulRetrieval,

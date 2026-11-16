@@ -46,6 +46,13 @@ describe("Cloudflare import bundle", () => {
     expect(roles("cy-ems")).toBe('["CPO","EMSP"]');
   });
 
+  it("reports a disabled source as disabled rather than stale", async () => {
+    const bundle = await buildImportBundle();
+    const cyprus = bundle.sources.find((source) => source.id === "cy-ems");
+
+    expect(cyprus).toMatchObject({ health_status: "disabled", freshness_status: "disabled" });
+  });
+
   it("emits one authority row per authority and takes levels from the descriptor", async () => {
     const bundle = await buildImportBundle();
 

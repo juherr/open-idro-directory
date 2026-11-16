@@ -350,6 +350,22 @@ describe("Cloudflare API", () => {
     expect(document.components.schemas.SourceRegistry?.required).toContain("supportedRoles");
   });
 
+  it("declares a required path parameter for every path template variable", async () => {
+    const document = (await (await request("/openapi.json")).json()) as {
+      paths: Record<string, { get: { parameters?: Array<Record<string, unknown>> } }>;
+    };
+
+    expect(document.paths["/api/v1/countries/{countryCode}"]?.get.parameters).toEqual([
+      { name: "countryCode", in: "path", required: true, schema: { type: "string" } },
+    ]);
+    for (const [path, item] of Object.entries(document.paths)) {
+      const variables = [...path.matchAll(/\{([^}]+)\}/g)].map((match) => match[1]);
+      expect(item.get.parameters ?? [], path).toEqual(
+        variables.map((name) => ({ name, in: "path", required: true, schema: { type: "string" } })),
+      );
+    }
+  });
+
   it("routes web pages to static assets without intercepting the API", async () => {
     const root = await workerRequest("/");
     expect(root.status).toBe(200);

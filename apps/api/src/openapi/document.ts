@@ -37,6 +37,16 @@ const ERROR_RESPONSES: Record<string, Record<string, ReturnType<typeof errorResp
   },
 };
 
+/** Declares each `{name}` template variable of a path as a required path parameter. */
+function pathParameters(path: string) {
+  return [...path.matchAll(/\{([^}]+)\}/g)].map(([, name]) => ({
+    name,
+    in: "path",
+    required: true,
+    schema: { type: "string" },
+  }));
+}
+
 export function openApiDocument(origin = "http://localhost:8787") {
   return {
     openapi: "3.1.0",
@@ -69,6 +79,7 @@ export function openApiDocument(origin = "http://localhost:8787") {
         {
           get: {
             summary,
+            ...(path.includes("{") && { parameters: pathParameters(path) }),
             responses: {
               "200": successResponse(dataSchema),
               "304": { description: "Not modified" },

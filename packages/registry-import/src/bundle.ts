@@ -360,6 +360,7 @@ function toSources(sources: SourceSummary[], datasetReleaseId: string) {
       machine_readable_url: source.publication.machineReadableUrl,
       verified_at: source.publication.verifiedAt,
       jurisdictions_json: stableJson(source.registry.jurisdictions),
+      supported_roles_json: stableJson(source.registry.supportedRoles),
       reuse_status: source.reuse.status,
       reuse_legal_basis_name: source.reuse.legalBasis?.name ?? null,
       reuse_legal_basis_url: source.reuse.legalBasis?.url ?? null,

@@ -9,6 +9,18 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
+- `GET /api/v1/countries/{countryCode}`: one summary per country, gathering
+  every authority whose remit includes it, every source that declares it or
+  publishes identifiers for it, role coverage, freshness, counts, and the dataset
+  timestamp. Countries with a known IDRO but no published register, such as
+  Cyprus, get a summary too. Several authorities covering one country are all
+  listed. The per-source breakdown of observations by authority level shows which
+  one is authoritative there. Unknown countries return `404 COUNTRY_NOT_FOUND`
+  and malformed codes return `422 INVALID_COUNTRY_CODE`. API schema version is
+  now 1.3.0.
+- `registry.supportedRoles` on API sources: the roles a register declares it
+  publishes. D1 migration `0005` adds the column. It reads `null` until the next
+  import.
 - `outOfJurisdiction` in `data/registry-invalid.json`: the well-formed
   identifiers a register publishes for a country it does not administer, each
   with the `countryCode` it belongs to and the run it was first and last seen

@@ -37,6 +37,15 @@ describe("Cloudflare import bundle", () => {
     );
   });
 
+  it("carries the roles each registry declares, including CPO-only and disabled ones", async () => {
+    const bundle = await buildImportBundle();
+    const roles = (id: string) =>
+      bundle.sources.find((source) => source.id === id)?.supported_roles_json;
+
+    expect(roles("at-ladestellen")).toBe('["CPO"]');
+    expect(roles("cy-ems")).toBe('["CPO","EMSP"]');
+  });
+
   it("emits one authority row per authority and takes levels from the descriptor", async () => {
     const bundle = await buildImportBundle();
 
@@ -152,5 +161,6 @@ describe("Cloudflare import bundle", () => {
       ),
     ).toBe(true);
     expect(sql).toContain("INSERT INTO active_dataset");
+    expect(/INSERT INTO sources \([^)]*\bsupported_roles_json\b/.test(sql)).toBe(true);
   });
 });

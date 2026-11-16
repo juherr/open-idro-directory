@@ -68,6 +68,7 @@ const source: SourceRow = {
   homepage_url: "https://afirev.fr/",
   registry_url: "https://api.afirev.fr/public/prefixes",
   jurisdictions_json: '["FR"]',
+  supported_roles_json: '["CPO","EMSP"]',
   machine_readable_url: "https://api.afirev.fr/public/prefixes",
   verified_at: "2026-01-02",
   reuse_status: "licensed",
@@ -283,6 +284,72 @@ describe("Cloudflare API", () => {
     expect((await request("/openapi.json")).status).toBe(200);
   });
 
+  it("serves a country summary", async () => {
+    const response = await request("/api/v1/countries/fr");
+    expect(response.status).toBe(200);
+    expect(response.headers.get("etag")).toMatch(/^"/);
+    const body = (await response.json()) as {
+      data: Record<string, unknown> & { sources: Array<Record<string, unknown>> };
+      meta: { datasetReleaseId: string };
+    };
+
+    expect(body.meta.datasetReleaseId).toBe(release.id);
+    expect(body.data).toMatchObject({
+      countryCode: "FR",
+      authorities: [{ id: "fr-afirev", name: "AFIREV", level: "AUTHORITATIVE" }],
+      coverage: { status: "PUBLISHED", declaredRoles: ["CPO", "EMSP"], publishedRoles: { CPO: 1 } },
+      statistics: { parties: 1, partyRoles: 1, observations: 2, conflicts: 1 },
+      datasetTimestamp: release.generated_at,
+    });
+    expect(body.data.sources).toEqual([
+      expect.objectContaining({
+        id: "fr-afirev",
+        countryObservations: { total: 2, byAuthorityLevel: { AUTHORITATIVE: 2 } },
+      }),
+    ]);
+  });
+
+  it("returns a documented error for an unknown country", async () => {
+    const response = await request("/api/v1/countries/ZZ");
+    expect(response.status).toBe(404);
+    const body = (await response.json()) as { error: { code: string } };
+    expect(body.error.code).toBe("COUNTRY_NOT_FOUND");
+  });
+
+  it("rejects a malformed country code", async () => {
+    const response = await request("/api/v1/countries/F1");
+    expect(response.status).toBe(422);
+    const body = (await response.json()) as { error: { code: string } };
+    expect(body.error.code).toBe("INVALID_COUNTRY_CODE");
+  });
+
+  it("documents the country summary and its errors in OpenAPI", async () => {
+    const document = (await (await request("/openapi.json")).json()) as {
+      paths: Record<string, { get: { responses: Record<string, unknown> } }>;
+      components: { schemas: Record<string, { required?: string[] }> };
+    };
+    const responses = document.paths["/api/v1/countries/{countryCode}"]?.get.responses;
+    const errorSchema = { $ref: "#/components/schemas/ErrorResponse" };
+
+    expect(JSON.stringify(responses?.["200"])).toContain("#/components/schemas/CountrySummary");
+    expect(responses?.["404"]).toMatchObject({
+      description: expect.stringContaining("COUNTRY_NOT_FOUND"),
+      content: { "application/json": { schema: errorSchema } },
+    });
+    expect(responses?.["422"]).toMatchObject({
+      description: expect.stringContaining("INVALID_COUNTRY_CODE"),
+      content: { "application/json": { schema: errorSchema } },
+    });
+
+    const summary = (await (await request("/api/v1/countries/FR")).json()) as {
+      data: Record<string, unknown>;
+    };
+    expect(document.components.schemas.CountrySummary?.required?.slice().sort()).toEqual(
+      Object.keys(summary.data).sort(),
+    );
+    expect(document.components.schemas.SourceRegistry?.required).toContain("supportedRoles");
+  });
+
   it("routes web pages to static assets without intercepting the API", async () => {
     const root = await workerRequest("/");
     expect(root.status).toBe(200);
@@ -371,10 +438,20 @@ function first<T>(sql: string, params: unknown[]): T | null {
   if (sql.includes("SELECT") && sql.includes("AS parties")) {
     return { parties: 1, observations: 2, conflicts: 1 } as T;
   }
+  if (sql.includes("FROM conflicts") && sql.includes("party_key LIKE ?"))
+    return { count: params.includes("FR:%") ? 1 : 0 } as T;
   return null;
 }
 
 function all<T>(sql: string, params: unknown[]): T[] {
+  // Country-scoped aggregates first: the broader matchers below ignore the country.
+  if (sql.includes("country_code = ?") && sql.includes("GROUP BY")) {
+    if (!params.includes("FR")) return [];
+    if (sql.includes("GROUP BY consolidated_status")) return [{ key: "ACTIVE", count: 1 }] as T[];
+    if (sql.includes("GROUP BY pr.role")) return [{ key: "CPO", count: 1 }] as T[];
+    if (sql.includes("GROUP BY source_id, authority_level"))
+      return [{ source_id: "fr-afirev", authority_level: "AUTHORITATIVE", count: 2 }] as T[];
+  }
   if (sql.includes("FROM parties p")) {
     if (params.some((param) => String(param).includes("legal group"))) {
       return sql.includes("p.normalized_legal_name") ? ([party] as T[]) : [];
@@ -386,7 +463,7 @@ function all<T>(sql: string, params: unknown[]): T[] {
     return [{ key: "FR", count: 2 }] as T[];
   if (sql.includes("FROM observations")) return [observation] as T[];
   if (sql.includes("FROM conflicts")) return [conflict] as T[];
-  if (sql.includes("FROM sources") && !sql.includes("id = ?")) return [source] as T[];
+  if (sql.includes("FROM sources s") && !sql.includes("s.id = ?")) return [source] as T[];
   if (sql.includes("GROUP BY country_code")) return [{ key: "FR", count: 1 }] as T[];
   if (sql.includes("GROUP BY role")) return [{ key: "CPO", count: 1 }] as T[];
   if (sql.includes("GROUP BY consolidated_status")) return [{ key: "ACTIVE", count: 1 }] as T[];

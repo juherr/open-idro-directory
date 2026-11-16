@@ -20,6 +20,23 @@ function successResponse(dataSchema?: string) {
   };
 }
 
+function errorResponse(description: string) {
+  return {
+    description,
+    content: { "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } } },
+  };
+}
+
+/** Error responses documented with their codes, by path. */
+const ERROR_RESPONSES: Record<string, Record<string, ReturnType<typeof errorResponse>>> = {
+  [`${API_PREFIX}/countries/{countryCode}`]: {
+    "404": errorResponse(
+      "`COUNTRY_NOT_FOUND`: no source covers the country and no identifier carries it.",
+    ),
+    "422": errorResponse("`INVALID_COUNTRY_CODE`: the code is not an ISO 3166-1 alpha-2 code."),
+  },
+};
+
 export function openApiDocument(origin = "http://localhost:8787") {
   return {
     openapi: "3.1.0",
@@ -45,8 +62,9 @@ export function openApiDocument(origin = "http://localhost:8787") {
         [`${API_PREFIX}/sources/{sourceId}/health`, "Get source health"],
         [`${API_PREFIX}/conflicts`, "List conflicts"],
         [`${API_PREFIX}/stats`, "Dataset statistics"],
+        [`${API_PREFIX}/countries/{countryCode}`, "Get a country summary", "CountrySummary"],
         [`${API_PREFIX}/resolve/{emobilityId}`, "Resolve an e-mobility party identifier"],
-      ].map(([path, summary, dataSchema]) => [
+      ].map(([path = "", summary, dataSchema]) => [
         path,
         {
           get: {
@@ -58,6 +76,7 @@ export function openApiDocument(origin = "http://localhost:8787") {
               "404": { description: "Unknown resource" },
               "422": { description: "Unsupported filter or identifier" },
               "503": { description: "Database or active dataset unavailable" },
+              ...ERROR_RESPONSES[path],
             },
           },
         },
@@ -177,7 +196,7 @@ export function openApiDocument(origin = "http://localhost:8787") {
         SourceRegistry: {
           type: "object",
           description: "The register operated by the authority, and what its entries mean.",
-          required: ["url", "observationType", "jurisdictions"],
+          required: ["url", "observationType", "jurisdictions", "supportedRoles"],
           properties: {
             url: { type: ["string", "null"], format: "uri" },
             observationType: {
@@ -193,7 +212,127 @@ export function openApiDocument(origin = "http://localhost:8787") {
               ],
             },
             jurisdictions: { type: "array", items: { type: "string" } },
+            supportedRoles: {
+              type: ["array", "null"],
+              items: { type: "string", enum: ["CPO", "EMSP"] },
+              description:
+                "Roles the register declares it publishes. Null when not yet imported, not when no role is published.",
+            },
           },
+        },
+        CountrySummary: {
+          type: "object",
+          description:
+            "Everything known about one country. Every authority whose remit includes the country is listed and none is designated: where several registers cover a country, `sources[].countryObservations.byAuthorityLevel` shows which one is authoritative for it.",
+          required: [
+            "countryCode",
+            "authorities",
+            "sources",
+            "coverage",
+            "statistics",
+            "freshness",
+            "datasetTimestamp",
+            "links",
+          ],
+          properties: {
+            countryCode: { type: "string", pattern: "^[A-Z]{2}$" },
+            authorities: {
+              type: "array",
+              items: { $ref: "#/components/schemas/CountryAuthority" },
+            },
+            sources: {
+              type: "array",
+              description:
+                "Sources whose registry declares the country, and any source with identifiers in it.",
+              items: { $ref: "#/components/schemas/CountrySource" },
+            },
+            coverage: {
+              type: "object",
+              required: ["status", "declaredRoles", "publishedRoles"],
+              properties: {
+                status: { type: "string", enum: ["PUBLISHED", "NO_PUBLISHED_IDENTIFIERS"] },
+                declaredRoles: {
+                  type: ["array", "null"],
+                  items: { type: "string" },
+                  description:
+                    "Union of the roles the declaring registers publish. Null when unknown.",
+                },
+                publishedRoles: {
+                  type: "object",
+                  additionalProperties: { type: "integer" },
+                  description: "Party-role counts for the country, by role.",
+                },
+              },
+            },
+            statistics: {
+              type: "object",
+              required: ["parties", "partyRoles", "observations", "conflicts", "countsByStatus"],
+              properties: {
+                parties: { type: "integer" },
+                partyRoles: { type: "integer" },
+                observations: { type: "integer" },
+                conflicts: { type: "integer" },
+                countsByStatus: { type: "object", additionalProperties: { type: "integer" } },
+              },
+            },
+            freshness: {
+              type: "object",
+              required: ["latestSuccessfulRetrievalAt", "staleSourceIds"],
+              properties: {
+                latestSuccessfulRetrievalAt: { type: ["string", "null"], format: "date-time" },
+                staleSourceIds: { type: "array", items: { type: "string" } },
+              },
+            },
+            datasetTimestamp: { type: "string", format: "date-time" },
+            links: {
+              type: "object",
+              required: ["self", "parties", "conflicts"],
+              properties: {
+                self: { type: "string" },
+                parties: { type: "string" },
+                conflicts: { type: "string" },
+              },
+            },
+          },
+        },
+        CountryAuthority: {
+          allOf: [
+            { $ref: "#/components/schemas/SourceAuthority" },
+            {
+              type: "object",
+              required: ["sourceIds"],
+              properties: {
+                sourceIds: {
+                  type: "array",
+                  items: { type: "string" },
+                  description:
+                    "This authority's sources relevant to the country. Empty when it publishes nothing for it.",
+                },
+              },
+            },
+          ],
+        },
+        CountrySource: {
+          allOf: [
+            { $ref: "#/components/schemas/Source" },
+            {
+              type: "object",
+              required: ["countryObservations"],
+              properties: {
+                countryObservations: {
+                  type: "object",
+                  required: ["total", "byAuthorityLevel"],
+                  properties: {
+                    total: { type: "integer" },
+                    byAuthorityLevel: {
+                      type: "object",
+                      additionalProperties: { type: "integer" },
+                    },
+                  },
+                },
+              },
+            },
+          ],
         },
         SourcePublication: {
           type: "object",

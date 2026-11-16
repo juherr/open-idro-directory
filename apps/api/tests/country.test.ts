@@ -71,7 +71,7 @@ const sources = [
   sourceRow("benelux-idro", benelux),
   sourceRow("cy-ems", cyEms, {
     machine_readable_url: null,
-    // As imported: the bundle marks a disabled source stale, its freshness says disabled.
+    // As in releases imported before the disabled-status fix: health stale, freshness disabled.
     health_status: "stale",
     freshness_status: "disabled",
     record_count: 0,

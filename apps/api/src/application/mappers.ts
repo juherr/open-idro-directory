@@ -173,6 +173,7 @@ export function countrySummaryPayload(
       };
     });
 
+  const relevantIds = new Set(relevant.map((source) => source.id));
   const authorities = new Map<
     string,
     ReturnType<typeof sourcePayload>["authority"] & { sourceIds: string[] }
@@ -181,7 +182,7 @@ export function countrySummaryPayload(
     if (!authority.jurisdictions.includes(countryCode)) continue;
     const key = authority.id ?? authority.name ?? id;
     const entry = authorities.get(key) ?? { ...authority, sourceIds: [] };
-    if (relevant.some((source) => source.id === id)) entry.sourceIds.push(id);
+    if (relevantIds.has(id)) entry.sourceIds.push(id);
     authorities.set(key, entry);
   }
 
@@ -194,9 +195,9 @@ export function countrySummaryPayload(
 
   return {
     countryCode,
-    authorities: [...authorities.values()].sort((a, b) =>
-      String(a.id ?? a.name).localeCompare(String(b.id ?? b.name)),
-    ),
+    authorities: [...authorities]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([, authority]) => authority),
     sources: relevant,
     coverage: {
       status: parties > 0 ? "PUBLISHED" : "NO_PUBLISHED_IDENTIFIERS",
@@ -218,7 +219,8 @@ export function countrySummaryPayload(
           .sort()
           .at(-1) ?? null,
       staleSourceIds: relevant
-        // Not `health.status`: the import marks a disabled source stale too.
+        // Not `health.status`: releases imported before the disabled-status fix
+        // still mark a disabled source stale there.
         .filter((source) => source.health.freshness === "stale")
         .map((source) => source.id),
     },

@@ -374,7 +374,7 @@
       "amenageurName": "Communauté des communes Vallée des Baux-Alpilles",
       "exploitantName": "SMEG DEVELOPPEMENT",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRACA",
@@ -626,7 +626,7 @@
     },
     {
       "prefixId": "FRAU6",
-      "name": "Guerin Logistique",
+      "name": "Neveu Transports",
       "amenageurName": "AUTORECHARGE",
       "exploitantName": "AUTORECHARGE",
       "type": "CHARGE",
@@ -635,6 +635,22 @@
     {
       "prefixId": "FRAU7",
       "name": "Groupe Vallée",
+      "amenageurName": "AUTORECHARGE",
+      "exploitantName": "AUTORECHARGE",
+      "type": "CHARGE",
+      "status": "ACTIVE"
+    },
+    {
+      "prefixId": "FRAU8",
+      "name": "Transports DUBOC",
+      "amenageurName": "AUTORECHARGE",
+      "exploitantName": "AUTORECHARGE",
+      "type": "CHARGE",
+      "status": "ACTIVE"
+    },
+    {
+      "prefixId": "FRAU9",
+      "name": "PTS Dufour",
       "amenageurName": "AUTORECHARGE",
       "exploitantName": "AUTORECHARGE",
       "type": "CHARGE",
@@ -668,7 +684,7 @@
       "prefixId": "FRAVI",
       "name": "AVIA",
       "amenageurName": "Thevenin & Ducrot",
-      "exploitantName": "",
+      "exploitantName": "SPIE CITYNETWORKS",
       "type": "CHARGE",
       "status": "ACTIVE"
     },
@@ -905,6 +921,14 @@
       "status": "SUSPENDED"
     },
     {
+      "prefixId": "FRBYD",
+      "name": "BYD France Flash Charging",
+      "amenageurName": "BYD FRANCE",
+      "exploitantName": "BYD FRANCE",
+      "type": "CHARGE",
+      "status": "ACTIVE"
+    },
+    {
       "prefixId": "FRC01",
       "name": "Métropole Rouen Normandie",
       "amenageurName": "Métropole Rouen Normandie",
@@ -974,7 +998,7 @@
       "amenageurName": "Usine d'Électricité de Metz",
       "exploitantName": "Freshmile",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRCAI",
@@ -1270,7 +1294,7 @@
       "amenageurName": "IZIVIA",
       "exploitantName": "IZIVIA",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRE05",
@@ -1446,7 +1470,7 @@
       "amenageurName": "ROAD B.V.",
       "exploitantName": "ROAD B.V.",
       "type": "BOTH",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FREGR",
@@ -1646,7 +1670,7 @@
       "amenageurName": "Erinion SAS",
       "exploitantName": "Erinion SAS",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRESE",
@@ -1750,7 +1774,7 @@
       "amenageurName": "EV MAP",
       "exploitantName": "EV MAP",
       "type": "MOBILITY",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FREVO",
@@ -1774,7 +1798,7 @@
       "amenageurName": "SMEG DEVELOPPEMENT",
       "exploitantName": "SMEG DEVELOPPEMENT",
       "type": "BOTH",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FREXA",
@@ -1830,6 +1854,14 @@
       "amenageurName": "FLEXIS",
       "exploitantName": "FLEXIS",
       "type": "CHARGE",
+      "status": "ACTIVE"
+    },
+    {
+      "prefixId": "FRFO1",
+      "name": "Fondation OPTEO",
+      "amenageurName": "FONDATION OPTEO",
+      "exploitantName": "FONDATION OPTEO",
+      "type": "MOBILITY",
       "status": "ACTIVE"
     },
     {
@@ -2606,7 +2638,7 @@
       "amenageurName": "LE BOIS BASALTE",
       "exploitantName": "LE BOIS BASALTE",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "SUSPENDED"
     },
     {
       "prefixId": "FRLDL",
@@ -2614,7 +2646,7 @@
       "amenageurName": "LIDL",
       "exploitantName": "LIDL",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRLE1",
@@ -3129,6 +3161,14 @@
       "status": "ACTIVE"
     },
     {
+      "prefixId": "FRODP",
+      "name": "Unité d'exploitation liée au préfixe FRODP",
+      "amenageurName": "OBORNES",
+      "exploitantName": "OBORNES",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
+    },
+    {
       "prefixId": "FRONE",
       "name": "reev",
       "amenageurName": "",
@@ -3238,13 +3278,21 @@
       "amenageurName": "Petite Borne",
       "exploitantName": "Petite Borne",
       "type": "CHARGE",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRPD1",
       "name": "Power Dot",
       "amenageurName": "POWER DOT FRANCE",
       "exploitantName": "POWER DOT FRANCE",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
+    },
+    {
+      "prefixId": "FRPDN",
+      "name": "Prise de Nice",
+      "amenageurName": "Métropole Nice Côte d'Azur",
+      "exploitantName": "SMEG DEVELOPPEMENT",
       "type": "CHARGE",
       "status": "AWAITING_PAYMENT"
     },
@@ -3558,7 +3606,7 @@
       "amenageurName": "Boréal Energy",
       "exploitantName": "Boréal Energy",
       "type": "CHARGE",
-      "status": "SUSPENDED"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRRPL",
@@ -3574,7 +3622,7 @@
       "amenageurName": "REGIE SERVICES ENERGIE",
       "exploitantName": "SPIE CITYNETWORKS",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRRTC",
@@ -3718,7 +3766,7 @@
       "amenageurName": "Syndicat Départemental d'Energie des Côtes d'Armor (SDE22)",
       "exploitantName": "BOUYGUES ENERGIES & SERVICES",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRS23",
@@ -4438,7 +4486,7 @@
       "amenageurName": "SM DES TRANSPORTS DU BASSIN DE BRIEY",
       "exploitantName": "Freshmile",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRSTE",
@@ -4847,6 +4895,14 @@
       "exploitantName": "",
       "type": "CHARGE",
       "status": "SUSPENDED"
+    },
+    {
+      "prefixId": "FRV4U",
+      "name": "Entreprise VOLT4U",
+      "amenageurName": "Volt4U",
+      "exploitantName": "Volt4U",
+      "type": "CHARGE",
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRV51",
@@ -5617,5 +5673,5 @@
       "status": "ACTIVE"
     }
   ],
-  "total": 702
+  "total": 709
 }

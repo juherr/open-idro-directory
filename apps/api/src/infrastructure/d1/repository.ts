@@ -281,6 +281,38 @@ export class RegistryRepository {
     };
   }
 
+  async countryStats(releaseId: string, countryCode: string) {
+    const [statuses, roles, observations, conflicts] = await Promise.all([
+      this.all<{ key: string; count: number }>(
+        `SELECT consolidated_status AS key, COUNT(*) AS count
+         FROM parties
+         WHERE dataset_release_id = ? AND country_code = ?
+         GROUP BY consolidated_status ORDER BY consolidated_status`,
+        [releaseId, countryCode],
+      ),
+      this.all<{ key: string; count: number }>(
+        `SELECT pr.role AS key, COUNT(*) AS count
+         FROM party_roles pr
+         JOIN parties p ON p.key = pr.party_key AND p.dataset_release_id = pr.dataset_release_id
+         WHERE pr.dataset_release_id = ? AND p.country_code = ?
+         GROUP BY pr.role ORDER BY pr.role`,
+        [releaseId, countryCode],
+      ),
+      this.all<{ source_id: string; authority_level: string; count: number }>(
+        `SELECT source_id, authority_level, COUNT(*) AS count
+         FROM observations
+         WHERE dataset_release_id = ? AND country_code = ?
+         GROUP BY source_id, authority_level ORDER BY source_id, authority_level`,
+        [releaseId, countryCode],
+      ),
+      this.first<{ count: number }>(
+        "SELECT COUNT(*) AS count FROM conflicts WHERE dataset_release_id = ? AND party_key LIKE ?",
+        [releaseId, `${countryCode}:%`],
+      ),
+    ]);
+    return { statuses, roles, observations, conflicts: conflicts?.count ?? 0 };
+  }
+
   async first<T>(sql: string, params: unknown[] = []) {
     return (
       (await this.db

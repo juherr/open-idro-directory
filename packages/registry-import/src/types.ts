@@ -5,7 +5,7 @@ import type {
   RegistryStatus,
 } from "../../registry-model/src/index.js";
 
-export const API_SCHEMA_VERSION = "1.2.0";
+export const API_SCHEMA_VERSION = "1.3.0";
 export const IMPORTER_VERSION = "0.1.0";
 
 export interface DatasetReleaseRow {
@@ -44,6 +44,7 @@ export interface SourceRow {
   machine_readable_url: string | null;
   verified_at: string | null;
   jurisdictions_json: string;
+  supported_roles_json: string;
   reuse_status: string;
   reuse_legal_basis_name: string | null;
   reuse_legal_basis_url: string | null;

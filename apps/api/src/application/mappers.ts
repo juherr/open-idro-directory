@@ -1,5 +1,5 @@
 import { encodeCursor } from "../domain/cursor.js";
-import { SOURCE_DISCLAIMER } from "../domain/constants.js";
+import { API_PREFIX, SOURCE_DISCLAIMER } from "../domain/constants.js";
 import type {
   ConflictRow,
   DatasetRelease,
@@ -84,6 +84,10 @@ export function sourcePayload(row: SourceRow) {
       url: row.registry_url,
       observationType: row.observation_type,
       jurisdictions: registryJurisdictions,
+      // Unknown, not empty, until the first import after migration 0005.
+      supportedRoles: row.supported_roles_json
+        ? parseJson<string[]>(row.supported_roles_json)
+        : null,
     },
     // The technical resource this project consumes.
     publication: {
@@ -123,6 +127,114 @@ export function sourcePayload(row: SourceRow) {
     },
     disclaimer: SOURCE_DISCLAIMER,
   };
+}
+
+export interface CountryStats {
+  statuses: CountRow[];
+  roles: CountRow[];
+  observations: Array<{ source_id: string; authority_level: string; count: number }>;
+  conflicts: number;
+}
+
+type CountRow = { key: string; count: number };
+
+/**
+ * One country's authorities, sources, coverage, freshness, and counts.
+ *
+ * Every authority whose remit includes the country is listed and none is ranked
+ * above another: where two registers cover a country, the per-source
+ * `countryObservations.byAuthorityLevel` shows which one is authoritative for it.
+ * Returns null when no source covers the country and no identifier carries it.
+ */
+export function countrySummaryPayload(
+  countryCode: string,
+  sources: SourceRow[],
+  stats: CountryStats,
+  release: DatasetRelease,
+) {
+  const payloads = sources.map(sourcePayload);
+  const observedBySource = new Map<string, Record<string, number>>();
+  for (const row of stats.observations) {
+    const levels = observedBySource.get(row.source_id) ?? {};
+    levels[row.authority_level] = (levels[row.authority_level] ?? 0) + row.count;
+    observedBySource.set(row.source_id, levels);
+  }
+
+  const declaring = payloads.filter((source) =>
+    source.registry.jurisdictions.includes(countryCode),
+  );
+  const relevant = payloads
+    .filter((source) => declaring.includes(source) || observedBySource.has(source.id))
+    .map((source) => {
+      const byAuthorityLevel = observedBySource.get(source.id) ?? {};
+      return {
+        ...source,
+        countryObservations: { total: sum(Object.values(byAuthorityLevel)), byAuthorityLevel },
+      };
+    });
+
+  const relevantIds = new Set(relevant.map((source) => source.id));
+  const authorities = new Map<
+    string,
+    ReturnType<typeof sourcePayload>["authority"] & { sourceIds: string[] }
+  >();
+  for (const { id, authority } of payloads) {
+    if (!authority.jurisdictions.includes(countryCode)) continue;
+    const key = authority.id ?? authority.name ?? id;
+    const entry = authorities.get(key) ?? { ...authority, sourceIds: [] };
+    if (relevantIds.has(id)) entry.sourceIds.push(id);
+    authorities.set(key, entry);
+  }
+
+  const parties = sum(stats.statuses.map((row) => row.count));
+  if (authorities.size === 0 && relevant.length === 0 && parties === 0) return null;
+
+  const declaredRoles = declaring.flatMap((source) => source.registry.supportedRoles ?? []);
+  const anyRolesKnown = declaring.some((source) => source.registry.supportedRoles !== null);
+  const countryPath = `${API_PREFIX}/countries/${countryCode}`;
+
+  return {
+    countryCode,
+    authorities: [...authorities]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([, authority]) => authority),
+    sources: relevant,
+    coverage: {
+      status: parties > 0 ? "PUBLISHED" : "NO_PUBLISHED_IDENTIFIERS",
+      declaredRoles: anyRolesKnown ? [...new Set(declaredRoles)].sort() : null,
+      publishedRoles: countMap(stats.roles),
+    },
+    statistics: {
+      parties,
+      partyRoles: sum(stats.roles.map((row) => row.count)),
+      observations: sum(relevant.map((source) => source.countryObservations.total)),
+      conflicts: stats.conflicts,
+      countsByStatus: countMap(stats.statuses),
+    },
+    freshness: {
+      latestSuccessfulRetrievalAt:
+        relevant
+          .map((source) => source.health.lastSuccessfulAt)
+          .filter((value): value is string => value !== null)
+          .sort()
+          .at(-1) ?? null,
+      staleSourceIds: relevant
+        // Not `health.status`: releases imported before the disabled-status fix
+        // still mark a disabled source stale there.
+        .filter((source) => source.health.freshness === "stale")
+        .map((source) => source.id),
+    },
+    datasetTimestamp: release.generated_at,
+    links: {
+      self: countryPath,
+      parties: `${API_PREFIX}/parties?country=${countryCode}`,
+      conflicts: `${API_PREFIX}/conflicts?country=${countryCode}`,
+    },
+  };
+}
+
+function sum(values: number[]) {
+  return values.reduce((total, value) => total + value, 0);
 }
 
 export function observationPayload(row: ObservationRow) {

@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import {
   conflictPayload,
   countMap,
+  countrySummaryPayload,
   datasetPayload,
   listPayload,
   observationPayload,
@@ -26,6 +27,7 @@ import { docsHtml } from "./docs.js";
 import { ApiError, errorResponse } from "./errors.js";
 import {
   conflictQuerySchema,
+  parseCountryCode,
   observationQuerySchema,
   parseCountryParty,
   parseQuery,
@@ -75,6 +77,7 @@ export function createApp() {
         sources: `${API_PREFIX}/sources`,
         parties: `${API_PREFIX}/parties`,
         stats: `${API_PREFIX}/stats`,
+        countries: `${API_PREFIX}/countries/{countryCode}`,
         github: REPOSITORY_URL,
       },
     })),
@@ -236,6 +239,25 @@ export function createApp() {
         conflictCounts: countMap(stats.conflicts),
         datasetTimestamp: release.generated_at,
       };
+    }),
+  );
+
+  app.get(`${API_PREFIX}/countries/:countryCode`, async (c) =>
+    withDataset(c, CACHE_CONTROL.default, async ({ repo, release }) => {
+      const countryCode = parseCountryCode(c.req.param("countryCode"));
+      const [sources, stats] = await Promise.all([
+        repo.listSources(release.id),
+        repo.countryStats(release.id, countryCode),
+      ]);
+      const summary = countrySummaryPayload(countryCode, sources, stats, release);
+      if (!summary) {
+        throw new ApiError(
+          404,
+          "COUNTRY_NOT_FOUND",
+          "No source covers this country and no identifier carries it.",
+        );
+      }
+      return summary;
     }),
   );
 

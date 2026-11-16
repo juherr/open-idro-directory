@@ -360,6 +360,7 @@ function toSources(sources: SourceSummary[], datasetReleaseId: string) {
       machine_readable_url: source.publication.machineReadableUrl,
       verified_at: source.publication.verifiedAt,
       jurisdictions_json: stableJson(source.registry.jurisdictions),
+      supported_roles_json: stableJson(source.registry.supportedRoles),
       reuse_status: source.reuse.status,
       reuse_legal_basis_name: source.reuse.legalBasis?.name ?? null,
       reuse_legal_basis_url: source.reuse.legalBasis?.url ?? null,
@@ -373,11 +374,13 @@ function toSources(sources: SourceSummary[], datasetReleaseId: string) {
             ? 1
             : 0,
       reuse_notes: source.reuse.notes,
-      health_status: source.health.stale
-        ? "stale"
-        : source.publication.enabled
-          ? "current"
-          : "disabled",
+      // A disabled source is never retrieved, so it is always flagged stale too;
+      // disabled is the more accurate status.
+      health_status: !source.publication.enabled
+        ? "disabled"
+        : source.health.stale
+          ? "stale"
+          : "current",
       record_count: source.health.recordCount,
       last_attempted_at: source.health.lastAttemptedRetrieval,
       last_successful_at: source.health.lastSuccessfulRetrieval,

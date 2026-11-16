@@ -29,6 +29,8 @@ export interface SourceRow {
   machine_readable_url: string | null;
   verified_at: string | null;
   jurisdictions_json: string;
+  /** NULL until the first import after migration 0005. */
+  supported_roles_json: string | null;
   reuse_status: string;
   reuse_legal_basis_name: string | null;
   reuse_legal_basis_url: string | null;

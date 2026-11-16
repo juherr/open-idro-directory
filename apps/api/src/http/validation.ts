@@ -81,6 +81,18 @@ export function parseQuery<T>(schema: z.ZodType<T>, query: Record<string, string
   return result.data;
 }
 
+export function parseCountryCode(countryCode: string) {
+  const country = uppercase(countryCode);
+  if (!/^[A-Z]{2}$/.test(country)) {
+    throw new ApiError(
+      422,
+      "INVALID_COUNTRY_CODE",
+      "The country code must be an ISO 3166-1 alpha-2 code.",
+    );
+  }
+  return country;
+}
+
 export function parseCountryParty(countryCode: string, partyId: string) {
   const country = uppercase(countryCode);
   const party = uppercase(partyId);

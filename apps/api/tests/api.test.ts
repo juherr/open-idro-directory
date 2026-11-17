@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SCHEMA_VERSION } from "../src/domain/constants.js";
+import { makeEtag } from "../src/domain/etag.js";
 import { createApp, type Env } from "../src/http/app.js";
 import worker from "../src/index.js";
 import type {
@@ -186,7 +187,7 @@ describe("Cloudflare API", () => {
     const db = {
       prepare: (sql: string) => ({
         bind: () => ({
-          first: async () => (sql.includes("FROM sources") ? unjoined : first(sql, [])),
+          first: async () => (sql.includes("FROM sources") ? unjoined : first(sql, [], release)),
           all: async () => ({ results: [] }),
         }),
       }),
@@ -385,6 +386,80 @@ describe("Cloudflare API", () => {
     expect(statsBody.data.countsByIdentifierCountry.FR).toBe(2);
   });
 
+  it("serves a server-rendered country page on the canonical path", async () => {
+    const response = await workerRequest("/countries/fr/");
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/html");
+    expect(response.headers.get("x-dataset-release")).toBe(release.id);
+    expect(response.headers.get("cache-control")).toContain("max-age=3600");
+    const page = await response.text();
+    expect(page).toContain("France");
+    expect(page).toContain("AFIREV");
+    expect(page).toContain("https://api.afirev.fr/public/prefixes");
+    expect(page).toContain('href="/explore/?country=FR"');
+  });
+
+  it("revalidates country pages with an ETag distinct from the JSON summary", async () => {
+    const first = await workerRequest("/countries/fr/");
+    const etag = first.headers.get("etag");
+    expect(etag).toMatch(/^"/);
+    expect(etag).not.toBe(
+      await makeEtag(release.dataset_checksum, "https://example.test/countries/fr/"),
+    );
+
+    const revalidated = await workerRequest("/countries/fr/", {
+      headers: { "If-None-Match": etag ?? "" },
+    });
+    expect(revalidated.status).toBe(304);
+  });
+
+  it.each([
+    ["/countries/FR/", "/countries/fr/"],
+    ["/countries/fr", "/countries/fr/"],
+    ["/countries/fr/?country=FR&q=total", "/countries/fr/?q=total"],
+  ])("redirects %s to the canonical %s", async (path, location) => {
+    const response = await workerRequest(path);
+
+    expect(response.status).toBe(301);
+    expect(response.headers.get("location")).toBe(location);
+  });
+
+  it("rejects a country parameter that conflicts with the path", async () => {
+    const response = await workerRequest("/countries/FR/?country=DE");
+
+    expect(response.status).toBe(400);
+    expect(response.headers.get("content-type")).toContain("text/html");
+    await expect(response.text()).resolves.toContain("Conflicting country");
+  });
+
+  it.each(["/countries/zz/", "/countries/fr/extra", "/countries/", "/countries/fra/"])(
+    "returns an uncached HTML 404 for %s",
+    async (path) => {
+      const response = await workerRequest(path);
+
+      expect(response.status).toBe(404);
+      expect(response.headers.get("content-type")).toContain("text/html");
+      expect(response.headers.get("etag")).toBeNull();
+      expect(response.headers.get("cache-control") ?? "").not.toContain("max-age=3600");
+      await expect(response.text()).resolves.toContain("Page not found");
+    },
+  );
+
+  it("returns an HTML 503 for a country page when no dataset is active", async () => {
+    const response = await workerRequest("/countries/fr/", undefined, { activeRelease: null });
+
+    expect(response.status).toBe(503);
+    expect(response.headers.get("content-type")).toContain("text/html");
+  });
+
+  it("keeps the generic explorer URLs on static assets", async () => {
+    const response = await workerRequest("/explore/?country=FR&q=total");
+
+    expect(response.status).toBe(200);
+    await expect(response.text()).resolves.toContain("Explorateur de données");
+  });
+
   it("returns the asset-layer 404 for unknown non-API routes", async () => {
     const response = await workerRequest("/does-not-exist");
     expect(response.status).toBe(404);
@@ -397,12 +472,12 @@ function request(path: string, init?: RequestInit) {
   return app.request(path, init, { REGISTRY_DB: fakeD1() } satisfies Env);
 }
 
-function workerRequest(path: string, init?: RequestInit) {
+function workerRequest(path: string, init?: RequestInit, options?: FakeD1Options) {
   return worker.fetch(
     new Request(`https://example.test${path}`, init) as Parameters<
       NonNullable<typeof worker.fetch>
     >[0],
-    { REGISTRY_DB: fakeD1(), ASSETS: fakeAssets() },
+    { REGISTRY_DB: fakeD1(options), ASSETS: fakeAssets() },
     {} as ExecutionContext,
   );
 }
@@ -426,11 +501,16 @@ function fakeAssets(): Fetcher {
   } as Fetcher;
 }
 
-function fakeD1(): D1Database {
+interface FakeD1Options {
+  activeRelease?: DatasetRelease | null;
+}
+
+function fakeD1(options: FakeD1Options = {}): D1Database {
+  const activeRelease = options.activeRelease === undefined ? release : options.activeRelease;
   return {
     prepare: (sql: string) => ({
-      bind: (...params: unknown[]) => statement(sql, params),
-      first: async <T>() => first<T>(sql, []),
+      bind: (...params: unknown[]) => statement(sql, params, activeRelease),
+      first: async <T>() => first<T>(sql, [], activeRelease),
       all: async <T>() => ({ results: all<T>(sql, []) }),
     }),
     batch: async () => [],
@@ -439,15 +519,15 @@ function fakeD1(): D1Database {
   } as unknown as D1Database;
 }
 
-function statement(sql: string, params: unknown[]) {
+function statement(sql: string, params: unknown[], activeRelease: DatasetRelease | null) {
   return {
-    first: async <T>() => first<T>(sql, params),
+    first: async <T>() => first<T>(sql, params, activeRelease),
     all: async <T>() => ({ results: all<T>(sql, params) }),
   };
 }
 
-function first<T>(sql: string, params: unknown[]): T | null {
-  if (sql.includes("FROM active_dataset")) return release as T;
+function first<T>(sql: string, params: unknown[], activeRelease: DatasetRelease | null): T | null {
+  if (sql.includes("FROM active_dataset")) return activeRelease as T;
   if (sql.includes("FROM parties") && sql.includes("country_code = ?") && params.includes("ABC"))
     return party as T;
   if (sql.includes("FROM sources") && sql.includes("id = ?")) return source as T;

@@ -1406,6 +1406,58 @@ button {
   text-decoration: none;
 }
 
+.country-page {
+  padding-top: 40px;
+}
+
+.country-page-code {
+  margin: 0 0 6px;
+  color: var(--subtle);
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.country-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.country-cards .meta-grid {
+  margin: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.country-cards .meta-value {
+  overflow-wrap: anywhere;
+}
+
+.country-cards .trust-card p {
+  margin-top: 14px;
+}
+
+.country-empty {
+  margin-bottom: 28px;
+  border-color: var(--accent);
+}
+
+.country-facts dd,
+.country-cards dd {
+  margin: 0;
+}
+
+.country-links {
+  margin: 0 0 12px;
+  padding-left: 18px;
+}
+
+.country-page-meta {
+  color: var(--subtle);
+  font-size: 13px;
+}
+
 @media (max-width: 940px) {
   .topbar-inner,
   .topbar-inner.wide {

@@ -58,6 +58,9 @@ country. The code is an ISO 3166-1 alpha-2 code and is case-insensitive.
 A country with a known IDRO but no published register, such as Cyprus, returns
 its authority and its disabled source with `NO_PUBLISHED_IDENTIFIERS`.
 
+The same summary is rendered as HTML at `/countries/{code}/` (lowercase); see
+`docs/api-architecture.md`.
+
 Errors use the standard error body:
 
 - `422 INVALID_COUNTRY_CODE`: the code is not two letters.

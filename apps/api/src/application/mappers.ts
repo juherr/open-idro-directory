@@ -138,6 +138,8 @@ export interface CountryStats {
 
 type CountRow = { key: string; count: number };
 
+export type CountrySummary = NonNullable<ReturnType<typeof countrySummaryPayload>>;
+
 /**
  * One country's authorities, sources, coverage, freshness, and counts.
  *

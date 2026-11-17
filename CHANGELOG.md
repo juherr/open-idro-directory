@@ -9,6 +9,14 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
+- Country pages at `/countries/{code}/`, rendered on the server so they work
+  without JavaScript: the country's IDRO authorities, coverage, and sources,
+  with an explained empty state for a country with a known IDRO but no
+  published identifiers, such as Cyprus. The lowercase URL is canonical:
+  uppercase codes, a missing trailing slash, or a redundant `country` query
+  parameter redirect to it, and a `country` parameter naming another country
+  returns `400`. Unknown countries and paths return `404`. Pages are in English
+  for now. The generic explorer `/explore/` is unchanged.
 - `GET /api/v1/countries/{countryCode}`: one summary per country, gathering
   every authority whose remit includes it, every source that declares it or
   publishes identifiers for it, role coverage, freshness, counts, and the dataset
@@ -71,6 +79,9 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Changed
 
+- The landing page's country cards open the country page instead of the
+  explorer. The Cyprus card opens its country page, which links to the
+  ministry, instead of the ministry's site.
 - The Slovenian NAP connector reads its workbook with `read-excel-file`, the
   library the pipeline already uses for the Swedish registers, instead of
   matching the sheet XML by hand.

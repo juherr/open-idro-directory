@@ -60,12 +60,7 @@ const LANDING_FALLBACK_ROOT = {
 const ADD_COUNTRY_ISSUE_URL =
   "https://github.com/juherr/open-idro-directory/issues/new?template=add-country.yml";
 
-const KNOWN_UNPUBLISHED_COUNTRIES = [
-  {
-    code: "CY",
-    url: "https://www.mcw.gov.cy/mcw/ems/ems.nsf/All/D764FAE19922743BC2258DAA002FA4BC?OpenDocument",
-  },
-];
+const KNOWN_UNPUBLISHED_COUNTRIES = [{ code: "CY" }];
 
 const COMING_SOON_COUNTRIES = ["BG", "CZ", "EE", "IT", "LU", "MT", "RO", "SK"];
 
@@ -226,13 +221,13 @@ function renderCountries() {
     .map((code) => ({
       code,
       count: countries[code],
-      href: `/explore/?country=${encodeURIComponent(code)}`,
+      href: countryPageHref(code),
       status: COMING_SOON_COUNTRIES.includes(code) ? "coming-soon" : "supported",
     }));
   const knownUnpublished = KNOWN_UNPUBLISHED_COUNTRIES.map((country) => ({
     ...country,
     count: 0,
-    href: country.url,
+    href: countryPageHref(country.code),
     status: "known-unpublished",
   }));
   const comingSoon = COMING_SOON_COUNTRIES.filter((code) => !countries[code]).map((code) => ({
@@ -272,6 +267,10 @@ function countryCardHtml(country, lang) {
     return `<article class="${className}" aria-label="${escapeHtml(countryName(country.code, lang))}">${content}</article>`;
   const target = country.href.startsWith("http") ? ' target="_blank" rel="noreferrer"' : "";
   return `<a class="${className}" href="${escapeHtml(country.href)}"${target}>${content}</a>`;
+}
+
+function countryPageHref(code) {
+  return `/countries/${encodeURIComponent(code.toLowerCase())}/`;
 }
 
 function countryStatusCaption(country, lang) {

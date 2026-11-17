@@ -23,8 +23,10 @@ import { makeEtag } from "../domain/etag.js";
 import { parseEmobilityIdentifierInput } from "../domain/identifier.js";
 import { RegistryRepository } from "../infrastructure/d1/repository.js";
 import { openApiDocument } from "../openapi/document.js";
+import { COUNTRY_PAGE_PREFIX, isCountryPagePath, resolveCountryPage } from "./country-route.js";
 import { docsHtml } from "./docs.js";
 import { ApiError, errorResponse } from "./errors.js";
+import { renderCountryPage, renderErrorPage } from "./pages/country-page.js";
 import {
   conflictQuerySchema,
   parseCountryCode,
@@ -245,21 +247,36 @@ export function createApp() {
   app.get(`${API_PREFIX}/countries/:countryCode`, async (c) =>
     withDataset(c, CACHE_CONTROL.default, async ({ repo, release }) => {
       const countryCode = parseCountryCode(c.req.param("countryCode"));
-      const [sources, stats] = await Promise.all([
-        repo.listSources(release.id),
-        repo.countryStats(release.id, countryCode),
-      ]);
-      const summary = countrySummaryPayload(countryCode, sources, stats, release);
-      if (!summary) {
-        throw new ApiError(
-          404,
-          "COUNTRY_NOT_FOUND",
-          "No source covers this country and no identifier carries it.",
-        );
-      }
-      return summary;
+      return loadCountrySummary(repo, release, countryCode);
     }),
   );
+
+  const countryPage = async (c: ApiContext) => {
+    const route = resolveCountryPage(new URL(c.req.url));
+    if (route.kind === "redirect") return c.redirect(route.location, 301);
+    if (route.kind === "conflict") {
+      throw new ApiError(
+        400,
+        "CONFLICTING_COUNTRY",
+        "The country query parameter names another country than the page path.",
+      );
+    }
+    if (route.kind === "not-found") throw routeNotFound();
+
+    const repo = new RegistryRepository(c.env.REGISTRY_DB);
+    const release = await activeRelease(repo);
+    // Loaded before any cache header is set, so a 404 is neither cached nor revalidated.
+    const summary = await loadCountrySummary(repo, release, route.countryCode);
+    c.header("X-Dataset-Release", release.id);
+    c.header("Cache-Control", CACHE_CONTROL.default);
+    // The page version keeps a markup-only deploy from being answered with a stale 304.
+    const etag = await makeEtag(`${release.dataset_checksum}:${COUNTRY_PAGE_VERSION}`, c.req.url);
+    c.header("ETag", etag);
+    if (c.req.header("If-None-Match") === etag) return c.body(null, 304);
+    return c.html(await renderCountryPage(summary, new URL(c.req.url).origin));
+  };
+  app.get(COUNTRY_PAGE_PREFIX, countryPage);
+  app.get(`${COUNTRY_PAGE_PREFIX}/*`, countryPage);
 
   app.get(`${API_PREFIX}/resolve/:emobilityId`, async (c) =>
     withDataset(c, CACHE_CONTROL.default, async ({ repo, release }) => {
@@ -282,16 +299,12 @@ export function createApp() {
   );
 
   app.notFound((c) =>
-    errorResponse(
-      c,
-      new ApiError(404, "ROUTE_NOT_FOUND", "Route not found."),
-      c.get("requestId") ?? crypto.randomUUID(),
-    ),
+    respondWithError(c, routeNotFound(), c.get("requestId") ?? crypto.randomUUID()),
   );
 
   app.onError((error, c) => {
     const requestId = c.get("requestId") ?? crypto.randomUUID();
-    if (error instanceof ApiError) return errorResponse(c, error, requestId);
+    if (error instanceof ApiError) return respondWithError(c, error, requestId);
     console.error(
       JSON.stringify({
         requestId,
@@ -301,7 +314,7 @@ export function createApp() {
         message: error instanceof Error ? error.message : String(error),
       }),
     );
-    return errorResponse(
+    return respondWithError(
       c,
       new ApiError(500, "INTERNAL_ERROR", "Unexpected server failure."),
       requestId,
@@ -311,8 +324,47 @@ export function createApp() {
   return app;
 }
 
+/** Bumped whenever the country page markup changes, so cached pages revalidate. */
+const COUNTRY_PAGE_VERSION = "1";
+
 type ApiContext = Context<{ Bindings: Env; Variables: { requestId: string } }>;
 type ActiveRelease = NonNullable<Awaited<ReturnType<RegistryRepository["activeRelease"]>>>;
+
+function routeNotFound() {
+  return new ApiError(404, "ROUTE_NOT_FOUND", "Route not found.");
+}
+
+/** Country pages get HTML errors; the API keeps its JSON error envelope. */
+async function respondWithError(c: ApiContext, error: ApiError, requestId: string) {
+  if (!isCountryPagePath(c.req.path)) return errorResponse(c, error, requestId);
+  return c.html(await renderErrorPage(error.status, error.message, requestId), error.status);
+}
+
+async function activeRelease(repo: RegistryRepository) {
+  const release = await repo.activeRelease();
+  if (!release) throw new ApiError(503, "NO_ACTIVE_DATASET", "No active dataset is available.");
+  return release;
+}
+
+async function loadCountrySummary(
+  repo: RegistryRepository,
+  release: ActiveRelease,
+  countryCode: string,
+) {
+  const [sources, stats] = await Promise.all([
+    repo.listSources(release.id),
+    repo.countryStats(release.id, countryCode),
+  ]);
+  const summary = countrySummaryPayload(countryCode, sources, stats, release);
+  if (!summary) {
+    throw new ApiError(
+      404,
+      "COUNTRY_NOT_FOUND",
+      "No source covers this country and no identifier carries it.",
+    );
+  }
+  return summary;
+}
 
 async function withDataset<T>(
   c: ApiContext,
@@ -320,8 +372,7 @@ async function withDataset<T>(
   handler: (context: { repo: RegistryRepository; release: ActiveRelease }) => Promise<T>,
 ) {
   const repo = new RegistryRepository(c.env.REGISTRY_DB);
-  const release = await repo.activeRelease();
-  if (!release) throw new ApiError(503, "NO_ACTIVE_DATASET", "No active dataset is available.");
+  const release = await activeRelease(repo);
   c.header("X-Dataset-Release", release.id);
   c.header("Cache-Control", cacheControl);
   const etag = await makeEtag(release.dataset_checksum, c.req.url);

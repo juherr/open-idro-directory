@@ -89,7 +89,10 @@ bun run api:test
 
 MVP endpoints include `/api/v1`, `/api/v1/health`, `/api/v1/dataset`,
 `/api/v1/parties`, `/api/v1/sources`, `/api/v1/conflicts`, `/api/v1/stats`,
-`/api/v1/resolve/{emobilityId}`, `/openapi.json`, and `/docs`.
+`/api/v1/countries/{countryCode}`, `/api/v1/resolve/{emobilityId}`,
+`/openapi.json`, and `/docs`. The Worker also renders a page per country at
+`/countries/{code}/`, next to the static landing page and the `/explore/`
+explorer.
 
 See `docs/api-architecture.md`, `docs/api-reference.md`,
 `docs/cloudflare-deployment.md`, and `docs/d1-import.md`.

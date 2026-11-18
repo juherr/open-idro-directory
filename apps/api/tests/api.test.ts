@@ -148,6 +148,14 @@ describe("Cloudflare API", () => {
     expect(second.status).toBe(304);
   });
 
+  it("returns 304 when an If-None-Match list holds the weak form of the ETag", async () => {
+    const first = await request("/api/v1/dataset");
+    const second = await request("/api/v1/dataset", {
+      headers: { "If-None-Match": `"other", W/${first.headers.get("etag") ?? ""}` },
+    });
+    expect(second.status).toBe(304);
+  });
+
   it("lists and resolves parties", async () => {
     const list = await request("/api/v1/parties?country=fr&limit=1");
     expect(list.status).toBe(200);
@@ -412,6 +420,11 @@ describe("Cloudflare API", () => {
       headers: { "If-None-Match": etag ?? "" },
     });
     expect(revalidated.status).toBe(304);
+
+    const listed = await workerRequest("/countries/fr/", {
+      headers: { "If-None-Match": `"other", ${etag ?? ""}` },
+    });
+    expect(listed.status).toBe(304);
   });
 
   it.each([

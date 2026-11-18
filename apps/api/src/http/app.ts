@@ -19,7 +19,7 @@ import {
   SCHEMA_VERSION,
 } from "../domain/constants.js";
 import { decodeCursor } from "../domain/cursor.js";
-import { makeEtag } from "../domain/etag.js";
+import { ifNoneMatchMatches, makeEtag } from "../domain/etag.js";
 import { parseEmobilityIdentifierInput } from "../domain/identifier.js";
 import { RegistryRepository } from "../infrastructure/d1/repository.js";
 import { openApiDocument } from "../openapi/document.js";
@@ -272,7 +272,7 @@ export function createApp() {
     // The page version keeps a markup-only deploy from being answered with a stale 304.
     const etag = await makeEtag(`${release.dataset_checksum}:${COUNTRY_PAGE_VERSION}`, c.req.url);
     c.header("ETag", etag);
-    if (c.req.header("If-None-Match") === etag) return c.body(null, 304);
+    if (ifNoneMatchMatches(c.req.header("If-None-Match"), etag)) return c.body(null, 304);
     return c.html(await renderCountryPage(summary, new URL(c.req.url).origin));
   };
   app.get(COUNTRY_PAGE_PREFIX, countryPage);
@@ -377,7 +377,7 @@ async function withDataset<T>(
   c.header("Cache-Control", cacheControl);
   const etag = await makeEtag(release.dataset_checksum, c.req.url);
   c.header("ETag", etag);
-  if (c.req.header("If-None-Match") === etag) return c.body(null, 304);
+  if (ifNoneMatchMatches(c.req.header("If-None-Match"), etag)) return c.body(null, 304);
   const data = await handler({ repo, release });
   return c.json({ data, meta: meta(release) });
 }

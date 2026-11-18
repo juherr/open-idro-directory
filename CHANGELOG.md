@@ -163,6 +163,9 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Fixed
 
+- Conditional requests answered `200` instead of `304` when `If-None-Match`
+  listed several entity tags, was `*`, or held the weak form `W/"…"` of the
+  current ETag. The header is now evaluated as a list with weak comparison.
 - The API reported a disabled source, such as Cyprus, with health status
   `stale`, because a source that is never retrieved is always flagged stale.
   It now reports `disabled`.

@@ -75,13 +75,19 @@ function coverageLine(summary: CountrySummary) {
 function emptyState(summary: CountrySummary, name: string) {
   const authorities = summary.authorities.map((authority) => authority.name).filter(Boolean);
   const holder = authorities.length > 0 ? authorities.join(", ") : "The national authority";
-  const publishesList = summary.sources.some((source) => source.publication.machineReadableUrl);
+  const listed = summary.sources.filter((source) => source.publication.machineReadableUrl);
+  // Only a list the directory has retrieved can be said to hold no identifiers.
+  const retrieved = listed.some((source) => source.health.lastSuccessfulAt);
   // Plain strings, escaped when interpolated below.
-  const explanation = publishesList
-    ? `${holder} manages e-mobility identifiers for ${name}. ` +
-      `Its published list holds no identifiers for ${name} yet, so this directory holds none.`
-    : `${holder} manages e-mobility identifiers for ${name}, ` +
-      "but publishes no machine-readable list of them, so this directory holds none.";
+  const explanation =
+    listed.length === 0
+      ? `${holder} manages e-mobility identifiers for ${name}, ` +
+        "but publishes no machine-readable list of them, so this directory holds none."
+      : retrieved
+        ? `${holder} manages e-mobility identifiers for ${name}. ` +
+          `Its published list holds no identifiers for ${name} yet, so this directory holds none.`
+        : `${holder} manages e-mobility identifiers for ${name} and publishes a machine-readable ` +
+          "list, but this directory has not retrieved it yet, so it holds none.";
   return html`
     <section class="trust-card country-empty" aria-labelledby="empty-title">
       <h2 id="empty-title">No published identifiers</h2>

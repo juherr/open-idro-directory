@@ -42,6 +42,18 @@ describe("country page", () => {
     expect(page).toContain("holds no identifiers for Netherlands yet");
   });
 
+  it("makes no claim about a published list the directory has never retrieved", async () => {
+    const rows = sources.map((row) =>
+      row.id === "benelux-idro" ? { ...row, last_successful_at: null } : row,
+    );
+    const page = await renderCountryPage(summaryFor("NL", rows), origin);
+
+    expect(page).toContain("No published identifiers");
+    expect(page).toContain("this directory has not retrieved it yet");
+    expect(page).not.toContain("holds no identifiers");
+    expect(page).not.toContain("publishes no machine-readable list");
+  });
+
   it("counts only the sources that publish identifiers for the country", async () => {
     const stats = {
       ...irishStats,

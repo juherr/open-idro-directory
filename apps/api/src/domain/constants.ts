@@ -11,4 +11,5 @@ export const CACHE_CONTROL = {
   health: "public, max-age=60",
   dataset: "public, max-age=300, stale-while-revalidate=3600",
   default: "public, max-age=3600, stale-while-revalidate=86400",
+  error: "no-store",
 };

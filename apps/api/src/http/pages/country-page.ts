@@ -73,19 +73,53 @@ function coverageLine(summary: CountrySummary) {
 }
 
 function emptyState(summary: CountrySummary, name: string) {
-  const authorities = summary.authorities.map((authority) => authority.name).filter(Boolean);
-  const holder = authorities.length > 0 ? authorities.join(", ") : "The national authority";
-  const publishesList = summary.sources.some((source) => source.publication.machineReadableUrl);
+  const authorities = summary.authorities
+    .map((authority) => authority.name)
+    .filter((authorityName): authorityName is string => Boolean(authorityName));
+  const holder =
+    authorities.length > 0
+      ? new Intl.ListFormat("en", { type: "conjunction" }).format(authorities)
+      : "The national authority";
+  // Verbs and pronouns agree with the number of authorities named.
+  const several = authorities.length > 1;
+  const manages = several ? "manage" : "manages";
+  const publishes = several ? "publish" : "publishes";
+  const its = several ? "Their" : "Its";
+  const listed = summary.sources.filter((source) => source.publication.machineReadableUrl);
+  // Only a list the directory has retrieved can be said to hold no identifiers.
+  const retrieved = listed.filter((source) => source.health.lastSuccessfulAt).length;
   // Plain strings, escaped when interpolated below.
-  const explanation = publishesList
-    ? `${holder} manages e-mobility identifiers for ${name}. ` +
-      `Its published list holds no identifiers for ${name} yet, so this directory holds none.`
-    : `${holder} manages e-mobility identifiers for ${name}, ` +
-      "but publishes no machine-readable list of them, so this directory holds none.";
+  let explanation: string;
+  if (listed.length === 0) {
+    explanation =
+      `${holder} ${manages} e-mobility identifiers for ${name}, ` +
+      `but ${publishes} no machine-readable list of them, so this directory holds none.`;
+  } else if (retrieved === 0) {
+    explanation =
+      listed.length === 1
+        ? `${holder} ${manages} e-mobility identifiers for ${name} and ${publishes} a ` +
+          "machine-readable list, but this directory has not retrieved it yet, so it holds none."
+        : `${holder} ${manages} e-mobility identifiers for ${name} and ${publishes} ` +
+          "machine-readable lists, but this directory has not retrieved them yet, so it holds none.";
+  } else if (retrieved < listed.length) {
+    explanation =
+      `${holder} ${manages} e-mobility identifiers for ${name}. ` +
+      `The lists retrieved so far hold no identifiers for ${name}, and others have not been ` +
+      "retrieved yet, so this directory holds none.";
+  } else {
+    explanation =
+      `${holder} ${manages} e-mobility identifiers for ${name}. ` +
+      (listed.length === 1
+        ? `${its} published list holds no identifiers for ${name} yet, so this directory holds none.`
+        : `${its} published lists hold no identifiers for ${name} yet, so this directory holds none.`);
+  }
   return html`
     <section class="trust-card country-empty" aria-labelledby="empty-title">
       <h2 id="empty-title">No published identifiers</h2>
-      <p>${explanation} Ask the authority below to verify an identifier.</p>
+      <p>
+        ${explanation} Ask the ${several ? "authorities" : "authority"} below to verify an
+        identifier.
+      </p>
     </section>
   `;
 }

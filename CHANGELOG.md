@@ -15,8 +15,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   published identifiers, such as Cyprus. The lowercase URL is canonical:
   uppercase codes, a missing trailing slash, or a redundant `country` query
   parameter redirect to it, and a `country` parameter naming another country
-  returns `400`. Unknown countries and paths return `404`. Pages are in English
-  for now. The generic explorer `/explore/` is unchanged.
+  returns `400`. Unknown countries and paths return `404`. Error pages are sent
+  with `Cache-Control: no-store`. Pages are in English for now. The generic explorer `/explore/` is unchanged.
 - `GET /api/v1/countries/{countryCode}`: one summary per country, gathering
   every authority whose remit includes it, every source that declares it or
   publishes identifiers for it, role coverage, freshness, counts, and the dataset
@@ -163,6 +163,13 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Fixed
 
+- Conditional requests answered `200` instead of `304` when `If-None-Match`
+  listed several entity tags, was `*`, or held the weak form `W/"…"` of the
+  current ETag. The header is now evaluated as a list with weak comparison.
+- API errors raised while answering a request, such as `404 COUNTRY_NOT_FOUND`,
+  went out with the dataset's one-hour `Cache-Control` and ETag, and sending
+  that ETag back answered `304` for a resource that does not exist. Errors now
+  carry `Cache-Control: no-store` and no ETag, and are never revalidated.
 - The API reported a disabled source, such as Cyprus, with health status
   `stale`, because a source that is never retrieved is always flagged stale.
   It now reports `disabled`.

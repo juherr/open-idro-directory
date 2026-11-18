@@ -359,6 +359,7 @@ export function openApiDocument(origin = "http://localhost:8787") {
     },
     "x-disclaimer": DISCLAIMER,
     "x-pagination": "Cursor pagination only. Default limit is 50 and maximum limit is 200.",
-    "x-cache": "ETags are derived from the active dataset checksum and canonical request URL.",
+    "x-cache":
+      "ETags are derived from the active dataset release, its checksum and the canonical request URL.",
   };
 }

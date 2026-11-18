@@ -42,6 +42,64 @@ describe("country page", () => {
     expect(page).toContain("holds no identifiers for Netherlands yet");
   });
 
+  it("makes no claim about a published list the directory has never retrieved", async () => {
+    const rows = sources.map((row) =>
+      row.id === "benelux-idro" ? { ...row, last_successful_at: null } : row,
+    );
+    const page = await renderCountryPage(summaryFor("NL", rows), origin);
+
+    expect(page).toContain("No published identifiers");
+    expect(page).toContain("this directory has not retrieved it yet");
+    expect(page).not.toContain("holds no identifiers");
+    expect(page).not.toContain("publishes no machine-readable list");
+  });
+
+  it("describes several retrieved lists in the plural", async () => {
+    const nlNap = { id: "nl-nap", name: "NL NAP", jurisdictions: ["NL"] };
+    const rows = [...sources, sourceRow("nl-nap", nlNap)];
+    const page = await renderCountryPage(summaryFor("NL", rows), origin);
+
+    expect(page).toContain("Their published lists hold no identifiers for Netherlands yet");
+    expect(page).not.toContain("Its published list holds no identifiers");
+  });
+
+  it("agrees the empty-state verbs with several authorities", async () => {
+    // Without identifiers, Ireland has two authorities: EV Roam and TII.
+    const page = await renderCountryPage(summaryFor("IE"), origin);
+
+    expect(page).toContain(
+      "EV Roam and Transport Infrastructure Ireland manage e-mobility identifiers for Ireland.",
+    );
+    expect(page).toContain("Their published lists hold no identifiers");
+    expect(page).toContain("Ask the authorities below");
+    expect(page).not.toContain(" manages ");
+  });
+
+  it("describes several unretrieved lists in the plural", async () => {
+    const nlNap = { id: "nl-nap", name: "NL NAP", jurisdictions: ["NL"] };
+    const rows = [...sources, sourceRow("nl-nap", nlNap)].map((row) =>
+      row.id === "benelux-idro" || row.id === "nl-nap" ? { ...row, last_successful_at: null } : row,
+    );
+    const page = await renderCountryPage(summaryFor("NL", rows), origin);
+
+    expect(page).toContain("publish machine-readable lists");
+    expect(page).toContain("this directory has not retrieved them yet");
+    expect(page).not.toContain("a machine-readable list");
+    expect(page).not.toContain("holds no identifiers");
+    expect(page).not.toContain("hold no identifiers");
+  });
+
+  it("does not call every list empty when only some have been retrieved", async () => {
+    const nlNap = { id: "nl-nap", name: "NL NAP", jurisdictions: ["NL"] };
+    const rows = [...sources, sourceRow("nl-nap", nlNap, { last_successful_at: null })];
+    const page = await renderCountryPage(summaryFor("NL", rows), origin);
+
+    expect(page).toContain("No published identifiers");
+    expect(page).toContain("The lists retrieved so far hold no identifiers for Netherlands");
+    expect(page).toContain("others have not been retrieved yet");
+    expect(page).not.toContain("Its published list holds no identifiers");
+  });
+
   it("counts only the sources that publish identifiers for the country", async () => {
     const stats = {
       ...irishStats,

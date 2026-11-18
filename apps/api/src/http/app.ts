@@ -19,7 +19,7 @@ import {
   SCHEMA_VERSION,
 } from "../domain/constants.js";
 import { decodeCursor } from "../domain/cursor.js";
-import { makeEtag } from "../domain/etag.js";
+import { ifNoneMatchMatches, makeEtag } from "../domain/etag.js";
 import { parseEmobilityIdentifierInput } from "../domain/identifier.js";
 import { RegistryRepository } from "../infrastructure/d1/repository.js";
 import { openApiDocument } from "../openapi/document.js";
@@ -270,9 +270,9 @@ export function createApp() {
     c.header("X-Dataset-Release", release.id);
     c.header("Cache-Control", CACHE_CONTROL.default);
     // The page version keeps a markup-only deploy from being answered with a stale 304.
-    const etag = await makeEtag(`${release.dataset_checksum}:${COUNTRY_PAGE_VERSION}`, c.req.url);
+    const etag = await makeEtag(`${datasetValidator(release)}:${COUNTRY_PAGE_VERSION}`, c.req.url);
     c.header("ETag", etag);
-    if (c.req.header("If-None-Match") === etag) return c.body(null, 304);
+    if (ifNoneMatchMatches(c.req.header("If-None-Match"), etag)) return c.body(null, 304);
     return c.html(await renderCountryPage(summary, new URL(c.req.url).origin));
   };
   app.get(COUNTRY_PAGE_PREFIX, countryPage);
@@ -325,7 +325,7 @@ export function createApp() {
 }
 
 /** Bumped whenever the country page markup changes, so cached pages revalidate. */
-const COUNTRY_PAGE_VERSION = "1";
+const COUNTRY_PAGE_VERSION = "2";
 
 type ApiContext = Context<{ Bindings: Env; Variables: { requestId: string } }>;
 type ActiveRelease = NonNullable<Awaited<ReturnType<RegistryRepository["activeRelease"]>>>;
@@ -336,6 +336,10 @@ function routeNotFound() {
 
 /** Country pages get HTML errors; the API keeps its JSON error envelope. */
 async function respondWithError(c: ApiContext, error: ApiError, requestId: string) {
+  // A heuristically cached 404 would outlive a release that adds the resource.
+  c.header("Cache-Control", CACHE_CONTROL.error);
+  // An error raised after the success headers were set must not keep their ETag.
+  c.header("ETag", undefined);
   if (!isCountryPagePath(c.req.path)) return errorResponse(c, error, requestId);
   return c.html(await renderErrorPage(error.status, error.message, requestId), error.status);
 }
@@ -373,13 +377,22 @@ async function withDataset<T>(
 ) {
   const repo = new RegistryRepository(c.env.REGISTRY_DB);
   const release = await activeRelease(repo);
+  // Run before any cache header is set, so an error is neither cached nor revalidated.
+  const data = await handler({ repo, release });
   c.header("X-Dataset-Release", release.id);
   c.header("Cache-Control", cacheControl);
-  const etag = await makeEtag(release.dataset_checksum, c.req.url);
+  const etag = await makeEtag(datasetValidator(release), c.req.url);
   c.header("ETag", etag);
-  if (c.req.header("If-None-Match") === etag) return c.body(null, 304);
-  const data = await handler({ repo, release });
+  if (ifNoneMatchMatches(c.req.header("If-None-Match"), etag)) return c.body(null, 304);
   return c.json({ data, meta: meta(release) });
+}
+
+/**
+ * The checksum covers the normalized records only. Source health and release metadata can
+ * change between releases with the same records, so the release id is part of the validator.
+ */
+function datasetValidator(release: ActiveRelease) {
+  return `${release.id}:${release.dataset_checksum}`;
 }
 
 function meta(release: ActiveRelease) {

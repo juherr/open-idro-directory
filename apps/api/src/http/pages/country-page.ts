@@ -86,8 +86,11 @@ function emptyState(summary: CountrySummary, name: string) {
       "but publishes no machine-readable list of them, so this directory holds none.";
   } else if (retrieved === 0) {
     explanation =
-      `${holder} manages e-mobility identifiers for ${name} and publishes a machine-readable ` +
-      "list, but this directory has not retrieved it yet, so it holds none.";
+      listed.length === 1
+        ? `${holder} manages e-mobility identifiers for ${name} and publishes a machine-readable ` +
+          "list, but this directory has not retrieved it yet, so it holds none."
+        : `${holder} manages e-mobility identifiers for ${name} and publishes machine-readable ` +
+          "lists, but this directory has not retrieved them yet, so it holds none.";
   } else if (retrieved < listed.length) {
     explanation =
       `${holder} manages e-mobility identifiers for ${name}. ` +
@@ -96,7 +99,9 @@ function emptyState(summary: CountrySummary, name: string) {
   } else {
     explanation =
       `${holder} manages e-mobility identifiers for ${name}. ` +
-      `Its published list holds no identifiers for ${name} yet, so this directory holds none.`;
+      (listed.length === 1
+        ? `Its published list holds no identifiers for ${name} yet, so this directory holds none.`
+        : `The published lists hold no identifiers for ${name} yet, so this directory holds none.`);
   }
   return html`
     <section class="trust-card country-empty" aria-labelledby="empty-title">

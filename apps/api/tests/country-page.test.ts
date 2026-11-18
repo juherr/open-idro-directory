@@ -54,6 +54,29 @@ describe("country page", () => {
     expect(page).not.toContain("publishes no machine-readable list");
   });
 
+  it("describes several retrieved lists in the plural", async () => {
+    const nlNap = { id: "nl-nap", name: "NL NAP", jurisdictions: ["NL"] };
+    const rows = [...sources, sourceRow("nl-nap", nlNap)];
+    const page = await renderCountryPage(summaryFor("NL", rows), origin);
+
+    expect(page).toContain("The published lists hold no identifiers for Netherlands yet");
+    expect(page).not.toContain("Its published list holds no identifiers");
+  });
+
+  it("describes several unretrieved lists in the plural", async () => {
+    const nlNap = { id: "nl-nap", name: "NL NAP", jurisdictions: ["NL"] };
+    const rows = [...sources, sourceRow("nl-nap", nlNap)].map((row) =>
+      row.id === "benelux-idro" || row.id === "nl-nap" ? { ...row, last_successful_at: null } : row,
+    );
+    const page = await renderCountryPage(summaryFor("NL", rows), origin);
+
+    expect(page).toContain("publishes machine-readable lists");
+    expect(page).toContain("this directory has not retrieved them yet");
+    expect(page).not.toContain("publishes a machine-readable");
+    expect(page).not.toContain("holds no identifiers");
+    expect(page).not.toContain("hold no identifiers");
+  });
+
   it("does not call every list empty when only some have been retrieved", async () => {
     const nlNap = { id: "nl-nap", name: "NL NAP", jurisdictions: ["NL"] };
     const rows = [...sources, sourceRow("nl-nap", nlNap, { last_successful_at: null })];

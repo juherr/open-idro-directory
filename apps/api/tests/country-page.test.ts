@@ -54,6 +54,17 @@ describe("country page", () => {
     expect(page).not.toContain("publishes no machine-readable list");
   });
 
+  it("does not call every list empty when only some have been retrieved", async () => {
+    const nlNap = { id: "nl-nap", name: "NL NAP", jurisdictions: ["NL"] };
+    const rows = [...sources, sourceRow("nl-nap", nlNap, { last_successful_at: null })];
+    const page = await renderCountryPage(summaryFor("NL", rows), origin);
+
+    expect(page).toContain("No published identifiers");
+    expect(page).toContain("The lists retrieved so far hold no identifiers for Netherlands");
+    expect(page).toContain("others have not been retrieved yet");
+    expect(page).not.toContain("Its published list holds no identifiers");
+  });
+
   it("counts only the sources that publish identifiers for the country", async () => {
     const stats = {
       ...irishStats,

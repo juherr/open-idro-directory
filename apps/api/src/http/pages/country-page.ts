@@ -77,17 +77,27 @@ function emptyState(summary: CountrySummary, name: string) {
   const holder = authorities.length > 0 ? authorities.join(", ") : "The national authority";
   const listed = summary.sources.filter((source) => source.publication.machineReadableUrl);
   // Only a list the directory has retrieved can be said to hold no identifiers.
-  const retrieved = listed.some((source) => source.health.lastSuccessfulAt);
+  const retrieved = listed.filter((source) => source.health.lastSuccessfulAt).length;
   // Plain strings, escaped when interpolated below.
-  const explanation =
-    listed.length === 0
-      ? `${holder} manages e-mobility identifiers for ${name}, ` +
-        "but publishes no machine-readable list of them, so this directory holds none."
-      : retrieved
-        ? `${holder} manages e-mobility identifiers for ${name}. ` +
-          `Its published list holds no identifiers for ${name} yet, so this directory holds none.`
-        : `${holder} manages e-mobility identifiers for ${name} and publishes a machine-readable ` +
-          "list, but this directory has not retrieved it yet, so it holds none.";
+  let explanation: string;
+  if (listed.length === 0) {
+    explanation =
+      `${holder} manages e-mobility identifiers for ${name}, ` +
+      "but publishes no machine-readable list of them, so this directory holds none.";
+  } else if (retrieved === 0) {
+    explanation =
+      `${holder} manages e-mobility identifiers for ${name} and publishes a machine-readable ` +
+      "list, but this directory has not retrieved it yet, so it holds none.";
+  } else if (retrieved < listed.length) {
+    explanation =
+      `${holder} manages e-mobility identifiers for ${name}. ` +
+      `The lists retrieved so far hold no identifiers for ${name}, and others have not been ` +
+      "retrieved yet, so this directory holds none.";
+  } else {
+    explanation =
+      `${holder} manages e-mobility identifiers for ${name}. ` +
+      `Its published list holds no identifiers for ${name} yet, so this directory holds none.`;
+  }
   return html`
     <section class="trust-card country-empty" aria-labelledby="empty-title">
       <h2 id="empty-title">No published identifiers</h2>

@@ -17,7 +17,7 @@ This repository is a TypeScript pipeline for aggregating e-mobility IDRO registr
 
 Use Bun as the package manager.
 
-- `bun install`: install dependencies.
+- `bun install --frozen-lockfile`: install dependencies as CI does. If it fails, `bun.lock` is out of sync with `package.json`: regenerate it with `bun install` and commit it on its own, rather than leaving a rewritten lockfile in the tree.
 - `bun run build`: run TypeScript compilation.
 - `bun run test`: run Vitest once.
 - `bun run check`: run VitePlus format/lint/type checks, tests, and registry validation.
@@ -39,6 +39,8 @@ Run `bunx vp check --fix` or `bun run format` before committing when formatting 
 ## Testing Guidelines
 
 Tests use Vitest. Add focused unit tests for every parser and normalizer, with fixtures under `tests/fixtures/<source-id>/`. Cover malformed rows, duplicate identifiers, role mapping, source URLs, and generated key formats. Run `bun run test` for tests only, or `bun run check` before finalizing.
+
+API tests live in `apps/api/tests/`. Run one file with `bun run api:test -- tests/<file>` and pair it with `bun run api:typecheck`: Vitest does not type-check, so a type error otherwise surfaces only in `bun run check`.
 
 A fixture captured verbatim from an upstream response must be listed in `fmt.ignorePatterns` in `vite.config.ts`. Formatting rewrites escaping and quoting, so a formatted capture stops matching what the source actually serves and the parser is then tested against something that does not exist.
 

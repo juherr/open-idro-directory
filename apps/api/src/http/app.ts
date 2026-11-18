@@ -337,6 +337,8 @@ function routeNotFound() {
 /** Country pages get HTML errors; the API keeps its JSON error envelope. */
 async function respondWithError(c: ApiContext, error: ApiError, requestId: string) {
   if (!isCountryPagePath(c.req.path)) return errorResponse(c, error, requestId);
+  // A heuristically cached 404 would outlive a release that adds the country.
+  c.header("Cache-Control", CACHE_CONTROL.error);
   return c.html(await renderErrorPage(error.status, error.message, requestId), error.status);
 }
 

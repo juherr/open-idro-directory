@@ -15,8 +15,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   published identifiers, such as Cyprus. The lowercase URL is canonical:
   uppercase codes, a missing trailing slash, or a redundant `country` query
   parameter redirect to it, and a `country` parameter naming another country
-  returns `400`. Unknown countries and paths return `404`. Pages are in English
-  for now. The generic explorer `/explore/` is unchanged.
+  returns `400`. Unknown countries and paths return `404`. Error pages are sent
+  with `Cache-Control: no-store`. Pages are in English for now. The generic explorer `/explore/` is unchanged.
 - `GET /api/v1/countries/{countryCode}`: one summary per country, gathering
   every authority whose remit includes it, every source that declares it or
   publishes identifiers for it, role coverage, freshness, counts, and the dataset

@@ -443,6 +443,7 @@ describe("Cloudflare API", () => {
 
     expect(response.status).toBe(400);
     expect(response.headers.get("content-type")).toContain("text/html");
+    expect(response.headers.get("cache-control")).toBe("no-store");
     await expect(response.text()).resolves.toContain("Conflicting country");
   });
 
@@ -454,7 +455,7 @@ describe("Cloudflare API", () => {
       expect(response.status).toBe(404);
       expect(response.headers.get("content-type")).toContain("text/html");
       expect(response.headers.get("etag")).toBeNull();
-      expect(response.headers.get("cache-control") ?? "").not.toContain("max-age=3600");
+      expect(response.headers.get("cache-control")).toBe("no-store");
       await expect(response.text()).resolves.toContain("Page not found");
     },
   );
@@ -464,6 +465,7 @@ describe("Cloudflare API", () => {
 
     expect(response.status).toBe(503);
     expect(response.headers.get("content-type")).toContain("text/html");
+    expect(response.headers.get("cache-control")).toBe("no-store");
   });
 
   it("keeps the generic explorer URLs on static assets", async () => {

@@ -59,8 +59,20 @@ describe("country page", () => {
     const rows = [...sources, sourceRow("nl-nap", nlNap)];
     const page = await renderCountryPage(summaryFor("NL", rows), origin);
 
-    expect(page).toContain("The published lists hold no identifiers for Netherlands yet");
+    expect(page).toContain("Their published lists hold no identifiers for Netherlands yet");
     expect(page).not.toContain("Its published list holds no identifiers");
+  });
+
+  it("agrees the empty-state verbs with several authorities", async () => {
+    // Without identifiers, Ireland has two authorities: EV Roam and TII.
+    const page = await renderCountryPage(summaryFor("IE"), origin);
+
+    expect(page).toContain(
+      "EV Roam and Transport Infrastructure Ireland manage e-mobility identifiers for Ireland.",
+    );
+    expect(page).toContain("Their published lists hold no identifiers");
+    expect(page).toContain("Ask the authorities below");
+    expect(page).not.toContain(" manages ");
   });
 
   it("describes several unretrieved lists in the plural", async () => {
@@ -70,9 +82,9 @@ describe("country page", () => {
     );
     const page = await renderCountryPage(summaryFor("NL", rows), origin);
 
-    expect(page).toContain("publishes machine-readable lists");
+    expect(page).toContain("publish machine-readable lists");
     expect(page).toContain("this directory has not retrieved them yet");
-    expect(page).not.toContain("publishes a machine-readable");
+    expect(page).not.toContain("a machine-readable list");
     expect(page).not.toContain("holds no identifiers");
     expect(page).not.toContain("hold no identifiers");
   });

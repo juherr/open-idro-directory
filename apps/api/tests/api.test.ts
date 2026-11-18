@@ -1,7 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { SCHEMA_VERSION } from "../src/domain/constants.js";
 import { makeEtag } from "../src/domain/etag.js";
 import { createApp, type Env } from "../src/http/app.js";
+import { renderCountryPage } from "../src/http/pages/country-page.js";
 import worker from "../src/index.js";
 import type {
   ConflictRow,
@@ -11,6 +12,12 @@ import type {
   PartyRow,
   SourceRow,
 } from "../src/infrastructure/d1/types.js";
+
+// Passthrough, so a test can make the renderer fail after the success headers are set.
+vi.mock("../src/http/pages/country-page.js", async (importOriginal) => {
+  const original = await importOriginal<typeof import("../src/http/pages/country-page.js")>();
+  return { ...original, renderCountryPage: vi.fn(original.renderCountryPage) };
+});
 
 const release: DatasetRelease = {
   id: "release-1",
@@ -475,6 +482,17 @@ describe("Cloudflare API", () => {
     expect(response.status).toBe(503);
     expect(response.headers.get("content-type")).toContain("text/html");
     expect(response.headers.get("cache-control")).toBe("no-store");
+  });
+
+  it("drops the success ETag from an error raised after it was set", async () => {
+    vi.spyOn(console, "error").mockImplementationOnce(() => undefined);
+    vi.mocked(renderCountryPage).mockRejectedValueOnce(new Error("render failed"));
+    const response = await workerRequest("/countries/fr/");
+
+    expect(response.status).toBe(500);
+    expect(response.headers.get("content-type")).toContain("text/html");
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.headers.get("etag")).toBeNull();
   });
 
   it("keeps the generic explorer URLs on static assets", async () => {

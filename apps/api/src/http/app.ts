@@ -338,6 +338,8 @@ function routeNotFound() {
 async function respondWithError(c: ApiContext, error: ApiError, requestId: string) {
   // A heuristically cached 404 would outlive a release that adds the resource.
   c.header("Cache-Control", CACHE_CONTROL.error);
+  // An error raised after the success headers were set must not keep their ETag.
+  c.header("ETag", undefined);
   if (!isCountryPagePath(c.req.path)) return errorResponse(c, error, requestId);
   return c.html(await renderErrorPage(error.status, error.message, requestId), error.status);
 }

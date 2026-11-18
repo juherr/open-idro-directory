@@ -186,6 +186,13 @@ describe("Cloudflare API", () => {
     expect(response.status).toBe(422);
   });
 
+  it("rejects an unsupported identifier even when If-None-Match is *", async () => {
+    const response = await request("/api/v1/resolve/FRABC123456", {
+      headers: { "If-None-Match": "*" },
+    });
+    expect(response.status).toBe(422);
+  });
+
   it("falls back to the source row when the authority join misses", async () => {
     // Between migration 0004 and the next import, sources.authority_id is NULL for
     // every row, so the LEFT JOIN yields no authority columns. The response must

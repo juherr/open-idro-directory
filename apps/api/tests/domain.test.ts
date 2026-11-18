@@ -26,6 +26,10 @@ describe("API domain helpers", () => {
     ['"zzz", W/"abc"', true],
     ['"zzz", "abcd"', false],
     ['"a,abc"', false],
+    ['xW/"abc"', false],
+    ['"zzz"x"abc"', false],
+    ['"a,b", W/"abc"', true],
+    ['"a,b" , "abc"', true],
     ["", false],
     [undefined, false],
   ])("matches If-None-Match %j against the current ETag: %s", (header, expected) => {

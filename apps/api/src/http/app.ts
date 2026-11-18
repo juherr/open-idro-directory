@@ -270,7 +270,7 @@ export function createApp() {
     c.header("X-Dataset-Release", release.id);
     c.header("Cache-Control", CACHE_CONTROL.default);
     // The page version keeps a markup-only deploy from being answered with a stale 304.
-    const etag = await makeEtag(`${release.dataset_checksum}:${COUNTRY_PAGE_VERSION}`, c.req.url);
+    const etag = await makeEtag(`${datasetValidator(release)}:${COUNTRY_PAGE_VERSION}`, c.req.url);
     c.header("ETag", etag);
     if (ifNoneMatchMatches(c.req.header("If-None-Match"), etag)) return c.body(null, 304);
     return c.html(await renderCountryPage(summary, new URL(c.req.url).origin));
@@ -381,10 +381,18 @@ async function withDataset<T>(
   const data = await handler({ repo, release });
   c.header("X-Dataset-Release", release.id);
   c.header("Cache-Control", cacheControl);
-  const etag = await makeEtag(release.dataset_checksum, c.req.url);
+  const etag = await makeEtag(datasetValidator(release), c.req.url);
   c.header("ETag", etag);
   if (ifNoneMatchMatches(c.req.header("If-None-Match"), etag)) return c.body(null, 304);
   return c.json({ data, meta: meta(release) });
+}
+
+/**
+ * The checksum covers the normalized records only. Source health and release metadata can
+ * change between releases with the same records, so the release id is part of the validator.
+ */
+function datasetValidator(release: ActiveRelease) {
+  return `${release.id}:${release.dataset_checksum}`;
 }
 
 function meta(release: ActiveRelease) {

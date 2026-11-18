@@ -436,7 +436,10 @@ describe("Cloudflare API", () => {
     const etag = first.headers.get("etag");
     expect(etag).toMatch(/^"/);
     expect(etag).not.toBe(
-      await makeEtag(release.dataset_checksum, "https://example.test/countries/fr/"),
+      await makeEtag(
+        `${release.id}:${release.dataset_checksum}`,
+        "https://example.test/countries/fr/",
+      ),
     );
 
     const revalidated = await workerRequest("/countries/fr/", {
@@ -449,6 +452,23 @@ describe("Cloudflare API", () => {
     });
     expect(listed.status).toBe(304);
   });
+
+  it.each(["/countries/fr/", "/api/v1/dataset", "/api/v1/sources"])(
+    "does not revalidate %s across releases that share a dataset checksum",
+    async (path) => {
+      const etag = (await workerRequest(path)).headers.get("etag");
+      expect(etag).toMatch(/^"/);
+
+      const next = { ...release, id: "release-2", generated_at: "2026-06-16T06:39:47.501Z" };
+      const response = await workerRequest(
+        path,
+        { headers: { "If-None-Match": etag ?? "" } },
+        { activeRelease: next },
+      );
+      expect(response.status).toBe(200);
+      expect(response.headers.get("x-dataset-release")).toBe("release-2");
+    },
+  );
 
   it.each([
     ["/countries/FR/", "/countries/fr/"],

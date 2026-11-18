@@ -36,6 +36,8 @@ The project uses TypeScript ESM and VitePlus for formatting, linting, and type c
 
 Run `bunx vp check --fix` or `bun run format` before committing when formatting fails.
 
+Before changing caching in `apps/api`, read the caching part of `docs/api-architecture.md`: handlers run before any cache header so an error is never cached or answered `304`, errors carry `Cache-Control: no-store` and no ETag, ETags cover the release id and the dataset checksum (`datasetValidator`), and a country-page markup change bumps `COUNTRY_PAGE_VERSION` in `apps/api/src/http/app.ts`.
+
 ## Testing Guidelines
 
 Tests use Vitest. Add focused unit tests for every parser and normalizer, with fixtures under `tests/fixtures/<source-id>/`. Cover malformed rows, duplicate identifiers, role mapping, source URLs, and generated key formats. Run `bun run test` for tests only, or `bun run check` before finalizing.

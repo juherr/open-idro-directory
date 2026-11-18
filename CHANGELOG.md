@@ -166,6 +166,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Conditional requests answered `200` instead of `304` when `If-None-Match`
   listed several entity tags, was `*`, or held the weak form `W/"…"` of the
   current ETag. The header is now evaluated as a list with weak comparison.
+- API errors raised while answering a request, such as `404 COUNTRY_NOT_FOUND`,
+  went out with the dataset's one-hour `Cache-Control` and ETag, and sending
+  that ETag back answered `304` for a resource that does not exist. Errors now
+  carry `Cache-Control: no-store` and no ETag, and are never revalidated.
 - The API reported a disabled source, such as Cyprus, with health status
   `stale`, because a source that is never retrieved is always flagged stale.
   It now reports `disabled`.

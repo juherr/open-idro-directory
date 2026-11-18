@@ -42,5 +42,6 @@ The path country is the source of truth:
 Errors under `/countries/` are HTML pages; the API keeps its JSON error body.
 A rendered page carries `Cache-Control`, `X-Dataset-Release`, and an ETag
 derived from the dataset checksum and a page version, so a markup-only deploy
-is not answered with a stale `304`. An error page carries
-`Cache-Control: no-store` and no ETag.
+is not answered with a stale `304`. Every error, an HTML page or a JSON body,
+carries `Cache-Control: no-store` and no ETag, so it is neither cached nor
+revalidated into a `304`.

@@ -336,9 +336,9 @@ function routeNotFound() {
 
 /** Country pages get HTML errors; the API keeps its JSON error envelope. */
 async function respondWithError(c: ApiContext, error: ApiError, requestId: string) {
-  if (!isCountryPagePath(c.req.path)) return errorResponse(c, error, requestId);
-  // A heuristically cached 404 would outlive a release that adds the country.
+  // A heuristically cached 404 would outlive a release that adds the resource.
   c.header("Cache-Control", CACHE_CONTROL.error);
+  if (!isCountryPagePath(c.req.path)) return errorResponse(c, error, requestId);
   return c.html(await renderErrorPage(error.status, error.message, requestId), error.status);
 }
 
@@ -375,12 +375,13 @@ async function withDataset<T>(
 ) {
   const repo = new RegistryRepository(c.env.REGISTRY_DB);
   const release = await activeRelease(repo);
+  // Run before any cache header is set, so an error is neither cached nor revalidated.
+  const data = await handler({ repo, release });
   c.header("X-Dataset-Release", release.id);
   c.header("Cache-Control", cacheControl);
   const etag = await makeEtag(release.dataset_checksum, c.req.url);
   c.header("ETag", etag);
   if (ifNoneMatchMatches(c.req.header("If-None-Match"), etag)) return c.body(null, 304);
-  const data = await handler({ repo, release });
   return c.json({ data, meta: meta(release) });
 }
 

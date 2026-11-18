@@ -323,6 +323,15 @@ describe("Cloudflare API", () => {
     expect(response.status).toBe(404);
     const body = (await response.json()) as { error: { code: string } };
     expect(body.error.code).toBe("COUNTRY_NOT_FOUND");
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.headers.get("etag")).toBeNull();
+  });
+
+  it("never revalidates a JSON error into a 304", async () => {
+    const response = await request("/api/v1/countries/ZZ", {
+      headers: { "If-None-Match": "*" },
+    });
+    expect(response.status).toBe(404);
   });
 
   it("rejects a malformed country code", async () => {

@@ -27,6 +27,10 @@ jobs:
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends poppler-utils
       - run: vp install --frozen-lockfile
+      # setup-vp already ran a plain `bun install`, which rewrites a stale
+      # bun.lock before the frozen install above can reject it.
+      - name: Check that bun.lock matches package.json
+        run: git diff --exit-code -- bun.lock
       - name: Validate commit messages
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then

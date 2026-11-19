@@ -27,6 +27,9 @@ export default defineConfig({
       "tests/fixtures/se-energimyndigheten/idro-landing-page-2026-10.html",
       "build/change-summary.md",
       "build/change-summary-pr.md",
+      // Serena rewrites its project file in its own format whenever it activates
+      // the project, so formatting it would only dirty the tree again.
+      ".serena/**",
     ],
   },
   lint: {

@@ -12,19 +12,23 @@ This repository is a TypeScript pipeline for aggregating e-mobility IDRO registr
 - `tests/unit/` and `tests/integration/`: Vitest suites.
 - `tests/fixtures/`: deterministic source fixtures.
 - `docs/`: architecture, data model, source policy, and source onboarding notes.
+- `apps/api/`: read-only Cloudflare Worker (Hono + D1) serving `/api/v1`, the landing page in `public/`, and server-rendered country pages in `src/http/pages/`; tests in `apps/api/tests/`. See `docs/api-architecture.md`.
+- `packages/registry-import/`: builds the D1 import bundle from `data/`; `packages/registry-model/`: the registry types it shares.
 
 ## Build, Test, and Development Commands
 
 Use Bun as the package manager.
 
-- `bun install`: install dependencies.
+- `bun install --frozen-lockfile`: install dependencies as CI does. If it fails, `bun.lock` is out of sync with `package.json`: regenerate it with `bun install` and commit it on its own, rather than leaving a rewritten lockfile in the tree.
 - `bun run build`: run TypeScript compilation.
 - `bun run test`: run Vitest once.
-- `bun run check`: run VitePlus format/lint/type checks, tests, and registry validation.
+- `bun run check`: run VitePlus format/lint/type checks, pipeline and API tests, the API type check, registry validation, and the D1 import bundle build.
 - `bun run directory fetch --source <id>`: fetch one source snapshot.
 - `bun run directory build`: normalize enabled sources and write `data/`.
 - `bun run directory update --source <id>`: fetch, build, validate, and write a change report. The sources the run did not rebuild keep their published records and health.
 - `bun run directory validate`: validate generated registry data.
+- `bun run api:test` / `bun run api:typecheck`: API tests and type check.
+- `bun run api:migrate:local`, `bun run api:import:local`, then `bun run api:dev`: run the Worker locally on a D1 database loaded from `data/`; `bun run api:smoke:local` checks it.
 
 The Irish `ie-tii` connector parses a PDF register and requires `pdftotext`
 from Poppler (`brew install poppler` on macOS, `apt-get install poppler-utils`
@@ -36,9 +40,13 @@ The project uses TypeScript ESM and VitePlus for formatting, linting, and type c
 
 Run `bunx vp check --fix` or `bun run format` before committing when formatting fails.
 
+Before changing caching in `apps/api`, read the caching part of `docs/api-architecture.md`: handlers run before any cache header so an error is never cached or answered `304`, errors carry `Cache-Control: no-store` and no ETag, ETags cover the release id and the dataset checksum (`datasetValidator`), and a country-page markup change bumps `COUNTRY_PAGE_VERSION` in `apps/api/src/http/app.ts`.
+
 ## Testing Guidelines
 
 Tests use Vitest. Add focused unit tests for every parser and normalizer, with fixtures under `tests/fixtures/<source-id>/`. Cover malformed rows, duplicate identifiers, role mapping, source URLs, and generated key formats. Run `bun run test` for tests only, or `bun run check` before finalizing.
+
+API tests live in `apps/api/tests/`. Run one file with `bun run api:test -- tests/<file>` and pair it with `bun run api:typecheck`: Vitest does not type-check, so a type error otherwise surfaces only in `bun run check`.
 
 A fixture captured verbatim from an upstream response must be listed in `fmt.ignorePatterns` in `vite.config.ts`. Formatting rewrites escaping and quoting, so a formatted capture stops matching what the source actually serves and the parser is then tested against something that does not exist.
 

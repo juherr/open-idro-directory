@@ -73,6 +73,14 @@
       "status": "INACTIVE"
     },
     {
+      "prefixId": "FR250",
+      "name": "Réseau de la ville de La Garenne-Colombes",
+      "amenageurName": "Commune de La Garenne-Colombes",
+      "exploitantName": "Eiffage Energie Systèmes Ile-de-France",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
+    },
+    {
       "prefixId": "FR281",
       "name": "WALLCORP",
       "amenageurName": "",
@@ -206,7 +214,7 @@
       "amenageurName": "PARKINVOLT",
       "exploitantName": "PARKINVOLT",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FR777",
@@ -1018,7 +1026,7 @@
     },
     {
       "prefixId": "FRCG0",
-      "name": "ChargeGuru",
+      "name": "Tohmo",
       "amenageurName": "RAIDEN",
       "exploitantName": "RAIDEN",
       "type": "BOTH",
@@ -1026,7 +1034,7 @@
     },
     {
       "prefixId": "FRCG1",
-      "name": "ChargeGuru",
+      "name": "Tohmo",
       "amenageurName": "RAIDEN",
       "exploitantName": "RAIDEN",
       "type": "CHARGE",
@@ -1183,6 +1191,14 @@
       "exploitantName": "",
       "type": "CHARGE",
       "status": "INACTIVE"
+    },
+    {
+      "prefixId": "FRD65",
+      "name": "SDE65",
+      "amenageurName": "SYNDICAT DEPARTEMENTAL D'ENERGIE (SDE) des Hautes-Pyrénées",
+      "exploitantName": "SAS LOAD STATIONS",
+      "type": "CHARGE",
+      "status": "AWAITING_PAYMENT"
     },
     {
       "prefixId": "FRDCS",
@@ -3990,7 +4006,7 @@
       "amenageurName": "Morbihan énergies",
       "exploitantName": "Freshmile",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRS59",
@@ -4134,7 +4150,7 @@
       "amenageurName": "Syndicat Départemental d'Energie de Tarn et Garonne (SDE82)",
       "exploitantName": "Freshmile",
       "type": "CHARGE",
-      "status": "AWAITING_PAYMENT"
+      "status": "ACTIVE"
     },
     {
       "prefixId": "FRS84",
@@ -5673,5 +5689,5 @@
       "status": "ACTIVE"
     }
   ],
-  "total": 709
+  "total": 711
 }

@@ -158,6 +158,12 @@ const rows: Row[] = [
     expected: { country: "AT", confirmation: "UNSUPPORTED_ROLE", confirmedBy: [] },
   },
   {
+    name: "an EMSP record a CPO-only register publishes itself confirms nothing",
+    records: [record("at-ladestellen", "AT", "ABC", "EMSP")],
+    key: "AT:ABC:EMSP",
+    expected: { country: "AT", confirmation: "UNSUPPORTED_ROLE", confirmedBy: [] },
+  },
+  {
     name: "the CPO identifier of a CPO-only register is classified normally",
     records: [record("at-ladestellen", "AT", "ABC", "CPO")],
     key: "AT:ABC:CPO",

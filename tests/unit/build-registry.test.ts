@@ -270,7 +270,9 @@ describe("buildRegistry issuing confirmation", () => {
   });
 
   // Plan decision 3d: a partial update reads the health of the sources it did
-  // not rebuild from the published sources.json.
+  // not rebuild from the published sources.json, and classifies every record,
+  // carried ones included: dk-fstyr's published DK*BBB keeps confirming it,
+  // even when dk-fstyr failed and its records were republished.
   it.each([
     { case: "current", fetchErrors: {}, dkErrors: [], expected: "NOT_FOUND" },
     {
@@ -286,7 +288,7 @@ describe("buildRegistry issuing confirmation", () => {
       expected: "SOURCE_STALE",
     },
   ])(
-    "classifies DK*MON as $expected in a Swedish-only update when dk-fstyr was $case",
+    "classifies a Swedish-only update as the full build, carried confirmations included, with DK*MON $expected when dk-fstyr was $case",
     async ({ fetchErrors, dkErrors, expected }) => {
       const createConnector = await nordicConnectors(dkErrors);
       await withWorkspace(
@@ -296,11 +298,14 @@ describe("buildRegistry issuing confirmation", () => {
           const partial = await build({ createConnector, sourceId: "se-energimyndigheten" });
 
           expect(issuingOf(full.records, "DK:MON:CPO")?.confirmation).toBe(expected);
-          expect(issuingOf(partial.records, "DK:MON:CPO")).toEqual(
-            issuingOf(full.records, "DK:MON:CPO"),
-          );
+          expect(issuingOf(full.records, "DK:BBB:CPO")).toEqual({
+            country: "DK",
+            confirmation: "CONFIRMED",
+            confirmedBy: ["dk-fstyr"],
+          });
+          expect(issuingByIdentifier(partial.records)).toEqual(issuingByIdentifier(full.records));
         },
-        { sourceIds: NORDIC, published: [] },
+        { sourceIds: NORDIC, published: [sampleRecord("dk-fstyr", "DK", "BBB")] },
       );
     },
   );
@@ -522,6 +527,10 @@ async function swedishListings(...sourceValues: string[]) {
 
 function issuingOf(records: NormalizedRegistryRecord[], key: string) {
   return records.find((record) => identifierRoleKey(record) === key)?.issuing;
+}
+
+function issuingByIdentifier(records: NormalizedRegistryRecord[]) {
+  return Object.fromEntries(records.map((record) => [identifierRoleKey(record), record.issuing]));
 }
 
 function withObservationBlock(

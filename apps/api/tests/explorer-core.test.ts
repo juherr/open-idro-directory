@@ -3,7 +3,6 @@ import {
   countryPagePath,
   createSearchScope,
   existingCountryPagePath,
-  isIdentifierLike,
   normalizeIdentifierInput,
 } from "../public/explorer-core.js";
 
@@ -18,14 +17,12 @@ describe("normalizeIdentifierInput", () => {
     ["FRA*B", { countryCode: "FR", partyId: "A*B", emobilityId: "FRA*B" }],
   ])("normalizes %j", (input, expected) => {
     expect(normalizeIdentifierInput(input)).toEqual(expected);
-    expect(isIdentifierLike(input)).toBe(true);
   });
 
   it.each(["fr ab1", "FR-AB", "FR-AB12", "F1-AB1", "IONITY", "", "FR--AB1", "FR-A*B"])(
     "rejects %j",
     (input) => {
       expect(normalizeIdentifierInput(input)).toBeNull();
-      expect(isIdentifierLike(input)).toBe(false);
     },
   );
 });
@@ -261,5 +258,24 @@ describe("existingCountryPagePath", () => {
 
   it("returns null for a value that is not a country code", () => {
     expect(existingCountryPagePath("../", { "../": 1 })).toBeNull();
+  });
+});
+
+describe("planQuery search path", () => {
+  // The explorer runs `searchPath` for a new search and `buildApiPath` with
+  // a cursor for "load more": both must describe the same first page.
+  const explorer = createSearchScope({ basePath: "/explore/" });
+  const france = createSearchScope({ fixedCountry: "fr", basePath: "/countries/fr/" });
+
+  it.each([
+    ["explorer", { ...emptyState, q: "ionity" }, explorer],
+    ["explorer", { ...emptyState, q: "DE*ABC" }, explorer],
+    ["fixed-country", { ...emptyState, role: "CPO" }, france],
+    ["fixed-country", { ...emptyState, q: "fr-ab1", status: "ACTIVE" }, france],
+  ])("equals the first-page API path (%s scope, %j)", (_label, state, scope) => {
+    const plan = scope.planQuery(state);
+    expect(plan.kind).toBe("search");
+    if (plan.kind !== "search") return;
+    expect(plan.searchPath).toBe(scope.buildApiPath(state, null));
   });
 });

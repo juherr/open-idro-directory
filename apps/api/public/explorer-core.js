@@ -16,10 +16,6 @@ export function normalizeIdentifierInput(value) {
   };
 }
 
-export function isIdentifierLike(value) {
-  return normalizeIdentifierInput(value) !== null;
-}
-
 /** `/countries/{lc}/` for a two-letter country code, else `null`. */
 export function countryPagePath(code) {
   if (typeof code !== "string" || !/^[A-Za-z]{2}$/.test(code)) return null;

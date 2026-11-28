@@ -236,7 +236,11 @@ function renderContextLabel() {
 /** The country name, linked to its country page when the code is valid. */
 function countryLink(code, lang) {
   const name = escapeHtml(countryName(code, lang));
-  const path = countryPagePath(code);
+  return linkOrName(countryPagePath(code), name);
+}
+
+/** `name` (already escaped) linked to `path`, or plain when `path` is empty. */
+function linkOrName(path, name) {
   return path ? `<a class="text-link" href="${escapeHtml(path)}">${name}</a>` : name;
 }
 
@@ -252,8 +256,7 @@ function syncUrl() {
 // Bumped by every new query: a response of a superseded one is dropped.
 let queryGeneration = 0;
 
-async function runQuery(append = false) {
-  const path = scope.buildApiPath(state, append ? state.cursor : null);
+async function runQuery(path, append = false) {
   if (!path) return;
   const generation = queryGeneration;
   state.loading = !append;
@@ -313,7 +316,7 @@ function startQuery() {
     return;
   }
   void resolveIdentifier(plan.resolvePath);
-  void runQuery(false);
+  void runQuery(plan.searchPath);
 }
 
 function renderForeignNotice() {
@@ -330,7 +333,7 @@ function renderForeignNotice() {
   const path = existingCountryPagePath(code, state.countsByCountry);
   notice.innerHTML =
     escapeHtml(before.replace("{id}", state.foreign.emobilityId)) +
-    (path ? `<a class="text-link" href="${escapeHtml(path)}">${name}</a>` : name) +
+    linkOrName(path, name) +
     escapeHtml(after);
 }
 
@@ -621,7 +624,9 @@ document.querySelector("#copy-request").addEventListener("click", async () => {
     translateExplorer();
   }, 1500);
 });
-document.querySelector("#load-more").addEventListener("click", () => runQuery(true));
+document
+  .querySelector("#load-more")
+  .addEventListener("click", () => runQuery(scope.buildApiPath(state, state.cursor), true));
 document.querySelector("#open-resolved").addEventListener("click", () => {
   if (state.resolve?.party)
     void openDetail(state.resolve.party.countryCode, state.resolve.party.partyId);

@@ -58,7 +58,7 @@ program
       const result = await buildRegistry(sources, compactOptions({ sourceId: options.source }));
       const failures = reportSourceFailures(result.results);
       console.log(
-        `Built ${result.records.length} normalized record(s), ${failures.length} source(s) failed.`,
+        `Built ${result.records.length} normalized record(s), ${failures.length} source(s) failed, ${result.discrepancies.summary.totalFindings} discrepancy finding(s) reported.`,
       );
     }),
   );
@@ -102,7 +102,7 @@ program
         runFindings(result.records, result.invalidHistory, sources),
       );
       console.log(
-        `Updated ${result.records.length} normalized record(s), ${failures.length} source(s) failed.`,
+        `Updated ${result.records.length} normalized record(s), ${failures.length} source(s) failed, ${result.discrepancies.summary.totalFindings} discrepancy finding(s) reported.`,
       );
     }),
   );

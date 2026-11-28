@@ -13,6 +13,7 @@ import type {
 import type { SourceDefinition } from "../../src/domain/source-definition.js";
 import type { ValidationIssue } from "../../src/domain/validation-issue.js";
 import { diffRecords } from "../../src/application/change-report.js";
+import type { DiscrepancyReport } from "../../src/application/discrepancy-report.js";
 import { identifierRoleKey } from "../../src/domain/identifier-provenance.js";
 import { withPublishedObservations } from "../../src/domain/registry-observation.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
@@ -361,6 +362,140 @@ describe("buildRegistry issuing confirmation", () => {
   });
 });
 
+describe("buildRegistry discrepancy report", () => {
+  const NORDIC = ["dk-fstyr", "se-energimyndigheten"];
+  const LATER = "2026-06-16T00:00:00.000Z";
+
+  const duplicateWarning = (code: string, value: string): ValidationIssue => ({
+    severity: "warning",
+    code,
+    message: `Duplicate identifier ${value} for CPO.`,
+  });
+
+  // dk-fstyr assigns DK*BBB; the Swedish register also lists DK*BBB and DK*MON.
+  async function nordicConnectors(warnings: { dk?: ValidationIssue[]; se?: ValidationIssue[] }) {
+    const swedish = await swedishListings("SE*AAA", "SE*BBB", "SE*CCC", "DK*BBB", "DK*MON");
+    const connectors: Record<string, () => RegistryConnector> = {
+      "dk-fstyr": connectorReturning([assignedThisRun("dk-fstyr", "DK", "BBB")], [], warnings.dk),
+      "se-energimyndigheten": connectorReturning(swedish, [], warnings.se),
+    };
+    return (source: SourceDefinition) => connectors[source.id]!();
+  }
+
+  const duplicatesOf = (report: DiscrepancyReport) =>
+    findingsOf(report)
+      .filter((finding) => finding.category === "DUPLICATE_IDENTIFIER")
+      .map((finding) => [finding.observedRegistryId, finding.evidence[0]?.code]);
+
+  it.each([{ case: "a full build" }, { case: "a single-source build", sourceId: "fr-afirev" }])(
+    "writes the report on $case",
+    async ({ sourceId }) => {
+      await withWorkspace(async ({ build, outputDir }) => {
+        // Each register answers with its own identifier, so a full build passes
+        // registry validation.
+        const own: Record<string, NormalizedRegistryRecord> = {
+          "fr-afirev": assignedThisRun("fr-afirev", "FR", "AAA"),
+          "dk-fstyr": assignedThisRun("dk-fstyr", "DK", "BBB"),
+        };
+        await build({
+          ...(sourceId ? { sourceId } : {}),
+          createConnector: (source) => connectorReturning([own[source.id]!])(),
+        });
+
+        const report = await readDiscrepancies(outputDir);
+        expect(report.generatedAt).toBe(GENERATED_AT);
+        expect(report.summary.totalFindings).toBe(findingsOf(report).length);
+      });
+    },
+  );
+
+  it("gives a partial build the report of a full build", async () => {
+    const createConnector = await nordicConnectors({
+      dk: [duplicateWarning("FSTYR_DUPLICATE_IDENTIFIER", "DK*BBB")],
+      se: [duplicateWarning("ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER", "SE*AAA")],
+    });
+    await withWorkspace(
+      async ({ build, outputDir, publishOutput }) => {
+        await build({ createConnector });
+        const full = await readDiscrepancies(outputDir);
+        await publishOutput();
+        await build({ createConnector, sourceId: "se-energimyndigheten", generatedAt: LATER });
+        const partial = await readDiscrepancies(outputDir);
+
+        expect(findingsOf(full).map((finding) => finding.category)).toContain(
+          "NOT_FOUND_IN_ISSUING_REGISTER",
+        );
+        expect(duplicatesOf(full)).toEqual([
+          ["dk-fstyr", "FSTYR_DUPLICATE_IDENTIFIER"],
+          ["se-energimyndigheten", "ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER"],
+        ]);
+        expect(partial.generatedAt).toBe(LATER);
+        expect({ ...partial, generatedAt: GENERATED_AT }).toEqual(full);
+      },
+      { sourceIds: NORDIC, published: [] },
+    );
+  });
+
+  it("keeps the duplicate findings of a source that failed, not of one rebuilt", async () => {
+    const warned = await nordicConnectors({
+      dk: [duplicateWarning("FSTYR_DUPLICATE_IDENTIFIER", "DK*BBB")],
+      se: [duplicateWarning("ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER", "SE*AAA")],
+    });
+    await withWorkspace(
+      async ({ build, outputDir, publishOutput }) => {
+        await build({ createConnector: warned });
+        await publishOutput();
+        await build({
+          createConnector: await nordicConnectors({}),
+          fetchErrors: { "dk-fstyr": "HTTP 503 while fetching https://example.test/" },
+        });
+
+        expect(duplicatesOf(await readDiscrepancies(outputDir))).toEqual([
+          ["dk-fstyr", "FSTYR_DUPLICATE_IDENTIFIER"],
+        ]);
+      },
+      { sourceIds: NORDIC, published: [] },
+    );
+  });
+
+  // #31 reference scenario 4: an unreachable issuing register must not yield a
+  // removal or a not-found.
+  it("reports a failing issuing register as unverifiable only", async () => {
+    const removed: NormalizedRegistryRecord = {
+      ...sampleRecord("dk-fstyr", "DK", "OLD"),
+      status: "INACTIVE",
+      metadata: {
+        inactiveSince: PREVIOUS_RETRIEVAL,
+        inactiveReason: "missing-from-official-source",
+      },
+    };
+    removed.source = { ...removed.source, lastSeenAt: "2026-06-01T00:00:00.000Z" };
+    await withWorkspace(
+      async ({ build, outputDir }) => {
+        await build({
+          createConnector: await nordicConnectors({}),
+          fetchErrors: { "dk-fstyr": "HTTP 503 while fetching https://example.test/" },
+        });
+
+        const findings = findingsOf(await readDiscrepancies(outputDir)).filter(
+          (finding) => finding.issuingRegistryId === "dk-fstyr",
+        );
+        const categories = findings.map((finding) => finding.category);
+        expect(categories).toContain("SOURCE_UNAVAILABLE");
+        expect(categories).not.toContain("REMOVED_FROM_ISSUING_REGISTER");
+        expect(categories).not.toContain("NOT_FOUND_IN_ISSUING_REGISTER");
+        expect(
+          findings
+            .filter((finding) => finding.category === "ISSUING_REGISTER_UNVERIFIABLE")
+            .map((finding) => finding.identifier?.eMobilityId ?? "")
+            .toSorted(),
+        ).toEqual(["DKMON", "DKOLD"]);
+      },
+      { sourceIds: NORDIC, published: [sampleRecord("dk-fstyr", "DK", "BBB"), removed] },
+    );
+  });
+});
+
 const GENERATED_AT = "2026-06-15T00:00:00.000Z";
 const PREVIOUS_RETRIEVAL = "2026-06-14T00:00:00.000Z";
 
@@ -401,7 +536,13 @@ async function withWorkspace(
       setup.health,
     );
     const publishOutput = async () => {
-      for (const file of ["registry.json", "sources.json"]) {
+      await mkdir(join(dataDir, "reports"), { recursive: true });
+      for (const file of [
+        "registry.json",
+        "sources.json",
+        "registry-invalid.json",
+        join("reports", "discrepancies.json"),
+      ]) {
         await copyFile(join(outputDir, file), join(dataDir, file));
       }
     };
@@ -487,6 +628,7 @@ async function readHealth(outputDir: string, sourceId: string) {
 function connectorReturning(
   records: NormalizedRegistryRecord[],
   errors: ValidationIssue[] = [],
+  warnings: ValidationIssue[] = [],
 ): () => RegistryConnector {
   return () => ({
     sourceId: "stub",
@@ -494,8 +636,18 @@ function connectorReturning(
       throw new Error("not used by the build");
     },
     parse: async () => ({ records: [], warnings: [], errors: [] }),
-    normalize: async () => ({ records, warnings: [], errors }),
+    normalize: async () => ({ records, warnings, errors }),
   });
+}
+
+async function readDiscrepancies(outputDir: string) {
+  return JSON.parse(
+    await readFile(join(outputDir, "reports", "discrepancies.json"), "utf8"),
+  ) as DiscrepancyReport;
+}
+
+function findingsOf(report: DiscrepancyReport) {
+  return report.countries.flatMap((country) => country.pairs.flatMap((pair) => pair.findings));
 }
 
 /** An assignment the issuing register listed in this run's retrieval. */

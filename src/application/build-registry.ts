@@ -31,7 +31,13 @@ import { checkSafetyThresholds } from "../validation/safety-thresholds.js";
 import { mergeGeneratedRecords } from "./generated-record-merge.js";
 import { buildOutOfJurisdictionReport } from "./out-of-jurisdiction-report.js";
 import { mergeInvalidRecordHistory } from "./invalid-record-history.js";
-import { issuingHealthBySourceId } from "./issuing-source-health.js";
+import {
+  buildDiscrepancyReport,
+  readDuplicateFindings,
+  type DiscrepancyReport,
+  type DuplicateObservation,
+} from "./discrepancy-report.js";
+import { issuingHealthBySourceId, issuingSourceHealth } from "./issuing-source-health.js";
 import { applyOfficialStatusPolicy } from "./official-status-policy.js";
 
 export interface BuildOptions {
@@ -228,6 +234,25 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   if (!options.sourceId) {
     await writeOutOfJurisdictionReport(outputDir, classifiedRecords, sources, generatedAt);
   }
+  // Every run writes it: carried sources keep their published health and
+  // duplicate findings, so a partial run reports what a full one would.
+  const discrepancies = buildDiscrepancyReport({
+    records: classifiedRecords,
+    sources,
+    health: Object.fromEntries(
+      results.map((result) => [
+        result.sourceId,
+        {
+          state: issuingSourceHealth(result),
+          lastSuccessfulRetrieval: result.lastSuccessfulRetrieval,
+        },
+      ]),
+    ),
+    invalidHistory,
+    duplicates: await duplicateObservations(dataDir, results, selectedIds),
+    generatedAt,
+  });
+  await writeReport(outputDir, "discrepancies.json", discrepancies);
   if (registryIssues.some((issue) => issue.severity === "error")) {
     throw new Error(
       `Registry validation failed: ${registryIssues.map((issue) => issue.message).join("; ")}`,
@@ -251,6 +276,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     invalidHistory,
     results: policyResults,
     issues: registryIssues,
+    discrepancies,
     rebuiltSourceIds: [...selectedIds],
   };
 }
@@ -261,12 +287,57 @@ async function writeOutOfJurisdictionReport(
   sources: SourceDefinition[],
   generatedAt: string,
 ) {
+  await writeReport(
+    outputDir,
+    "out-of-jurisdiction.json",
+    buildOutOfJurisdictionReport(records, sources, generatedAt),
+  );
+}
+
+async function writeReport(outputDir: string, fileName: string, report: unknown) {
   const reportsDir = path.join(outputDir, "reports");
   await mkdir(reportsDir, { recursive: true });
-  await writeFile(
-    path.join(reportsDir, "out-of-jurisdiction.json"),
-    `${JSON.stringify(buildOutOfJurisdictionReport(records, sources, generatedAt), null, 2)}\n`,
-  );
+  await writeFile(path.join(reportsDir, fileName), `${JSON.stringify(report, null, 2)}\n`);
+}
+
+/**
+ * A source ingested this run reports the duplicates its connector raised now.
+ * Any other source, carried or republished after a failure, keeps the
+ * duplicate findings it was last published with.
+ */
+async function duplicateObservations(
+  dataDir: string,
+  results: readonly SourceBuildResult[],
+  selectedIds: ReadonlySet<string>,
+): Promise<DuplicateObservation[]> {
+  const isIngested = (result: SourceBuildResult) =>
+    selectedIds.has(result.sourceId) && !result.errors.some((issue) => issue.severity === "error");
+  const ingested = results.filter(isIngested);
+  const ingestedIds = new Set(ingested.map((result) => result.sourceId));
+  return [
+    ...ingested.flatMap((result) =>
+      result.warnings
+        .filter((warning) => warning.code.endsWith("_DUPLICATE_IDENTIFIER"))
+        .map((warning) => ({
+          sourceId: result.sourceId,
+          code: warning.code,
+          message: warning.message,
+          retrievedAt: result.retrievedAt,
+        })),
+    ),
+    ...(await readPreviousDuplicateFindings(dataDir)).filter(
+      (duplicate) => !ingestedIds.has(duplicate.sourceId),
+    ),
+  ];
+}
+
+async function readPreviousDuplicateFindings(dataDir: string): Promise<DuplicateObservation[]> {
+  try {
+    const raw = await readFile(path.join(dataDir, "reports", "discrepancies.json"), "utf8");
+    return readDuplicateFindings(JSON.parse(raw) as DiscrepancyReport);
+  } catch {
+    return [];
+  }
 }
 
 // Hand-written `supersededBy` annotations live in this file, so the build reads

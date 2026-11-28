@@ -40,4 +40,12 @@ jobs:
             bun run commit:check -- --last --verbose
           fi
       - run: bun run check
+      # Validates both Worker configs and bundles without deploying; the web
+      # Worker is checked on the build `bun run check` just produced.
+      - name: Dry-run the API Worker deploy
+        working-directory: apps/api
+        run: ../../node_modules/.bin/wrangler deploy --dry-run --outdir "${{ runner.temp }}/wrangler-dry-run/api"
+      - name: Dry-run the web Worker deploy
+        working-directory: apps/web
+        run: ../../node_modules/.bin/wrangler deploy --dry-run --outdir "${{ runner.temp }}/wrangler-dry-run/web"
       - run: bun run directory validate

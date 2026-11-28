@@ -223,7 +223,7 @@ const fr: PageCopy = {
     unknownFeminine: "Inconnue",
     never: "Jamais",
     notPublished: "Non publiée",
-    colon: " : ",
+    colon: "\u00a0: ",
   },
   status: {
     ACTIVE: "Actif",

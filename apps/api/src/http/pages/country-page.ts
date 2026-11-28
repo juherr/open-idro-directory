@@ -431,7 +431,7 @@ function sourcesSection(summary: CountrySummary, locale: Locale) {
               ? link(source.publication.machineReadableUrl, source.publication.machineReadableUrl)
               : t.values.notPublished,
           )}
-          ${fact(s.freshness, label(t.freshness, source.health.freshness) ?? t.values.unknown)}
+          ${fact(s.freshness, label(t.freshness, source.health.freshness) ?? t.values.unknownFeminine)}
           ${fact(s.lastSuccess, source.health.lastSuccessfulAt ? timestamp(source.health.lastSuccessfulAt) : t.values.never)}
           ${fact(
             s.observationsIn(summary.countryCode),

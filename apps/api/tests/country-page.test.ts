@@ -329,7 +329,23 @@ describe("country page localization", () => {
     const stats = { ...irishStats, statuses: [{ key: "ACTIVE", count: 12345 }] };
     const page = await renderCountryPage(summaryFor("IE", sources, stats), origin, "fr");
 
-    expect(page).toContain(`Actif : ${new Intl.NumberFormat("fr").format(12345)}`);
+    const colon = COUNTRY_PAGE_COPY.fr.values.colon;
+    expect(page).toContain(`Actif${colon}${new Intl.NumberFormat("fr").format(12345)}`);
+  });
+
+  it("puts a no-break space before a French colon", () => {
+    expect(COUNTRY_PAGE_COPY.fr.values.colon).toBe(" : ");
+  });
+
+  it("agrees the unknown French freshness with its feminine label", async () => {
+    const rows = sources.map((row) =>
+      row.id === "ie-tii" ? sourceRow("ie-tii", tii, { freshness_status: "" }) : row,
+    );
+    const page = await renderCountryPage(summaryFor("IE", rows, irishStats), origin, "fr");
+
+    expect(page).toMatch(
+      /<dt class="meta-label">Fraîcheur<\/dt>\s*<dd class="meta-value">Inconnue<\/dd>/,
+    );
   });
 
   it("treats a single identifier and source as singular in French", async () => {

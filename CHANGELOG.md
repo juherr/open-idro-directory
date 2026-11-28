@@ -9,6 +9,17 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
+- Issuing confirmation in the datasets and the API: whether the register of
+  the identifier's own country lists it, and whether an observation is that
+  register's assignment or another register's listing. `data/registry.csv`
+  gains `issuing_country`, `issuing_confirmation`, and `observation_kind`,
+  appended after `retrievedAt`, and `data/stats.json` gains
+  `recordsByIssuingConfirmation`. API parties carry `issuingCountry` and
+  `roles[].issuing { confirmation, confirmedBy }`; observations carry
+  `observationKind` and `observingJurisdiction`. D1 migration `0006` adds the
+  columns, which read `null` until the next import of data carrying these
+  blocks. The OpenAPI document describes them in `Party` and `Observation`
+  components. API schema version is now 1.4.0.
 - Country pages at `/countries/{code}/`, rendered on the server so they work
   without JavaScript: the country's IDRO authorities, coverage, and sources,
   with an explained empty state for a country with a known IDRO but no
@@ -93,6 +104,11 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Changed
 
+- A party's `highestAuthorityLevel` is now computed from its observations: a
+  party only listed by registers outside its country is `SECONDARY`, which
+  changes the results of `?authority=` and the authority grouping of `/stats`.
+  Its `preferredName` comes from an assignment by its own country's register
+  before any cross-register listing, however recent the listing is.
 - The landing page's country cards open the country page instead of the
   explorer. The Cyprus card opens its country page, which links to the
   ministry, instead of the ministry's site.

@@ -29,6 +29,7 @@ Use Bun as the package manager.
 - `bun run directory validate`: validate generated registry data.
 - `bun run api:test` / `bun run api:typecheck`: API tests and type check.
 - `bun run api:migrate:local`, `bun run api:import:local`, then `bun run api:dev`: run the Worker locally on a D1 database loaded from `data/`; `bun run api:smoke:local` checks it.
+- `bun run web:e2e`: run the Playwright browser suite (`tests/e2e/`, Chromium, under Node) against the legacy site served on a fixture D1; see `docs/operations.md`.
 
 The Irish `ie-tii` connector parses a PDF register and requires `pdftotext`
 from Poppler (`brew install poppler` on macOS, `apt-get install poppler-utils`
@@ -47,6 +48,8 @@ Before changing caching in `apps/api`, read the caching part of `docs/api-archit
 Tests use Vitest. Add focused unit tests for every parser and normalizer, with fixtures under `tests/fixtures/<source-id>/`. Cover malformed rows, duplicate identifiers, role mapping, source URLs, and generated key formats. Run `bun run test` for tests only, or `bun run check` before finalizing.
 
 API tests live in `apps/api/tests/`. Run one file with `bun run api:test -- tests/<file>` and pair it with `bun run api:typecheck`: Vitest does not type-check, so a type error otherwise surfaces only in `bun run check`.
+
+Browser scenarios live in `tests/e2e/*.spec.ts` and run with `bun run web:e2e` (once per machine: `npx playwright install chromium`), not in `bun run check`; CI runs them in their own `e2e` job. They read the fixture of `tests/e2e/fixtures/dataset.ts`, never `data/`, and assert visible text and roles rather than CSS classes. Run one file with `bun run web:e2e -- tests/e2e/<file>`; `E2E_BASE_URL` points the suite at a site you started yourself, which must serve that fixture.
 
 A fixture captured verbatim from an upstream response must be listed in `fmt.ignorePatterns` in `vite.config.ts`. Formatting rewrites escaping and quoting, so a formatted capture stops matching what the source actually serves and the parser is then tested against something that does not exist.
 

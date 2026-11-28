@@ -291,23 +291,23 @@ function renderChips(lang) {
   const chips =
     lang === "fr"
       ? [
-          ["Allemagne", "country=DE"],
-          ["AFIREV", "q=AFIREV"],
-          ["FR026", "q=FR026"],
-          ["CPO", "role=CPO"],
-          ["Belgique", "country=BE"],
+          ["Allemagne", countryPageHref("DE")],
+          ["AFIREV", "/explore/?q=AFIREV"],
+          ["FR026", "/explore/?q=FR026"],
+          ["CPO", "/explore/?role=CPO"],
+          ["Belgique", countryPageHref("BE")],
         ]
       : [
-          ["Germany", "country=DE"],
-          ["AFIREV", "q=AFIREV"],
-          ["FR026", "q=FR026"],
-          ["CPO", "role=CPO"],
-          ["Belgium", "country=BE"],
+          ["Germany", countryPageHref("DE")],
+          ["AFIREV", "/explore/?q=AFIREV"],
+          ["FR026", "/explore/?q=FR026"],
+          ["CPO", "/explore/?role=CPO"],
+          ["Belgium", countryPageHref("BE")],
         ];
   setHtml(
     "#popular-chips",
     chips
-      .map(([label, query]) => `<a class="chip" href="/explore/?${query}">${escapeHtml(label)}</a>`)
+      .map(([label, href]) => `<a class="chip" href="${escapeHtml(href)}">${escapeHtml(label)}</a>`)
       .join(""),
   );
 }

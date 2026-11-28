@@ -61,7 +61,6 @@ describe("invalid identifier handling", () => {
           {
             records: partitionRecordsByIdentifierValidity([sampleRecord("WXYZ")]).invalid,
             rows: [],
-            outOfJurisdiction: [],
           },
           "2026-06-14T00:00:00.000Z",
         ),
@@ -185,7 +184,6 @@ describe("invalid identifier handling", () => {
                 message: "Unexpected identifier syntax: SEWXYZ",
               },
             ],
-            outOfJurisdiction: [],
           },
           "2026-06-14T00:00:00.000Z",
         ),
@@ -222,7 +220,7 @@ describe("invalid identifier handling", () => {
       // The source has stopped publishing it, so the next run detects nothing.
       const history = mergeInvalidRecordHistory(
         previous,
-        { records: [], rows: [], outOfJurisdiction: [] },
+        { records: [], rows: [] },
         "2026-07-27T00:00:00.000Z",
       );
 

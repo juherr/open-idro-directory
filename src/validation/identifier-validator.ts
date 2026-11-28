@@ -2,7 +2,6 @@ import { emi3IdentifierReasons } from "../domain/emi3-identifier.js";
 import type {
   InvalidRegistryRecordDetection,
   NormalizedRegistryRecord,
-  OutOfJurisdictionDetection,
   RejectedSourceRowDetection,
 } from "../domain/registry-record.js";
 import type { ValidationIssue } from "../domain/validation-issue.js";
@@ -39,28 +38,6 @@ export function toRejectedSourceRows(
             registryId,
             code: issue.code,
             sourceValue: issue.rejectedIdentifier,
-            message: issue.message,
-          },
-        ],
-  );
-}
-
-// A register publishing another country's identifier is a finding to raise with
-// its operator, not a defect to discard: it is collected so the registers
-// concerned can be told, and so a later correction stays visible.
-export function toOutOfJurisdictionRows(
-  registryId: string,
-  issues: ValidationIssue[],
-): OutOfJurisdictionDetection[] {
-  return issues.flatMap((issue) =>
-    issue.outOfJurisdictionIdentifier === undefined
-      ? []
-      : [
-          {
-            registryId,
-            code: issue.code,
-            sourceValue: issue.outOfJurisdictionIdentifier.value,
-            countryCode: issue.outOfJurisdictionIdentifier.countryCode,
             message: issue.message,
           },
         ],

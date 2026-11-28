@@ -1,28 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { EvroamConnector } from "../../src/connectors/gb-evroam/evroam.connector.js";
-import type { ValidationIssue } from "../../src/domain/validation-issue.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
 import {
   coversJurisdiction,
   rejectedIdentifierWarning,
 } from "../../src/validation/identifier-scope.js";
-import {
-  toOutOfJurisdictionRows,
-  toRejectedSourceRows,
-} from "../../src/validation/identifier-validator.js";
 
 const REJECTION = { codePrefix: "EIPA", subject: "EIPA identifier" };
-
-// Published by earlier runs, before foreign identifiers became listings; the
-// report readers still accept it.
-const OUT_OF_JURISDICTION: ValidationIssue = {
-  severity: "warning",
-  sourceId: "pl-eipa",
-  code: "EIPA_OUT_OF_JURISDICTION_IDENTIFIER",
-  message:
-    "EIPA identifier NL*TNM belongs to NL, outside the jurisdictions this register covers (PL).",
-  outOfJurisdictionIdentifier: { value: "NL*TNM", countryCode: "NL" },
-};
 
 describe("identifier scope", () => {
   it("reads the covered jurisdictions from the source descriptor", async () => {
@@ -44,7 +28,6 @@ describe("identifier scope", () => {
     expect(malformed.code).toBe("EIPA_MALFORMED_IDENTIFIER");
     expect(malformed.message).toBe("Unexpected EIPA identifier syntax: 37");
     expect(malformed.rejectedIdentifier).toBe("37");
-    expect(malformed.outOfJurisdictionIdentifier).toBeUndefined();
   });
 
   it("keeps an identifier of a covered country out of the rejection path", async () => {
@@ -94,36 +77,6 @@ describe("identifier scope", () => {
     });
 
     expect(warning.rejectedIdentifier).toBe("raw-prefix-id");
-  });
-
-  it("keeps an out-of-jurisdiction identifier with the country it belongs to", async () => {
-    const source = await loadSourceDefinition("pl-eipa");
-    const warnings = [
-      OUT_OF_JURISDICTION,
-      rejectedIdentifierWarning(source, { ...REJECTION, value: "37" }),
-    ];
-
-    // Filterable by register and by country, which is what turns the finding
-    // into something an operator can act on.
-    expect(toOutOfJurisdictionRows("pl-eipa", warnings)).toEqual([
-      {
-        registryId: "pl-eipa",
-        code: "EIPA_OUT_OF_JURISDICTION_IDENTIFIER",
-        sourceValue: "NL*TNM",
-        countryCode: "NL",
-        message: OUT_OF_JURISDICTION.message,
-      },
-    ]);
-  });
-
-  it("excludes out-of-jurisdiction warnings from the rejected rows", async () => {
-    const source = await loadSourceDefinition("pl-eipa");
-    const warnings = [
-      OUT_OF_JURISDICTION,
-      rejectedIdentifierWarning(source, { ...REJECTION, value: "37" }),
-    ];
-
-    expect(toRejectedSourceRows("pl-eipa", warnings).map((row) => row.sourceValue)).toEqual(["37"]);
   });
 });
 

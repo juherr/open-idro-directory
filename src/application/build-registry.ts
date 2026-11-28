@@ -6,7 +6,6 @@ import type {
   InvalidRegistryHistory,
   InvalidRegistryRecordDetection,
   NormalizedRegistryRecord,
-  OutOfJurisdictionDetection,
   RejectedSourceRowDetection,
 } from "../domain/registry-record.js";
 import type { SourceBuildResult } from "../domain/source-result.js";
@@ -19,7 +18,6 @@ import {
 } from "../infrastructure/serialization/serializers.js";
 import {
   partitionRecordsByIdentifierValidity,
-  toOutOfJurisdictionRows,
   toRejectedSourceRows,
 } from "../validation/identifier-validator.js";
 import { validateRegistry } from "../validation/registry-validator.js";
@@ -57,7 +55,6 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   const records: NormalizedRegistryRecord[] = [];
   const invalidRecords: InvalidRegistryRecordDetection[] = [];
   const rejectedRows: RejectedSourceRowDetection[] = [];
-  const outOfJurisdiction: OutOfJurisdictionDetection[] = [];
   // The datasets are global. A run restricted to one source must therefore
   // republish what the other sources published last time, or writing the
   // datasets would drop them from the registry.
@@ -145,7 +142,6 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
       // previous records, so its discarded rows would describe nothing.
       if (ingested) {
         rejectedRows.push(...toRejectedSourceRows(source.id, warnings));
-        outOfJurisdiction.push(...toOutOfJurisdictionRows(source.id, warnings));
       }
       // Partitioning after the merge also cleans records carried over from the
       // previous dataset, which is where retained tombstones come from. Safety
@@ -198,7 +194,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   const registryIssues = validateRegistry(policyRecords, sources);
   const invalidHistory = mergeInvalidRecordHistory(
     await readPreviousInvalidHistory(dataDir),
-    { records: invalidRecords, rows: rejectedRows, outOfJurisdiction },
+    { records: invalidRecords, rows: rejectedRows },
     generatedAt,
   );
   await writeDatasets(
@@ -209,10 +205,10 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     outputDir,
     invalidHistory,
   );
-  // A filtered run only refreshes its own source's findings, so writing the
-  // report would drop every other register from a global artifact.
+  // Only a full run writes the report, as before listings replaced the
+  // rejection history it was read from.
   if (!options.sourceId) {
-    await writeOutOfJurisdictionReport(outputDir, invalidHistory, sources, generatedAt);
+    await writeOutOfJurisdictionReport(outputDir, policyRecords, sources, generatedAt);
   }
   if (registryIssues.some((issue) => issue.severity === "error")) {
     throw new Error(
@@ -243,7 +239,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
 
 async function writeOutOfJurisdictionReport(
   outputDir: string,
-  invalid: InvalidRegistryHistory,
+  records: NormalizedRegistryRecord[],
   sources: SourceDefinition[],
   generatedAt: string,
 ) {
@@ -251,7 +247,7 @@ async function writeOutOfJurisdictionReport(
   await mkdir(reportsDir, { recursive: true });
   await writeFile(
     path.join(reportsDir, "out-of-jurisdiction.json"),
-    `${JSON.stringify(buildOutOfJurisdictionReport(invalid, sources, generatedAt), null, 2)}\n`,
+    `${JSON.stringify(buildOutOfJurisdictionReport(records, sources, generatedAt), null, 2)}\n`,
   );
 }
 

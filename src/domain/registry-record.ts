@@ -89,9 +89,10 @@ export interface RejectedSourceRowDetection {
 }
 
 /**
- * A well-formed identifier a register publishes for a country it does not
- * administer. Kept so that the registers concerned can be told about it, and so
- * that a correction -- or the lack of one -- stays visible across builds.
+ * A well-formed identifier a register published for a country it does not
+ * administer, as builds recorded it before such identifiers were published as
+ * cross-register listings. No build adds one any more; the entries already in
+ * `data/registry-invalid.json` are kept readable.
  */
 export interface OutOfJurisdictionDetection {
   registryId: string;

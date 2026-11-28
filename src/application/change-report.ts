@@ -1,8 +1,14 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import type { NormalizedRegistryRecord } from "../domain/registry-record.js";
+import type {
+  InvalidRegistryHistory,
+  NormalizedRegistryRecord,
+} from "../domain/registry-record.js";
+import { crossRegisterListings } from "../domain/registry-observation.js";
+import type { SourceDefinition } from "../domain/source-definition.js";
 import { fromRoot } from "../infrastructure/filesystem/paths.js";
+import { currentDetections } from "./invalid-record-history.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -48,19 +54,37 @@ export function diffRecords(
 const PR_BODY_MAX_CHARS = 60_000;
 const REPORT_HEADING = "# Registry Change Summary";
 
-/** What the run refused, across every source, as the history records it. */
+/**
+ * What the run found worth a look, across every source: the values it could not
+ * read, as the history records them, and the cross-register listings the
+ * published records hold.
+ */
 export interface RunFindings {
   rows: { registryId: string; sourceValue: string }[];
-  outOfJurisdiction: { registryId: string; sourceValue: string; countryCode: string }[];
+  crossRegisterListings: { registryId: string; sourceValue: string; countryCode: string }[];
 }
 
-/** What a source published that the run could not use, this run. */
+/**
+ * What a source published this run that is not one of its own assignments:
+ * values it could not read, and other countries' identifiers it lists.
+ */
 export interface SourceFindings {
   unreadable: { sourceValue: string }[];
-  outOfJurisdiction: { sourceValue: string; countryCode: string }[];
+  crossRegisterListings: { sourceValue: string; countryCode: string }[];
 }
 
-const NO_FINDINGS: SourceFindings = { unreadable: [], outOfJurisdiction: [] };
+const NO_FINDINGS: SourceFindings = { unreadable: [], crossRegisterListings: [] };
+
+export function runFindings(
+  records: NormalizedRegistryRecord[],
+  history: InvalidRegistryHistory,
+  sources: SourceDefinition[],
+): RunFindings {
+  return {
+    rows: currentDetections(history).rows,
+    crossRegisterListings: crossRegisterListings(records, sources),
+  };
+}
 
 export interface ChangeReportEntry {
   sourceId: string;
@@ -83,10 +107,10 @@ export interface RenderedChangeReport {
 export async function writeChangeReport(
   sourceIds: string[],
   failures: SourceFailure[] = [],
-  findings: RunFindings = { rows: [], outOfJurisdiction: [] },
+  findings: RunFindings = { rows: [], crossRegisterListings: [] },
 ) {
   const unreadableBySource = Map.groupBy(findings.rows, (row) => row.registryId);
-  const foreignBySource = Map.groupBy(findings.outOfJurisdiction, (row) => row.registryId);
+  const listingsBySource = Map.groupBy(findings.crossRegisterListings, (row) => row.registryId);
   await mkdir(fromRoot("build"), { recursive: true });
   // The registry weighs several megabytes and reading it from git spawns a
   // subprocess: load both sides once and diff each source from memory.
@@ -97,7 +121,7 @@ export async function writeChangeReport(
     diff: diffRecords(previous.get(sourceId) ?? [], current.get(sourceId) ?? []),
     findings: {
       unreadable: unreadableBySource.get(sourceId) ?? [],
-      outOfJurisdiction: foreignBySource.get(sourceId) ?? [],
+      crossRegisterListings: listingsBySource.get(sourceId) ?? [],
     },
   }));
   const { full, prBody } = renderChangeReports(entries, failures);
@@ -150,7 +174,7 @@ function renderSummarySection(sourceId: string, diff: RegistryDiff, findings: So
 - Removed: ${diff.removed.length}
 - Unchanged: ${diff.unchanged}
 - Unreadable values: ${findings.unreadable.length}
-- Out-of-jurisdiction identifiers: ${findings.outOfJurisdiction.length}`;
+- Cross-register listings: ${findings.crossRegisterListings.length}`;
 }
 
 function renderDetailsSection(diff: RegistryDiff, findings: SourceFindings) {
@@ -167,8 +191,9 @@ ${
     // The values the source published but the run could not use are listed
     // here too: they never became records, so no diff line would mention them.
     ...findings.unreadable.map((row) => `| Unreadable | ${row.sourceValue} | n/a |`),
-    ...findings.outOfJurisdiction.map(
-      (row) => `| Out of jurisdiction | ${row.sourceValue} | ${row.countryCode} |`,
+    // Listings are records, but a diff line only shows the ones that changed.
+    ...findings.crossRegisterListings.map(
+      (row) => `| Cross-register listing | ${row.sourceValue} | ${row.countryCode} |`,
     ),
   ].join("\n") || "| None | n/a | n/a |"
 }

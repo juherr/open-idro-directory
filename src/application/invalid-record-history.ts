@@ -3,14 +3,12 @@ import type {
   InvalidRegistryHistory,
   InvalidRegistryRecordDetection,
   InvalidRegistryRecordEntry,
-  OutOfJurisdictionDetection,
   RejectedSourceRowDetection,
 } from "../domain/registry-record.js";
 
 export interface InvalidDetections {
   records: InvalidRegistryRecordDetection[];
   rows: RejectedSourceRowDetection[];
-  outOfJurisdiction: OutOfJurisdictionDetection[];
 }
 
 /**
@@ -33,10 +31,10 @@ export function mergeInvalidRecordHistory(
       merge(previous?.records ?? [], detections.records, recordKey, generatedAt),
     ),
     rows: sortRows(merge(previous?.rows ?? [], detections.rows, rowKey, generatedAt)),
-    // `previous` is parsed from a file that may predate this bucket.
-    outOfJurisdiction: sortRows(
-      merge(previous?.outOfJurisdiction ?? [], detections.outOfJurisdiction, rowKey, generatedAt),
-    ),
+    // No build adds to this bucket any more: a foreign identifier is published
+    // as a cross-register listing instead. Earlier entries stay readable, and
+    // `previous` is parsed from a file that may predate the bucket.
+    outOfJurisdiction: sortRows(merge(previous?.outOfJurisdiction ?? [], [], rowKey, generatedAt)),
   };
 }
 

@@ -6,10 +6,10 @@ import { fetchSources, isFetchFailure } from "./application/fetch-sources.js";
 import { validateGeneratedRegistry } from "./application/validate-registry.js";
 import {
   diffAgainstGit,
+  runFindings,
   writeChangeReport,
   type SourceFailure,
 } from "./application/change-report.js";
-import { currentDetections } from "./application/invalid-record-history.js";
 import { buildNonIdrrReports } from "./application/non-idrr-reports.js";
 import { updateCountryRoleHistory } from "./application/stats-history.js";
 import { refreshSourceMetadata } from "./application/refresh-source-metadata.js";
@@ -98,7 +98,7 @@ program
       await writeChangeReport(
         result.rebuiltSourceIds,
         failures,
-        currentDetections(result.invalidHistory),
+        runFindings(result.records, result.invalidHistory, sources),
       );
       console.log(
         `Updated ${result.records.length} normalized record(s), ${failures.length} source(s) failed.`,

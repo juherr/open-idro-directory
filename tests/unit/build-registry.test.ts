@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { describe, expect, it } from "vitest";
 import { buildRegistry, type BuildOptions } from "../../src/application/build-registry.js";
+import { EvroamConnector } from "../../src/connectors/gb-evroam/evroam.connector.js";
 import type { RegistryConnector } from "../../src/connectors/connector.js";
 import type { NormalizedRegistryRecord } from "../../src/domain/registry-record.js";
 import type { SourceDefinition } from "../../src/domain/source-definition.js";
@@ -88,6 +89,38 @@ describe("buildRegistry", () => {
     });
   });
 
+  // #91 reference scenario 6: the issuing register being unreachable says
+  // nothing about the identifiers another register lists.
+  it("keeps a cross-register listing when the issuing source failed", async () => {
+    const evroam = await loadSourceDefinition("gb-evroam");
+    const listing = await new EvroamConnector().normalize({
+      source: evroam,
+      retrievedAt: GENERATED_AT,
+      records: [{ title: "Blink Charge UK Ltd", operatorIdIE: "IE*BLK" }],
+    });
+    const official = sampleRecord("ie-tii", "IE", "BLK");
+    await withWorkspace(
+      async ({ build, outputDir }) => {
+        const result = await build({
+          createConnector: connectorReturning(listing.records),
+          fetchErrors: { "ie-tii": "HTTP 503 while fetching https://example.test/" },
+        });
+
+        expect(result.records.map((record) => record.key).toSorted()).toEqual([
+          "gb-evroam:IE:BLK:CPO",
+          "ie-tii:IE:BLK:CPO",
+        ]);
+        const observed = result.records.find((record) => record.key === "gb-evroam:IE:BLK:CPO");
+        expect(observed?.source).toMatchObject({
+          official: false,
+          observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "GB" },
+        });
+        expect(await readHealth(outputDir, "ie-tii")).toMatchObject({ freshness: "stale" });
+      },
+      { sourceIds: ["ie-tii", "gb-evroam"], published: [official] },
+    );
+  });
+
   it("throws when every selected source failed", async () => {
     await withWorkspace(async ({ build }) => {
       await expect(
@@ -117,15 +150,22 @@ async function withWorkspace(
       overrides?: BuildOptions & { sources?: SourceDefinition[] },
     ) => ReturnType<typeof buildRegistry>;
   }) => Promise<void>,
+  setup: { sourceIds?: string[]; published?: NormalizedRegistryRecord[] } = {},
 ) {
   const dataDir = await mkdtemp(join(tmpdir(), "open-idro-build-data-"));
   const outputDir = await mkdtemp(join(tmpdir(), "open-idro-build-out-"));
   try {
-    const sources = [
-      await loadSourceDefinition("fr-afirev"),
-      await loadSourceDefinition("dk-fstyr"),
-    ];
-    await writeWorkspace(dataDir, sources);
+    const sources = await Promise.all(
+      (setup.sourceIds ?? ["fr-afirev", "dk-fstyr"]).map((id) => loadSourceDefinition(id)),
+    );
+    await writeWorkspace(
+      dataDir,
+      sources,
+      setup.published ?? [
+        sampleRecord("fr-afirev", "FR", "AAA"),
+        sampleRecord("dk-fstyr", "DK", "BBB"),
+      ],
+    );
     const build = ({
       sources: override,
       ...options
@@ -144,11 +184,12 @@ async function withWorkspace(
   }
 }
 
-async function writeWorkspace(dataDir: string, sources: SourceDefinition[]) {
-  await writeFile(
-    join(dataDir, "registry.json"),
-    JSON.stringify([sampleRecord("fr-afirev", "FR", "AAA"), sampleRecord("dk-fstyr", "DK", "BBB")]),
-  );
+async function writeWorkspace(
+  dataDir: string,
+  sources: SourceDefinition[],
+  published: NormalizedRegistryRecord[],
+) {
+  await writeFile(join(dataDir, "registry.json"), JSON.stringify(published));
   await writeFile(
     join(dataDir, "sources.json"),
     JSON.stringify(

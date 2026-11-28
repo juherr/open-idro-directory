@@ -14,11 +14,8 @@ import {
   type RegistryRole,
 } from "../../domain/registry-record.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import {
-  coversJurisdiction,
-  outOfJurisdictionWarning,
-  rejectedIdentifierWarning,
-} from "../../validation/identifier-scope.js";
+import { observationScope } from "../../domain/registry-observation.js";
+import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import { parseEvroamRegister } from "./evroam.parser.js";
 import type { EvroamRegisterItem } from "./evroam.types.js";
@@ -88,23 +85,6 @@ export class EvroamConnector implements RegistryConnector<EvroamRegisterItem> {
           continue;
         }
 
-        // The register may list identifiers it does not administer. Publishing
-        // them would attribute another country's identifier to this source.
-        if (!coversJurisdiction(input.source, parsed.countryCode)) {
-          warnings.push(
-            outOfJurisdictionWarning(
-              input.source,
-              {
-                codePrefix: "EVROAM",
-                subject: "EV Roam identifier",
-                value: identifier.sourceValue,
-              },
-              parsed.countryCode,
-            ),
-          );
-          continue;
-        }
-
         const key = makeRegistryKey(
           input.source.id,
           parsed.countryCode,
@@ -114,13 +94,16 @@ export class EvroamConnector implements RegistryConnector<EvroamRegisterItem> {
         if (seen.has(key)) continue;
         seen.add(key);
 
+        // EV Roam assigns GB identifiers; the IE ones it lists are issued by
+        // TII, so they are cross-register listings and never official here.
+        const observation = observationScope(input.source, parsed.countryCode);
         records.push({
           key,
           countryCode: parsed.countryCode,
           partyId: parsed.partyId,
           eMobilityId: `${parsed.countryCode}${parsed.partyId}`,
           role: identifier.role,
-          status: parsed.countryCode === "GB" ? "ACTIVE" : "UNKNOWN",
+          status: "ACTIVE",
           organization: {
             name:
               clean(sourceRecord.title) ??
@@ -130,20 +113,21 @@ export class EvroamConnector implements RegistryConnector<EvroamRegisterItem> {
           },
           source: {
             registryId: input.source.id,
-            official: isAuthoritative(input.source) && parsed.countryCode === "GB",
+            official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
             sourceUrl: input.source.registry.url,
             sourceValue: identifier.sourceValue,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,
             retrievedAt: input.retrievedAt,
+            observation,
           },
           metadata: {
             evroamField: identifier.field,
             evroamTitle: clean(sourceRecord.title),
             evroamWebsite: clean(sourceRecord.website),
             evroamAuthority:
-              parsed.countryCode === "GB" ? "originating-registry" : "cross-register",
+              observation.kind === "ASSIGNMENT" ? "originating-registry" : "cross-register",
           },
         });
       }

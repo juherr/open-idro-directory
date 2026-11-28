@@ -16,13 +16,15 @@ const REJECTION = { codePrefix: "EIPA", subject: "EIPA identifier" };
 
 describe("identifier scope", () => {
   it("reads the covered jurisdictions from the source descriptor", async () => {
-    // EV Roam publishes the Irish identifiers it cross-registers, which is why
-    // its descriptor declares both.
+    // EV Roam's authority spans GB and IE, but its register only assigns GB
+    // identifiers: TII is the Irish registrar.
     const evroam = await loadSourceDefinition("gb-evroam");
+    const tii = await loadSourceDefinition("ie-tii");
 
-    expect(coversJurisdiction(evroam, "IE")).toBe(true);
-    expect(coversJurisdiction(evroam, "ie")).toBe(true);
-    expect(coversJurisdiction(evroam, "FR")).toBe(false);
+    expect(coversJurisdiction(evroam, "GB")).toBe(true);
+    expect(coversJurisdiction(evroam, "gb")).toBe(true);
+    expect(coversJurisdiction(evroam, "IE")).toBe(false);
+    expect(coversJurisdiction(tii, "ie")).toBe(true);
   });
 
   it("separates an identifier of another country from an unreadable one", async () => {
@@ -140,7 +142,7 @@ describe("connector jurisdiction guard", () => {
     expect(result.warnings[0]?.message).toContain("BE, NL, LU");
   });
 
-  it("publishes the countries the register declares, such as EV Roam's Irish entries", async () => {
+  it("publishes EV Roam's Irish entries as listings observed in GB", async () => {
     const source = await loadSourceDefinition("gb-evroam");
     const connector = new EvroamConnector();
 
@@ -151,6 +153,10 @@ describe("connector jurisdiction guard", () => {
     });
 
     expect(result.records.map((record) => record.countryCode)).toEqual(["IE"]);
+    expect(result.records[0]?.source).toMatchObject({
+      official: false,
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "GB" },
+    });
     expect(result.warnings).toHaveLength(0);
   });
 });

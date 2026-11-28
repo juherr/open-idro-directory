@@ -528,27 +528,39 @@ describe("Cloudflare API", () => {
     expect(response.headers.get("location")).toBe(location);
   });
 
-  it("rejects a country parameter that conflicts with the path", async () => {
-    const response = await workerRequest("/countries/FR/?country=DE");
-
-    expect(response.status).toBe(400);
-    expect(response.headers.get("content-type")).toContain("text/html");
-    expect(response.headers.get("cache-control")).toBe("no-store");
-    await expect(response.text()).resolves.toContain("Conflicting country");
-  });
-
-  it.each(["/countries/zz/", "/countries/fr/extra", "/countries/", "/countries/fra/"])(
-    "returns an uncached HTML 404 for %s",
+  it.each(["/countries/FR/?country=DE", "/countries/fr/?country=DE&lang=fr"])(
+    "rejects a country parameter that conflicts with the path in %s",
     async (path) => {
       const response = await workerRequest(path);
 
-      expect(response.status).toBe(404);
+      expect(response.status).toBe(400);
       expect(response.headers.get("content-type")).toContain("text/html");
       expect(response.headers.get("etag")).toBeNull();
       expect(response.headers.get("cache-control")).toBe("no-store");
-      await expect(response.text()).resolves.toContain("Page not found");
+      const body = await response.text();
+      expect(body).toContain('<html lang="en">');
+      expect(body).toContain("Conflicting country");
     },
   );
+
+  // Error pages stay English, even when the request asks for French.
+  it.each([
+    "/countries/zz/",
+    "/countries/zz/?lang=fr",
+    "/countries/fr/extra",
+    "/countries/",
+    "/countries/fra/",
+  ])("returns an uncached HTML 404 for %s", async (path) => {
+    const response = await workerRequest(path);
+
+    expect(response.status).toBe(404);
+    expect(response.headers.get("content-type")).toContain("text/html");
+    expect(response.headers.get("etag")).toBeNull();
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    const body = await response.text();
+    expect(body).toContain('<html lang="en">');
+    expect(body).toContain("Page not found");
+  });
 
   it("serves a country 404 page that loads no script", async () => {
     const response = await workerRequest("/countries/zz/");

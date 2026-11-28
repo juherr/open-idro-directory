@@ -372,12 +372,26 @@ describe("buildRegistry discrepancy report", () => {
     message: `Duplicate identifier ${value} for CPO.`,
   });
 
+  // One duplicate per register, reported by duplicatesOf as
+  // ["dk-fstyr", "FSTYR_DUPLICATE_IDENTIFIER"] and
+  // ["se-energimyndigheten", "ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER"].
+  const DUPLICATE_WARNINGS = {
+    dk: [duplicateWarning("FSTYR_DUPLICATE_IDENTIFIER", "DK*BBB")],
+    se: [duplicateWarning("ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER", "SE*AAA")],
+  };
+
   // dk-fstyr assigns DK*BBB; the Swedish register also lists DK*BBB and DK*MON.
-  async function nordicConnectors(warnings: { dk?: ValidationIssue[]; se?: ValidationIssue[] }) {
+  async function nordicConnectors(
+    options: { dk?: ValidationIssue[]; se?: ValidationIssue[]; dkErrors?: ValidationIssue[] } = {},
+  ) {
     const swedish = await swedishListings("SE*AAA", "SE*BBB", "SE*CCC", "DK*BBB", "DK*MON");
     const connectors: Record<string, () => RegistryConnector> = {
-      "dk-fstyr": connectorReturning([assignedThisRun("dk-fstyr", "DK", "BBB")], [], warnings.dk),
-      "se-energimyndigheten": connectorReturning(swedish, [], warnings.se),
+      "dk-fstyr": connectorReturning(
+        [assignedThisRun("dk-fstyr", "DK", "BBB")],
+        options.dkErrors,
+        options.dk,
+      ),
+      "se-energimyndigheten": connectorReturning(swedish, [], options.se),
     };
     return (source: SourceDefinition) => connectors[source.id]!();
   }
@@ -410,10 +424,7 @@ describe("buildRegistry discrepancy report", () => {
   );
 
   it("gives a partial build the report of a full build", async () => {
-    const createConnector = await nordicConnectors({
-      dk: [duplicateWarning("FSTYR_DUPLICATE_IDENTIFIER", "DK*BBB")],
-      se: [duplicateWarning("ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER", "SE*AAA")],
-    });
+    const createConnector = await nordicConnectors(DUPLICATE_WARNINGS);
     await withWorkspace(
       async ({ build, outputDir, publishOutput }) => {
         await build({ createConnector });
@@ -437,10 +448,7 @@ describe("buildRegistry discrepancy report", () => {
   });
 
   it("keeps the duplicate findings of a source that failed, not of one rebuilt", async () => {
-    const warned = await nordicConnectors({
-      dk: [duplicateWarning("FSTYR_DUPLICATE_IDENTIFIER", "DK*BBB")],
-      se: [duplicateWarning("ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER", "SE*AAA")],
-    });
+    const warned = await nordicConnectors(DUPLICATE_WARNINGS);
     await withWorkspace(
       async ({ build, outputDir, publishOutput }) => {
         await build({ createConnector: warned });
@@ -476,10 +484,7 @@ describe("buildRegistry discrepancy report", () => {
         sources.filter((source) => source.id !== "dk-fstyr"),
     },
   ])("drops the duplicate findings of a source $case since", async ({ sourcesOf }) => {
-    const createConnector = await nordicConnectors({
-      dk: [duplicateWarning("FSTYR_DUPLICATE_IDENTIFIER", "DK*BBB")],
-      se: [duplicateWarning("ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER", "SE*AAA")],
-    });
+    const createConnector = await nordicConnectors(DUPLICATE_WARNINGS);
     await withWorkspace(
       async ({ build, outputDir, publishOutput, sources }) => {
         await build({ createConnector });
@@ -501,28 +506,13 @@ describe("buildRegistry discrepancy report", () => {
   // #31 reference scenario 4, stale variant: the issuing register answered but
   // its run was not ingested, so a tombstone or an absence proves nothing.
   it("reports an issuing register answering but not ingested as unverifiable only", async () => {
-    const removed: NormalizedRegistryRecord = {
-      ...sampleRecord("dk-fstyr", "DK", "OLD"),
-      status: "INACTIVE",
-      metadata: {
-        inactiveSince: PREVIOUS_RETRIEVAL,
-        inactiveReason: "missing-from-official-source",
-      },
-    };
-    removed.source = { ...removed.source, lastSeenAt: "2026-06-01T00:00:00.000Z" };
-    const swedish = await swedishListings("SE*AAA", "SE*BBB", "SE*CCC", "DK*BBB", "DK*MON");
-    const connectors: Record<string, () => RegistryConnector> = {
-      "dk-fstyr": connectorReturning(
-        [assignedThisRun("dk-fstyr", "DK", "BBB")],
-        [{ severity: "error", code: "MASS_CHANGE", message: "1 of 1 changed." }],
-      ),
-      "se-energimyndigheten": connectorReturning(swedish),
-    };
+    const removed = removedDkRecord();
+    const createConnector = await nordicConnectors({
+      dkErrors: [{ severity: "error", code: "MASS_CHANGE", message: "1 of 1 changed." }],
+    });
     await withWorkspace(
       async ({ build, outputDir }) => {
-        const { results } = await build({
-          createConnector: (source) => connectors[source.id]!(),
-        });
+        const { results } = await build({ createConnector });
 
         const dk = results.find((result) => result.sourceId === "dk-fstyr");
         expect(dk?.stale).toBe(true);
@@ -550,15 +540,7 @@ describe("buildRegistry discrepancy report", () => {
   // #31 reference scenario 4: an unreachable issuing register must not yield a
   // removal or a not-found.
   it("reports a failing issuing register as unverifiable only", async () => {
-    const removed: NormalizedRegistryRecord = {
-      ...sampleRecord("dk-fstyr", "DK", "OLD"),
-      status: "INACTIVE",
-      metadata: {
-        inactiveSince: PREVIOUS_RETRIEVAL,
-        inactiveReason: "missing-from-official-source",
-      },
-    };
-    removed.source = { ...removed.source, lastSeenAt: "2026-06-01T00:00:00.000Z" };
+    const removed = removedDkRecord();
     await withWorkspace(
       async ({ build, outputDir }) => {
         await build({
@@ -748,6 +730,20 @@ function assignedThisRun(registryId: string, countryCode: string, partyId: strin
   return {
     ...record,
     source: { ...record.source, lastSeenAt: GENERATED_AT, retrievedAt: GENERATED_AT },
+  };
+}
+
+/** A DK*OLD tombstone: dk-fstyr stopped listing it before this run. */
+function removedDkRecord(): NormalizedRegistryRecord {
+  const record = sampleRecord("dk-fstyr", "DK", "OLD");
+  return {
+    ...record,
+    status: "INACTIVE",
+    metadata: {
+      inactiveSince: PREVIOUS_RETRIEVAL,
+      inactiveReason: "missing-from-official-source",
+    },
+    source: { ...record.source, lastSeenAt: "2026-06-01T00:00:00.000Z" },
   };
 }
 

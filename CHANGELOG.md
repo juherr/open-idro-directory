@@ -37,6 +37,19 @@ confirmation, confirmedBy }` block saying what the registers of the
   columns, which read `null` until the next import of data carrying these
   blocks. The OpenAPI document describes them in `Party` and `Observation`
   components. API schema version is now 1.4.0.
+- `data/reports/discrepancies.json`, written on every build, full or partial:
+  what the issuing registers and the other sources disagree on, grouped by
+  country and by pair of issuing and observed register, for the IDRO
+  authorities to review. It lists identifiers another source publishes that
+  the issuing register does not, identifiers added to or removed from the
+  issuing register, conflicting names, roles or statuses, duplicate and
+  malformed identifiers, and sources that are stale or unavailable. Each
+  finding carries a severity, a confidence, and the timestamped records it
+  rests on. When the issuing register itself is stale or unavailable, an
+  absence it cannot vouch for is reported as unverifiable rather than as a
+  removal. Findings describe differences between registers; none of them
+  claims an identifier is invalid. Plus a `schemas/discrepancies.schema.json`
+  contract. Serving the report through the API is tracked in #120.
 - Country pages at `/countries/{code}/`, rendered on the server so they work
   without JavaScript: the country's IDRO authorities, coverage, and sources,
   with an explained empty state for a country with a known IDRO but no

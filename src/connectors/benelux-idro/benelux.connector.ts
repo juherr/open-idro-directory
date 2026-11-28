@@ -15,9 +15,10 @@ import {
 } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { observationScope } from "../../domain/registry-observation.js";
 import {
   coversJurisdiction,
-  outOfJurisdictionWarning,
+  parseCrossRegisterIdentifier,
   rejectedIdentifierWarning,
 } from "../../validation/identifier-scope.js";
 import { parseBeneluxCsv } from "./benelux.parser.js";
@@ -92,7 +93,14 @@ export class BeneluxIdroConnector implements RegistryConnector<BeneluxCsvRow> {
       ];
 
       for (const identifier of identifiers) {
-        const parsed = parseBeneluxIdentifier(identifier.sourceValue);
+        // The register may list identifiers it does not administer: those are
+        // cross-register listings, and a prefix naming no country stays
+        // malformed.
+        const strict = parseBeneluxIdentifier(identifier.sourceValue);
+        const parsed =
+          strict && coversJurisdiction(input.source, strict.countryCode)
+            ? strict
+            : parseCrossRegisterIdentifier(input.source, identifier.sourceValue);
         if (!parsed) {
           warnings.push(
             rejectedIdentifierWarning(input.source, {
@@ -100,23 +108,6 @@ export class BeneluxIdroConnector implements RegistryConnector<BeneluxCsvRow> {
               subject: "Benelux IDRO identifier",
               value: identifier.sourceValue,
             }),
-          );
-          continue;
-        }
-
-        // The register may list identifiers it does not administer. Publishing
-        // them would attribute another country's identifier to this source.
-        if (!coversJurisdiction(input.source, parsed.countryCode)) {
-          warnings.push(
-            outOfJurisdictionWarning(
-              input.source,
-              {
-                codePrefix: "BENELUX",
-                subject: "Benelux IDRO identifier",
-                value: identifier.sourceValue,
-              },
-              parsed.countryCode,
-            ),
           );
           continue;
         }
@@ -138,6 +129,8 @@ export class BeneluxIdroConnector implements RegistryConnector<BeneluxCsvRow> {
         }
         seen.add(key);
 
+        const observation = observationScope(input.source, parsed.countryCode);
+
         records.push({
           key,
           countryCode: parsed.countryCode,
@@ -152,13 +145,14 @@ export class BeneluxIdroConnector implements RegistryConnector<BeneluxCsvRow> {
           },
           source: {
             registryId: input.source.id,
-            official: isAuthoritative(input.source),
+            official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
             sourceUrl: input.source.registry.url,
             sourceValue: identifier.sourceValue,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,
             retrievedAt: input.retrievedAt,
+            observation,
           },
           metadata: {
             beneluxCompanyName: organizationName,

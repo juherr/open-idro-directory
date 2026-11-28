@@ -75,3 +75,50 @@ describe("Benelux IDRO parser", () => {
     expect(result.warnings[0]?.code).toBe("BENELUX_MALFORMED_IDENTIFIER");
   });
 });
+
+describe("Benelux IDRO cross-register listings", () => {
+  it("publishes a foreign identifier as a listing with no single observing country", async () => {
+    const source = await loadSourceDefinition("benelux-idro");
+    const result = await new BeneluxIdroConnector().normalize({
+      source,
+      retrievedAt: "2026-06-14T00:00:00.000Z",
+      records: [
+        {
+          companyName: "Example Operator",
+          cpoIds: ["NL*TNM", "FR*XYZ"],
+          emspIds: [],
+          website: null,
+        },
+      ],
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.records.map((record) => record.key)).toEqual([
+      "benelux-idro:NL:TNM:CPO",
+      "benelux-idro:FR:XYZ:CPO",
+    ]);
+    expect(result.records[0]?.source).toMatchObject({
+      official: true,
+      observation: { kind: "ASSIGNMENT", observingJurisdiction: "NL" },
+    });
+    // The register covers three countries, so no single one observed it.
+    expect(result.records[1]?.source).toMatchObject({
+      official: false,
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: null },
+    });
+  });
+
+  it("reports a prefix that names no country as malformed", async () => {
+    const source = await loadSourceDefinition("benelux-idro");
+    const result = await new BeneluxIdroConnector().normalize({
+      source,
+      retrievedAt: "2026-06-14T00:00:00.000Z",
+      records: [{ companyName: "Bad", cpoIds: ["ZZ*ABC"], emspIds: [], website: null }],
+    });
+
+    expect(result.records).toHaveLength(0);
+    expect(result.warnings.map((warning) => warning.code)).toEqual([
+      "BENELUX_MALFORMED_IDENTIFIER",
+    ]);
+  });
+});

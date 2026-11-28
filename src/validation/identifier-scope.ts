@@ -52,52 +52,20 @@ export function coversJurisdiction(source: SourceDefinition, countryCode: string
 }
 
 /**
- * A national register listing another country's identifier is publishing
- * something it does not administer -- not a broken row. Reporting it as
- * unreadable sends a maintainer looking for a parser bug that does not exist,
- * and buries the genuinely malformed values it is meant to surface.
+ * Reports a value the connector could not read. Connectors try
+ * `parseCrossRegisterIdentifier` first, so another country's well-formed
+ * identifier never lands here: it is published as a cross-register listing.
  */
 export function rejectedIdentifierWarning(
   source: SourceDefinition,
   rejection: RejectedIdentifier,
 ): ValidationIssue {
-  const foreign = foreignCountryOf(source, rejection.value);
-  if (foreign) return outOfJurisdiction(source, rejection, foreign);
   return {
     severity: "warning",
     sourceId: source.id,
     code: `${rejection.codePrefix}_MALFORMED_IDENTIFIER`,
     message: `Unexpected ${rejection.subject} syntax: ${rejection.value}`,
     rejectedIdentifier: rejection.reported ?? rejection.value,
-  };
-}
-
-/**
- * Reports an identifier this register does not cover. Connectors that accept
- * any country call it after parsing, so no source publishes records outside the
- * jurisdictions it declares.
- */
-export function outOfJurisdictionWarning(
-  source: SourceDefinition,
-  rejection: Omit<RejectedIdentifier, "reported">,
-  countryCode: string,
-): ValidationIssue {
-  return outOfJurisdiction(source, rejection, countryCode.toUpperCase());
-}
-
-function outOfJurisdiction(
-  source: SourceDefinition,
-  rejection: Omit<RejectedIdentifier, "reported">,
-  countryCode: string,
-): ValidationIssue {
-  return {
-    severity: "warning",
-    sourceId: source.id,
-    code: `${rejection.codePrefix}_OUT_OF_JURISDICTION_IDENTIFIER`,
-    message: `${rejection.subject} ${rejection.value} belongs to ${countryCode}, outside the jurisdictions this register covers (${sourceJurisdictions(source).join(", ")}).`,
-    // Reported verbatim, like the unreadable values: the register's own
-    // spelling is the provenance.
-    outOfJurisdictionIdentifier: { value: rejection.value, countryCode },
   };
 }
 

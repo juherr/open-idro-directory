@@ -11,7 +11,11 @@ import type {
 import { makeRegistryKey } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
+import { observationScope } from "../../domain/registry-observation.js";
+import {
+  parseCrossRegisterIdentifier,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { parseLadestellenJson } from "./ladestellen.parser.js";
 import type { LadestellenOperator } from "./ladestellen.types.js";
 
@@ -65,8 +69,10 @@ export class LadestellenConnector implements RegistryConnector<LadestellenOperat
     const records = [];
 
     for (const sourceRecord of input.records) {
-      const partyId = sourceRecord.operatorId.trim().toUpperCase();
-      if (!/^[A-Z0-9]{3}$/.test(partyId)) {
+      const parsed = /^[A-Z0-9]{3}$/i.test(sourceRecord.operatorId.trim())
+        ? { countryCode: "AT", partyId: sourceRecord.operatorId.trim().toUpperCase() }
+        : parseCrossRegisterIdentifier(input.source, sourceRecord.operatorId);
+      if (!parsed) {
         warnings.push(
           rejectedIdentifierWarning(input.source, {
             codePrefix: "LADESTELLEN",
@@ -76,7 +82,8 @@ export class LadestellenConnector implements RegistryConnector<LadestellenOperat
         );
         continue;
       }
-      const countryCode = "AT";
+      const { countryCode, partyId } = parsed;
+      const observation = observationScope(input.source, countryCode);
       records.push({
         key: makeRegistryKey(input.source.id, countryCode, partyId, "CPO"),
         countryCode,
@@ -91,13 +98,14 @@ export class LadestellenConnector implements RegistryConnector<LadestellenOperat
         },
         source: {
           registryId: input.source.id,
-          official: isAuthoritative(input.source),
+          official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
           sourceRecordId: `${countryCode}${partyId}`,
           sourceUrl: input.source.authority.homepageUrl,
           sourceValue: `${countryCode}*${partyId}`,
           firstSeenAt: input.retrievedAt,
           lastSeenAt: input.retrievedAt,
           retrievedAt: input.retrievedAt,
+          observation,
         },
         metadata: {
           ladestellenType: sourceRecord.type,

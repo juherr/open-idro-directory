@@ -15,7 +15,11 @@ import {
 } from "../../domain/registry-record.js";
 import { getBinary, sha256 } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
+import { observationScope } from "../../domain/registry-observation.js";
+import {
+  parseCrossRegisterIdentifier,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { parseTiiSnapshot } from "./tii.parser.js";
 import type { TiiRow } from "./tii.types.js";
 
@@ -89,7 +93,9 @@ export class TiiConnector implements RegistryConnector<TiiRow> {
           : []),
       ];
       for (const identifier of identifiers) {
-        const parsed = parseIrishIdentifier(identifier.sourceValue);
+        const parsed =
+          parseIrishIdentifier(identifier.sourceValue) ??
+          parseCrossRegisterIdentifier(input.source, identifier.sourceValue);
         if (!parsed) {
           warnings.push(
             rejectedIdentifierWarning(input.source, {
@@ -110,6 +116,8 @@ export class TiiConnector implements RegistryConnector<TiiRow> {
         if (seen.has(key)) continue;
         seen.add(key);
 
+        const observation = observationScope(input.source, parsed.countryCode);
+
         records.push({
           key,
           countryCode: parsed.countryCode,
@@ -124,13 +132,14 @@ export class TiiConnector implements RegistryConnector<TiiRow> {
           },
           source: {
             registryId: input.source.id,
-            official: isAuthoritative(input.source),
+            official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
             sourceUrl: input.source.registry.url,
             sourceValue: identifier.sourceValue,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,
             retrievedAt: input.retrievedAt,
+            observation,
           },
           metadata: {
             tiiLegalEntityName: sourceRecord.legalEntityName,

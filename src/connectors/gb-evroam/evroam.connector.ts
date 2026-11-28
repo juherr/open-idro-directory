@@ -15,7 +15,10 @@ import {
 } from "../../domain/registry-record.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
 import { observationScope } from "../../domain/registry-observation.js";
-import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
+import {
+  parseCrossRegisterIdentifier,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import { parseEvroamRegister } from "./evroam.parser.js";
 import type { EvroamRegisterItem } from "./evroam.types.js";
@@ -73,7 +76,9 @@ export class EvroamConnector implements RegistryConnector<EvroamRegisterItem> {
     for (const sourceRecord of input.records) {
       const identifiers = identifiersFor(sourceRecord);
       for (const identifier of identifiers) {
-        const parsed = parseIdentifier(identifier.sourceValue, identifier.countryCode);
+        const parsed =
+          parseIdentifier(identifier.sourceValue, identifier.countryCode) ??
+          parseCrossRegisterIdentifier(input.source, identifier.sourceValue);
         if (!parsed) {
           warnings.push(
             rejectedIdentifierWarning(input.source, {
@@ -95,7 +100,8 @@ export class EvroamConnector implements RegistryConnector<EvroamRegisterItem> {
         seen.add(key);
 
         // EV Roam assigns GB identifiers; the IE ones it lists are issued by
-        // TII, so they are cross-register listings and never official here.
+        // TII, and any other country by its own register, so they are
+        // cross-register listings and never official here.
         const observation = observationScope(input.source, parsed.countryCode);
         records.push({
           key,

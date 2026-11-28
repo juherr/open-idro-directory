@@ -77,3 +77,52 @@ describe("AFIREV parser", () => {
     expect(result.warnings[0]?.code).toBe("AFIREV_MALFORMED_IDENTIFIER");
   });
 });
+
+describe("AFIREV cross-register listings", () => {
+  it("publishes a foreign prefix as a listing observed in France", async () => {
+    const source = await loadSourceDefinition("fr-afirev");
+    const result = await new AfirevConnector().normalize({
+      source,
+      retrievedAt: "2026-06-14T00:00:00.000Z",
+      records: [afirevRow("FRABC"), afirevRow("BEXYZ")],
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.records.map((record) => record.key)).toEqual([
+      "fr-afirev:FR:ABC:CPO",
+      "fr-afirev:BE:XYZ:CPO",
+    ]);
+    expect(result.records[0]?.source).toMatchObject({
+      official: true,
+      observation: { kind: "ASSIGNMENT", observingJurisdiction: "FR" },
+    });
+    expect(result.records[1]?.source).toMatchObject({
+      official: false,
+      sourceValue: "BEXYZ",
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "FR" },
+    });
+  });
+
+  it("reports a prefix that names no country as malformed", async () => {
+    const source = await loadSourceDefinition("fr-afirev");
+    const result = await new AfirevConnector().normalize({
+      source,
+      retrievedAt: "2026-06-14T00:00:00.000Z",
+      records: [afirevRow("ZZABC")],
+    });
+
+    expect(result.records).toHaveLength(0);
+    expect(result.warnings.map((warning) => warning.code)).toEqual(["AFIREV_MALFORMED_IDENTIFIER"]);
+  });
+});
+
+function afirevRow(prefixId: string) {
+  return {
+    prefixId,
+    name: "Example",
+    type: "CHARGE",
+    status: "ACTIVE",
+    amenageurName: "",
+    exploitantName: "",
+  };
+}

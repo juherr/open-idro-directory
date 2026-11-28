@@ -15,7 +15,11 @@ import {
 } from "../../domain/registry-record.js";
 import { getText, sha256 } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
+import { observationScope } from "../../domain/registry-observation.js";
+import {
+  parseCrossRegisterIdentifier,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { parseBdewJson } from "./bdew.parser.js";
 import { bdewApiResponseSchema, type BdewApiCode, type BdewSnapshot } from "./bdew.types.js";
 
@@ -124,7 +128,9 @@ function normalizeCode(
   warnings: ValidationIssue[],
   seen: Set<string>,
 ) {
-  const parsed = parseBdewIdentifier(sourceRecord.Code);
+  const parsed =
+    parseBdewIdentifier(sourceRecord.Code) ??
+    parseCrossRegisterIdentifier(input.source, sourceRecord.Code);
   if (!parsed) {
     warnings.push(
       rejectedIdentifierWarning(input.source, {
@@ -149,6 +155,7 @@ function normalizeCode(
   seen.add(key);
 
   const organizationName = cleanCompany(sourceRecord.Company) ?? "Unspecified BDEW organization";
+  const observation = observationScope(input.source, parsed.countryCode);
   records.push({
     key,
     countryCode: parsed.countryCode,
@@ -163,13 +170,14 @@ function normalizeCode(
     },
     source: {
       registryId: input.source.id,
-      official: isAuthoritative(input.source),
+      official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
       sourceRecordId: String(sourceRecord.Id),
       sourceUrl: bdewSourceUrl(input.source.registry.url, role),
       sourceValue: sourceRecord.Code,
       firstSeenAt: input.retrievedAt,
       lastSeenAt: input.retrievedAt,
       retrievedAt: input.retrievedAt,
+      observation,
     },
     metadata: {
       bdewId: sourceRecord.Id,

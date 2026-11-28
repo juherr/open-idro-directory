@@ -168,3 +168,23 @@ describe("EV Roam parser", () => {
     expect(validateRegistry(published, [tiiSource, evroamSource])).toHaveLength(0);
   });
 });
+
+describe("EV Roam foreign identifiers", () => {
+  it("publishes a foreign identifier in a GB field as a listing observed in GB", async () => {
+    const source = await loadSourceDefinition("gb-evroam");
+    const result = await new EvroamConnector().normalize({
+      source,
+      retrievedAt: "2026-06-15T00:00:00.000Z",
+      records: [{ title: "Example Operator", operatorId: "FR*ABC", website: null }],
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.records[0]).toMatchObject({
+      key: "gb-evroam:FR:ABC:CPO",
+      source: {
+        official: false,
+        observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "GB" },
+      },
+    });
+  });
+});

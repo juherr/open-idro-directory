@@ -15,7 +15,11 @@ import {
 } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
+import { observationScope } from "../../domain/registry-observation.js";
+import {
+  parseCrossRegisterIdentifier,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { parseLvceliJson } from "./lvceli.parser.js";
 import type { LvceliRow } from "./lvceli.types.js";
 
@@ -80,7 +84,9 @@ export class LvceliConnector implements RegistryConnector<LvceliRow> {
       ];
 
       for (const identifier of identifiers) {
-        const parsed = parseLatvianIdentifier(identifier.sourceValue);
+        const parsed =
+          parseLatvianIdentifier(identifier.sourceValue) ??
+          parseCrossRegisterIdentifier(input.source, identifier.sourceValue);
         if (!parsed) {
           warnings.push(
             rejectedIdentifierWarning(input.source, {
@@ -100,6 +106,8 @@ export class LvceliConnector implements RegistryConnector<LvceliRow> {
         if (seen.has(key)) continue;
         seen.add(key);
 
+        const observation = observationScope(input.source, parsed.countryCode);
+
         records.push({
           key,
           countryCode: parsed.countryCode,
@@ -114,13 +122,14 @@ export class LvceliConnector implements RegistryConnector<LvceliRow> {
           },
           source: {
             registryId: input.source.id,
-            official: isAuthoritative(input.source),
+            official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
             sourceUrl: input.source.authority.homepageUrl,
             sourceValue: identifier.sourceValue,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,
             retrievedAt: input.retrievedAt,
+            observation,
           },
           metadata: {
             lvceliLegalEntityName: sourceRecord.legalEntityName,

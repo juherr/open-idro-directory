@@ -11,7 +11,11 @@ import type {
 import { makeRegistryKey, type NormalizedRegistryRecord } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
+import { observationScope } from "../../domain/registry-observation.js";
+import {
+  parseCrossRegisterIdentifier,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { parseHuIdroHtml } from "./hu-idro.parser.js";
 import type { HuIdroHtmlRow } from "./hu-idro.types.js";
 
@@ -78,7 +82,9 @@ export class HuIdroConnector implements RegistryConnector<HuIdroHtmlRow> {
     const seen = new Set<string>();
 
     for (const sourceRecord of input.records) {
-      const parsed = parseHuIdroIdentifier(sourceRecord.sourceValue);
+      const parsed =
+        parseHuIdroIdentifier(sourceRecord.sourceValue) ??
+        parseCrossRegisterIdentifier(input.source, sourceRecord.sourceValue);
       if (!parsed) {
         warnings.push(
           rejectedIdentifierWarning(input.source, {
@@ -107,6 +113,8 @@ export class HuIdroConnector implements RegistryConnector<HuIdroHtmlRow> {
       }
       seen.add(key);
 
+      const observation = observationScope(input.source, parsed.countryCode);
+
       records.push({
         key,
         countryCode: parsed.countryCode,
@@ -121,13 +129,14 @@ export class HuIdroConnector implements RegistryConnector<HuIdroHtmlRow> {
         },
         source: {
           registryId: input.source.id,
-          official: isAuthoritative(input.source),
+          official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
           sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
           sourceUrl: input.source.registry.url,
           sourceValue: sourceRecord.sourceValue,
           firstSeenAt: input.retrievedAt,
           lastSeenAt: input.retrievedAt,
           retrievedAt: input.retrievedAt,
+          observation,
         },
         metadata: {
           huIdroCompanyName: sourceRecord.organizationName,

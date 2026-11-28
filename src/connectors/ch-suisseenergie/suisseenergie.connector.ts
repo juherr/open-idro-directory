@@ -15,7 +15,11 @@ import {
 } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
+import { observationScope } from "../../domain/registry-observation.js";
+import {
+  parseCrossRegisterIdentifier,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { parseSuisseEnergieHtml } from "./suisseenergie.parser.js";
 import type { SuisseEnergieProvider } from "./suisseenergie.types.js";
 
@@ -84,7 +88,9 @@ export class SuisseEnergieConnector implements RegistryConnector<SuisseEnergiePr
     const seen = new Set<string>();
 
     for (const sourceRecord of preferredLocaleRecords(input.records)) {
-      const parsed = parseSuisseEnergieIdentifier(sourceRecord.digitId);
+      const parsed =
+        parseSuisseEnergieIdentifier(sourceRecord.digitId) ??
+        parseCrossRegisterIdentifier(input.source, sourceRecord.digitId);
       if (!parsed) {
         warnings.push(
           rejectedIdentifierWarning(input.source, {
@@ -123,6 +129,8 @@ export class SuisseEnergieConnector implements RegistryConnector<SuisseEnergiePr
         }
         seen.add(key);
 
+        const observation = observationScope(input.source, parsed.countryCode);
+
         records.push({
           key,
           countryCode: parsed.countryCode,
@@ -137,13 +145,14 @@ export class SuisseEnergieConnector implements RegistryConnector<SuisseEnergiePr
           },
           source: {
             registryId: input.source.id,
-            official: isAuthoritative(input.source),
+            official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
             sourceUrl: input.source.registry.url,
             sourceValue: sourceRecord.digitId,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,
             retrievedAt: input.retrievedAt,
+            observation,
           },
           metadata: {
             suisseEnergieCompanyName: organizationName,

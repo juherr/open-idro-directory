@@ -11,7 +11,11 @@ import type {
 import { makeRegistryKey, type NormalizedRegistryRecord } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
+import { observationScope } from "../../domain/registry-observation.js";
+import {
+  parseCrossRegisterIdentifier,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { parseElectrokinisiHtml } from "./electrokinisi.parser.js";
 import type { ElectrokinisiHtmlRow } from "./electrokinisi.types.js";
 
@@ -79,7 +83,9 @@ export class ElectrokinisiConnector implements RegistryConnector<ElectrokinisiHt
 
     for (const sourceRecord of input.records) {
       if (sourceRecord.role === "OTHER") continue;
-      const parsed = parseElectrokinisiIdentifier(sourceRecord.sourceValue);
+      const parsed =
+        parseElectrokinisiIdentifier(sourceRecord.sourceValue) ??
+        parseCrossRegisterIdentifier(input.source, sourceRecord.sourceValue);
       if (!parsed) {
         warnings.push(
           rejectedIdentifierWarning(input.source, {
@@ -110,6 +116,7 @@ export class ElectrokinisiConnector implements RegistryConnector<ElectrokinisiHt
 
       const organizationName =
         sourceRecord.organizationName ?? "Unspecified Hellenic IDRO organization";
+      const observation = observationScope(input.source, parsed.countryCode);
       records.push({
         key,
         countryCode: parsed.countryCode,
@@ -124,13 +131,14 @@ export class ElectrokinisiConnector implements RegistryConnector<ElectrokinisiHt
         },
         source: {
           registryId: input.source.id,
-          official: isAuthoritative(input.source),
+          official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
           sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
           sourceUrl: input.source.registry.url,
           sourceValue: sourceRecord.sourceValue,
           firstSeenAt: input.retrievedAt,
           lastSeenAt: input.retrievedAt,
           retrievedAt: input.retrievedAt,
+          observation,
         },
         metadata: {
           electrokinisiCompanyName: organizationName,

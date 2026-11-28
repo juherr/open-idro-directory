@@ -11,6 +11,7 @@ import {
   E2E_LOCAL_PORT,
   WRANGLER_BIN,
 } from "./tests/e2e/support/paths.js";
+import { shellQuote } from "./tests/e2e/support/shell.js";
 
 const externalBaseUrl = process.env.E2E_BASE_URL;
 const localBaseUrl = `http://127.0.0.1:${E2E_LOCAL_PORT}`;
@@ -36,8 +37,8 @@ export default defineConfig({
     : {
         webServer: {
           command: [
-            "node --import tsx ../../tests/e2e/support/prepare-legacy.ts",
-            `${WRANGLER_BIN} dev --ip 127.0.0.1 --port ${E2E_LOCAL_PORT} --persist-to ${E2E_D1_STATE_DIR}`,
+            `node --import tsx ${shellQuote("../../tests/e2e/support/prepare-legacy.ts")}`,
+            `${shellQuote(WRANGLER_BIN)} dev --ip 127.0.0.1 --port ${E2E_LOCAL_PORT} --persist-to ${shellQuote(E2E_D1_STATE_DIR)}`,
           ].join(" && "),
           cwd: API_DIR,
           url: `${localBaseUrl}/api/v1/health`,

@@ -22,6 +22,10 @@ a few routes of its own. `wrangler.jsonc` sets `run_worker_first`, and
 the Hono app. Every other path, the landing page and the generic explorer
 `/explore/` included, goes to the asset server unchanged.
 
+This frontend moves to the Astro website in `apps/web` (epic #137). The API
+Worker keeps serving it until the route cutover (#143), and again after a
+rollback; see [ADR 0001](decisions/0001-astro-web-frontend.md).
+
 `/countries/{code}/` is a server-rendered HTML page built from the country
 summary read model, so it is useful without JavaScript. It lists the country's
 authorities, coverage, and sources, and explains the empty state of a country

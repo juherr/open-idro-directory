@@ -1,0 +1,17 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "open-idro-directory-web",
+  "compatibility_date": "2026-06-15",
+  // Preview on workers.dev only: the production route on idro.juherr.dev is
+  // attached in #143, never from this file before then.
+  "workers_dev": true,
+  "services": [
+    {
+      "binding": "API",
+      "service": "open-idro-directory-api",
+    },
+  ],
+  "observability": {
+    "enabled": true,
+  },
+}

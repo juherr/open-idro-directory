@@ -1,0 +1,16 @@
+{
+  "name": "@open-idro-directory/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "WEB_DEV_LOCAL_API=1 astro dev",
+    "build": "astro build",
+    "test": "vitest run -c vitest.config.ts",
+    "typecheck": "astro sync && tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^14.4.9",
+    "astro": "^7.4.13"
+  }
+}

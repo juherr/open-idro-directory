@@ -62,6 +62,11 @@ that publishes its role on its own: a current one that does not list it yields
 a not-found or a role conflict, a stale or unavailable one an unverifiable
 finding, whatever the other issuing registers say. The identifier's
 `issuingConfirmation` is carried as context and decides no finding.
+Each issuing register is read as a complete listing of the identifiers it
+assigns for the roles it publishes: a current register that does not list an
+identifier yields a not-found for it even when another issuing register
+confirms it, while a stale or unavailable register yields only an
+unverifiable finding.
 
 Rules that keep a temporary failure from reading as a discrepancy:
 

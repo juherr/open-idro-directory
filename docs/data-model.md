@@ -23,8 +23,8 @@ These patterns live in `src/domain/emi3-identifier.ts` and are the single source
 of truth for the zod schemas, the record validator, and the generated JSON
 Schemas.
 
-A row can be kept out of the datasets for three different reasons, and
-`data/registry-invalid.json` reports all three:
+A row can be kept out of the datasets for two reasons, and
+`data/registry-invalid.json` reports both:
 
 - `records`: rows a connector normalized into a record whose identifier then
   failed the rule, with their reason codes (`INVALID_COUNTRY`,
@@ -33,37 +33,22 @@ A row can be kept out of the datasets for three different reasons, and
   and a party ID at all, so they never became a record. Each carries its
   `registryId`, the connector issue `code`, the rejected `sourceValue`, and the
   message.
-- `outOfJurisdiction`: well-formed identifiers a register publishes for a
-  country it does not administer. Each carries its `registryId`, `code`,
-  `sourceValue`, the `countryCode` it belongs to, and the message, so the
-  entries can be filtered by register or by country and taken back to the
-  registries concerned.
 
-The first two mean different things: a rejected row is upstream data the
-pipeline could not read, an invalid record is data it read and then refused.
-Both are only reported for sources whose run was actually ingested -- a source
-that fails its safety thresholds republishes its previous records, so its
-discarded rows would describe nothing. The same value published twice in one run
-is one problem, so it is recorded once.
+They mean different things: a rejected row is upstream data the pipeline could
+not read, an invalid record is data it read and then refused. Both are only
+reported for sources whose run was actually ingested -- a source that fails its
+safety thresholds republishes its previous records, so its discarded rows would
+describe nothing. The same value published twice in one run is one problem, so
+it is recorded once. A prefix naming no country at all, such as `ZZ`, is a
+rejected row: it is unreadable, not foreign.
 
-The third is neither a defect nor a publication, but a finding to raise with the
-register that published it. A source covers its authority's jurisdictions, which
-the optional `registry.jurisdictions` may narrow when the register serves less
-than the authority does. A connector publishes no identifier outside that
-coverage, and reports the value as
-`<CONNECTOR>_OUT_OF_JURISDICTION_IDENTIFIER`. Nothing is wrong with the value
-itself, so counting it as unreadable would send a maintainer looking for a
-parser bug that does not exist -- and would bury the values that genuinely are
-unreadable. A prefix naming no country at all, such as `ZZ`, is a rejected row
-instead: it is unreadable, not foreign. A register that legitimately covers
-several countries, such as EV Roam for `GB` and `IE`, declares them and keeps
-publishing them; the appointed-registry policy is what decides whether those
-records are authoritative.
-
-`outOfJurisdictionByRegistry` says who to tell; `outOfJurisdictionByCountry`
-says whose identifiers they are. `data/reports/out-of-jurisdiction.json` turns
-the same findings into an actionable list, grouped by the register to contact --
-see `docs/operations.md`.
+A well-formed identifier of a country the register does not cover is not kept
+out: it is published as a cross-register listing (see
+[Issuing Country And Observing Register](#issuing-country-and-observing-register)).
+The file keeps a third bucket, `outOfJurisdiction`, for the entries earlier
+builds recorded when such identifiers were refused. No build adds to it any
+more; its entries keep their `registryId`, `code`, `sourceValue`,
+`countryCode`, message, and history fields, so they stay readable.
 
 ### History And Corrections
 
@@ -89,13 +74,14 @@ prose -- the goal is a correct directory, not public blame.
 
 Excluded entries never appear in `data/registry.*`. The counters in
 `data/stats.json` (`totalInvalidRecords`, `invalidRecordsByReason`,
-`invalidRecordsByRegistry`, `totalRejectedRows`, `rejectedRowsByRegistry`,
-`totalOutOfJurisdictionRows`, `outOfJurisdictionByRegistry`,
-`outOfJurisdictionByCountry`)
+`invalidRecordsByRegistry`, `totalRejectedRows`, `rejectedRowsByRegistry`)
 describe only what the **current** run detected, so a corrected identifier stops
 being reported as a live problem while staying in the history. An entry whose
 `lastDetectedAt` is older than `generatedAt` is one the sources no longer
-publish.
+publish. `totalOutOfJurisdictionRows`, `outOfJurisdictionByRegistry`, and
+`outOfJurisdictionByCountry` count the current entries of the `outOfJurisdiction`
+bucket, which no build adds to: they stay at zero and do not count
+cross-register listings.
 
 The rule applies to the official registry pipeline only. Complementary
 observations use other identifier schemes with their own length rules.
@@ -124,10 +110,92 @@ source health metadata records the latest attempted and successful retrievals
 independently.
 
 Authoritativeness is expressed by `authority.level`, not by a boolean. Generated
-data and API responses still carry a derived `official` field, which is exactly
-`authority.level === "AUTHORITATIVE"` and is never the source of truth. A null
+data and API responses still carry a derived `official` field, which is true
+exactly when `authority.level === "AUTHORITATIVE"` and the record is an
+`ASSIGNMENT` (see below), and is never the source of truth. A null
 `machineReadableUrl` means no stable machine-readable publication was found, not
 that the registry is absent.
+
+## Issuing Country And Observing Register
+
+A record states two different facts, kept apart:
+
+- the **issuing country** is the record's `countryCode`, read from the
+  identifier's prefix. It names the country whose IDRO the identifier belongs
+  to, whichever register published it;
+- the **observing register** is `source.registryId`: the register the record was
+  read from.
+
+`source.observation` says how the two relate:
+
+- `kind: ASSIGNMENT`: the register covers the issuing country (its
+  `registry.jurisdictions`, or its authority's jurisdictions when the registry
+  does not narrow them). `observingJurisdiction` is the record's `countryCode`.
+- `kind: CROSS_REGISTER_LISTING`: the register lists another country's
+  identifier. This neither makes the register the issuer nor says anything about
+  the identifier's standing with its issuer. `observingJurisdiction` is the
+  register's jurisdiction when it covers exactly one country, and `null` when it
+  covers several: a Benelux register cannot say which of its countries observed
+  the identifier.
+
+`source.official` is true only for an `ASSIGNMENT` from an authoritative source.
+A cross-register listing is always `official: false`, and the status policy
+reports an `ACTIVE` listing as `UNKNOWN` (`metadata.statusPolicy`) when the
+issuing country has official records: the observing register cannot speak for
+the issuer. Neither value is a statement about the identifier's legal validity.
+
+When a register stops publishing a listing, the record is dropped rather than
+kept as a tombstone: a listing records an observation, not an assignment that
+could have been withdrawn.
+
+### Reference Scenarios
+
+The scenarios of issue #91, and how each is represented:
+
+1. `PL*XYZ` assigned and listed by the Polish IDRO: a `pl-eipa` record with
+   `countryCode: PL`, `kind: ASSIGNMENT`, `observingJurisdiction: PL`,
+   `official: true`.
+2. `NL*TNM` listed in Poland: a `pl-eipa` record with `countryCode: NL`,
+   `kind: CROSS_REGISTER_LISTING`, `observingJurisdiction: PL`,
+   `official: false`. The Netherlands stays the issuing country; the Benelux
+   register's own `NL*TNM` record, if it publishes one, is a separate record.
+3. `DK*MON` observed in Sweden through OCPI: a `se-energimyndigheten` record
+   with `countryCode: DK`, `kind: CROSS_REGISTER_LISTING`,
+   `observingJurisdiction: SE`, `official: false`. Sweden is the observing
+   register, not the issuer.
+4. A `PL*...` identifier another public source lists while the Polish register
+   does not: that source's listing record exists on its own. Nothing is added
+   to or removed from the `pl-eipa` records, and the listing is not refused.
+5. Absence from the issuing register is not represented as invalidity: no field
+   says "not found", and the listing stays published.
+6. A stale, unavailable, unsupported, or failed issuing source changes nothing
+   about the listings other registers publish. A failed source republishes its
+   own previous records; another register's observation is never removed or
+   flagged because of it.
+
+Whether the issuing register confirms an identifier is a separate fact, derived
+from these records by the classification rules of #49; it is not stored on the
+observation.
+
+### Backward Compatibility
+
+- `data/registry.json` and `data/registry.csv` gain rows: the cross-register
+  listings that connectors used to refuse, for example `NL*TNM` in `pl-eipa`,
+  `DK*MON` in `se-energimyndigheten`, `SE*VGC` in `es-ripree`, and the Irish
+  entries of EV Roam (`gb-evroam` now covers `GB` only, so its `IE` entries are
+  listings of identifiers Ireland issues).
+- A consumer that filters by `countryCode` now also sees the listings other
+  registers publish for that country. To keep only assignments, filter on
+  `source.official` or on `source.observation.kind === "ASSIGNMENT"`.
+- Records published before the block existed carry no `source.observation`.
+  Derive it from the source's jurisdictions in `data/sources.json`: an
+  `ASSIGNMENT` when they include the record's `countryCode`, a
+  `CROSS_REGISTER_LISTING` otherwise.
+- `outOfJurisdiction` in `data/registry-invalid.json` no longer grows; its
+  existing entries stay.
+- `data/reports/out-of-jurisdiction.json` keeps its shape but now lists the
+  published cross-register listings, grouped by the register that lists them
+  (see `docs/operations.md`).
 
 ## Source Provenance And Reuse
 

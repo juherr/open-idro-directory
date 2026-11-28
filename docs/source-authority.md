@@ -19,9 +19,27 @@ back several registers without repeating its metadata. See
 
 Every source currently published is `AUTHORITATIVE` with an `OFFICIAL_ASSIGNMENT`
 registry: the split records the distinction faithfully but does not reclassify
-any existing source. Role-scoped and jurisdiction-scoped precedence, such as EV
-Roam being authoritative for GB while only cross-registering IE identifiers, is
-still resolved by connectors rather than by the descriptor.
+any existing source. Role-scoped precedence is still resolved by connectors
+rather than by the descriptor.
+
+## Authority And Observing Register
+
+Being authoritative is a property of the organisation; what a given record
+says depends on the register it was read from. A register is the issuing
+register only for the countries it covers (`registry.jurisdictions`, which may
+narrow its authority's jurisdictions). For any other country, the same
+register is an observing register: its record is a `CROSS_REGISTER_LISTING`,
+published with `official: false`, and the country of the prefix stays the
+issuing country. See [data-model.md](data-model.md#issuing-country-and-observing-register).
+
+EV Roam is the case where the two differ. Its authority keeps `GB` and `IE`,
+but `gb-evroam` declares `registry.jurisdictions: [GB]`: EV Roam assigns GB
+identifiers, while TII publishes the Irish IDRO register (`ie-tii`). EV Roam's
+Irish entries are therefore published as listings, never as Irish assignments.
+
+A listing does not make the observing register responsible for the
+identifier, and its absence from the issuing register is not a statement that
+the identifier is invalid.
 
 ## National Responsibility Boundaries
 

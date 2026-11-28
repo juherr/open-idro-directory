@@ -57,7 +57,9 @@ registry.
   the published lists -- `records` whose eMI3 identifier is invalid, and `rows` a
   connector could not read as an identifier at all -- each with its reason, when
   it was first and last seen, and the hand-written `supersededBy` identifier that
-  replaced it upstream.
+  replaced it upstream. Its `outOfJurisdiction` bucket keeps the foreign
+  identifiers earlier builds refused; they are now published as cross-register
+  listings, and the bucket no longer grows.
 - `data/sources.json`: source configuration and health.
 - `data/stats.json`: aggregate counts.
 - `data/reports/non-idrr-additions.json`: complementary observations absent from the
@@ -66,6 +68,9 @@ registry.
   observations and official records.
 - `data/reports/non-idrr-overlap.json`: complementary observations already present
   in official records.
+- `data/reports/out-of-jurisdiction.json`: cross-register listings, the
+  identifiers each register publishes for a country it does not cover, with the
+  registry appointed for that country.
 - `data/reports/source-health.json`: source health summary for official and
   complementary pipelines.
 - `data/reports/rejected-sources.json`: rejected, deferred, or spike-only

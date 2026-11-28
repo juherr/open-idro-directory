@@ -53,6 +53,9 @@ duplicate warnings the connectors raised.
 
 Conflicts compare the issuing register's record with every other source's;
 without an issuing record, they compare the other sources with each other.
+A removal is reported per issuing register: another issuing register that still
+lists the identifier does not hide it, and the finding keeps the identifier's
+`CONFIRMED` confirmation.
 
 Rules that keep a temporary failure from reading as a discrepancy:
 

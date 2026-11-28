@@ -242,11 +242,9 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
           evidence: [recordEvidence(record)],
         });
       }
-      if (
-        isInLatestRetrieval(record) ||
-        record.metadata.inactiveReason !== REMOVAL_REASON ||
-        confirmation === "CONFIRMED"
-      ) {
+      // Per register: another issuing register still listing the identifier
+      // (a CONFIRMED identifier) does not hide this one's removal.
+      if (isInLatestRetrieval(record) || record.metadata.inactiveReason !== REMOVAL_REASON) {
         continue;
       }
       drafts.push(

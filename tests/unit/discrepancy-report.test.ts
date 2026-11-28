@@ -171,12 +171,24 @@ const rows: Row[] = [
     ],
   },
   {
-    name: "a removal another issuing register still confirms is not reported",
+    name: "a removal from one issuing register is reported though another still lists it",
     records: [
       record("de-first", "DE", "OLD", "CPO", { tombstone: true }),
       record("de-second", "DE", "OLD"),
     ],
-    expected: [],
+    expected: ["REMOVED_FROM_ISSUING_REGISTER de-first>de-first DEOLD medium/high"],
+  },
+  {
+    name: "a removal from a stale issuing register another still lists is unverifiable",
+    records: [
+      record("de-first", "DE", "OLD", "CPO", { tombstone: true }),
+      record("de-second", "DE", "OLD"),
+    ],
+    health: { ...allCurrent, "de-first": "STALE" },
+    expected: [
+      "ISSUING_REGISTER_UNVERIFIABLE de-first>de-first DEOLD info/low SOURCE_STALE",
+      "SOURCE_STALE de-first>de-first - medium/high",
+    ],
   },
   {
     name: "a role the country's register does not publish is outside its scope",
@@ -309,6 +321,23 @@ describe("buildDiscrepancyReport", () => {
         { recordKey: null, registryId: "pl-eipa", retrievedAt: RETRIEVED_AT, lastSeenAt: null },
       ],
     });
+  });
+
+  it("keeps the identifier's confirmation on a removal another issuing register contradicts", () => {
+    const report = build({
+      records: [
+        record("de-first", "DE", "OLD", "CPO", { tombstone: true }),
+        record("de-second", "DE", "OLD"),
+      ],
+    });
+    expect(findings(report)).toEqual([
+      expect.objectContaining({
+        category: "REMOVED_FROM_ISSUING_REGISTER",
+        issuingRegistryId: "de-first",
+        observedRegistryId: "de-first",
+        issuingConfirmation: "CONFIRMED",
+      }),
+    ]);
   });
 
   it("words a removal it cannot confirm as an absence from the last successful retrieval", () => {

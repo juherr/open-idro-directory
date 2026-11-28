@@ -334,7 +334,7 @@ describe("country page localization", () => {
   });
 
   it("puts a no-break space before a French colon", () => {
-    expect(COUNTRY_PAGE_COPY.fr.values.colon).toBe(" : ");
+    expect(COUNTRY_PAGE_COPY.fr.values.colon).toBe("\u00a0: ");
   });
 
   it("agrees the unknown French freshness with its feminine label", async () => {

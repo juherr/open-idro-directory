@@ -5,12 +5,14 @@ import { describe, expect, it } from "vitest";
 import { buildRegistry, type BuildOptions } from "../../src/application/build-registry.js";
 import { EvroamConnector } from "../../src/connectors/gb-evroam/evroam.connector.js";
 import type { RegistryConnector } from "../../src/connectors/connector.js";
+import { EnergimyndighetenConnector } from "../../src/connectors/se-energimyndigheten/energimyndigheten.connector.js";
 import type {
   NormalizedRegistryRecord,
   RegistryObservation,
 } from "../../src/domain/registry-record.js";
 import type { SourceDefinition } from "../../src/domain/source-definition.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
+import { validateRegistry } from "../../src/validation/registry-validator.js";
 
 describe("buildRegistry", () => {
   it("keeps the records of the sources a filtered run did not rebuild", async () => {
@@ -121,6 +123,63 @@ describe("buildRegistry", () => {
         expect(await readHealth(outputDir, "ie-tii")).toMatchObject({ freshness: "stale" });
       },
       { sourceIds: ["ie-tii", "gb-evroam"], published: [official] },
+    );
+  });
+
+  // Issue #91, scenarios 4 and 5: absence from the issuing register is not
+  // invalidity, and the issuing register is left as it is.
+  it("publishes a PL identifier another register lists while the Polish register does not", async () => {
+    const sweden = await loadSourceDefinition("se-energimyndigheten");
+    const swedishRecords = await new EnergimyndighetenConnector().normalize({
+      source: sweden,
+      retrievedAt: GENERATED_AT,
+      records: [
+        {
+          sourceValue: "PL*ABC",
+          organizationName: "Example Polska",
+          role: "CPO",
+          sourceUrl: "https://example.test/",
+        },
+      ],
+    });
+    const polish = withObservationBlock(sampleRecord("pl-eipa", "PL", "XYZ"), {
+      kind: "ASSIGNMENT",
+      observingJurisdiction: "PL",
+    });
+    const connectors: Record<string, NormalizedRegistryRecord[]> = {
+      "pl-eipa": [polish],
+      "se-energimyndigheten": swedishRecords.records,
+    };
+    await withWorkspace(
+      async ({ build, outputDir, sources }) => {
+        const result = await build({
+          createConnector: (source) => connectorReturning(connectors[source.id] ?? [])(),
+        });
+
+        const listing = result.records.find(
+          (record) => record.key === "se-energimyndigheten:PL:ABC:CPO",
+        );
+        expect(listing?.source).toMatchObject({
+          official: false,
+          observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "SE" },
+        });
+        expect(
+          result.records
+            .filter((record) => record.source.registryId === "pl-eipa")
+            .map((record) => record.key),
+        ).toEqual(["pl-eipa:PL:XYZ:CPO"]);
+        // Only the retrieval time of this run differs from what pl-eipa published.
+        expect(result.records.find((record) => record.key === polish.key)).toEqual({
+          ...polish,
+          source: { ...polish.source, retrievedAt: GENERATED_AT },
+        });
+        expect(validateRegistry(result.records, sources)).toEqual([]);
+        const invalid = JSON.parse(
+          await readFile(join(outputDir, "registry-invalid.json"), "utf8"),
+        ) as { records: unknown[]; rows: unknown[]; outOfJurisdiction: unknown[] };
+        expect(invalid).toMatchObject({ records: [], rows: [], outOfJurisdiction: [] });
+      },
+      { sourceIds: ["pl-eipa", "se-energimyndigheten"], published: [polish] },
     );
   });
 

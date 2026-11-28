@@ -18,7 +18,7 @@ interface RecordedCall {
 function recordingFetcher(respond: (call: RecordedCall) => Response | Promise<Response>) {
   const calls: RecordedCall[] = [];
   const fetcher: ApiFetcher = async (input, init) => {
-    const call = { url: String(input), init };
+    const call = { url: input instanceof Request ? input.url : input.toString(), init };
     calls.push(call);
     return respond(call);
   };

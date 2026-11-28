@@ -5,7 +5,7 @@ describe("api client from the web app", () => {
   it("reads a dataset answer through an injected fetcher", async () => {
     const urls: string[] = [];
     const fetcher: ApiFetcher = async (input) => {
-      urls.push(String(input));
+      urls.push(input instanceof Request ? input.url : input.toString());
       return Response.json(
         {
           data: { status: "ok" },

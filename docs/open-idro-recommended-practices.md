@@ -141,7 +141,8 @@ record, however correctly the identifier was assigned.
   disclosure is not presented here as universally lawful; see
   [Open Legal And Regulatory Questions](#open-legal-and-regulatory-questions). This
   project marks an entry that disappears from an official source as `INACTIVE` with
-  `metadata.inactiveReason`, and, as stated in [source-policy.md](source-policy.md),
+  `metadata.inactiveReason` (another country's identifier that the source only
+  listed is dropped instead), and, as stated in [source-policy.md](source-policy.md),
   does not interpret disappearance as revocation.
 - **Per-entry fields** (`Minimum`): identifier, role, organisation name, and legal
   name. Lifecycle status is added at `Good`, and assignment and change dates at

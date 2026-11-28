@@ -15,7 +15,10 @@ Many sources publish identifiers without a lifecycle status. Connectors mark
 those current entries as `ACTIVE`. When an official source no longer publishes a
 previously observed identifier, the build keeps the record as `INACTIVE` with
 `metadata.inactiveReason` set to `missing-from-official-source`; disappearance
-does not prove revocation.
+does not prove revocation. This applies to the identifiers the source assigns.
+A cross-register listing (another country's identifier the source lists) that
+disappears is dropped instead: the source never assigned it (see
+[data-model.md](data-model.md#issuing-country-and-observing-register)).
 
 A failed fetch, parse, or safety check does not erase the last successful data.
 The build retains the previous records and marks the source as stale in

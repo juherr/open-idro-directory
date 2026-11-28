@@ -186,12 +186,24 @@ observation.
   entries of EV Roam (`gb-evroam` now covers `GB` only, so its `IE` entries are
   listings of identifiers Ireland issues).
 - A consumer that filters by `countryCode` now also sees the listings other
-  registers publish for that country. To keep only assignments, filter on
-  `source.official` or on `source.observation.kind === "ASSIGNMENT"`.
+  registers publish for that country. The two filters that remove them are not
+  equivalent. `source.official` keeps only the assignments of authoritative
+  sources: a non-authoritative source's record of a country it covers is an
+  `ASSIGNMENT` with `official: false`, and this filter drops it.
+  `source.observation.kind === "ASSIGNMENT"` keeps every assignment, whatever
+  the source's authority, but needs the derivation below for records that
+  carry no block.
 - Records published before the block existed carry no `source.observation`.
   Derive it from the source's jurisdictions in `data/sources.json`: an
   `ASSIGNMENT` when they include the record's `countryCode`, a
   `CROSS_REGISTER_LISTING` otherwise.
+- A cross-register listing a register no longer publishes is dropped from the
+  build, not kept as an `INACTIVE` tombstone with `metadata.inactiveReason:
+missing-from-official-source`. This also applies to listings an earlier build
+  had already tombstoned: the first build with this model removes them. In
+  practice this drops the few `IE` entries of `gb-evroam` that EV Roam had
+  stopped publishing and that were kept as `INACTIVE` records; their keys no
+  longer appear in `data/registry.json`.
 - `outOfJurisdiction` in `data/registry-invalid.json` no longer grows; its
   existing entries stay.
 - `data/reports/out-of-jurisdiction.json` keeps its shape but now lists the

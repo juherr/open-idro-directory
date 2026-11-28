@@ -86,6 +86,16 @@ export interface SearchScope {
 
 export function normalizeIdentifierInput(value: string): IdentifierInput | null;
 /**
+ * The language the explorer renders in. On a country page (`fixed`) it is
+ * `<html lang>` (`fr`, anything else English), never the stored `oid-lang`;
+ * elsewhere it is `stored`, the stored or browser-preferred language.
+ */
+export function pageLanguage(options: {
+  fixed: boolean;
+  htmlLang: string | null | undefined;
+  stored: string;
+}): string;
+/**
  * `/countries/{lc}/` for a two-letter country code, else `null`, with
  * `?lang=fr` when `lang` is `fr`. English, the default, adds nothing.
  */

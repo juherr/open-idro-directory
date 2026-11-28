@@ -4,9 +4,28 @@ import {
   createSearchScope,
   existingCountryPagePath,
   normalizeIdentifierInput,
+  pageLanguage,
 } from "../public/explorer-core.js";
 
 const emptyState = { q: "", country: "", role: "", status: "" };
+
+describe("pageLanguage", () => {
+  it("takes the country page language from <html lang>, not the stored one", () => {
+    expect(pageLanguage({ fixed: true, htmlLang: "en", stored: "fr" })).toBe("en");
+  });
+
+  it("keeps a French country page in French", () => {
+    expect(pageLanguage({ fixed: true, htmlLang: "fr", stored: "en" })).toBe("fr");
+  });
+
+  it.each(["de", "", undefined])("falls back to English on a country page for %j", (htmlLang) => {
+    expect(pageLanguage({ fixed: true, htmlLang, stored: "fr" })).toBe("en");
+  });
+
+  it("keeps the stored language outside a country page", () => {
+    expect(pageLanguage({ fixed: false, htmlLang: "en", stored: "fr" })).toBe("fr");
+  });
+});
 
 describe("normalizeIdentifierInput", () => {
   it.each([

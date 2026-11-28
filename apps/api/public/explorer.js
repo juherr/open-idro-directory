@@ -1,6 +1,11 @@
 // ES module: the helpers of the classic shared.js script, loaded before it,
 // stay reachable as globals.
-import { countryPagePath, createSearchScope, existingCountryPagePath } from "/explorer-core.js";
+import {
+  countryPagePath,
+  createSearchScope,
+  existingCountryPagePath,
+  pageLanguage,
+} from "/explorer-core.js";
 
 // A country page hosts this search in a section pinned to its country; the
 // explorer page has no such section.
@@ -9,8 +14,11 @@ const fixedRoot = document.querySelector("[data-fixed-country]");
 // The country page is server-rendered in the language of <html lang>, which
 // wins over the stored `oid-lang` and is never overwritten.
 function currentLanguage() {
-  if (!fixedRoot) return getLanguage();
-  return document.documentElement.lang === "fr" ? "fr" : "en";
+  return pageLanguage({
+    fixed: Boolean(fixedRoot),
+    htmlLang: document.documentElement.lang,
+    stored: fixedRoot ? "" : getLanguage(),
+  });
 }
 
 const scope = fixedRoot

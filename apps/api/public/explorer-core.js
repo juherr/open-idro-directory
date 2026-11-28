@@ -22,6 +22,17 @@ function languageQuery(lang) {
 }
 
 /**
+ * The language the explorer renders in. A country page (`fixed`) is
+ * server-rendered in the language of `<html lang>`, which wins over the
+ * stored `oid-lang`; anything but `fr` there is English. Elsewhere the
+ * stored (or browser-preferred) language `stored` is kept as is.
+ */
+export function pageLanguage({ fixed, htmlLang, stored }) {
+  if (!fixed) return stored;
+  return htmlLang === "fr" ? "fr" : "en";
+}
+
+/**
  * `/countries/{lc}/` for a two-letter country code, else `null`. The page
  * language `lang` is passed in, never read from storage here.
  */

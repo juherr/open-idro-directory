@@ -473,9 +473,34 @@ describe("Cloudflare API", () => {
   );
 
   it.each([
+    ["/countries/fr/?lang=fr", "fr"],
+    ["/countries/fr/?lang=en", "en"],
+    ["/countries/fr/", "en"],
+    ["/countries/fr/?lang=xx", "en"],
+  ])("serves %s in the %s page language", async (path, lang) => {
+    const response = await workerRequest(path);
+
+    expect(response.status).toBe(200);
+    await expect(response.text()).resolves.toContain(`<html lang="${lang}">`);
+  });
+
+  it.each([
+    ["/countries/fr/", "/countries/fr/?lang=fr", "fr"],
+    ["/countries/fr/?lang=fr", "/countries/fr/", "en"],
+  ])("does not revalidate %s into %s", async (first, second, lang) => {
+    const etag = (await workerRequest(first)).headers.get("etag");
+    expect(etag).toMatch(/^"/);
+
+    const response = await workerRequest(second, { headers: { "If-None-Match": etag ?? "" } });
+    expect(response.status).toBe(200);
+    await expect(response.text()).resolves.toContain(`<html lang="${lang}">`);
+  });
+
+  it.each([
     ["/countries/FR/", "/countries/fr/"],
     ["/countries/fr", "/countries/fr/"],
     ["/countries/fr/?country=FR&q=total", "/countries/fr/?q=total"],
+    ["/countries/FR/?lang=fr", "/countries/fr/?lang=fr"],
   ])("redirects %s to the canonical %s", async (path, location) => {
     const response = await workerRequest(path);
 

@@ -26,7 +26,7 @@ import { openApiDocument } from "../openapi/document.js";
 import { COUNTRY_PAGE_PREFIX, isCountryPagePath, resolveCountryPage } from "./country-route.js";
 import { docsHtml } from "./docs.js";
 import { ApiError, errorResponse } from "./errors.js";
-import { renderCountryPage, renderErrorPage } from "./pages/country-page.js";
+import { pageLanguage, renderCountryPage, renderErrorPage } from "./pages/country-page.js";
 import {
   conflictQuerySchema,
   parseCountryCode,
@@ -252,7 +252,8 @@ export function createApp() {
   );
 
   const countryPage = async (c: ApiContext) => {
-    const route = resolveCountryPage(new URL(c.req.url));
+    const url = new URL(c.req.url);
+    const route = resolveCountryPage(url);
     if (route.kind === "redirect") return c.redirect(route.location, 301);
     if (route.kind === "conflict") {
       throw new ApiError(
@@ -270,10 +271,13 @@ export function createApp() {
     c.header("X-Dataset-Release", release.id);
     c.header("Cache-Control", CACHE_CONTROL.default);
     // The page version keeps a markup-only deploy from being answered with a stale 304.
+    // The ETag covers the query, `lang` included, so one language never
+    // revalidates the other.
     const etag = await makeEtag(`${datasetValidator(release)}:${COUNTRY_PAGE_VERSION}`, c.req.url);
     c.header("ETag", etag);
     if (ifNoneMatchMatches(c.req.header("If-None-Match"), etag)) return c.body(null, 304);
-    return c.html(await renderCountryPage(summary, new URL(c.req.url).origin));
+    const lang = pageLanguage(url.searchParams.get("lang"));
+    return c.html(await renderCountryPage(summary, url.origin, lang));
   };
   app.get(COUNTRY_PAGE_PREFIX, countryPage);
   app.get(`${COUNTRY_PAGE_PREFIX}/*`, countryPage);
@@ -325,7 +329,7 @@ export function createApp() {
 }
 
 /** Bumped whenever the country page markup changes, so cached pages revalidate. */
-const COUNTRY_PAGE_VERSION = "3";
+const COUNTRY_PAGE_VERSION = "4";
 
 type ApiContext = Context<{ Bindings: Env; Variables: { requestId: string } }>;
 type ActiveRelease = NonNullable<Awaited<ReturnType<RegistryRepository["activeRelease"]>>>;

@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { countrySummaryPayload, type CountrySummary } from "../src/application/mappers.js";
-import { renderCountryPage, renderErrorPage } from "../src/http/pages/country-page.js";
+import {
+  COUNTRY_PAGE_COPY,
+  pageLanguage,
+  renderCountryPage,
+  renderErrorPage,
+} from "../src/http/pages/country-page.js";
 import {
   cyEms,
   irishStats,
@@ -126,7 +131,7 @@ describe("country page", () => {
     expect(page).toContain("EV Roam");
     expect(page).toContain("gb-evroam");
     expect(page).toContain("ie-tii");
-    expect(page).toContain("SECONDARY");
+    expect(page).toContain("Secondary");
     expect(page).toContain('href="/explore/?country=IE"');
     expect(page).not.toContain("country-empty");
     // Fragment lists are joined without separators and escaped only once.
@@ -196,6 +201,20 @@ describe("country page", () => {
     expect(page).toContain("javascript:alert(2)");
   });
 
+  it("labels statuses, authority levels, observation types and freshness", async () => {
+    const stats = {
+      ...irishStats,
+      statuses: [...irishStats.statuses, { key: "REVOKED", count: 2 }],
+    };
+    const page = await renderCountryPage(summaryFor("IE", sources, stats), origin);
+
+    expect(page).toContain("Active: 80, Revoked: 2");
+    expect(page).toContain("Secondary");
+    expect(page).toContain("Official assignment");
+    expect(page).toContain("Stale");
+    expect(page).not.toContain("OFFICIAL_ASSIGNMENT");
+  });
+
   it("renders error pages as HTML with the request id", async () => {
     const page = await renderErrorPage(404, "No source covers this country.", "req-1");
 
@@ -209,5 +228,114 @@ describe("country page", () => {
     const page = await renderErrorPage(404, "No source covers this country.", "req-1");
 
     expect(scriptTags(page)).toEqual([]);
+  });
+
+  it("keeps error pages in English", async () => {
+    const page = await renderErrorPage(404, "No source covers this country.", "req-1");
+
+    expect(page).toContain('<html lang="en">');
+  });
+});
+
+/** Every key path of a dictionary, nested objects included. */
+function keyPaths(value: object, prefix = ""): string[] {
+  return Object.entries(value).flatMap(([key, entry]) =>
+    entry && typeof entry === "object"
+      ? keyPaths(entry as object, `${prefix}${key}.`)
+      : [`${prefix}${key}`],
+  );
+}
+
+describe("country page localization", () => {
+  it("gives the French and English dictionaries exactly the same keys", () => {
+    const en = keyPaths(COUNTRY_PAGE_COPY.en).sort();
+    expect(en.length).toBeGreaterThan(50);
+    expect(keyPaths(COUNTRY_PAGE_COPY.fr).sort()).toEqual(en);
+  });
+
+  it.each([
+    ["fr", "fr"],
+    ["en", "en"],
+    [null, "en"],
+    ["", "en"],
+    ["xx", "en"],
+    ["FR-fr", "en"],
+  ])("reads the page language %j as %j", (value, expected) => {
+    expect(pageLanguage(value)).toBe(expected);
+  });
+
+  it("renders a published country in French", async () => {
+    const page = await renderCountryPage(summaryFor("IE", sources, irishStats), origin, "fr");
+
+    expect(page).toContain('<html lang="fr">');
+    expect(page).toContain("Irlande");
+    expect(page).toContain("Autorités IDRO");
+    expect(page).toContain("Couverture");
+    expect(page).toContain("Type d&#39;observation");
+    expect(page).toContain("Attribution officielle");
+    expect(page).toContain("Secondaire");
+    expect(page).toContain("Rechercher des identifiants");
+    expect(page).toContain("Charger plus");
+    expect(page).toContain("projet d&#39;agrégation indépendant");
+    expect(page).toContain(
+      `${new Intl.NumberFormat("fr").format(80)} identifiants publiés par 2 sources.`,
+    );
+    for (const english of [
+      "IDRO authorities",
+      "Coverage",
+      "Declared roles",
+      "Freshness",
+      "Observation type",
+      "Last successful retrieval",
+      "Search identifiers",
+      "Load more",
+      "This summary as JSON",
+      ">Countries<",
+      "independent aggregation project",
+      "Official assignment",
+    ]) {
+      expect(page).not.toContain(english);
+    }
+  });
+
+  it("formats French counts with the French number format", async () => {
+    const stats = { ...irishStats, statuses: [{ key: "ACTIVE", count: 12345 }] };
+    const page = await renderCountryPage(summaryFor("IE", sources, stats), origin, "fr");
+
+    expect(page).toContain(`Actif : ${new Intl.NumberFormat("fr").format(12345)}`);
+  });
+
+  it("treats a single identifier and source as singular in French", async () => {
+    const stats = {
+      ...irishStats,
+      statuses: [{ key: "ACTIVE", count: 1 }],
+      observations: irishStats.observations.filter((row) => row.source_id === "ie-tii"),
+    };
+    const page = await renderCountryPage(summaryFor("IE", sources, stats), origin, "fr");
+
+    expect(page).toContain("1 identifiant publié par 1 source.");
+  });
+
+  it("explains an empty country in French without naming it in a sentence", async () => {
+    const page = await renderCountryPage(summaryFor("IE"), origin, "fr");
+
+    expect(page).toContain("Aucun identifiant publié");
+    expect(page).toContain(
+      "EV Roam et Transport Infrastructure Ireland gèrent les identifiants de mobilité électrique de ce pays.",
+    );
+    expect(page).toContain(
+      "Leurs listes publiées ne contiennent encore aucun identifiant de ce pays",
+    );
+    expect(page).toContain("adressez-vous aux autorités ci-dessous");
+    expect(page).not.toContain("No published identifiers");
+    expect(page).not.toContain("invalide");
+  });
+
+  it("explains a country without a published list in French", async () => {
+    const page = await renderCountryPage(summaryFor("CY"), origin, "fr");
+
+    expect(page).toContain("Chypre");
+    expect(page).toContain("ne publie aucune liste lisible par machine");
+    expect(page).toContain("adressez-vous à l&#39;autorité ci-dessous");
   });
 });

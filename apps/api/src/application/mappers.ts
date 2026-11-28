@@ -31,10 +31,17 @@ export function datasetPayload(release: DatasetRelease) {
   };
 }
 
+/**
+ * A consolidated party. `status`, `highestAuthorityLevel` and `hasConflict`
+ * are derived convenience values: they summarise the observations and never
+ * replace them, nor the per-role issuing confirmation.
+ */
 export function partyPayload(row: PartyRow, roles: PartyRoleRow[] = []) {
   return {
     key: row.key,
     countryCode: row.country_code,
+    // The identifier's prefix country issues it; observations never change it.
+    issuingCountry: row.country_code,
     partyId: row.party_id,
     eMobilityId: row.emobility_id,
     preferredName: row.preferred_name,
@@ -53,6 +60,14 @@ export function partyPayload(row: PartyRow, roles: PartyRoleRow[] = []) {
       highestAuthorityLevel: role.highest_authority_level,
       observationCount: role.observation_count,
       hasConflict: Boolean(role.has_conflict),
+      // Unknown, not unconfirmed, until the first import after migration 0006
+      // of a dataset carrying the issuing block.
+      issuing: {
+        confirmation: role.issuing_confirmation,
+        confirmedBy: role.issuing_confirmed_by_json
+          ? parseJson<string[]>(role.issuing_confirmed_by_json)
+          : null,
+      },
     })),
   };
 }
@@ -258,6 +273,9 @@ export function observationPayload(row: ObservationRow) {
     sourceUrl: row.source_url,
     authorityLevel: row.authority_level,
     observationType: row.observation_type,
+    // Unknown, not empty, until the first import after migration 0006.
+    observationKind: row.observation_kind,
+    observingJurisdiction: row.observing_jurisdiction,
     firstSeenAt: row.first_seen_at,
     lastSeenAt: row.last_seen_at,
     retrievedAt: row.retrieved_at,

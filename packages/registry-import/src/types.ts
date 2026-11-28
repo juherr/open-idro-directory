@@ -7,7 +7,7 @@ import type {
   RegistryStatus,
 } from "../../registry-model/src/index.js";
 
-export const API_SCHEMA_VERSION = "1.3.0";
+export const API_SCHEMA_VERSION = "1.4.0";
 export const IMPORTER_VERSION = "0.1.0";
 
 export interface DatasetReleaseRow {

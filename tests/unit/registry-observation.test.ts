@@ -164,6 +164,50 @@ describe("registry jurisdiction check", () => {
     expect(await issuesFor(foreignAssignment)).toHaveLength(1);
     expect(await issuesFor(domesticListing)).toHaveLength(1);
   });
+
+  it("rejects an assignment observed from another country than its own", async () => {
+    const assignment = record("pl-eipa", "PL", {
+      official: true,
+      observation: { kind: "ASSIGNMENT", observingJurisdiction: "NL" },
+    });
+
+    expect(await issuesFor(assignment)).toEqual([
+      expect.objectContaining({
+        severity: "error",
+        message: expect.stringContaining("observingJurisdiction NL"),
+      }),
+    ]);
+  });
+
+  it("rejects a listing observed from a country the register does not cover", async () => {
+    const elsewhere = record("pl-eipa", "NL", {
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "DE" },
+    });
+    const unattributed = record("pl-eipa", "NL", {
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: null },
+    });
+
+    expect(await issuesFor(elsewhere)).toEqual([
+      expect.objectContaining({ message: expect.stringContaining("observingJurisdiction DE") }),
+    ]);
+    // pl-eipa covers PL alone, so its listings name PL as the observer.
+    expect(await issuesFor(unattributed)).toEqual([
+      expect.objectContaining({ message: expect.stringContaining("observingJurisdiction null") }),
+    ]);
+  });
+
+  it("accepts an unattributed listing from a register covering several countries", async () => {
+    const benelux = await loadSourceDefinition("benelux-idro");
+    const listing = record("benelux-idro", "DE", {
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: null },
+    });
+
+    expect(
+      validateRegistry([listing], [benelux]).filter(
+        (issue) => issue.code === "JURISDICTION_MISMATCH",
+      ),
+    ).toEqual([]);
+  });
 });
 
 function record(

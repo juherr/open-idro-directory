@@ -3,6 +3,7 @@ import {
   type NormalizedRegistryRecord,
 } from "../domain/registry-record.js";
 import { sourceJurisdictions, type SourceDefinition } from "../domain/source-definition.js";
+import { observationScope } from "../domain/registry-observation.js";
 import type { ValidationIssue } from "../domain/validation-issue.js";
 import { validateRecord } from "./identifier-validator.js";
 
@@ -66,7 +67,8 @@ export function validateRegistry(
 /**
  * A register may list another country's identifier, as a non-official
  * cross-register listing. It may not claim it as official, nor carry an
- * observation block that contradicts its jurisdictions. Records without a block
+ * observation block that contradicts its jurisdictions, in its kind or in its
+ * `observingJurisdiction` (see `observationScope`). Records without a block
  * predate it: only their `official` flag is checked.
  */
 function jurisdictionMismatch(record: NormalizedRegistryRecord, source: SourceDefinition) {
@@ -80,6 +82,11 @@ function jurisdictionMismatch(record: NormalizedRegistryRecord, source: SourceDe
   }
   if (covered && declared === "CROSS_REGISTER_LISTING") {
     return `${record.countryCode} is declared for ${source.id}, so it cannot be a cross-register listing`;
+  }
+  const observing = record.source.observation?.observingJurisdiction;
+  const expected = observationScope(source, record.countryCode).observingJurisdiction;
+  if (observing !== undefined && observing !== expected) {
+    return `${source.id} observes ${record.countryCode} records from ${expected ?? "no single country"}, not from observingJurisdiction ${observing}`;
   }
   return null;
 }

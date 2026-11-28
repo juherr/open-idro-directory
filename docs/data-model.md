@@ -321,6 +321,99 @@ block is not counted, and a state no record carries has no key.
   report leave it out of their comparisons, and a build drops the published
   block before it derives the new one.
 
+## Discrepancy Report
+
+`data/reports/discrepancies.json` lists what the issuing registers and the
+other sources disagree on; how each finding is derived is in
+`docs/data-consolidation.md`. Its shape:
+
+```json
+{
+  "generatedAt": "2026-06-15T00:00:00.000Z",
+  "summary": {
+    "totalFindings": 1,
+    "byCategory": {
+      "NOT_FOUND_IN_ISSUING_REGISTER": 1,
+      "CONFLICTING_ROLE": 0,
+      "REMOVED_FROM_ISSUING_REGISTER": 0,
+      "ADDED_TO_ISSUING_REGISTER": 0,
+      "CONFLICTING_NAME": 0,
+      "CONFLICTING_STATUS": 0,
+      "ISSUING_REGISTER_UNVERIFIABLE": 0,
+      "OUTSIDE_ISSUING_REGISTER_SCOPE": 0,
+      "DUPLICATE_IDENTIFIER": 0,
+      "MALFORMED_IDENTIFIER": 0,
+      "SOURCE_STALE": 0,
+      "SOURCE_UNAVAILABLE": 0
+    },
+    "bySeverity": { "high": 1, "medium": 0, "low": 0, "info": 0 }
+  },
+  "countries": [
+    {
+      "countryCode": "DK",
+      "issuingRegistryIds": ["dk-fstyr"],
+      "pairs": [
+        {
+          "issuingRegistryId": "dk-fstyr",
+          "observedRegistryId": "se-energimyndigheten",
+          "findings": [
+            {
+              "category": "NOT_FOUND_IN_ISSUING_REGISTER",
+              "severity": "high",
+              "confidence": "high",
+              "countryCode": "DK",
+              "issuingRegistryId": "dk-fstyr",
+              "observedRegistryId": "se-energimyndigheten",
+              "identifier": {
+                "countryCode": "DK",
+                "partyId": "MON",
+                "role": "CPO",
+                "eMobilityId": "DKMON"
+              },
+              "issuingConfirmation": "NOT_FOUND",
+              "summary": "DKMON (CPO) is listed by se-energimyndigheten and not found in the issuing register dk-fstyr.",
+              "evidence": [
+                {
+                  "recordKey": "se-energimyndigheten:DK:MON:CPO",
+                  "registryId": "se-energimyndigheten",
+                  "retrievedAt": "2026-06-15T00:00:00.000Z",
+                  "lastSeenAt": "2026-06-15T00:00:00.000Z",
+                  "healthState": "CURRENT"
+                },
+                {
+                  "recordKey": null,
+                  "registryId": "dk-fstyr",
+                  "retrievedAt": "2026-06-15T00:00:00.000Z",
+                  "lastSeenAt": null,
+                  "healthState": "CURRENT"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+- `summary.byCategory` and `summary.bySeverity` list every category and
+  severity, zero counts included, in a fixed order.
+- `countryCode` is `null` for a finding about a source that covers several
+  countries (a duplicate or an unreadable value, say), and `issuingRegistryId`
+  is `null` when no issuing register is involved.
+- `identifier` and `issuingConfirmation` are `null` for source-level findings.
+  `reason` is present only on the categories that refine their cause (for
+  example `SOURCE_STALE` or `SOURCE_UNAVAILABLE` on an unverifiable finding).
+- Every finding has at least one `evidence` entry: a record (`recordKey`) or a
+  source-level observation (`recordKey: null`), with its `retrievedAt`. The
+  optional fields carry what the category compares: role, status, organisation
+  name, health state, record count, detection dates, or the connector's
+  duplicate warning code and message.
+
+The schema is `schemas/discrepancies.schema.json`. Compatibility: the report is
+a new file; no existing dataset, schema or API response changes.
+
 ## Source Provenance And Reuse
 
 The `reuse.status` field distinguishes the legal mechanism that applies:

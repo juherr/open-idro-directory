@@ -30,8 +30,15 @@ import { validateRegistry } from "../validation/registry-validator.js";
 import { checkSafetyThresholds } from "../validation/safety-thresholds.js";
 import { mergeGeneratedRecords } from "./generated-record-merge.js";
 import { buildOutOfJurisdictionReport } from "./out-of-jurisdiction-report.js";
-import { mergeInvalidRecordHistory } from "./invalid-record-history.js";
-import { issuingHealthBySourceId } from "./issuing-source-health.js";
+import { currentDetections, mergeInvalidRecordHistory } from "./invalid-record-history.js";
+import {
+  buildDiscrepancyReport,
+  readDuplicateFindings,
+  readMalformedFindings,
+  type DiscrepancyReport,
+  type DuplicateObservation,
+} from "./discrepancy-report.js";
+import { issuingHealthBySourceId, issuingSourceHealth } from "./issuing-source-health.js";
 import { applyOfficialStatusPolicy } from "./official-status-policy.js";
 
 export interface BuildOptions {
@@ -228,6 +235,28 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   if (!options.sourceId) {
     await writeOutOfJurisdictionReport(outputDir, classifiedRecords, sources, generatedAt);
   }
+  // Every run writes it: carried sources keep their published health,
+  // duplicate and malformed findings, so a partial run reports what a full one
+  // would.
+  const previousReport = await readPreviousReport(dataDir);
+  const notIngested = notIngestedSourceIds(results, selectedIds);
+  const discrepancies = buildDiscrepancyReport({
+    records: classifiedRecords,
+    sources,
+    health: Object.fromEntries(
+      results.map((result) => [
+        result.sourceId,
+        {
+          state: issuingSourceHealth(result),
+          lastSuccessfulRetrieval: result.lastSuccessfulRetrieval,
+        },
+      ]),
+    ),
+    invalidHistory: currentMalformed(invalidHistory, previousReport, notIngested),
+    duplicates: duplicateObservations(previousReport, results, notIngested),
+    generatedAt,
+  });
+  await writeReport(outputDir, "discrepancies.json", discrepancies);
   if (registryIssues.some((issue) => issue.severity === "error")) {
     throw new Error(
       `Registry validation failed: ${registryIssues.map((issue) => issue.message).join("; ")}`,
@@ -251,6 +280,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     invalidHistory,
     results: policyResults,
     issues: registryIssues,
+    discrepancies,
     rebuiltSourceIds: [...selectedIds],
   };
 }
@@ -261,12 +291,125 @@ async function writeOutOfJurisdictionReport(
   sources: SourceDefinition[],
   generatedAt: string,
 ) {
+  await writeReport(
+    outputDir,
+    "out-of-jurisdiction.json",
+    buildOutOfJurisdictionReport(records, sources, generatedAt),
+  );
+}
+
+async function writeReport(outputDir: string, fileName: string, report: unknown) {
   const reportsDir = path.join(outputDir, "reports");
   await mkdir(reportsDir, { recursive: true });
-  await writeFile(
-    path.join(reportsDir, "out-of-jurisdiction.json"),
-    `${JSON.stringify(buildOutOfJurisdictionReport(records, sources, generatedAt), null, 2)}\n`,
+  await writeFile(path.join(reportsDir, fileName), `${JSON.stringify(report, null, 2)}\n`);
+}
+
+/**
+ * A source ingested this run reports the duplicates its connector raised now.
+ * Any other source, carried or republished after a failure, keeps the
+ * duplicate findings it was last published with.
+ */
+function duplicateObservations(
+  previousReport: unknown,
+  results: readonly SourceBuildResult[],
+  carriedIds: ReadonlySet<string>,
+): DuplicateObservation[] {
+  return [
+    ...results
+      .filter((result) => !carriedIds.has(result.sourceId))
+      .flatMap((result) =>
+        result.warnings
+          .filter((warning) => warning.code.endsWith("_DUPLICATE_IDENTIFIER"))
+          .map((warning) => ({
+            sourceId: result.sourceId,
+            code: warning.code,
+            message: warning.message,
+            retrievedAt: result.retrievedAt,
+          })),
+      ),
+    ...fromPreviousReport(previousReport, readDuplicateFindings).filter((duplicate) =>
+      carriedIds.has(duplicate.sourceId),
+    ),
+  ];
+}
+
+/**
+ * The sources of this run that were not ingested in it: carried by a partial
+ * run, or republished after a failure. Only a source still in this run counts:
+ * a disabled source, or one whose descriptor was removed, has no result and
+ * loses its findings with its data.
+ */
+function notIngestedSourceIds(
+  results: readonly SourceBuildResult[],
+  selectedIds: ReadonlySet<string>,
+): Set<string> {
+  const isIngested = (result: SourceBuildResult) =>
+    selectedIds.has(result.sourceId) && !result.errors.some((issue) => issue.severity === "error");
+  return new Set(results.filter((result) => !isIngested(result)).map((result) => result.sourceId));
+}
+
+/**
+ * The exclusion-history entries the report presents as current. A source
+ * ingested this run reports what this run detected; any other source keeps the
+ * malformed findings it was last published with, so an entry its source has
+ * since corrected or dropped is not reported again. The history itself, in
+ * `registry-invalid.json`, keeps every entry with its detection dates.
+ */
+function currentMalformed(
+  history: InvalidRegistryHistory,
+  previousReport: unknown,
+  carriedIds: ReadonlySet<string>,
+): Pick<InvalidRegistryHistory, "records" | "rows"> {
+  const published = fromPreviousReport(previousReport, readMalformedFindings).filter((finding) =>
+    carriedIds.has(finding.registryId),
   );
+  const publishedRecords = new Set(published.map((finding) => finding.recordKey));
+  const rowKey = (registryId: string, sourceValue: string | null) =>
+    JSON.stringify([registryId, sourceValue]);
+  const publishedRows = new Set(
+    published
+      .filter((finding) => finding.recordKey === null)
+      .map((finding) => rowKey(finding.registryId, finding.sourceValue)),
+  );
+  const current = currentDetections(history);
+  const currentRecords = new Set(current.records);
+  const currentRows = new Set(current.rows);
+  return {
+    records: history.records.filter(
+      (entry) =>
+        currentRecords.has(entry) ||
+        (carriedIds.has(entry.record.source.registryId) && publishedRecords.has(entry.record.key)),
+    ),
+    rows: history.rows.filter(
+      (entry) =>
+        currentRows.has(entry) ||
+        (carriedIds.has(entry.registryId) &&
+          publishedRows.has(rowKey(entry.registryId, entry.sourceValue))),
+    ),
+  };
+}
+
+// The previously published report, or `null` when there is none or it cannot
+// be read.
+async function readPreviousReport(dataDir: string): Promise<unknown> {
+  try {
+    return JSON.parse(
+      await readFile(path.join(dataDir, "reports", "discrepancies.json"), "utf8"),
+    ) as unknown;
+  } catch {
+    return null;
+  }
+}
+
+// What `read` finds in the previous report; nothing when there is no report or
+// it does not have the expected shape.
+function fromPreviousReport<T>(report: unknown, read: (report: DiscrepancyReport) => T[]): T[] {
+  if (report === null) return [];
+  try {
+    return read(report as DiscrepancyReport);
+  } catch {
+    return [];
+  }
 }
 
 // Hand-written `supersededBy` annotations live in this file, so the build reads

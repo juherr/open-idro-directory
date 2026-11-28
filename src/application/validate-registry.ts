@@ -12,6 +12,7 @@ import {
 import type { SourceDefinition } from "../domain/source-definition.js";
 import { fromRoot } from "../infrastructure/filesystem/paths.js";
 import { validateRegistry } from "../validation/registry-validator.js";
+import { discrepanciesSchema } from "./discrepancy-report-schema.js";
 
 export async function validateGeneratedRegistry(sources: SourceDefinition[]) {
   await writeSchemas();
@@ -45,6 +46,10 @@ export async function writeSchemas() {
   await writeFile(
     fromRoot("schemas", "registry-invalid.schema.json"),
     `${JSON.stringify(registryInvalidSchema, null, 2)}\n`,
+  );
+  await writeFile(
+    fromRoot("schemas", "discrepancies.schema.json"),
+    `${JSON.stringify(discrepanciesSchema, null, 2)}\n`,
   );
 }
 

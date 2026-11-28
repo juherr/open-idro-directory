@@ -1,0 +1,421 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DiscrepancyReport",
+  "type": "object",
+  "required": [
+    "generatedAt",
+    "summary",
+    "countries"
+  ],
+  "properties": {
+    "generatedAt": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "totalFindings",
+        "byCategory",
+        "bySeverity"
+      ],
+      "properties": {
+        "totalFindings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "byCategory": {
+          "type": "object",
+          "required": [
+            "NOT_FOUND_IN_ISSUING_REGISTER",
+            "CONFLICTING_ROLE",
+            "REMOVED_FROM_ISSUING_REGISTER",
+            "ADDED_TO_ISSUING_REGISTER",
+            "CONFLICTING_NAME",
+            "CONFLICTING_STATUS",
+            "ISSUING_REGISTER_UNVERIFIABLE",
+            "OUTSIDE_ISSUING_REGISTER_SCOPE",
+            "DUPLICATE_IDENTIFIER",
+            "MALFORMED_IDENTIFIER",
+            "SOURCE_STALE",
+            "SOURCE_UNAVAILABLE"
+          ],
+          "properties": {
+            "NOT_FOUND_IN_ISSUING_REGISTER": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "CONFLICTING_ROLE": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "REMOVED_FROM_ISSUING_REGISTER": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "ADDED_TO_ISSUING_REGISTER": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "CONFLICTING_NAME": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "CONFLICTING_STATUS": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "ISSUING_REGISTER_UNVERIFIABLE": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "OUTSIDE_ISSUING_REGISTER_SCOPE": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "DUPLICATE_IDENTIFIER": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "MALFORMED_IDENTIFIER": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "SOURCE_STALE": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "SOURCE_UNAVAILABLE": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "bySeverity": {
+          "type": "object",
+          "required": [
+            "high",
+            "medium",
+            "low",
+            "info"
+          ],
+          "properties": {
+            "high": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "medium": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "low": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "info": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "countries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "countryCode",
+          "issuingRegistryIds",
+          "pairs"
+        ],
+        "properties": {
+          "countryCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{2}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "issuingRegistryIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "pairs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "issuingRegistryId",
+                "observedRegistryId",
+                "findings"
+              ],
+              "properties": {
+                "issuingRegistryId": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "observedRegistryId": {
+                  "type": "string"
+                },
+                "findings": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/finding"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "finding": {
+      "type": "object",
+      "required": [
+        "category",
+        "severity",
+        "confidence",
+        "countryCode",
+        "issuingRegistryId",
+        "observedRegistryId",
+        "identifier",
+        "issuingConfirmation",
+        "summary",
+        "evidence"
+      ],
+      "properties": {
+        "category": {
+          "enum": [
+            "NOT_FOUND_IN_ISSUING_REGISTER",
+            "CONFLICTING_ROLE",
+            "REMOVED_FROM_ISSUING_REGISTER",
+            "ADDED_TO_ISSUING_REGISTER",
+            "CONFLICTING_NAME",
+            "CONFLICTING_STATUS",
+            "ISSUING_REGISTER_UNVERIFIABLE",
+            "OUTSIDE_ISSUING_REGISTER_SCOPE",
+            "DUPLICATE_IDENTIFIER",
+            "MALFORMED_IDENTIFIER",
+            "SOURCE_STALE",
+            "SOURCE_UNAVAILABLE"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "info"
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "countryCode": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "issuingRegistryId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observedRegistryId": {
+          "type": "string"
+        },
+        "identifier": {
+          "anyOf": [
+            {
+              "type": "object",
+              "required": [
+                "countryCode",
+                "partyId",
+                "role",
+                "eMobilityId"
+              ],
+              "properties": {
+                "countryCode": {
+                  "type": "string"
+                },
+                "partyId": {
+                  "type": "string"
+                },
+                "role": {
+                  "enum": [
+                    "CPO",
+                    "CSO",
+                    "EMSP",
+                    "NSP",
+                    "HUB",
+                    "OTHER"
+                  ]
+                },
+                "eMobilityId": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "issuingConfirmation": {
+          "anyOf": [
+            {
+              "enum": [
+                "CONFIRMED",
+                "NOT_FOUND",
+                "SOURCE_STALE",
+                "SOURCE_UNAVAILABLE",
+                "UNSUPPORTED_ROLE",
+                "NO_ISSUING_SOURCE"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "recordKey",
+        "registryId",
+        "retrievedAt",
+        "lastSeenAt"
+      ],
+      "properties": {
+        "recordKey": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "registryId": {
+          "type": "string"
+        },
+        "retrievedAt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastSeenAt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "firstSeenAt": {
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "CPO",
+            "CSO",
+            "EMSP",
+            "NSP",
+            "HUB",
+            "OTHER"
+          ]
+        },
+        "status": {
+          "enum": [
+            "ACTIVE",
+            "INACTIVE",
+            "RESERVED",
+            "REVOKED",
+            "UNKNOWN"
+          ]
+        },
+        "organizationName": {
+          "type": "string"
+        },
+        "sourceValue": {
+          "type": "string"
+        },
+        "healthState": {
+          "enum": [
+            "CURRENT",
+            "STALE",
+            "UNAVAILABLE"
+          ]
+        },
+        "recordCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "firstDetectedAt": {
+          "type": "string"
+        },
+        "lastDetectedAt": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

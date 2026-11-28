@@ -7,12 +7,14 @@ import { EvroamConnector } from "../../src/connectors/gb-evroam/evroam.connector
 import type { RegistryConnector } from "../../src/connectors/connector.js";
 import { EnergimyndighetenConnector } from "../../src/connectors/se-energimyndigheten/energimyndigheten.connector.js";
 import type {
+  InvalidRegistryHistory,
   NormalizedRegistryRecord,
   RegistryObservation,
 } from "../../src/domain/registry-record.js";
 import type { SourceDefinition } from "../../src/domain/source-definition.js";
 import type { ValidationIssue } from "../../src/domain/validation-issue.js";
 import { diffRecords } from "../../src/application/change-report.js";
+import type { DiscrepancyReport } from "../../src/application/discrepancy-report.js";
 import { identifierRoleKey } from "../../src/domain/identifier-provenance.js";
 import { withPublishedObservations } from "../../src/domain/registry-observation.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
@@ -361,6 +363,329 @@ describe("buildRegistry issuing confirmation", () => {
   });
 });
 
+describe("buildRegistry discrepancy report", () => {
+  const NORDIC = ["dk-fstyr", "se-energimyndigheten"];
+  const LATER = "2026-06-16T00:00:00.000Z";
+
+  const duplicateWarning = (code: string, value: string): ValidationIssue => ({
+    severity: "warning",
+    code,
+    message: `Duplicate identifier ${value} for CPO.`,
+  });
+
+  // One duplicate per register, reported by duplicatesOf as
+  // ["dk-fstyr", "FSTYR_DUPLICATE_IDENTIFIER"] and
+  // ["se-energimyndigheten", "ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER"].
+  const DUPLICATE_WARNINGS = {
+    dk: [duplicateWarning("FSTYR_DUPLICATE_IDENTIFIER", "DK*BBB")],
+    se: [duplicateWarning("ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER", "SE*AAA")],
+  };
+
+  // dk-fstyr assigns DK*BBB; the Swedish register also lists DK*BBB and DK*MON.
+  async function nordicConnectors(
+    options: { dk?: ValidationIssue[]; se?: ValidationIssue[]; dkErrors?: ValidationIssue[] } = {},
+  ) {
+    const swedish = await swedishListings("SE*AAA", "SE*BBB", "SE*CCC", "DK*BBB", "DK*MON");
+    const connectors: Record<string, () => RegistryConnector> = {
+      "dk-fstyr": connectorReturning(
+        [assignedThisRun("dk-fstyr", "DK", "BBB")],
+        options.dkErrors,
+        options.dk,
+      ),
+      "se-energimyndigheten": connectorReturning(swedish, [], options.se),
+    };
+    return (source: SourceDefinition) => connectors[source.id]!();
+  }
+
+  const duplicatesOf = (report: DiscrepancyReport) =>
+    findingsOf(report)
+      .filter((finding) => finding.category === "DUPLICATE_IDENTIFIER")
+      .map((finding) => [finding.observedRegistryId, finding.evidence[0]?.code]);
+
+  it.each([{ case: "a full build" }, { case: "a single-source build", sourceId: "fr-afirev" }])(
+    "writes the report on $case",
+    async ({ sourceId }) => {
+      await withWorkspace(async ({ build, outputDir }) => {
+        // Each register answers with its own identifier, so a full build passes
+        // registry validation.
+        const own: Record<string, NormalizedRegistryRecord> = {
+          "fr-afirev": assignedThisRun("fr-afirev", "FR", "AAA"),
+          "dk-fstyr": assignedThisRun("dk-fstyr", "DK", "BBB"),
+        };
+        await build({
+          ...(sourceId ? { sourceId } : {}),
+          createConnector: (source) => connectorReturning([own[source.id]!])(),
+        });
+
+        const report = await readDiscrepancies(outputDir);
+        expect(report.generatedAt).toBe(GENERATED_AT);
+        expect(report.summary.totalFindings).toBe(findingsOf(report).length);
+      });
+    },
+  );
+
+  it("gives a partial build the report of a full build", async () => {
+    const createConnector = await nordicConnectors(DUPLICATE_WARNINGS);
+    await withWorkspace(
+      async ({ build, outputDir, publishOutput }) => {
+        await build({ createConnector });
+        const full = await readDiscrepancies(outputDir);
+        await publishOutput();
+        await build({ createConnector, sourceId: "se-energimyndigheten", generatedAt: LATER });
+        const partial = await readDiscrepancies(outputDir);
+
+        expect(findingsOf(full).map((finding) => finding.category)).toContain(
+          "NOT_FOUND_IN_ISSUING_REGISTER",
+        );
+        expect(duplicatesOf(full)).toEqual([
+          ["dk-fstyr", "FSTYR_DUPLICATE_IDENTIFIER"],
+          ["se-energimyndigheten", "ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER"],
+        ]);
+        expect(partial.generatedAt).toBe(LATER);
+        expect({ ...partial, generatedAt: GENERATED_AT }).toEqual(full);
+      },
+      { sourceIds: NORDIC, published: [] },
+    );
+  });
+
+  it("keeps the duplicate findings of a source that failed, not of one rebuilt", async () => {
+    const warned = await nordicConnectors(DUPLICATE_WARNINGS);
+    await withWorkspace(
+      async ({ build, outputDir, publishOutput }) => {
+        await build({ createConnector: warned });
+        await publishOutput();
+        await build({
+          createConnector: await nordicConnectors({}),
+          fetchErrors: { "dk-fstyr": "HTTP 503 while fetching https://example.test/" },
+        });
+
+        expect(duplicatesOf(await readDiscrepancies(outputDir))).toEqual([
+          ["dk-fstyr", "FSTYR_DUPLICATE_IDENTIFIER"],
+        ]);
+      },
+      { sourceIds: NORDIC, published: [] },
+    );
+  });
+
+  // Disabling a source, or removing its descriptor, removes its data: its
+  // duplicate findings must not be read back from the previous report forever.
+  it.each([
+    {
+      case: "disabled",
+      sourcesOf: (sources: SourceDefinition[]) =>
+        sources.map((source) =>
+          source.id === "dk-fstyr"
+            ? { ...source, publication: { ...source.publication, enabled: false } }
+            : source,
+        ),
+    },
+    {
+      case: "removed",
+      sourcesOf: (sources: SourceDefinition[]) =>
+        sources.filter((source) => source.id !== "dk-fstyr"),
+    },
+  ])("drops the duplicate findings of a source $case since", async ({ sourcesOf }) => {
+    const createConnector = await nordicConnectors(DUPLICATE_WARNINGS);
+    await withWorkspace(
+      async ({ build, outputDir, publishOutput, sources }) => {
+        await build({ createConnector });
+        expect(duplicatesOf(await readDiscrepancies(outputDir))).toContainEqual([
+          "dk-fstyr",
+          "FSTYR_DUPLICATE_IDENTIFIER",
+        ]);
+        await publishOutput();
+        await build({ createConnector, sources: sourcesOf(sources) });
+
+        expect(duplicatesOf(await readDiscrepancies(outputDir))).toEqual([
+          ["se-energimyndigheten", "ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER"],
+        ]);
+      },
+      { sourceIds: NORDIC, published: [] },
+    );
+  });
+
+  // dk-fstyr publishes DK*X!X, which is not an eMI3 identifier, and a row its
+  // connector could not read at all.
+  const MALFORMED_RECORD = "dk-fstyr:DK:X!X:CPO";
+  const UNREADABLE_ROW = "DK-??";
+  async function malformedConnectors(options: { dkMalformed: boolean }) {
+    const swedish = await swedishListings("SE*AAA", "SE*BBB", "SE*CCC", "DK*BBB", "DK*MON");
+    const dk = [assignedThisRun("dk-fstyr", "DK", "BBB")];
+    const connectors: Record<string, () => RegistryConnector> = {
+      "dk-fstyr": options.dkMalformed
+        ? connectorReturning(
+            [...dk, assignedThisRun("dk-fstyr", "DK", "X!X")],
+            [],
+            [
+              {
+                severity: "warning",
+                code: "FSTYR_INVALID_IDENTIFIER",
+                message: `Unreadable identifier ${UNREADABLE_ROW}.`,
+                rejectedIdentifier: UNREADABLE_ROW,
+              },
+            ],
+          )
+        : connectorReturning(dk),
+      "se-energimyndigheten": connectorReturning(swedish),
+    };
+    return (source: SourceDefinition) => connectors[source.id]!();
+  }
+  const malformedOf = (report: DiscrepancyReport) =>
+    findingsOf(report)
+      .filter((finding) => finding.category === "MALFORMED_IDENTIFIER")
+      .map((finding) => finding.evidence[0]?.recordKey ?? finding.evidence[0]?.sourceValue ?? "")
+      .toSorted();
+  // Each history entry as `<record key or row value> <last detected at>`.
+  const historyOf = async (outputDir: string) => {
+    const history = JSON.parse(
+      await readFile(join(outputDir, "registry-invalid.json"), "utf8"),
+    ) as InvalidRegistryHistory;
+    return [
+      ...history.records.map((entry) => `${entry.record.key} ${entry.lastDetectedAt}`),
+      ...history.rows.map((entry) => `${entry.sourceValue} ${entry.lastDetectedAt}`),
+    ].toSorted();
+  };
+
+  it("reports only the malformed identifiers a source still publishes, the history keeping the others", async () => {
+    await withWorkspace(
+      async ({ build, outputDir, publishOutput }) => {
+        await build({ createConnector: await malformedConnectors({ dkMalformed: true }) });
+        expect(malformedOf(await readDiscrepancies(outputDir))).toEqual(
+          [MALFORMED_RECORD, UNREADABLE_ROW].toSorted(),
+        );
+        await publishOutput();
+        await build({
+          createConnector: await malformedConnectors({ dkMalformed: false }),
+          generatedAt: LATER,
+        });
+
+        expect(malformedOf(await readDiscrepancies(outputDir))).toEqual([]);
+        expect(await historyOf(outputDir)).toEqual(
+          [`${MALFORMED_RECORD} ${GENERATED_AT}`, `${UNREADABLE_ROW} ${GENERATED_AT}`].toSorted(),
+        );
+      },
+      { sourceIds: NORDIC, published: [] },
+    );
+  });
+
+  it("gives a partial build the malformed findings of a full build", async () => {
+    const LATEST = "2026-06-17T00:00:00.000Z";
+    const NEXT = "2026-06-18T00:00:00.000Z";
+    await withWorkspace(
+      async ({ build, outputDir, publishOutput }) => {
+        const malformed = await malformedConnectors({ dkMalformed: true });
+        const corrected = await malformedConnectors({ dkMalformed: false });
+        await build({ createConnector: malformed });
+        const full = malformedOf(await readDiscrepancies(outputDir));
+        await publishOutput();
+        // dk-fstyr is carried: it keeps what it was last published with.
+        await build({
+          createConnector: malformed,
+          sourceId: "se-energimyndigheten",
+          generatedAt: LATER,
+        });
+        expect(malformedOf(await readDiscrepancies(outputDir))).toEqual(full);
+        await publishOutput();
+        // dk-fstyr corrects both values, then is carried again.
+        await build({ createConnector: corrected, generatedAt: LATEST });
+        expect(malformedOf(await readDiscrepancies(outputDir))).toEqual([]);
+        await publishOutput();
+        await build({
+          createConnector: corrected,
+          sourceId: "se-energimyndigheten",
+          generatedAt: NEXT,
+        });
+
+        expect(full).toEqual([MALFORMED_RECORD, UNREADABLE_ROW].toSorted());
+        expect(malformedOf(await readDiscrepancies(outputDir))).toEqual([]);
+      },
+      { sourceIds: NORDIC, published: [] },
+    );
+  });
+
+  it("keeps the malformed findings of a source that failed", async () => {
+    await withWorkspace(
+      async ({ build, outputDir, publishOutput }) => {
+        await build({ createConnector: await malformedConnectors({ dkMalformed: true }) });
+        await publishOutput();
+        await build({
+          createConnector: await malformedConnectors({ dkMalformed: false }),
+          fetchErrors: { "dk-fstyr": "HTTP 503 while fetching https://example.test/" },
+          generatedAt: LATER,
+        });
+
+        expect(malformedOf(await readDiscrepancies(outputDir))).toEqual(
+          [MALFORMED_RECORD, UNREADABLE_ROW].toSorted(),
+        );
+      },
+      { sourceIds: NORDIC, published: [] },
+    );
+  });
+
+  // #31 reference scenario 4, stale variant: the issuing register answered but
+  // its run was not ingested, so a tombstone or an absence proves nothing.
+  it("reports an issuing register answering but not ingested as unverifiable only", async () => {
+    const removed = removedDkRecord();
+    const createConnector = await nordicConnectors({
+      dkErrors: [{ severity: "error", code: "MASS_CHANGE", message: "1 of 1 changed." }],
+    });
+    await withWorkspace(
+      async ({ build, outputDir }) => {
+        const { results } = await build({ createConnector });
+
+        const dk = results.find((result) => result.sourceId === "dk-fstyr");
+        expect(dk?.stale).toBe(true);
+        expect(dk?.lastSuccessfulRetrieval).toBe(dk?.retrievedAt);
+        const findings = findingsOf(await readDiscrepancies(outputDir)).filter(
+          (finding) => finding.issuingRegistryId === "dk-fstyr",
+        );
+        expect(new Set(findings.map((finding) => finding.category))).toEqual(
+          new Set(["ISSUING_REGISTER_UNVERIFIABLE", "SOURCE_STALE"]),
+        );
+        const unverifiable = findings.filter(
+          (finding) => finding.category === "ISSUING_REGISTER_UNVERIFIABLE",
+        );
+        expect(unverifiable.map((finding) => finding.reason)).toEqual(
+          unverifiable.map(() => "SOURCE_STALE"),
+        );
+        expect(
+          unverifiable.map((finding) => finding.identifier?.eMobilityId ?? "").toSorted(),
+        ).toEqual(["DKMON", "DKOLD"]);
+      },
+      { sourceIds: NORDIC, published: [sampleRecord("dk-fstyr", "DK", "BBB"), removed] },
+    );
+  });
+
+  // #31 reference scenario 4: an unreachable issuing register must not yield a
+  // removal or a not-found.
+  it("reports a failing issuing register as unverifiable only", async () => {
+    const removed = removedDkRecord();
+    await withWorkspace(
+      async ({ build, outputDir }) => {
+        await build({
+          createConnector: await nordicConnectors({}),
+          fetchErrors: { "dk-fstyr": "HTTP 503 while fetching https://example.test/" },
+        });
+
+        const findings = findingsOf(await readDiscrepancies(outputDir)).filter(
+          (finding) => finding.issuingRegistryId === "dk-fstyr",
+        );
+        const categories = findings.map((finding) => finding.category);
+        expect(categories).toContain("SOURCE_UNAVAILABLE");
+        expect(categories).not.toContain("REMOVED_FROM_ISSUING_REGISTER");
+        expect(categories).not.toContain("NOT_FOUND_IN_ISSUING_REGISTER");
+        expect(
+          findings
+            .filter((finding) => finding.category === "ISSUING_REGISTER_UNVERIFIABLE")
+            .map((finding) => finding.identifier?.eMobilityId ?? "")
+            .toSorted(),
+        ).toEqual(["DKMON", "DKOLD"]);
+      },
+      { sourceIds: NORDIC, published: [sampleRecord("dk-fstyr", "DK", "BBB"), removed] },
+    );
+  });
+});
+
 const GENERATED_AT = "2026-06-15T00:00:00.000Z";
 const PREVIOUS_RETRIEVAL = "2026-06-14T00:00:00.000Z";
 
@@ -401,7 +726,13 @@ async function withWorkspace(
       setup.health,
     );
     const publishOutput = async () => {
-      for (const file of ["registry.json", "sources.json"]) {
+      await mkdir(join(dataDir, "reports"), { recursive: true });
+      for (const file of [
+        "registry.json",
+        "sources.json",
+        "registry-invalid.json",
+        join("reports", "discrepancies.json"),
+      ]) {
         await copyFile(join(outputDir, file), join(dataDir, file));
       }
     };
@@ -487,6 +818,7 @@ async function readHealth(outputDir: string, sourceId: string) {
 function connectorReturning(
   records: NormalizedRegistryRecord[],
   errors: ValidationIssue[] = [],
+  warnings: ValidationIssue[] = [],
 ): () => RegistryConnector {
   return () => ({
     sourceId: "stub",
@@ -494,8 +826,18 @@ function connectorReturning(
       throw new Error("not used by the build");
     },
     parse: async () => ({ records: [], warnings: [], errors: [] }),
-    normalize: async () => ({ records, warnings: [], errors }),
+    normalize: async () => ({ records, warnings, errors }),
   });
+}
+
+async function readDiscrepancies(outputDir: string) {
+  return JSON.parse(
+    await readFile(join(outputDir, "reports", "discrepancies.json"), "utf8"),
+  ) as DiscrepancyReport;
+}
+
+function findingsOf(report: DiscrepancyReport) {
+  return report.countries.flatMap((country) => country.pairs.flatMap((pair) => pair.findings));
 }
 
 /** An assignment the issuing register listed in this run's retrieval. */
@@ -507,6 +849,20 @@ function assignedThisRun(registryId: string, countryCode: string, partyId: strin
   return {
     ...record,
     source: { ...record.source, lastSeenAt: GENERATED_AT, retrievedAt: GENERATED_AT },
+  };
+}
+
+/** A DK*OLD tombstone: dk-fstyr stopped listing it before this run. */
+function removedDkRecord(): NormalizedRegistryRecord {
+  const record = sampleRecord("dk-fstyr", "DK", "OLD");
+  return {
+    ...record,
+    status: "INACTIVE",
+    metadata: {
+      inactiveSince: PREVIOUS_RETRIEVAL,
+      inactiveReason: "missing-from-official-source",
+    },
+    source: { ...record.source, lastSeenAt: "2026-06-01T00:00:00.000Z" },
   };
 }
 

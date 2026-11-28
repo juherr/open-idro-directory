@@ -204,4 +204,10 @@ describe("country page", () => {
     expect(page).toContain("req-1");
     expect(page).toContain('href="/#pays"');
   });
+
+  it("loads no script on an error page", async () => {
+    const page = await renderErrorPage(404, "No source covers this country.", "req-1");
+
+    expect(scriptTags(page)).toEqual([]);
+  });
 });

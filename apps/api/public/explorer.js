@@ -12,7 +12,6 @@ const scope = fixedRoot
       knownCountries: Object.keys(COUNTRY_NAMES.en),
     })
   : createSearchScope({ basePath: "/explore/" });
-if (fixedRoot) fixedRoot.hidden = false;
 
 // The country page is server-rendered in the language of <html lang>.
 function currentLanguage() {
@@ -150,6 +149,14 @@ function initFromUrl() {
   if (countrySelect) countrySelect.value = state.country;
   document.querySelector("#role").value = state.role;
   document.querySelector("#status").value = state.status;
+  // A country page keeps only q, role and status in its URL: a stray
+  // parameter (a country, an unknown key) is dropped at once.
+  if (fixedRoot) {
+    const canonical = scope.buildPageUrl(state);
+    if (canonical !== window.location.pathname + window.location.search) {
+      history.replaceState(null, "", canonical);
+    }
+  }
 }
 
 function translateExplorer() {
@@ -622,3 +629,5 @@ initFromUrl();
 renderExplorer();
 void loadContext();
 startQuery();
+// Revealed only once init ran: a failure leaves the no-JS page as served.
+if (fixedRoot) fixedRoot.hidden = false;

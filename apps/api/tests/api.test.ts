@@ -506,6 +506,13 @@ describe("Cloudflare API", () => {
     },
   );
 
+  it("serves a country 404 page that loads no script", async () => {
+    const response = await workerRequest("/countries/zz/");
+
+    expect(response.status).toBe(404);
+    await expect(response.text()).resolves.not.toMatch(/<script\b/i);
+  });
+
   it("returns an HTML 503 for a country page when no dataset is active", async () => {
     const response = await workerRequest("/countries/fr/", undefined, { activeRelease: null });
 

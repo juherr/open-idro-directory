@@ -188,6 +188,15 @@ const en = {
     provenance: "Provenance",
     provenanceSub: "Where this identifier comes from, and which authority to verify it with.",
   },
+  // <head> metadata and the language switch. The switch is written in the
+  // language it links to.
+  meta: {
+    description: (name: string) =>
+      `${name} in the Open IDRO Directory: IDRO authorities, coverage and sources of e-mobility identifiers.`,
+    authorities: (names: string) => `Authorities: ${names}.`,
+    home: "Home",
+    otherLanguage: "Lire en français",
+  },
   nav: {
     explorer: "Explorer",
     countries: "Countries",
@@ -356,6 +365,13 @@ const fr: PageCopy = {
     website: "Site web",
     provenance: "Provenance",
     provenanceSub: "D'où provient cet identifiant, et chez quelle autorité le vérifier.",
+  },
+  meta: {
+    description: (name: string) =>
+      `${name} dans Open IDRO Directory : autorités IDRO, couverture et sources des identifiants de mobilité électrique.`,
+    authorities: (names: string) => `Autorités : ${names}.`,
+    home: "Accueil",
+    otherLanguage: "Read in English",
   },
   nav: {
     explorer: "Explorer",

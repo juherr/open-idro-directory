@@ -485,6 +485,26 @@ describe("Cloudflare API", () => {
   });
 
   it.each([
+    [
+      "/countries/fr/?lang=fr&q=x&role=CPO&status=ACTIVE",
+      "https://example.test/countries/fr/?lang=fr",
+    ],
+    ["/countries/fr/?q=x", "https://example.test/countries/fr/"],
+    ["/countries/fr/?lang=xx", "https://example.test/countries/fr/"],
+  ])("gives %s the canonical %s, built from the path country", async (path, canonical) => {
+    const response = await workerRequest(path);
+    const page = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(page).toContain(`<link rel="canonical" href="${canonical}"`);
+    expect(page).toContain(`<meta property="og:url" content="${canonical}"`);
+    expect(page).not.toMatch(/href="[^"]*[?&](q|role|status)=/);
+    const [, json] = page.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/) ?? [];
+    const breadcrumbs = JSON.parse(json ?? "null") as { itemListElement: { item: string }[] };
+    expect(breadcrumbs.itemListElement.at(-1)?.item).toBe(canonical);
+  });
+
+  it.each([
     ["/countries/fr/", "/countries/fr/?lang=fr", "fr"],
     ["/countries/fr/?lang=fr", "/countries/fr/", "en"],
   ])("does not revalidate %s into %s", async (first, second, lang) => {

@@ -1,4 +1,4 @@
-import { html } from "hono/html";
+import { html, raw } from "hono/html";
 import type { CountrySummary } from "../../application/mappers.js";
 import { API_PREFIX, REPOSITORY_URL } from "../../domain/constants.js";
 import {
@@ -46,22 +46,94 @@ export function countryName(countryCode: string, lang: PageLanguage = "en") {
   }
 }
 
-/** Server-rendered country page, in English by default or in French. */
+const SITE_NAME = "Open IDRO Directory";
+const OG_LOCALES: Record<PageLanguage, string> = { en: "en_GB", fr: "fr_FR" };
+const OTHER_LANGUAGE: Record<PageLanguage, PageLanguage> = { en: "fr", fr: "en" };
+
+/**
+ * The canonical URL of a country page in one language, built from the path
+ * country alone: no search parameter, an English page without `?lang`.
+ */
+function countryPageUrl(origin: string, code: string, lang: PageLanguage) {
+  const path = `${origin}/countries/${code.toLowerCase()}/`;
+  return lang === "en" ? path : `${path}?lang=${lang}`;
+}
+
+/**
+ * A `<script type="application/ld+json">` block for `data`. Every `<` is
+ * escaped as `<`, which JSON reads back unchanged, so no value can close
+ * the tag or open a comment; only this pre-escaped string is inserted raw.
+ */
+export function jsonLdScript(data: unknown) {
+  const json = JSON.stringify(data).replace(/</g, "\\u003c");
+  return html`<script type="application/ld+json">
+    ${raw(json)}
+  </script>`;
+}
+
+/**
+ * Server-rendered country page, in English by default or in French
+ * (`?lang=fr`). Its head carries a description, the canonical URL of its
+ * language, the `hreflang` alternates, Open Graph tags and JSON-LD
+ * breadcrumbs, all built from the path country.
+ */
 export async function renderCountryPage(
   summary: CountrySummary,
   origin: string,
   lang: PageLanguage = "en",
 ) {
   const locale = LOCALES[lang];
+  const { t } = locale;
   const code = summary.countryCode;
   const name = countryName(code, lang);
   const published = summary.coverage.status === "PUBLISHED";
+  const title = `${name} (${code}) - ${SITE_NAME}`;
+  const canonical = countryPageUrl(origin, code, lang);
+  const other = OTHER_LANGUAGE[lang];
+  const english = countryPageUrl(origin, code, "en");
+  const coverage = coverageLine(summary, locale);
+  const authorities = authorityNames(summary);
+  const description = [
+    t.meta.description(name),
+    coverage,
+    authorities.length > 0 ? t.meta.authorities(locale.lists.format(authorities)) : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { name: t.meta.home, item: `${origin}/` },
+      { name: t.nav.countries, item: `${origin}/#pays` },
+      { name, item: canonical },
+    ].map((crumb, index) => ({ "@type": "ListItem", position: index + 1, ...crumb })),
+  };
+
+  const head = html`<meta name="description" content="${description}" />
+    <link rel="canonical" href="${canonical}" />
+    <link rel="alternate" hreflang="en" href="${english}" />
+    <link rel="alternate" hreflang="fr" href="${countryPageUrl(origin, code, "fr")}" />
+    <link rel="alternate" hreflang="x-default" href="${english}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="${SITE_NAME}" />
+    <meta property="og:title" content="${title}" />
+    <meta property="og:description" content="${description}" />
+    <meta property="og:url" content="${canonical}" />
+    <meta property="og:locale" content="${OG_LOCALES[lang]}" />
+    <meta property="og:locale:alternate" content="${OG_LOCALES[other]}" />
+    ${jsonLdScript(breadcrumbs)}`;
 
   const body = html`
     <header class="page-header">
-      <p class="country-page-code">${locale.t.eyebrow} &middot; ${code}</p>
+      <p class="country-page-code">${t.eyebrow} &middot; ${code}</p>
       <h1 class="page-title">${name}</h1>
-      <p class="page-subtitle">${coverageLine(summary, locale)}</p>
+      <p class="page-subtitle">${coverage}</p>
+      <p class="country-page-meta">
+        <a href="${countryPageUrl(origin, code, other)}" hreflang="${other}" lang="${other}"
+          >${t.meta.otherLanguage}</a
+        >
+      </p>
     </header>
     ${published ? searchSection(code, name, locale.t) : emptyState(summary, name, locale)}
     ${authoritiesSection(summary, locale)} ${coverageSection(summary, locale)}
@@ -70,8 +142,8 @@ export async function renderCountryPage(
 
   return page({
     lang,
-    title: `${name} (${code}) - Open IDRO Directory`,
-    canonical: `${origin}/countries/${code.toLowerCase()}/`,
+    title,
+    head,
     body,
     // Only a country with identifiers has a search to enhance.
     scripts: published,
@@ -248,11 +320,15 @@ function coverageLine(summary: CountrySummary, locale: Locale) {
   return `${count(locale, parties, t.coverage.identifier)} ${published} ${count(locale, sourceCount, t.coverage.source)}.`;
 }
 
-function emptyState(summary: CountrySummary, name: string, locale: Locale) {
-  const { t } = locale;
-  const authorities = summary.authorities
+function authorityNames(summary: CountrySummary) {
+  return summary.authorities
     .map((authority) => authority.name)
     .filter((authorityName): authorityName is string => Boolean(authorityName));
+}
+
+function emptyState(summary: CountrySummary, name: string, locale: Locale) {
+  const { t } = locale;
+  const authorities = authorityNames(summary);
   const listed = summary.sources.filter((source) => source.publication.machineReadableUrl);
   // Only a list the directory has retrieved can be said to hold no identifiers.
   const retrieved = listed.filter((source) => source.health.lastSuccessfulAt).length;
@@ -475,13 +551,14 @@ function timestamp(value: string) {
 async function page({
   lang,
   title,
-  canonical,
+  head = "",
   body,
   scripts = false,
 }: {
   lang: PageLanguage;
   title: string;
-  canonical?: string;
+  /** Page-specific `<head>` tags; error pages have none. */
+  head?: Fragment | "";
   body: Fragment;
   scripts?: boolean;
 }) {
@@ -492,7 +569,7 @@ async function page({
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>${title}</title>
-        ${canonical ? html`<link rel="canonical" href="${canonical}" />` : ""}
+        ${head}
         <link rel="icon" type="image/png" href="/assets/favicon.png" />
         <link rel="stylesheet" href="/styles.css" />
       </head>

@@ -9,6 +9,7 @@ const scope = fixedRoot
   ? createSearchScope({
       fixedCountry: fixedRoot.dataset.fixedCountry,
       basePath: fixedRoot.dataset.basePath,
+      knownCountries: Object.keys(COUNTRY_NAMES.en),
     })
   : createSearchScope({ basePath: "/explore/" });
 if (fixedRoot) fixedRoot.hidden = false;
@@ -241,14 +242,20 @@ function syncUrl() {
   history.replaceState(null, "", scope.buildPageUrl(state));
 }
 
+// Bumped by every new query: a response of a superseded one is dropped.
+let queryGeneration = 0;
+
 async function runQuery(append = false) {
   const path = scope.buildApiPath(state, append ? state.cursor : null);
+  if (!path) return;
+  const generation = queryGeneration;
   state.loading = !append;
   state.lastPath = path;
   renderRows();
   renderApiLine();
   try {
     const json = await apiGet(path);
+    if (generation !== queryGeneration) return;
     const items = json.data?.items || [];
     state.items = append ? state.items.concat(items) : items;
     state.cursor = json.data?.pagination?.nextCursor || null;
@@ -256,6 +263,7 @@ async function runQuery(append = false) {
     renderRows();
     void enrichRoles(items);
   } catch {
+    if (generation !== queryGeneration) return;
     state.items = append ? state.items : [];
     state.cursor = null;
     state.loading = false;
@@ -282,6 +290,7 @@ async function enrichRoles(items) {
 
 /** Runs the plan of the current state: a search, or the foreign-ID notice. */
 function startQuery() {
+  queryGeneration += 1;
   const plan = scope.planQuery(state);
   state.foreign = plan.kind === "foreign-identifier" ? plan : null;
   renderForeignNotice();
@@ -289,8 +298,11 @@ function startQuery() {
     state.resolve = null;
     state.items = [];
     state.cursor = null;
+    state.loading = false;
+    state.lastPath = "";
     renderResolve();
     renderRows();
+    renderApiLine();
     return;
   }
   void resolveIdentifier(plan.resolvePath);
@@ -316,17 +328,22 @@ async function resolveIdentifier(path) {
     renderResolve();
     return;
   }
+  const generation = queryGeneration;
+  let resolved = null;
   try {
     const json = await apiGet(path);
-    state.resolve = json.data?.party ? { input: json.data.input, party: json.data.party } : null;
+    resolved = json.data?.party ? { input: json.data.input, party: json.data.party } : null;
   } catch {
-    state.resolve = null;
+    resolved = null;
   }
+  if (generation !== queryGeneration) return;
+  state.resolve = resolved;
   renderResolve();
 }
 
 function renderApiLine() {
-  document.querySelector("#api-line").hidden = !state.showApi;
+  // Empty on a foreign identifier, for which nothing is fetched.
+  document.querySelector("#api-line").hidden = !state.showApi || !state.lastPath;
   setText("#request-path", `GET ${state.lastPath}`);
   setHref("#open-json", `${API_BASE}${state.lastPath}`);
   document.querySelector("#toggle-api span").textContent = state.showApi

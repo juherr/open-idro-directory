@@ -43,6 +43,13 @@ export interface SearchScopeOptions {
   fixedCountry?: string;
   /** Path of the page that hosts the search. Defaults to `/explore/`. */
   basePath?: string;
+  /**
+   * Upper-case country codes, read in fixed-country mode only. A compact
+   * query (no `-`/`*` after the prefix) whose prefix is neither the fixed
+   * country nor listed here is a text search, e.g. `TESLA`. A separated
+   * query (`XX*ABC`, `XX-ABC`) stays an identifier whatever its prefix.
+   */
+  knownCountries?: Iterable<string>;
 }
 
 export interface SearchScope {
@@ -51,8 +58,12 @@ export interface SearchScope {
   readonly basePath: string;
   /** Reads `q`, `country`, `role` and `status` from a `location.search` string. */
   readState(search: string): SearchState;
-  /** `/api/v1/parties?...` for the state; `cursor` is appended when truthy. */
-  buildApiPath(state: SearchState, cursor?: string | null): string;
+  /**
+   * `/api/v1/parties?...` for the state; `cursor` is appended when truthy.
+   * `null` when the query is a foreign identifier of a fixed-country scope:
+   * nothing is to be fetched. Never `null` in explorer mode.
+   */
+  buildApiPath(state: SearchState, cursor?: string | null): string | null;
   /** `basePath` plus the state's query string, without `?` when empty. */
   buildPageUrl(state: SearchState): string;
   /** `/api/v1/resolve/...` for an identifier-looking query of the scope, else `null`. */

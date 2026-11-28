@@ -26,11 +26,18 @@ export function countryPagePath(code) {
   return `/countries/${code.toLowerCase()}/`;
 }
 
-export function createSearchScope({ fixedCountry, basePath = "/explore/" } = {}) {
+export function createSearchScope({ fixedCountry, basePath = "/explore/", knownCountries } = {}) {
   const forced = fixedCountry ? fixedCountry.toUpperCase() : null;
+  const known = new Set(knownCountries ?? []);
 
+  // In fixed-country mode, a compact input (no `-`/`*` after the prefix)
+  // whose prefix is neither the fixed country nor a known one is a name
+  // such as TESLA, searched as text.
   function identifierOf(q) {
-    return q ? normalizeIdentifierInput(q) : null;
+    const identifier = q ? normalizeIdentifierInput(q) : null;
+    if (!identifier || !forced || identifier.countryCode === forced) return identifier;
+    const separated = /^[A-Z]{2}[-*]/.test(q.trim().toUpperCase());
+    return separated || known.has(identifier.countryCode) ? identifier : null;
   }
 
   function isForeign(identifier) {
@@ -48,12 +55,13 @@ export function createSearchScope({ fixedCountry, basePath = "/explore/" } = {})
   }
 
   function buildApiPath(state, cursor = null) {
+    const identifier = identifierOf(state.q);
+    if (isForeign(identifier)) return null;
     const params = new URLSearchParams();
     const country = forced ?? state.country;
     if (country) params.set("country", country);
     if (state.role) params.set("role", state.role);
     if (state.status) params.set("status", state.status);
-    const identifier = identifierOf(state.q);
     if (identifier) params.set("emobilityId", identifier.emobilityId);
     else if (state.q) params.set("q", state.q.trim());
     params.set("limit", PAGE_SIZE);

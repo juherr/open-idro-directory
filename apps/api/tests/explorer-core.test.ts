@@ -156,6 +156,67 @@ describe("fixed-country scope", () => {
       resolvePath: null,
     });
   });
+
+  it("never builds an API or resolve path for a foreign identifier", () => {
+    expect(scope.buildApiPath({ ...emptyState, q: "DE*ABC" }, "c1")).toBeNull();
+    expect(scope.buildApiPath({ ...emptyState, q: "DE-ABC" })).toBeNull();
+    expect(scope.resolvePath("DE-ABC")).toBeNull();
+  });
+});
+
+describe("fixed-country scope with known countries", () => {
+  const scope = createSearchScope({
+    fixedCountry: "FR",
+    basePath: "/countries/fr/",
+    knownCountries: ["FR", "DE", "NL"],
+  });
+
+  it("searches a compact name with an unknown prefix as text in the fixed country", () => {
+    expect(scope.planQuery({ ...emptyState, q: "TESLA" })).toEqual({
+      kind: "search",
+      searchPath: "/api/v1/parties?country=FR&q=TESLA&limit=25",
+      resolvePath: null,
+    });
+    expect(scope.resolvePath("tesla")).toBeNull();
+  });
+
+  it("reports a compact identifier with a known foreign prefix", () => {
+    expect(scope.planQuery({ ...emptyState, q: "deabc" })).toEqual({
+      kind: "foreign-identifier",
+      countryCode: "DE",
+      emobilityId: "DEABC",
+    });
+    const path = scope.buildApiPath({ ...emptyState, q: "DEABC" }, "c1");
+    expect(path ?? "").not.toContain("emobilityId=DE");
+  });
+
+  it.each(["XY*ABC", "XY-ABC", "DE*ABC"])(
+    "reports %j, whose separator makes it an identifier, as foreign",
+    (q) => {
+      expect(scope.planQuery({ ...emptyState, q })).toMatchObject({
+        kind: "foreign-identifier",
+      });
+      expect(scope.buildApiPath({ ...emptyState, q }, "c1")).toBeNull();
+      expect(scope.resolvePath(q)).toBeNull();
+    },
+  );
+
+  it("still searches and resolves a compact identifier of the fixed country", () => {
+    expect(scope.planQuery({ ...emptyState, q: "frab1" })).toEqual({
+      kind: "search",
+      searchPath: "/api/v1/parties?country=FR&emobilityId=FRAB1&limit=25",
+      resolvePath: "/api/v1/resolve/FRAB1",
+    });
+  });
+
+  it("leaves the explorer unaffected by known countries", () => {
+    const explorer = createSearchScope({ knownCountries: ["FR"] });
+    expect(explorer.planQuery({ ...emptyState, q: "TESLA" })).toEqual({
+      kind: "search",
+      searchPath: "/api/v1/parties?emobilityId=TESLA&limit=25",
+      resolvePath: "/api/v1/resolve/TESLA",
+    });
+  });
 });
 
 describe("countryPagePath", () => {

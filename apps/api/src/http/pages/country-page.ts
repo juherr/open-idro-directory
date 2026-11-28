@@ -29,15 +29,186 @@ export async function renderCountryPage(summary: CountrySummary, origin: string)
       <h1 class="page-title">${name}</h1>
       <p class="page-subtitle">${coverageLine(summary)}</p>
     </header>
-    ${published ? "" : emptyState(summary, name)} ${authoritiesSection(summary)}
-    ${coverageSection(summary)} ${sourcesSection(summary)} ${linksSection(summary, published)}
+    ${published ? searchSection(code, name) : emptyState(summary, name)}
+    ${authoritiesSection(summary)} ${coverageSection(summary)} ${sourcesSection(summary)}
+    ${linksSection(summary, published)}
   `;
 
   return page({
     title: `${name} (${code}) - Open IDRO Directory`,
     canonical: `${origin}/countries/${code.toLowerCase()}/`,
     body,
+    // Only a country with identifiers has a search to enhance.
+    scripts: published,
   });
+}
+
+// Copy of the search section. The client replaces the `data-i18n` texts with
+// the same keys of EXPLORER_COPY in public/explorer.js; #55 localizes both.
+const SEARCH_COPY = {
+  title: "Search identifiers",
+  scope: "Every search is limited to",
+  placeholder: "Operator name or identifier",
+  searchBtn: "Search",
+  request: "API request",
+  copy: "Copy",
+  openJson: "Open JSON",
+  showApiLabel: "Show API request",
+  resolved: "Identifier resolved",
+  viewProvenance: "View provenance",
+  colId: "Identifier",
+  colName: "Operator",
+  colCountry: "Country",
+  colStatus: "Status",
+  colRoles: "Roles",
+  loading: "Loading...",
+  emptyTitle: "No results",
+  emptyBody: "Adjust your search or filters.",
+  more: "Load more",
+  close: "Close",
+  conflict: "Conflict",
+  legalName: "Legal name",
+  authority: "Authority level",
+  roles: "Roles",
+  lastSeen: "Last seen",
+  website: "Website",
+  provenance: "Provenance",
+  provenanceSub: "Where this identifier comes from, and which authority to verify it with.",
+} as const;
+
+/**
+ * The explorer's search, pinned to the page country. Hidden until
+ * public/explorer.js reads the data attributes and unhides it, so the page
+ * without JavaScript is the static content alone.
+ */
+function searchSection(code: string, name: string) {
+  const t = SEARCH_COPY;
+  const i18n = (key: keyof typeof SEARCH_COPY) => html`<span data-i18n="${key}">${t[key]}</span>`;
+  return html`
+    <section
+      class="section country-section country-search"
+      aria-labelledby="search-title"
+      data-fixed-country="${code}"
+      hidden
+    >
+      <div class="section-heading">
+        <h2 id="search-title">${t.title}</h2>
+      </div>
+      <div class="filter-panel">
+        <form class="filter-form" id="explore-form">
+          <label class="filter-search">
+            <input id="query" type="text" autocomplete="off" placeholder="${t.placeholder}" />
+          </label>
+          <select id="role" aria-label="${t.colRoles}"></select>
+          <select id="status" aria-label="${t.colStatus}"></select>
+          <button class="primary-button" type="submit" data-i18n="searchBtn">${t.searchBtn}</button>
+        </form>
+        <p class="country-page-meta">${t.scope} <strong>${name}</strong>.</p>
+        <div class="api-line" id="api-line" hidden>
+          <span class="api-label" data-i18n="request">${t.request}</span>
+          <code id="request-path"></code>
+          <button class="ghost-button" type="button" id="copy-request" data-i18n="copy">
+            ${t.copy}
+          </button>
+          <a class="open-json" id="open-json" href="#" target="_blank" rel="noreferrer"
+            >${i18n("openJson")} ↗</a
+          >
+        </div>
+        <div class="api-toggle-wrap">
+          <button class="link-button" type="button" id="toggle-api">${i18n("showApiLabel")}</button>
+        </div>
+      </div>
+      <p class="resolve-banner foreign-notice" id="foreign-notice" role="status" hidden></p>
+      <div class="resolve-banner" id="resolve-banner" hidden>
+        <div>
+          <div class="resolve-eyebrow">${i18n("resolved")} · <span id="resolve-input"></span></div>
+          <div class="resolve-main">
+            <span class="resolve-name" id="resolve-name"></span>
+            <span class="mono-id" id="resolve-emid"></span>
+            <span id="resolve-status"></span>
+          </div>
+          <div class="resolve-sub" id="resolve-sub"></div>
+        </div>
+        <button class="secondary-button" type="button" id="open-resolved">
+          ${i18n("viewProvenance")} →
+        </button>
+      </div>
+      <div class="results-meta"><div class="result-label" id="result-label"></div></div>
+      <div class="table-shell">
+        <div class="table-head">
+          ${i18n("colId")} ${i18n("colName")} ${i18n("colCountry")} ${i18n("colStatus")}
+          ${i18n("colRoles")}<span></span>
+        </div>
+        <div id="results"></div>
+        <div class="state-box" id="loading" hidden>
+          <span class="spinner" aria-hidden="true"></span>${i18n("loading")}
+        </div>
+        <div class="empty-state" id="empty" hidden>
+          <strong data-i18n="emptyTitle">${t.emptyTitle}</strong>${i18n("emptyBody")}
+        </div>
+      </div>
+      <div class="load-more-wrap" id="load-more-wrap" hidden>
+        <button class="load-more" type="button" id="load-more" data-i18n="more">${t.more}</button>
+      </div>
+      <div class="detail-backdrop" id="detail-backdrop" hidden></div>
+      <aside class="detail-panel" id="detail-panel" aria-label="Party details" hidden>
+        <div class="detail-header">
+          <div class="detail-topline">
+            <span class="mono-id" id="detail-emid"></span>
+            <button class="close-button" type="button" id="close-detail" aria-label="${t.close}">
+              ×
+            </button>
+          </div>
+          <h2 class="detail-title" id="detail-name"></h2>
+          <div class="detail-meta-line">
+            <span id="detail-status"></span>
+            <span class="detail-country" id="detail-country"></span>
+            <span class="conflict-badge" id="detail-conflict" data-i18n="conflict" hidden
+              >${t.conflict}</span
+            >
+          </div>
+        </div>
+        <div class="state-box" id="detail-loading" hidden>
+          <span class="spinner" aria-hidden="true"></span>${i18n("loading")}
+        </div>
+        <div class="detail-body" id="detail-body" hidden>
+          <div class="meta-grid">
+            ${detailFact("legalName", "detail-legal-name")}
+            ${detailFact("authority", "detail-authority")} ${detailFact("roles", "detail-roles")}
+            ${detailFact("lastSeen", "detail-last-seen")}
+            <div class="meta-item full" id="detail-website-wrap" hidden>
+              <div class="meta-label" data-i18n="website">${t.website}</div>
+              <div class="meta-value">
+                <a id="detail-website" href="#" target="_blank" rel="noreferrer"></a>
+              </div>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="panel-title" data-i18n="provenance">${t.provenance}</div>
+            <p class="panel-subtitle" data-i18n="provenanceSub">${t.provenanceSub}</p>
+            <div id="observations"></div>
+          </div>
+          <div class="detail-api">
+            <code id="detail-path"></code>
+            <a id="detail-open-json" href="#" target="_blank" rel="noreferrer"
+              >${i18n("openJson")} ↗</a
+            >
+          </div>
+        </div>
+      </aside>
+    </section>
+  `;
+}
+
+// shared.js is a classic script whose globals explorer.js reads.
+const SEARCH_SCRIPTS = html`<script src="/shared.js"></script>
+  <script type="module" src="/explorer.js"></script>`;
+
+function detailFact(key: keyof typeof SEARCH_COPY, id: string) {
+  return html`<div>
+    <div class="meta-label" data-i18n="${key}">${SEARCH_COPY[key]}</div>
+    <div class="meta-value" id="${id}"></div>
+  </div>`;
 }
 
 const ERROR_TITLES: Record<number, string> = {
@@ -288,10 +459,12 @@ async function page({
   title,
   canonical,
   body,
+  scripts = false,
 }: {
   title: string;
   canonical?: string;
   body: Fragment;
+  scripts?: boolean;
 }) {
   const document = await html`<!doctype html>
     <html lang="en">
@@ -334,6 +507,7 @@ async function page({
             </div>
           </footer>
         </div>
+        ${scripts ? SEARCH_SCRIPTS : ""}
       </body>
     </html>`;
   return document.toString();

@@ -1,3 +1,23 @@
+// ES module: the helpers of the classic shared.js script, loaded before it,
+// stay reachable as globals.
+import { countryPagePath, createSearchScope, existingCountryPagePath } from "/explorer-core.js";
+
+// A country page hosts this search in a section pinned to its country; the
+// explorer page has no such section.
+const fixedRoot = document.querySelector("[data-fixed-country]");
+const scope = fixedRoot
+  ? createSearchScope({
+      fixedCountry: fixedRoot.dataset.fixedCountry,
+      knownCountries: Object.keys(COUNTRY_NAMES.en),
+    })
+  : createSearchScope();
+
+// The country page is server-rendered in the language of <html lang>.
+function currentLanguage() {
+  if (!fixedRoot) return getLanguage();
+  return document.documentElement.lang === "fr" ? "fr" : "en";
+}
+
 const EXPLORER_COPY = {
   fr: {
     home: "Accueil",
@@ -46,6 +66,7 @@ const EXPLORER_COPY = {
     byAuthor: "Un projet de",
     disclaimer:
       "Projet d'agrégation indépendant. Open IDRO Directory n'émet pas d'identifiants et ne fait pas autorité — référez-vous à l'IDRO d'origine pour toute vérification légale ou opérationnelle.",
+    belongsTo: "{id} relève d'un autre pays : {country}.",
   },
   en: {
     home: "Home",
@@ -94,6 +115,7 @@ const EXPLORER_COPY = {
     byAuthor: "A project by",
     disclaimer:
       "Independent aggregation project. Open IDRO Directory does not issue identifiers and is not authoritative — refer to the originating IDRO for any legal or operational verification.",
+    belongsTo: "{id} belongs to {country}.",
   },
 };
 
@@ -114,29 +136,38 @@ const state = {
   copied: false,
   selectedParty: null,
   detailPath: "",
+  foreign: null,
 };
 
+// Absent on a country page, whose country is fixed.
+const countrySelect = document.querySelector("#country");
+
 function initFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  state.q = params.get("q") || "";
-  state.country = params.get("country") || "";
-  state.role = params.get("role") || "";
-  state.status = params.get("status") || "";
+  Object.assign(state, scope.readState(window.location.search));
   document.querySelector("#query").value = state.q;
-  document.querySelector("#country").value = state.country;
+  if (countrySelect) countrySelect.value = state.country;
   document.querySelector("#role").value = state.role;
   document.querySelector("#status").value = state.status;
+  // A country page keeps only q, role and status in its URL: a stray
+  // parameter (a country, an unknown key) is dropped at once.
+  if (fixedRoot) {
+    const canonical = scope.buildPageUrl(state);
+    if (canonical !== window.location.pathname + window.location.search) {
+      history.replaceState(null, "", canonical);
+    }
+  }
 }
 
 function translateExplorer() {
-  const lang = getLanguage();
+  const lang = currentLanguage();
   document.documentElement.lang = lang;
   updateLanguageButtons(lang);
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     const key = element.dataset.i18n;
     if (EXPLORER_COPY[lang][key]) element.textContent = EXPLORER_COPY[lang][key];
   });
-  document.querySelector("#query").placeholder = EXPLORER_COPY[lang].searchPlaceholder;
+  if (!fixedRoot)
+    document.querySelector("#query").placeholder = EXPLORER_COPY[lang].searchPlaceholder;
   document.querySelector("#toggle-api span").textContent = state.showApi
     ? EXPLORER_COPY[lang].hideApiLabel
     : EXPLORER_COPY[lang].showApiLabel;
@@ -155,7 +186,7 @@ function renderExplorer() {
 }
 
 function renderOptions() {
-  const lang = getLanguage();
+  const lang = currentLanguage();
   const copy = EXPLORER_COPY[lang];
   const codes = availableCountryCodes().sort((left, right) =>
     countryName(left, lang).localeCompare(countryName(right, lang), lang),
@@ -192,11 +223,24 @@ function renderOptions() {
 }
 
 function renderContextLabel() {
-  const lang = getLanguage();
+  const lang = currentLanguage();
   const count = availableCountryCodes().length;
   const suffix =
     lang === "fr" ? `${count} pays` : `${count} ${count === 1 ? "country" : "countries"}`;
-  setText("[data-i18n='context']", `${EXPLORER_COPY[lang].context} · ${suffix}`);
+  const label = escapeHtml(`${EXPLORER_COPY[lang].context} · ${suffix}`);
+  const country = state.country ? ` · ${countryLink(state.country, lang)}` : "";
+  setHtml("[data-i18n='context']", label + country);
+}
+
+/** The country name, linked to its country page when the code is valid. */
+function countryLink(code, lang) {
+  const name = escapeHtml(countryName(code, lang));
+  return linkOrName(countryPagePath(code), name);
+}
+
+/** `name` (already escaped) linked to `path`, or plain when `path` is empty. */
+function linkOrName(path, name) {
+  return path ? `<a class="text-link" href="${escapeHtml(path)}">${name}</a>` : name;
 }
 
 function availableCountryCodes() {
@@ -204,37 +248,23 @@ function availableCountryCodes() {
   return countedCodes.length ? countedCodes : FALLBACK_COUNTRIES;
 }
 
-function buildPath(append = false) {
-  const params = new URLSearchParams();
-  if (state.country) params.set("country", state.country);
-  if (state.role) params.set("role", state.role);
-  if (state.status) params.set("status", state.status);
-  const identifier = state.q ? normalizeIdentifierInput(state.q) : null;
-  if (identifier) params.set("emobilityId", identifier.emobilityId);
-  else if (state.q) params.set("q", state.q.trim());
-  params.set("limit", "25");
-  if (append && state.cursor) params.set("cursor", state.cursor);
-  return `/api/v1/parties?${params.toString()}`;
-}
-
 function syncUrl() {
-  const params = new URLSearchParams();
-  if (state.q) params.set("q", state.q);
-  if (state.country) params.set("country", state.country);
-  if (state.role) params.set("role", state.role);
-  if (state.status) params.set("status", state.status);
-  const suffix = params.toString();
-  history.replaceState(null, "", suffix ? `/explore/?${suffix}` : "/explore/");
+  history.replaceState(null, "", scope.buildPageUrl(state));
 }
 
-async function runQuery(append = false) {
-  const path = buildPath(append);
+// Bumped by every new query: a response of a superseded one is dropped.
+let queryGeneration = 0;
+
+async function runQuery(path, append = false) {
+  if (!path) return;
+  const generation = queryGeneration;
   state.loading = !append;
   state.lastPath = path;
   renderRows();
   renderApiLine();
   try {
     const json = await apiGet(path);
+    if (generation !== queryGeneration) return;
     const items = json.data?.items || [];
     state.items = append ? state.items.concat(items) : items;
     state.cursor = json.data?.pagination?.nextCursor || null;
@@ -242,6 +272,7 @@ async function runQuery(append = false) {
     renderRows();
     void enrichRoles(items);
   } catch {
+    if (generation !== queryGeneration) return;
     state.items = append ? state.items : [];
     state.cursor = null;
     state.loading = false;
@@ -266,30 +297,72 @@ async function enrichRoles(items) {
   renderRows();
 }
 
-async function resolveIdentifier(value) {
-  if (!value || !isIdentifierLike(value)) {
+/** Runs the plan of the current state: a search, or the foreign-ID notice. */
+function startQuery() {
+  queryGeneration += 1;
+  const plan = scope.planQuery(state);
+  state.foreign = plan.kind === "foreign-identifier" ? plan : null;
+  renderForeignNotice();
+  if (state.foreign) {
+    state.resolve = null;
+    state.items = [];
+    state.cursor = null;
+    state.loading = false;
+    state.lastPath = "";
+    renderResolve();
+    renderRows();
+    renderApiLine();
+    return;
+  }
+  void resolveIdentifier(plan.resolvePath);
+  void runQuery(plan.searchPath);
+}
+
+function renderForeignNotice() {
+  const notice = document.querySelector("#foreign-notice");
+  if (!notice) return;
+  notice.hidden = !state.foreign;
+  if (!state.foreign) return;
+  const lang = currentLanguage();
+  const [before, after] = EXPLORER_COPY[lang].belongsTo.split("{country}");
+  // Linked only once the stats show the country has a page: before they
+  // load, or when they fail, the name stays plain text.
+  const code = state.foreign.countryCode;
+  const name = escapeHtml(countryName(code, lang));
+  const path = existingCountryPagePath(code, state.countsByCountry);
+  notice.innerHTML =
+    escapeHtml(before.replace("{id}", state.foreign.emobilityId)) +
+    linkOrName(path, name) +
+    escapeHtml(after);
+}
+
+async function resolveIdentifier(path) {
+  if (!path) {
     state.resolve = null;
     renderResolve();
     return;
   }
+  const generation = queryGeneration;
+  let resolved = null;
   try {
-    const identifier = normalizeIdentifierInput(value);
-    if (!identifier) return;
-    const json = await apiGet(`/api/v1/resolve/${encodeURIComponent(identifier.emobilityId)}`);
-    state.resolve = json.data?.party ? { input: json.data.input, party: json.data.party } : null;
+    const json = await apiGet(path);
+    resolved = json.data?.party ? { input: json.data.input, party: json.data.party } : null;
   } catch {
-    state.resolve = null;
+    resolved = null;
   }
+  if (generation !== queryGeneration) return;
+  state.resolve = resolved;
   renderResolve();
 }
 
 function renderApiLine() {
-  document.querySelector("#api-line").hidden = !state.showApi;
+  // Empty on a foreign identifier, for which nothing is fetched.
+  document.querySelector("#api-line").hidden = !state.showApi || !state.lastPath;
   setText("#request-path", `GET ${state.lastPath}`);
   setHref("#open-json", `${API_BASE}${state.lastPath}`);
   document.querySelector("#toggle-api span").textContent = state.showApi
-    ? EXPLORER_COPY[getLanguage()].hideApiLabel
-    : EXPLORER_COPY[getLanguage()].showApiLabel;
+    ? EXPLORER_COPY[currentLanguage()].hideApiLabel
+    : EXPLORER_COPY[currentLanguage()].showApiLabel;
 }
 
 function renderResolve() {
@@ -298,7 +371,7 @@ function renderResolve() {
     banner.hidden = true;
     return;
   }
-  const lang = getLanguage();
+  const lang = currentLanguage();
   const party = state.resolve.party;
   banner.hidden = false;
   setText("#resolve-input", state.resolve.input);
@@ -312,12 +385,16 @@ function renderResolve() {
 }
 
 function renderRows() {
-  const lang = getLanguage();
+  const lang = currentLanguage();
   const copy = EXPLORER_COPY[lang];
   document.querySelector("#loading").hidden = !state.loading;
-  document.querySelector("#empty").hidden = state.loading || state.items.length > 0;
+  document.querySelector("#empty").hidden =
+    state.loading || state.items.length > 0 || Boolean(state.foreign);
   document.querySelector("#load-more-wrap").hidden = !state.cursor || state.loading;
-  setText("#result-label", state.loading ? "" : `${state.items.length} ${copy.results}`);
+  setText(
+    "#result-label",
+    state.loading || state.foreign ? "" : `${state.items.length} ${copy.results}`,
+  );
 
   if (state.loading) {
     setHtml("#results", "");
@@ -384,14 +461,14 @@ async function openDetail(countryCode, partyId) {
 }
 
 function renderDetail(detail, observations) {
-  const lang = getLanguage();
+  const lang = currentLanguage();
   const copy = EXPLORER_COPY[lang];
   document.querySelector("#detail-loading").hidden = true;
   document.querySelector("#detail-body").hidden = false;
   setText("#detail-emid", formatIdentifier(detail.countryCode, detail.partyId));
   setText("#detail-name", detail.preferredName || detail.legalName || detail.eMobilityId);
   setHtml("#detail-status", statusBadge(detail.status, lang));
-  setText("#detail-country", countryName(detail.countryCode, lang));
+  setHtml("#detail-country", countryLink(detail.countryCode, lang));
   document.querySelector("#detail-conflict").hidden = !detail.hasConflict;
   setText("#detail-legal-name", detail.legalName || "—");
   setText(
@@ -483,29 +560,18 @@ function closeDetail() {
 
 function submitSearch() {
   state.q = document.querySelector("#query").value.trim();
-  state.country = document.querySelector("#country").value;
+  if (countrySelect) state.country = countrySelect.value;
   state.role = document.querySelector("#role").value;
   state.status = document.querySelector("#status").value;
   syncUrl();
-  if (state.q && isIdentifierLike(state.q)) void resolveIdentifier(state.q);
-  else {
-    state.resolve = null;
-    renderResolve();
-  }
-  void runQuery(false);
+  renderContextLabel();
+  startQuery();
 }
 
 async function loadContext() {
-  try {
-    const stats = await apiGet("/api/v1/stats");
-    state.countsByCountry =
-      stats.data?.countsByIdentifierCountry || stats.data?.countsByCountry || {};
-    renderOptions();
-    renderContextLabel();
-  } catch {
-    state.countsByCountry = {};
-    renderContextLabel();
-  }
+  // The stats feed the country select and the context label of the
+  // explorer, and the country link of a country page's foreign notice.
+  await loadStats();
   try {
     const sources = await apiGet("/api/v1/sources");
     state.sourceNames = Object.fromEntries(
@@ -516,12 +582,28 @@ async function loadContext() {
   }
 }
 
+async function loadStats() {
+  try {
+    const stats = await apiGet("/api/v1/stats");
+    state.countsByCountry =
+      stats.data?.countsByIdentifierCountry || stats.data?.countsByCountry || {};
+    renderOptions();
+    renderContextLabel();
+    // Writes the notice of the current query only: state.foreign is reset
+    // by every new query.
+    renderForeignNotice();
+  } catch {
+    state.countsByCountry = {};
+    renderContextLabel();
+  }
+}
+
 document.querySelector("#explore-form").addEventListener("submit", (event) => {
   event.preventDefault();
   submitSearch();
 });
 
-document.querySelector("#country").addEventListener("change", submitSearch);
+countrySelect?.addEventListener("change", submitSearch);
 document.querySelector("#role").addEventListener("change", submitSearch);
 document.querySelector("#status").addEventListener("change", submitSearch);
 document.querySelector("#toggle-api").addEventListener("click", () => {
@@ -541,7 +623,9 @@ document.querySelector("#copy-request").addEventListener("click", async () => {
     translateExplorer();
   }, 1500);
 });
-document.querySelector("#load-more").addEventListener("click", () => runQuery(true));
+document
+  .querySelector("#load-more")
+  .addEventListener("click", () => runQuery(scope.buildApiPath(state, state.cursor), true));
 document.querySelector("#open-resolved").addEventListener("click", () => {
   if (state.resolve?.party)
     void openDetail(state.resolve.party.countryCode, state.resolve.party.partyId);
@@ -557,5 +641,6 @@ renderOptions();
 initFromUrl();
 renderExplorer();
 void loadContext();
-if (state.q && isIdentifierLike(state.q)) void resolveIdentifier(state.q);
-void runQuery(false);
+startQuery();
+// Revealed only once init ran: a failure leaves the no-JS page as served.
+if (fixedRoot) fixedRoot.hidden = false;

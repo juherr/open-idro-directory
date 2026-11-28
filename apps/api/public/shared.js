@@ -133,22 +133,6 @@ async function apiGet(path) {
   return response.json();
 }
 
-function isIdentifierLike(value) {
-  return normalizeIdentifierInput(value) !== null;
-}
-
-function normalizeIdentifierInput(value) {
-  const input = value.trim().toUpperCase();
-  const separated = /^([A-Z]{2})[-*]([A-Z0-9]{3})$/.exec(input);
-  const compact = separated || /^([A-Z]{2})([A-Z0-9*]{3})$/.exec(input);
-  if (!compact) return null;
-  return {
-    countryCode: compact[1],
-    partyId: compact[2],
-    emobilityId: `${compact[1]}${compact[2]}`,
-  };
-}
-
 function formatIdentifier(countryCode, partyId) {
   return countryCode && partyId != null ? `${countryCode}-${partyId}` : countryCode || "";
 }

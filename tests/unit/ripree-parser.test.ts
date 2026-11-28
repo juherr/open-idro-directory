@@ -85,4 +85,48 @@ describe("Spanish RIPREE parser", () => {
     expect(result.records).toHaveLength(0);
     expect(result.warnings[0]?.code).toBe("RIPREE_MALFORMED_IDENTIFIER");
   });
+
+  it("publishes a foreign identifier as a listing observed in Spain", async () => {
+    const source = await loadSourceDefinition("es-ripree");
+    const result = await new RipreeConnector().normalize({
+      source,
+      retrievedAt: "2026-06-16T00:00:00.000Z",
+      records: [ripreeRow("ES*FEN"), ripreeRow("SE*VGC")],
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.records.map((record) => record.key)).toEqual([
+      "es-ripree:ES:FEN:CPO",
+      "es-ripree:SE:VGC:CPO",
+    ]);
+    expect(result.records[0]?.source).toMatchObject({
+      official: true,
+      observation: { kind: "ASSIGNMENT", observingJurisdiction: "ES" },
+    });
+    expect(result.records[1]).toMatchObject({
+      countryCode: "SE",
+      partyId: "VGC",
+      source: {
+        official: false,
+        observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "ES" },
+      },
+      metadata: { ripreeSeparator: "*" },
+    });
+  });
 });
+
+function ripreeRow(sourceValue: string) {
+  return {
+    document: "B00000000",
+    sourceValue,
+    companyType: "CPO",
+    organizationName: "Example",
+    address: null,
+    country: null,
+    autonomousCommunity: null,
+    province: null,
+    municipality: null,
+    postalCode: null,
+    website: null,
+  };
+}

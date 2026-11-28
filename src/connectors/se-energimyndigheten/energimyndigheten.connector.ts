@@ -11,7 +11,11 @@ import type {
 import { makeRegistryKey, type NormalizedRegistryRecord } from "../../domain/registry-record.js";
 import { getBinary, getText, sha256 } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
+import { observationScope } from "../../domain/registry-observation.js";
+import {
+  parseCrossRegisterIdentifier,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { parseEnergimyndighetenSnapshot } from "./energimyndigheten.parser.js";
 import type { EnergimyndighetenRow } from "./energimyndigheten.types.js";
 
@@ -116,7 +120,9 @@ export class EnergimyndighetenConnector implements RegistryConnector<Energimyndi
     const seen = new Set<string>();
 
     for (const sourceRecord of input.records) {
-      const parsed = parseEnergimyndighetenIdentifier(sourceRecord.sourceValue);
+      const parsed =
+        parseEnergimyndighetenIdentifier(sourceRecord.sourceValue) ??
+        parseCrossRegisterIdentifier(input.source, sourceRecord.sourceValue);
       if (!parsed) {
         warnings.push(
           rejectedIdentifierWarning(input.source, {
@@ -147,6 +153,9 @@ export class EnergimyndighetenConnector implements RegistryConnector<Energimyndi
 
       const organizationName =
         sourceRecord.organizationName ?? "Unspecified Swedish Energy Agency organization";
+      // The agency publishes the OCPI parties active in Sweden, so a foreign
+      // identifier is observed there, not assigned.
+      const observation = observationScope(input.source, parsed.countryCode);
       records.push({
         key,
         countryCode: parsed.countryCode,
@@ -161,13 +170,14 @@ export class EnergimyndighetenConnector implements RegistryConnector<Energimyndi
         },
         source: {
           registryId: input.source.id,
-          official: isAuthoritative(input.source),
+          official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
           sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
           sourceUrl: sourceRecord.sourceUrl,
           sourceValue: sourceRecord.sourceValue,
           firstSeenAt: input.retrievedAt,
           lastSeenAt: input.retrievedAt,
           retrievedAt: input.retrievedAt,
+          observation,
         },
         metadata: {
           energimyndighetenCompanyName: organizationName,

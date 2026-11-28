@@ -79,9 +79,10 @@ describe only what the **current** run detected, so a corrected identifier stops
 being reported as a live problem while staying in the history. An entry whose
 `lastDetectedAt` is older than `generatedAt` is one the sources no longer
 publish. `totalOutOfJurisdictionRows`, `outOfJurisdictionByRegistry`, and
-`outOfJurisdictionByCountry` count the current entries of the `outOfJurisdiction`
-bucket, which no build adds to: they stay at zero and do not count
-cross-register listings.
+`outOfJurisdictionByCountry` count the cross-register listings among the
+published records, once per register and identifier, as
+`data/reports/out-of-jurisdiction.json` lists them. They do not read the
+`outOfJurisdiction` bucket, which no build adds to.
 
 The rule applies to the official registry pipeline only. Complementary
 observations use other identifier schemes with their own length rules.
@@ -196,6 +197,8 @@ observation.
 - `data/reports/out-of-jurisdiction.json` keeps its shape but now lists the
   published cross-register listings, grouped by the register that lists them
   (see `docs/operations.md`).
+- The out-of-jurisdiction counters of `data/stats.json` keep their names but
+  now count those listings, not the `outOfJurisdiction` bucket.
 
 ## Source Provenance And Reuse
 

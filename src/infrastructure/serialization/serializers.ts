@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { currentDetections } from "../../application/invalid-record-history.js";
 import { fromRoot } from "../filesystem/paths.js";
 import { isValidEmi3Identifier } from "../../domain/emi3-identifier.js";
+import { crossRegisterListings } from "../../domain/registry-observation.js";
 import type {
   InvalidRegistryHistory,
   NormalizedRegistryRecord,
@@ -76,7 +77,7 @@ export async function writeDatasets(
   );
   await writeFile(
     `${outputDir}/stats.json`,
-    `${JSON.stringify(toStats(sorted, invalid, results, generatedAt), null, 2)}\n`,
+    `${JSON.stringify(toStats(sorted, sources, invalid, results, generatedAt), null, 2)}\n`,
   );
 }
 
@@ -185,6 +186,7 @@ export function toSourceMetadata(source: SourceDefinition) {
 
 function toStats(
   records: NormalizedRegistryRecord[],
+  sources: SourceDefinition[],
   invalid: InvalidRegistryHistory,
   results: SourceBuildResult[],
   generatedAt: string,
@@ -192,16 +194,16 @@ function toStats(
   // The history keeps every identifier ever refused; the counters describe only
   // what the sources still publish, so a corrected identifier stops being
   // reported as a current problem.
-  const {
-    records: currentRecords,
-    rows: currentRows,
-    outOfJurisdiction: currentForeign,
-  } = currentDetections(invalid);
+  const { records: currentRecords, rows: currentRows } = currentDetections(invalid);
+  // Foreign identifiers are published as cross-register listings, no longer
+  // refused: the counters follow data/reports/out-of-jurisdiction.json, one
+  // per register and identifier.
+  const listings = crossRegisterListings(records, sources);
   return {
     totalRecords: records.length,
     totalInvalidRecords: currentRecords.length,
     totalRejectedRows: currentRows.length,
-    totalOutOfJurisdictionRows: currentForeign.length,
+    totalOutOfJurisdictionRows: listings.length,
     recordsByCountry: countBy(records, (record) => record.countryCode),
     recordsByCountryRole: countByCountryRole(records),
     recordsByRole: countBy(records, (record) => record.role),
@@ -215,8 +217,8 @@ function toStats(
     rejectedRowsByRegistry: countBy(currentRows, (row) => row.registryId),
     // Grouped by register to know who to tell, and by country to know which
     // appointed registry the identifier actually belongs to.
-    outOfJurisdictionByRegistry: countBy(currentForeign, (row) => row.registryId),
-    outOfJurisdictionByCountry: countBy(currentForeign, (row) => row.countryCode),
+    outOfJurisdictionByRegistry: countBy(listings, (listing) => listing.registryId),
+    outOfJurisdictionByCountry: countBy(listings, (listing) => listing.countryCode),
     staleSources: results
       .filter((result) => result.stale)
       .map((result) => result.sourceId)

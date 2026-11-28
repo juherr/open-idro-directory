@@ -247,6 +247,52 @@ describe("invalid identifier handling", () => {
     }
   });
 
+  it("counts the published cross-register listings as out-of-jurisdiction rows", async () => {
+    const outputDir = await mkdtemp(join(tmpdir(), "open-idro-listing-stats-"));
+    const source = await loadSourceDefinition("se-energimyndigheten");
+    const listing = (countryCode: string, role: "CPO" | "EMSP"): NormalizedRegistryRecord => {
+      const base = sampleRecord("ABC");
+      return {
+        ...base,
+        key: `se-energimyndigheten:${countryCode}:ABC:${role}`,
+        countryCode,
+        eMobilityId: `${countryCode}ABC`,
+        role,
+        source: {
+          ...base.source,
+          official: false,
+          sourceRecordId: `${countryCode}ABC`,
+          sourceValue: `${countryCode}*ABC`,
+          observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "SE" },
+        },
+      };
+    };
+    // Published before the observation block existed: derived as a listing.
+    const legacy = listing("DK", "CPO");
+    delete legacy.source.observation;
+    try {
+      await writeDatasets(
+        [sampleRecord("ABC"), listing("PL", "CPO"), listing("PL", "EMSP"), legacy],
+        [source],
+        [],
+        "2026-06-14T00:00:00.000Z",
+        outputDir,
+      );
+
+      const stats = JSON.parse(await readFile(join(outputDir, "stats.json"), "utf8"));
+      // One per register and identifier, as in data/reports/out-of-jurisdiction.json.
+      expect(stats).toMatchObject({
+        totalOutOfJurisdictionRows: 2,
+        outOfJurisdictionByRegistry: { "se-energimyndigheten": 2 },
+        outOfJurisdictionByCountry: { DK: 1, PL: 1 },
+      });
+      const invalid = JSON.parse(await readFile(join(outputDir, "registry-invalid.json"), "utf8"));
+      expect(invalid.outOfJurisdiction).toEqual([]);
+    } finally {
+      await rm(outputDir, { recursive: true, force: true });
+    }
+  });
+
   it("refuses to publish an invalid record", async () => {
     const outputDir = await mkdtemp(join(tmpdir(), "open-idro-invalid-guard-"));
     const source = await loadSourceDefinition("se-energimyndigheten");

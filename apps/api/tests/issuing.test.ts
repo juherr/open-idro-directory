@@ -1,6 +1,9 @@
 import {
+  authorityLevelSchema,
   issuingConfirmationSchema,
   observationKindSchema,
+  observationTypeSchema,
+  registryRoleSchema,
 } from "@open-idro-directory/registry-model";
 import { describe, expect, it } from "vitest";
 import { observationPayload, partyPayload } from "../src/application/mappers.js";
@@ -145,6 +148,26 @@ describe("OpenAPI party and observation components", () => {
       ...observationKindSchema.options,
       null,
     ]);
+  });
+
+  it("enumerates the domain authority levels and observation types", () => {
+    const levels = [...authorityLevelSchema.options];
+    expect(party.properties?.highestAuthorityLevel?.enum).toEqual(levels);
+    expect(role.properties?.highestAuthorityLevel?.enum).toEqual(levels);
+    expect(observation.properties?.authorityLevel?.enum).toEqual(levels);
+    expect(observation.properties?.observationType?.enum).toEqual([
+      ...observationTypeSchema.options,
+    ]);
+  });
+
+  it("documents only roles the domain knows", () => {
+    // The API publishes CPO and EMSP only, a subset of the domain roles.
+    const roles: readonly string[] = registryRoleSchema.options;
+    for (const schema of [role, observation]) {
+      const documented = schema.properties?.role?.enum ?? [];
+      expect(documented.length).toBeGreaterThan(0);
+      expect(documented.filter((value) => !roles.includes(value as string))).toEqual([]);
+    }
   });
 
   it("declares every property of the fixture payloads", () => {

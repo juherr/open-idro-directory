@@ -96,6 +96,7 @@ program
       // published either way and the report is what makes the failure visible.
       const failures = reportSourceFailures(result.results);
       await writeChangeReport(
+        sources,
         result.rebuiltSourceIds,
         failures,
         runFindings(result.records, result.invalidHistory, sources),
@@ -111,7 +112,7 @@ program
   .option("--source <sourceId>", "source id")
   .action(async (options) =>
     run(async () => {
-      const diff = await diffAgainstGit(options.source);
+      const diff = await diffAgainstGit(await loadSourceDefinitions(), options.source);
       console.log(
         JSON.stringify(
           {

@@ -5,6 +5,7 @@ import {
   runFindings,
 } from "../../src/application/change-report.js";
 import type { NormalizedRegistryRecord } from "../../src/domain/registry-record.js";
+import { withPublishedObservations } from "../../src/domain/registry-observation.js";
 import { loadSourceDefinitions } from "../../src/infrastructure/filesystem/source-loader.js";
 
 describe("change report diff", () => {
@@ -16,6 +17,43 @@ describe("change report diff", () => {
 
     expect(diff.updated).toHaveLength(0);
     expect(diff.unchanged).toBe(1);
+  });
+
+  it("does not count the observation block a published record lacks as an update", async () => {
+    const sources = await loadSourceDefinitions();
+    const run = "2026-06-15T00:00:00.000Z";
+    const published = sampleRecord(run);
+    const current = sampleRecord(run);
+    current.source = {
+      ...current.source,
+      observation: { kind: "ASSIGNMENT", observingJurisdiction: "FR" },
+    };
+
+    const diff = diffRecords(
+      withPublishedObservations([published], sources),
+      withPublishedObservations([current], sources),
+    );
+
+    expect(diff.updated).toHaveLength(0);
+    expect(diff.unchanged).toBe(1);
+  });
+
+  it("still counts a switch of observation kind as an update", async () => {
+    const sources = await loadSourceDefinitions();
+    const run = "2026-06-15T00:00:00.000Z";
+    const published = sampleRecord(run);
+    published.source = {
+      ...published.source,
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "FR" },
+    };
+    const current = sampleRecord(run);
+
+    const diff = diffRecords(
+      withPublishedObservations([published], sources),
+      withPublishedObservations([current], sources),
+    );
+
+    expect(diff.updated.map((record) => record.key)).toEqual(["fr-afirev:FR:ABC:CPO"]);
   });
 });
 

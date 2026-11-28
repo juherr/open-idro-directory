@@ -8,6 +8,7 @@ import type {
   NormalizedRegistryRecord,
   RejectedSourceRowDetection,
 } from "../domain/registry-record.js";
+import { withPublishedObservations } from "../domain/registry-observation.js";
 import type { SourceBuildResult } from "../domain/source-result.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
 import { rawSnapshotDir, readCurrentSnapshot } from "../infrastructure/filesystem/raw-snapshot.js";
@@ -69,9 +70,11 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   );
   const previousHealth = await readPreviousSourceHealth(dataDir);
   // `registry.json` is several megabytes: read, parse, and group it once for the
-  // whole build rather than once per source.
+  // whole build rather than once per source. Records published before the
+  // observation block existed get it here, so the safety thresholds and the
+  // merge compare like with like.
   const publishedBySource = Map.groupBy(
-    await readGeneratedRecords(dataDir),
+    withPublishedObservations(await readGeneratedRecords(dataDir), sources),
     (record) => record.source.registryId,
   );
   const previousRecordsOf = (sourceId: string) => publishedBySource.get(sourceId) ?? [];

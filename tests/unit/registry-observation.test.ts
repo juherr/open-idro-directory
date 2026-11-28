@@ -3,7 +3,12 @@ import {
   normalizedRegistryRecordSchema,
   type NormalizedRegistryRecord,
 } from "../../src/domain/registry-record.js";
-import { observationOf, observationScope } from "../../src/domain/registry-observation.js";
+import {
+  observationOf,
+  observationScope,
+  withObservation,
+  withPublishedObservations,
+} from "../../src/domain/registry-observation.js";
 import type { SourceDefinition } from "../../src/domain/source-definition.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
 import { parseCrossRegisterIdentifier } from "../../src/validation/identifier-scope.js";
@@ -49,6 +54,32 @@ describe("observation scope", () => {
       kind: "CROSS_REGISTER_LISTING",
       observingJurisdiction: "PL",
     });
+  });
+
+  it("fills the block a published record lacks and keeps the one it carries", async () => {
+    const source = await loadSourceDefinition("pl-eipa");
+    const declared = record("pl-eipa", "PL", {
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "PL" },
+    });
+
+    expect(withObservation(record("pl-eipa", "NL"), source).source.observation).toEqual({
+      kind: "CROSS_REGISTER_LISTING",
+      observingJurisdiction: "PL",
+    });
+    expect(withObservation(declared, source)).toBe(declared);
+  });
+
+  it("leaves the records of a register no source describes as they are", async () => {
+    const source = await loadSourceDefinition("pl-eipa");
+    const orphan = record("xx-gone", "PL");
+
+    const [filled, kept] = withPublishedObservations([record("pl-eipa", "PL"), orphan], [source]);
+
+    expect(filled?.source.observation).toEqual({
+      kind: "ASSIGNMENT",
+      observingJurisdiction: "PL",
+    });
+    expect(kept).toBe(orphan);
   });
 
   it("keeps records without an observation block valid", () => {

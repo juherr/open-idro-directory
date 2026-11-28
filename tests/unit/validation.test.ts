@@ -108,6 +108,30 @@ describe("validation", () => {
     expect(issues.some((issue) => issue.code === "MASS_CHANGE")).toBe(true);
   });
 
+  it("counts a switch of observation kind as a change", async () => {
+    const source = await loadSourceDefinition("fr-afirev");
+    const previous = ["A", "B", "C", "D"].map((partyId) => {
+      const record = sampleRecord(partyId);
+      return {
+        ...record,
+        source: {
+          ...record.source,
+          observation: { kind: "ASSIGNMENT" as const, observingJurisdiction: "FR" },
+        },
+      };
+    });
+    const current = previous.map((record) => ({
+      ...record,
+      source: {
+        ...record.source,
+        observation: { kind: "CROSS_REGISTER_LISTING" as const, observingJurisdiction: "FR" },
+      },
+    }));
+    const issues = checkSafetyThresholds(source, previous, current, 0, '{"data":[]}');
+
+    expect(issues.some((issue) => issue.code === "MASS_CHANGE")).toBe(true);
+  });
+
   it("allows HTML source pages when they are the expected registry format", async () => {
     const source = await loadSourceDefinition("dk-fstyr");
     const current = [sampleRecord("ABC", "dk-fstyr", "DK")];

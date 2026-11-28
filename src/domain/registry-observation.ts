@@ -32,6 +32,34 @@ export function observationOf(
   return record.source.observation ?? observationScope(source, record.countryCode);
 }
 
+/**
+ * The record with its observation block, derived when it was published
+ * without one. Comparing a published record with fresh connector output
+ * otherwise counts the missing block as a change on every record.
+ */
+export function withObservation(
+  record: NormalizedRegistryRecord,
+  source: SourceDefinition,
+): NormalizedRegistryRecord {
+  if (record.source.observation) return record;
+  return { ...record, source: { ...record.source, observation: observationOf(record, source) } };
+}
+
+/**
+ * `withObservation` over published records. Records of a register no source
+ * describes are left as they are: there is nothing to derive the block from.
+ */
+export function withPublishedObservations(
+  records: NormalizedRegistryRecord[],
+  sources: SourceDefinition[],
+): NormalizedRegistryRecord[] {
+  const sourceById = new Map(sources.map((source) => [source.id, source]));
+  return records.map((record) => {
+    const source = sourceById.get(record.source.registryId);
+    return source ? withObservation(record, source) : record;
+  });
+}
+
 /** One identifier a register lists for a country it does not cover. */
 export interface CrossRegisterListing {
   registryId: string;

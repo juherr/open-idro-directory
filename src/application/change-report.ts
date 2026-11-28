@@ -5,7 +5,10 @@ import type {
   InvalidRegistryHistory,
   NormalizedRegistryRecord,
 } from "../domain/registry-record.js";
-import { crossRegisterListings } from "../domain/registry-observation.js";
+import {
+  crossRegisterListings,
+  withPublishedObservations,
+} from "../domain/registry-observation.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
 import { fromRoot } from "../infrastructure/filesystem/paths.js";
 import { currentDetections } from "./invalid-record-history.js";
@@ -21,9 +24,14 @@ export interface RegistryDiff {
   unchanged: number;
 }
 
-export async function diffAgainstGit(sourceId?: string): Promise<RegistryDiff> {
-  const current = filter(await readCurrent(), sourceId);
-  const previous = filter(await readFromGit(), sourceId);
+export async function diffAgainstGit(
+  sources: SourceDefinition[],
+  sourceId?: string,
+): Promise<RegistryDiff> {
+  // Both sides carry the observation block, derived where it was published
+  // without one, so its absence never reads as an update.
+  const current = filter(withPublishedObservations(await readCurrent(), sources), sourceId);
+  const previous = filter(withPublishedObservations(await readFromGit(), sources), sourceId);
   return diffRecords(previous, current);
 }
 
@@ -105,6 +113,7 @@ export interface RenderedChangeReport {
 }
 
 export async function writeChangeReport(
+  sources: SourceDefinition[],
   sourceIds: string[],
   failures: SourceFailure[] = [],
   findings: RunFindings = { rows: [], crossRegisterListings: [] },
@@ -114,8 +123,10 @@ export async function writeChangeReport(
   await mkdir(fromRoot("build"), { recursive: true });
   // The registry weighs several megabytes and reading it from git spawns a
   // subprocess: load both sides once and diff each source from memory.
-  const current = groupBySource(await readCurrent());
-  const previous = groupBySource(await readFromGit());
+  // Both sides carry the observation block, derived where it was published
+  // without one, so its absence never reads as an update.
+  const current = groupBySource(withPublishedObservations(await readCurrent(), sources));
+  const previous = groupBySource(withPublishedObservations(await readFromGit(), sources));
   const entries: ChangeReportEntry[] = sourceIds.map((sourceId) => ({
     sourceId,
     diff: diffRecords(previous.get(sourceId) ?? [], current.get(sourceId) ?? []),

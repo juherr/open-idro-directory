@@ -5,7 +5,10 @@ import { describe, expect, it } from "vitest";
 import { buildRegistry, type BuildOptions } from "../../src/application/build-registry.js";
 import { EvroamConnector } from "../../src/connectors/gb-evroam/evroam.connector.js";
 import type { RegistryConnector } from "../../src/connectors/connector.js";
-import type { NormalizedRegistryRecord } from "../../src/domain/registry-record.js";
+import type {
+  NormalizedRegistryRecord,
+  RegistryObservation,
+} from "../../src/domain/registry-record.js";
 import type { SourceDefinition } from "../../src/domain/source-definition.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
 
@@ -121,6 +124,27 @@ describe("buildRegistry", () => {
     );
   });
 
+  // Records published before the observation block existed carry none: the
+  // first rebuild that adds it must not read as every record having changed.
+  it("does not count the observation block a published record lacks as a change", async () => {
+    const current = withObservationBlock(sampleRecord("fr-afirev", "FR", "AAA"), {
+      kind: "ASSIGNMENT",
+      observingJurisdiction: "FR",
+    });
+    await withWorkspace(async ({ build }) => {
+      const result = await build({
+        sourceId: "fr-afirev",
+        createConnector: connectorReturning([current]),
+      });
+
+      const afirev = result.results.find((entry) => entry.sourceId === "fr-afirev");
+      expect(afirev?.errors).toEqual([]);
+      expect(result.records.find((record) => record.key === current.key)?.source).toMatchObject({
+        observation: { kind: "ASSIGNMENT", observingJurisdiction: "FR" },
+      });
+    });
+  });
+
   it("throws when every selected source failed", async () => {
     await withWorkspace(async ({ build }) => {
       await expect(
@@ -174,7 +198,13 @@ async function withWorkspace(
         dataDir,
         outputDir,
         generatedAt: GENERATED_AT,
-        createConnector: connectorReturning([sampleRecord("fr-afirev", "FR", "AAA")]),
+        // Connectors set the observation block; the published records predate it.
+        createConnector: connectorReturning([
+          withObservationBlock(sampleRecord("fr-afirev", "FR", "AAA"), {
+            kind: "ASSIGNMENT",
+            observingJurisdiction: "FR",
+          }),
+        ]),
         ...options,
       });
     await assertions({ sources, outputDir, build });
@@ -244,6 +274,13 @@ function connectorReturning(records: NormalizedRegistryRecord[]): () => Registry
     parse: async () => ({ records: [], warnings: [], errors: [] }),
     normalize: async () => ({ records, warnings: [], errors: [] }),
   });
+}
+
+function withObservationBlock(
+  record: NormalizedRegistryRecord,
+  observation: RegistryObservation,
+): NormalizedRegistryRecord {
+  return { ...record, source: { ...record.source, observation } };
 }
 
 function sampleRecord(

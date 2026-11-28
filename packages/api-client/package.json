@@ -1,0 +1,13 @@
+{
+  "name": "@open-idro-directory/api-client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run -c vitest.config.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

@@ -264,6 +264,18 @@ const rows: Row[] = [
     ],
   },
   {
+    name: "a role conflict observed by a stale source loses confidence",
+    records: [record("benelux-idro", "DE", "XYZ", "CPO"), record("de-first", "DE", "XYZ", "EMSP")],
+    health: { ...allCurrent, "benelux-idro": "STALE" },
+    expected: [
+      "CONFLICTING_ROLE de-first>benelux-idro DEXYZ medium/medium",
+      "NOT_FOUND_IN_ISSUING_REGISTER de-second>benelux-idro DEXYZ high/medium",
+      "SOURCE_STALE benelux-idro>benelux-idro - medium/high",
+      "SOURCE_STALE benelux-idro>benelux-idro - medium/high",
+      "SOURCE_STALE benelux-idro>benelux-idro - medium/high",
+    ],
+  },
+  {
     name: "a current issuing register lacking a listing another issuing register confirms gives a not-found",
     records: [record("benelux-idro", "DE", "XYZ"), record("de-first", "DE", "XYZ")],
     expected: ["NOT_FOUND_IN_ISSUING_REGISTER de-second>benelux-idro DEXYZ high/high"],
@@ -557,6 +569,27 @@ describe("buildDiscrepancyReport", () => {
     expect(JSON.stringify(buildDiscrepancyReport(permuted))).toBe(
       JSON.stringify(buildDiscrepancyReport(input)),
     );
+  });
+
+  it("does not depend on the order of its inputs with several issuing registers", () => {
+    const records = [
+      record("de-first", "DE", "XYZ", "CPO", { name: "Acme Energy" }),
+      record("de-second", "DE", "XYZ", "CPO", { name: "Acme Mobility", status: "REVOKED" }),
+      record("benelux-idro", "DE", "XYZ", "CPO", { name: "Acme Mobility" }),
+      record("benelux-idro", "DE", "ABC"),
+      record("de-first", "DE", "OLD", "CPO", { tombstone: true }),
+      record("de-second", "DE", "OLD"),
+    ];
+    const health = { ...allCurrent, "de-second": "STALE" as const };
+    const report = build({ records, health });
+    const permuted = build({
+      records: [...records].reverse(),
+      health: Object.fromEntries(Object.entries(health).reverse()),
+      sources: [...allSources].reverse(),
+    });
+
+    expect(compact(report)).toContain("CONFLICTING_NAME de-first>de-second DEXYZ low/low");
+    expect(JSON.stringify(permuted)).toBe(JSON.stringify(report));
   });
 
   it("orders countries, then pairs with a null issuing register last", () => {

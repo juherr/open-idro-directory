@@ -1,3 +1,9 @@
+// ES module: the helpers of the classic shared.js script, loaded before it,
+// stay reachable as globals.
+import { createSearchScope, isIdentifierLike } from "/explorer-core.js";
+
+const scope = createSearchScope({ basePath: "/explore/" });
+
 const EXPLORER_COPY = {
   fr: {
     home: "Accueil",
@@ -117,11 +123,7 @@ const state = {
 };
 
 function initFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  state.q = params.get("q") || "";
-  state.country = params.get("country") || "";
-  state.role = params.get("role") || "";
-  state.status = params.get("status") || "";
+  Object.assign(state, scope.readState(window.location.search));
   document.querySelector("#query").value = state.q;
   document.querySelector("#country").value = state.country;
   document.querySelector("#role").value = state.role;
@@ -204,31 +206,12 @@ function availableCountryCodes() {
   return countedCodes.length ? countedCodes : FALLBACK_COUNTRIES;
 }
 
-function buildPath(append = false) {
-  const params = new URLSearchParams();
-  if (state.country) params.set("country", state.country);
-  if (state.role) params.set("role", state.role);
-  if (state.status) params.set("status", state.status);
-  const identifier = state.q ? normalizeIdentifierInput(state.q) : null;
-  if (identifier) params.set("emobilityId", identifier.emobilityId);
-  else if (state.q) params.set("q", state.q.trim());
-  params.set("limit", "25");
-  if (append && state.cursor) params.set("cursor", state.cursor);
-  return `/api/v1/parties?${params.toString()}`;
-}
-
 function syncUrl() {
-  const params = new URLSearchParams();
-  if (state.q) params.set("q", state.q);
-  if (state.country) params.set("country", state.country);
-  if (state.role) params.set("role", state.role);
-  if (state.status) params.set("status", state.status);
-  const suffix = params.toString();
-  history.replaceState(null, "", suffix ? `/explore/?${suffix}` : "/explore/");
+  history.replaceState(null, "", scope.buildPageUrl(state));
 }
 
 async function runQuery(append = false) {
-  const path = buildPath(append);
+  const path = scope.buildApiPath(state, append ? state.cursor : null);
   state.loading = !append;
   state.lastPath = path;
   renderRows();
@@ -267,15 +250,14 @@ async function enrichRoles(items) {
 }
 
 async function resolveIdentifier(value) {
-  if (!value || !isIdentifierLike(value)) {
+  const path = value ? scope.resolvePath(value) : null;
+  if (!path) {
     state.resolve = null;
     renderResolve();
     return;
   }
   try {
-    const identifier = normalizeIdentifierInput(value);
-    if (!identifier) return;
-    const json = await apiGet(`/api/v1/resolve/${encodeURIComponent(identifier.emobilityId)}`);
+    const json = await apiGet(path);
     state.resolve = json.data?.party ? { input: json.data.input, party: json.data.party } : null;
   } catch {
     state.resolve = null;

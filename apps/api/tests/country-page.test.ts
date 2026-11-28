@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { countrySummaryPayload, type CountrySummary } from "../src/application/mappers.js";
-import { renderCountryPage, renderErrorPage } from "../src/http/pages/country-page.js";
+import {
+  COUNTRY_PAGE_COPY,
+  pageLanguage,
+  renderCountryPage,
+  jsonLdScript,
+  renderErrorPage,
+} from "../src/http/pages/country-page.js";
 import {
   cyEms,
   irishStats,
@@ -19,11 +25,37 @@ function summaryFor(countryCode: string, rows = sources, stats = noStats): Count
 
 const origin = "https://directory.example";
 
+const JSON_LD = '<script type="application/ld+json">';
 const SEARCH_SCRIPTS = ['<script src="/shared.js">', '<script type="module" src="/explorer.js">'];
 
 /** Every opening script tag of the page, in document order. */
 function scriptTags(page: string) {
   return page.match(/<script\b[^>]*>/gi) ?? [];
+}
+
+/** The `content` of the first `<meta>` whose `attribute` is `name`. */
+function metaContent(page: string, attribute: "name" | "property", name: string) {
+  const tags = page.match(/<meta\b[^>]*>/gi) ?? [];
+  const tag = tags.find((candidate) => candidate.includes(`${attribute}="${name}"`));
+  return tag?.match(/content="([^"]*)"/)?.[1] ?? null;
+}
+
+function canonicalOf(page: string) {
+  return page.match(/<link rel="canonical" href="([^"]*)"/)?.[1] ?? null;
+}
+
+/** The `hreflang` alternates of the page, as `[hreflang, href]` pairs. */
+function alternatesOf(page: string) {
+  return [...page.matchAll(/<link rel="alternate" hreflang="([^"]*)" href="([^"]*)"/g)].map(
+    ([, hreflang, href]) => [hreflang, href],
+  );
+}
+
+/** The parsed JSON-LD blocks of the page. */
+function jsonLdOf(page: string): unknown[] {
+  return [...page.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(
+    ([, json]) => JSON.parse(json ?? ""),
+  );
 }
 
 describe("country page", () => {
@@ -126,7 +158,7 @@ describe("country page", () => {
     expect(page).toContain("EV Roam");
     expect(page).toContain("gb-evroam");
     expect(page).toContain("ie-tii");
-    expect(page).toContain("SECONDARY");
+    expect(page).toContain("Secondary");
     expect(page).toContain('href="/explore/?country=IE"');
     expect(page).not.toContain("country-empty");
     // Fragment lists are joined without separators and escaped only once.
@@ -141,10 +173,10 @@ describe("country page", () => {
     expect(page).toContain('<link rel="canonical" href="https://directory.example/countries/ie/"');
   });
 
-  it("loads only the explorer scripts, for a search section hidden without JavaScript", async () => {
+  it("loads only the breadcrumbs and the explorer scripts, for a search section hidden without JavaScript", async () => {
     const page = await renderCountryPage(summaryFor("IE", sources, irishStats), origin);
 
-    expect(scriptTags(page)).toEqual(SEARCH_SCRIPTS);
+    expect(scriptTags(page)).toEqual([JSON_LD, ...SEARCH_SCRIPTS]);
     expect(page).toMatch(
       /<section\s+class="[^"]*country-search[^"]*"[^>]*data-fixed-country="IE"[^>]*hidden\s*>/,
     );
@@ -158,10 +190,10 @@ describe("country page", () => {
     expect(page).toContain('href="/explore/?country=IE"');
   });
 
-  it("renders no search section and no script for a country with nothing to search", async () => {
+  it("renders no search section and no search script for a country with nothing to search", async () => {
     const page = await renderCountryPage(summaryFor("CY"), origin);
 
-    expect(scriptTags(page)).toEqual([]);
+    expect(scriptTags(page)).toEqual([JSON_LD]);
     expect(page).not.toContain("data-fixed-country");
     expect(page).not.toContain('id="explore-form"');
   });
@@ -170,7 +202,7 @@ describe("country page", () => {
     const hostile = { ...cyEms, name: '<script>alert("x")</script>' };
     const page = await renderCountryPage(summaryFor("CY", [sourceRow("cy-ems", hostile)]), origin);
 
-    expect(scriptTags(page)).toEqual([]);
+    expect(scriptTags(page)).toEqual([JSON_LD]);
     expect(page).toContain("&lt;script&gt;");
   });
 
@@ -179,7 +211,7 @@ describe("country page", () => {
     const rows = sources.map((row) => (row.id === "ie-tii" ? sourceRow("ie-tii", hostile) : row));
     const page = await renderCountryPage(summaryFor("IE", rows, irishStats), origin);
 
-    expect(scriptTags(page)).toEqual(SEARCH_SCRIPTS);
+    expect(scriptTags(page)).toEqual([JSON_LD, ...SEARCH_SCRIPTS]);
     expect(page).toContain("&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;");
   });
 
@@ -196,6 +228,20 @@ describe("country page", () => {
     expect(page).toContain("javascript:alert(2)");
   });
 
+  it("labels statuses, authority levels, observation types and freshness", async () => {
+    const stats = {
+      ...irishStats,
+      statuses: [...irishStats.statuses, { key: "REVOKED", count: 2 }],
+    };
+    const page = await renderCountryPage(summaryFor("IE", sources, stats), origin);
+
+    expect(page).toContain("Active: 80, Revoked: 2");
+    expect(page).toContain("Secondary");
+    expect(page).toContain("Official assignment");
+    expect(page).toContain("Stale");
+    expect(page).not.toContain("OFFICIAL_ASSIGNMENT");
+  });
+
   it("renders error pages as HTML with the request id", async () => {
     const page = await renderErrorPage(404, "No source covers this country.", "req-1");
 
@@ -209,5 +255,226 @@ describe("country page", () => {
     const page = await renderErrorPage(404, "No source covers this country.", "req-1");
 
     expect(scriptTags(page)).toEqual([]);
+  });
+
+  it("keeps error pages in English", async () => {
+    const page = await renderErrorPage(404, "No source covers this country.", "req-1");
+
+    expect(page).toContain('<html lang="en">');
+  });
+});
+
+/** Every key path of a dictionary, nested objects included. */
+function keyPaths(value: object, prefix = ""): string[] {
+  return Object.entries(value).flatMap(([key, entry]) =>
+    entry && typeof entry === "object"
+      ? keyPaths(entry as object, `${prefix}${key}.`)
+      : [`${prefix}${key}`],
+  );
+}
+
+describe("country page localization", () => {
+  it("gives the French and English dictionaries exactly the same keys", () => {
+    const en = keyPaths(COUNTRY_PAGE_COPY.en).sort();
+    expect(en.length).toBeGreaterThan(50);
+    expect(keyPaths(COUNTRY_PAGE_COPY.fr).sort()).toEqual(en);
+  });
+
+  it.each([
+    ["fr", "fr"],
+    ["en", "en"],
+    [null, "en"],
+    ["", "en"],
+    ["xx", "en"],
+    ["FR-fr", "en"],
+  ])("reads the page language %j as %j", (value, expected) => {
+    expect(pageLanguage(value)).toBe(expected);
+  });
+
+  it("renders a published country in French", async () => {
+    const page = await renderCountryPage(summaryFor("IE", sources, irishStats), origin, "fr");
+
+    expect(page).toContain('<html lang="fr">');
+    expect(page).toContain("Irlande");
+    expect(page).toContain("Autorités IDRO");
+    expect(page).toContain("Couverture");
+    expect(page).toContain("Type d&#39;observation");
+    expect(page).toContain("Attribution officielle");
+    expect(page).toContain("Secondaire");
+    expect(page).toContain("Rechercher des identifiants");
+    expect(page).toContain("Charger plus");
+    expect(page).toContain("projet d&#39;agrégation indépendant");
+    expect(page).toContain(
+      `${new Intl.NumberFormat("fr").format(80)} identifiants publiés par 2 sources.`,
+    );
+    for (const english of [
+      "IDRO authorities",
+      "Coverage",
+      "Declared roles",
+      "Freshness",
+      "Observation type",
+      "Last successful retrieval",
+      "Search identifiers",
+      "Load more",
+      "This summary as JSON",
+      ">Countries<",
+      "independent aggregation project",
+      "Official assignment",
+    ]) {
+      expect(page).not.toContain(english);
+    }
+  });
+
+  it("formats French counts with the French number format", async () => {
+    const stats = { ...irishStats, statuses: [{ key: "ACTIVE", count: 12345 }] };
+    const page = await renderCountryPage(summaryFor("IE", sources, stats), origin, "fr");
+
+    const colon = COUNTRY_PAGE_COPY.fr.values.colon;
+    expect(page).toContain(`Actif${colon}${new Intl.NumberFormat("fr").format(12345)}`);
+  });
+
+  it("puts a no-break space before a French colon", () => {
+    expect(COUNTRY_PAGE_COPY.fr.values.colon).toBe("\u00a0: ");
+  });
+
+  it("agrees the unknown French freshness with its feminine label", async () => {
+    const rows = sources.map((row) =>
+      row.id === "ie-tii" ? sourceRow("ie-tii", tii, { freshness_status: "" }) : row,
+    );
+    const page = await renderCountryPage(summaryFor("IE", rows, irishStats), origin, "fr");
+
+    expect(page).toMatch(
+      /<dt class="meta-label">Fraîcheur<\/dt>\s*<dd class="meta-value">Inconnue<\/dd>/,
+    );
+  });
+
+  it("treats a single identifier and source as singular in French", async () => {
+    const stats = {
+      ...irishStats,
+      statuses: [{ key: "ACTIVE", count: 1 }],
+      observations: irishStats.observations.filter((row) => row.source_id === "ie-tii"),
+    };
+    const page = await renderCountryPage(summaryFor("IE", sources, stats), origin, "fr");
+
+    expect(page).toContain("1 identifiant publié par 1 source.");
+  });
+
+  it("explains an empty country in French without naming it in a sentence", async () => {
+    const page = await renderCountryPage(summaryFor("IE"), origin, "fr");
+
+    expect(page).toContain("Aucun identifiant publié");
+    expect(page).toContain(
+      "EV Roam et Transport Infrastructure Ireland gèrent les identifiants de mobilité électrique de ce pays.",
+    );
+    expect(page).toContain(
+      "Leurs listes publiées ne contiennent encore aucun identifiant de ce pays",
+    );
+    expect(page).toContain("adressez-vous aux autorités ci-dessous");
+    expect(page).not.toContain("No published identifiers");
+    expect(page).not.toContain("invalide");
+  });
+
+  it("explains a country without a published list in French", async () => {
+    const page = await renderCountryPage(summaryFor("CY"), origin, "fr");
+
+    expect(page).toContain("Chypre");
+    expect(page).toContain("ne publie aucune liste lisible par machine");
+    expect(page).toContain("adressez-vous à l&#39;autorité ci-dessous");
+  });
+});
+
+describe("country page metadata", () => {
+  const english = "https://directory.example/countries/ie/";
+  const french = "https://directory.example/countries/ie/?lang=fr";
+
+  it.each([
+    ["en" as const, english, "en_GB", "fr_FR", "Ireland"],
+    ["fr" as const, french, "fr_FR", "en_GB", "Irlande"],
+  ])(
+    "gives the %s page its canonical, alternates and Open Graph tags",
+    async (lang, canonical, locale, alternateLocale, name) => {
+      const page = await renderCountryPage(summaryFor("IE", sources, irishStats), origin, lang);
+
+      expect(canonicalOf(page)).toBe(canonical);
+      expect(alternatesOf(page)).toEqual([
+        ["en", english],
+        ["fr", french],
+        ["x-default", english],
+      ]);
+      expect(metaContent(page, "property", "og:url")).toBe(canonical);
+      expect(metaContent(page, "property", "og:type")).toBe("website");
+      expect(metaContent(page, "property", "og:site_name")).toBe("Open IDRO Directory");
+      expect(metaContent(page, "property", "og:locale")).toBe(locale);
+      expect(metaContent(page, "property", "og:locale:alternate")).toBe(alternateLocale);
+      expect(metaContent(page, "property", "og:title")).toContain(name);
+      const description = metaContent(page, "name", "description");
+      expect(description).toContain(name);
+      expect(metaContent(page, "property", "og:description")).toBe(description);
+    },
+  );
+
+  it("describes the country from its authorities and coverage", async () => {
+    const en = await renderCountryPage(summaryFor("IE", sources, irishStats), origin);
+    const fr = await renderCountryPage(summaryFor("IE", sources, irishStats), origin, "fr");
+
+    expect(metaContent(en, "name", "description")).toContain("80 identifiers published by");
+    expect(metaContent(en, "name", "description")).toContain("Transport Infrastructure Ireland");
+    expect(metaContent(fr, "name", "description")).toContain("publiés par");
+    expect(metaContent(fr, "name", "description")).toContain("Transport Infrastructure Ireland");
+  });
+
+  it.each([
+    ["en" as const, french, "fr", "Lire en français"],
+    ["fr" as const, english, "en", "Read in English"],
+  ])("links the %s page to the other language", async (lang, href, hreflang, text) => {
+    const page = await renderCountryPage(summaryFor("IE", sources, irishStats), origin, lang);
+
+    expect(page).toContain(`<a href="${href}" hreflang="${hreflang}" lang="${hreflang}"`);
+    expect(page).toContain(text);
+  });
+
+  it.each([
+    ["en" as const, "Home", "Countries", "Ireland", english],
+    ["fr" as const, "Accueil", "Pays", "Irlande", french],
+  ])("describes the %s page breadcrumbs as JSON-LD", async (lang, home, countries, name, url) => {
+    const page = await renderCountryPage(summaryFor("IE", sources, irishStats), origin, lang);
+
+    expect(jsonLdOf(page)).toEqual([
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: home, item: "https://directory.example/" },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: countries,
+            item: "https://directory.example/#pays",
+          },
+          { "@type": "ListItem", position: 3, name, item: url },
+        ],
+      },
+    ]);
+  });
+
+  it("keeps the head of an error page free of country metadata", async () => {
+    const page = await renderErrorPage(404, "No source covers this country.", "req-1");
+
+    expect(canonicalOf(page)).toBeNull();
+    expect(alternatesOf(page)).toEqual([]);
+    expect(metaContent(page, "name", "description")).toBeNull();
+    expect(jsonLdOf(page)).toEqual([]);
+  });
+});
+
+describe("JSON-LD serialization", () => {
+  it("cannot be closed by a value containing a script end tag", async () => {
+    const hostile = { name: '</script><script>alert("x")</script><!--' };
+    const block: string = await jsonLdScript(hostile);
+
+    expect(scriptTags(block)).toEqual([JSON_LD]);
+    expect(block.match(/<\/script>/gi)).toHaveLength(1);
+    expect(block).not.toContain("<!--");
+    expect(jsonLdOf(block)).toEqual([hostile]);
   });
 });

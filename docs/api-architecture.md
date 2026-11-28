@@ -25,8 +25,19 @@ the Hono app. Every other path, the landing page and the generic explorer
 `/countries/{code}/` is a server-rendered HTML page built from the country
 summary read model, so it is useful without JavaScript. It lists the country's
 authorities, coverage, and sources, and explains the empty state of a country
-with a known IDRO but no published identifiers. The page is English only for
-now.
+with a known IDRO but no published identifiers.
+
+The page is rendered in English by default and in French with `?lang=fr`;
+`?lang=en` is English too, and any other value falls back to English rather
+than failing. Error pages stay in English. Each language has its own canonical
+URL, built from the path country alone and never carrying the search
+parameters (`q`, `role`, `status`) or an unknown `lang`: `/countries/fr/` for
+English and `/countries/fr/?lang=fr` for French. The head lists both as
+`hreflang` alternates, with the English URL as `x-default`, and carries a
+localized description, Open Graph tags whose `og:url` is the canonical URL,
+and JSON-LD breadcrumbs. A link on the page switches to the other language.
+The ETag covers the query string, `lang` included, so a page in one language
+is never answered with a `304` validated by the other.
 
 The path country is the source of truth:
 

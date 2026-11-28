@@ -16,23 +16,47 @@ export function normalizeIdentifierInput(value) {
   };
 }
 
-/** `/countries/{lc}/` for a two-letter country code, else `null`. */
-export function countryPagePath(code) {
+/** `?lang=fr` for French; English is the default page language, with no query. */
+function languageQuery(lang) {
+  return lang === "fr" ? "?lang=fr" : "";
+}
+
+/**
+ * The language the explorer renders in. A country page (`fixed`) is
+ * server-rendered in the language of `<html lang>`, which wins over the
+ * stored `oid-lang`; anything but `fr` there is English. Elsewhere the
+ * stored (or browser-preferred) language `stored` is kept as is.
+ */
+export function pageLanguage({ fixed, htmlLang, stored }) {
+  if (!fixed) return stored;
+  return htmlLang === "fr" ? "fr" : "en";
+}
+
+/**
+ * `/countries/{lc}/` for a two-letter country code, else `null`. The page
+ * language `lang` is passed in, never read from storage here.
+ */
+export function countryPagePath(code, lang) {
   if (typeof code !== "string" || !/^[A-Za-z]{2}$/.test(code)) return null;
-  return `/countries/${code.toLowerCase()}/`;
+  return `/countries/${code.toLowerCase()}/${languageQuery(lang)}`;
 }
 
 /**
  * The country page path of `code` when the stats count identifiers for it,
  * else `null`: a country without identifiers has no page.
  */
-export function existingCountryPagePath(code, counts) {
-  const path = countryPagePath(code);
+export function existingCountryPagePath(code, counts, lang) {
+  const path = countryPagePath(code, lang);
   if (!path || !counts) return null;
   return Number(counts[code.toUpperCase()]) > 0 ? path : null;
 }
 
-export function createSearchScope({ fixedCountry, basePath: givenBasePath, knownCountries } = {}) {
+export function createSearchScope({
+  fixedCountry,
+  basePath: givenBasePath,
+  knownCountries,
+  lang,
+} = {}) {
   const forced = fixedCountry ? fixedCountry.toUpperCase() : null;
   // A country page hosts the search at its own path; an invalid code has no
   // page, so it falls back to the explorer rather than to `null`.
@@ -80,6 +104,8 @@ export function createSearchScope({ fixedCountry, basePath: givenBasePath, known
 
   function buildPageUrl(state) {
     const params = new URLSearchParams();
+    // A French country page keeps its language: a reload must not serve English.
+    if (forced && lang === "fr") params.set("lang", "fr");
     if (state.q) params.set("q", state.q);
     if (!forced && state.country) params.set("country", state.country);
     if (state.role) params.set("role", state.role);
@@ -115,4 +141,77 @@ export function createSearchScope({ fixedCountry, basePath: givenBasePath, known
     resolvePath,
     planQuery,
   };
+}
+
+// Labels of the detail panel, worded as the server-rendered country page
+// words them (COUNTRY_PAGE_COPY in country-page-copy.ts). Static browser
+// scripts cannot import that module, so the wording is copied here.
+const ENUM_LABELS = {
+  en: {
+    authorityLevel: {
+      AUTHORITATIVE: "Authoritative",
+      SUPRANATIONAL_DIRECTORY: "Supranational directory",
+      SECONDARY: "Secondary",
+      SELF_ASSERTED: "Self-asserted",
+      UNVERIFIED: "Unverified",
+    },
+    observationType: {
+      OFFICIAL_ASSIGNMENT: "Official assignment",
+      OFFICIAL_DIRECTORY_ENTRY: "Official directory entry",
+      LEGACY_ASSIGNMENT: "Legacy assignment",
+      NETWORK_REGISTRATION: "Network registration",
+      INFRASTRUCTURE_OBSERVATION: "Infrastructure observation",
+      SELF_DECLARATION: "Self-declaration",
+      COMMUNITY_OBSERVATION: "Community observation",
+    },
+  },
+  fr: {
+    authorityLevel: {
+      AUTHORITATIVE: "Faisant autorité",
+      SUPRANATIONAL_DIRECTORY: "Annuaire supranational",
+      SECONDARY: "Secondaire",
+      SELF_ASSERTED: "Auto-déclaré",
+      UNVERIFIED: "Non vérifié",
+    },
+    observationType: {
+      OFFICIAL_ASSIGNMENT: "Attribution officielle",
+      OFFICIAL_DIRECTORY_ENTRY: "Entrée d'annuaire officiel",
+      LEGACY_ASSIGNMENT: "Attribution historique",
+      NETWORK_REGISTRATION: "Enregistrement réseau",
+      INFRASTRUCTURE_OBSERVATION: "Observation d'infrastructure",
+      SELF_DECLARATION: "Auto-déclaration",
+      COMMUNITY_OBSERVATION: "Observation communautaire",
+    },
+  },
+};
+
+/** An enum value in sentence case, underscores as spaces; `—` when empty. */
+export function formatEnum(value) {
+  return (value || "—")
+    .replaceAll("_", " ")
+    .toLowerCase()
+    .replace(/^./, (char) => char.toUpperCase());
+}
+
+// The label of `value` in the `kind` dictionary of `lang` (French for "fr",
+// English otherwise); an unknown value falls back to `formatEnum`.
+function enumLabel(kind, value, lang) {
+  const labels = ENUM_LABELS[lang === "fr" ? "fr" : "en"][kind];
+  return Object.hasOwn(labels, value) ? labels[value] : formatEnum(value);
+}
+
+/**
+ * The highest authority level of an identifier in `lang`, worded as the
+ * country page does. An unknown value falls back to `formatEnum`.
+ */
+export function authorityLevelLabel(value, lang) {
+  return enumLabel("authorityLevel", value, lang);
+}
+
+/**
+ * The type of an observation in `lang`, worded as the country page does.
+ * An unknown value falls back to `formatEnum`.
+ */
+export function observationTypeLabel(value, lang) {
+  return enumLabel("observationType", value, lang);
 }

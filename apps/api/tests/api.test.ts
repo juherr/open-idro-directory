@@ -473,9 +473,54 @@ describe("Cloudflare API", () => {
   );
 
   it.each([
+    ["/countries/fr/?lang=fr", "fr"],
+    ["/countries/fr/?lang=en", "en"],
+    ["/countries/fr/", "en"],
+    ["/countries/fr/?lang=xx", "en"],
+  ])("serves %s in the %s page language", async (path, lang) => {
+    const response = await workerRequest(path);
+
+    expect(response.status).toBe(200);
+    await expect(response.text()).resolves.toContain(`<html lang="${lang}">`);
+  });
+
+  it.each([
+    [
+      "/countries/fr/?lang=fr&q=x&role=CPO&status=ACTIVE",
+      "https://example.test/countries/fr/?lang=fr",
+    ],
+    ["/countries/fr/?q=x", "https://example.test/countries/fr/"],
+    ["/countries/fr/?lang=xx", "https://example.test/countries/fr/"],
+  ])("gives %s the canonical %s, built from the path country", async (path, canonical) => {
+    const response = await workerRequest(path);
+    const page = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(page).toContain(`<link rel="canonical" href="${canonical}"`);
+    expect(page).toContain(`<meta property="og:url" content="${canonical}"`);
+    expect(page).not.toMatch(/href="[^"]*[?&](q|role|status)=/);
+    const [, json] = page.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/) ?? [];
+    const breadcrumbs = JSON.parse(json ?? "null") as { itemListElement: { item: string }[] };
+    expect(breadcrumbs.itemListElement.at(-1)?.item).toBe(canonical);
+  });
+
+  it.each([
+    ["/countries/fr/", "/countries/fr/?lang=fr", "fr"],
+    ["/countries/fr/?lang=fr", "/countries/fr/", "en"],
+  ])("does not revalidate %s into %s", async (first, second, lang) => {
+    const etag = (await workerRequest(first)).headers.get("etag");
+    expect(etag).toMatch(/^"/);
+
+    const response = await workerRequest(second, { headers: { "If-None-Match": etag ?? "" } });
+    expect(response.status).toBe(200);
+    await expect(response.text()).resolves.toContain(`<html lang="${lang}">`);
+  });
+
+  it.each([
     ["/countries/FR/", "/countries/fr/"],
     ["/countries/fr", "/countries/fr/"],
     ["/countries/fr/?country=FR&q=total", "/countries/fr/?q=total"],
+    ["/countries/FR/?lang=fr", "/countries/fr/?lang=fr"],
   ])("redirects %s to the canonical %s", async (path, location) => {
     const response = await workerRequest(path);
 
@@ -483,27 +528,39 @@ describe("Cloudflare API", () => {
     expect(response.headers.get("location")).toBe(location);
   });
 
-  it("rejects a country parameter that conflicts with the path", async () => {
-    const response = await workerRequest("/countries/FR/?country=DE");
-
-    expect(response.status).toBe(400);
-    expect(response.headers.get("content-type")).toContain("text/html");
-    expect(response.headers.get("cache-control")).toBe("no-store");
-    await expect(response.text()).resolves.toContain("Conflicting country");
-  });
-
-  it.each(["/countries/zz/", "/countries/fr/extra", "/countries/", "/countries/fra/"])(
-    "returns an uncached HTML 404 for %s",
+  it.each(["/countries/FR/?country=DE", "/countries/fr/?country=DE&lang=fr"])(
+    "rejects a country parameter that conflicts with the path in %s",
     async (path) => {
       const response = await workerRequest(path);
 
-      expect(response.status).toBe(404);
+      expect(response.status).toBe(400);
       expect(response.headers.get("content-type")).toContain("text/html");
       expect(response.headers.get("etag")).toBeNull();
       expect(response.headers.get("cache-control")).toBe("no-store");
-      await expect(response.text()).resolves.toContain("Page not found");
+      const body = await response.text();
+      expect(body).toContain('<html lang="en">');
+      expect(body).toContain("Conflicting country");
     },
   );
+
+  // Error pages stay English, even when the request asks for French.
+  it.each([
+    "/countries/zz/",
+    "/countries/zz/?lang=fr",
+    "/countries/fr/extra",
+    "/countries/",
+    "/countries/fra/",
+  ])("returns an uncached HTML 404 for %s", async (path) => {
+    const response = await workerRequest(path);
+
+    expect(response.status).toBe(404);
+    expect(response.headers.get("content-type")).toContain("text/html");
+    expect(response.headers.get("etag")).toBeNull();
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    const body = await response.text();
+    expect(body).toContain('<html lang="en">');
+    expect(body).toContain("Page not found");
+  });
 
   it("serves a country 404 page that loads no script", async () => {
     const response = await workerRequest("/countries/zz/");

@@ -1,12 +1,35 @@
 import { describe, expect, it } from "vitest";
 import {
+  authorityLevelLabel,
   countryPagePath,
   createSearchScope,
   existingCountryPagePath,
+  formatEnum,
   normalizeIdentifierInput,
+  observationTypeLabel,
+  pageLanguage,
 } from "../public/explorer-core.js";
+import { COUNTRY_PAGE_COPY } from "../src/http/pages/country-page-copy.js";
 
 const emptyState = { q: "", country: "", role: "", status: "" };
+
+describe("pageLanguage", () => {
+  it("takes the country page language from <html lang>, not the stored one", () => {
+    expect(pageLanguage({ fixed: true, htmlLang: "en", stored: "fr" })).toBe("en");
+  });
+
+  it("keeps a French country page in French", () => {
+    expect(pageLanguage({ fixed: true, htmlLang: "fr", stored: "en" })).toBe("fr");
+  });
+
+  it.each(["de", "", undefined])("falls back to English on a country page for %j", (htmlLang) => {
+    expect(pageLanguage({ fixed: true, htmlLang, stored: "fr" })).toBe("en");
+  });
+
+  it("keeps the stored language outside a country page", () => {
+    expect(pageLanguage({ fixed: false, htmlLang: "en", stored: "fr" })).toBe("fr");
+  });
+});
 
 describe("normalizeIdentifierInput", () => {
   it.each([
@@ -177,6 +200,43 @@ describe("fixed-country scope", () => {
   });
 });
 
+describe("fixed-country scope in a page language", () => {
+  const french = createSearchScope({ fixedCountry: "fr", lang: "fr" });
+
+  it("keeps lang=fr in the page URL of a French country page", () => {
+    expect(french.buildPageUrl(emptyState)).toBe("/countries/fr/?lang=fr");
+    expect(french.buildPageUrl({ q: "x", country: "DE", role: "CPO", status: "ACTIVE" })).toBe(
+      "/countries/fr/?lang=fr&q=x&role=CPO&status=ACTIVE",
+    );
+  });
+
+  it("keeps lang=fr after reading the page URL back", () => {
+    const url = french.buildPageUrl({ ...emptyState, q: "ionity", status: "ACTIVE" });
+    const state = french.readState(new URL(url, "https://example.test").search);
+    expect(state).toEqual({ q: "ionity", country: "FR", role: "", status: "ACTIVE" });
+    expect(french.buildPageUrl(state)).toBe(url);
+  });
+
+  it.each([["en"], [undefined], ["xx"]])(
+    "adds no lang to the page URL for the language %j",
+    (lang) => {
+      const scope = createSearchScope({ fixedCountry: "fr", lang });
+      expect(scope.buildPageUrl(emptyState)).toBe("/countries/fr/");
+      expect(scope.buildPageUrl({ ...emptyState, q: "x", role: "CPO" })).toBe(
+        "/countries/fr/?q=x&role=CPO",
+      );
+    },
+  );
+
+  it("leaves API paths and the explorer URL without lang", () => {
+    expect(french.buildApiPath({ ...emptyState, q: "x" })).toBe(
+      "/api/v1/parties?country=FR&q=x&limit=25",
+    );
+    const explorer = createSearchScope({ lang: "fr" });
+    expect(explorer.buildPageUrl({ ...emptyState, q: "x" })).toBe("/explore/?q=x");
+  });
+});
+
 describe("fixed-country scope with known countries", () => {
   const scope = createSearchScope({
     fixedCountry: "FR",
@@ -246,6 +306,19 @@ describe("countryPagePath", () => {
       expect(countryPagePath(code as string)).toBeNull();
     },
   );
+
+  it.each([
+    ["fr", "/countries/de/?lang=fr"],
+    ["en", "/countries/de/"],
+    [undefined, "/countries/de/"],
+    ["xx", "/countries/de/"],
+  ])("links in the language %j as %j", (lang, expected) => {
+    expect(countryPagePath("DE", lang)).toBe(expected);
+  });
+
+  it("returns null for an invalid code whatever the language", () => {
+    expect(countryPagePath("F1", "fr")).toBeNull();
+  });
 });
 
 describe("existingCountryPagePath", () => {
@@ -274,6 +347,12 @@ describe("existingCountryPagePath", () => {
   it("returns null for a value that is not a country code", () => {
     expect(existingCountryPagePath("../", { "../": 1 })).toBeNull();
   });
+
+  it("links in the page language", () => {
+    expect(existingCountryPagePath("DE", counts, "fr")).toBe("/countries/de/?lang=fr");
+    expect(existingCountryPagePath("DE", counts, "en")).toBe("/countries/de/");
+    expect(existingCountryPagePath("IT", counts, "fr")).toBeNull();
+  });
 });
 
 describe("planQuery search path", () => {
@@ -292,5 +371,57 @@ describe("planQuery search path", () => {
     expect(plan.kind).toBe("search");
     if (plan.kind !== "search") return;
     expect(plan.searchPath).toBe(scope.buildApiPath(state, null));
+  });
+});
+
+describe("enum labels of the detail panel", () => {
+  const { en, fr } = COUNTRY_PAGE_COPY;
+
+  it.each(Object.entries(en.authorityLevel))(
+    "words the English authority level %s as the country page does",
+    (value, label) => {
+      expect(authorityLevelLabel(value, "en")).toBe(label);
+    },
+  );
+
+  it.each(Object.entries(fr.authorityLevel))(
+    "words the French authority level %s as the country page does",
+    (value, label) => {
+      expect(authorityLevelLabel(value, "fr")).toBe(label);
+    },
+  );
+
+  it.each(Object.entries(en.observationType))(
+    "words the English observation type %s as the country page does",
+    (value, label) => {
+      expect(observationTypeLabel(value, "en")).toBe(label);
+    },
+  );
+
+  it.each(Object.entries(fr.observationType))(
+    "words the French observation type %s as the country page does",
+    (value, label) => {
+      expect(observationTypeLabel(value, "fr")).toBe(label);
+    },
+  );
+
+  it("translates the same values in both languages", () => {
+    expect(Object.keys(en.authorityLevel).sort()).toEqual(Object.keys(fr.authorityLevel).sort());
+    expect(Object.keys(en.observationType).sort()).toEqual(Object.keys(fr.observationType).sort());
+  });
+
+  it.each(["en", "fr"])("falls back to formatEnum for an unknown value in %s", (lang) => {
+    expect(authorityLevelLabel("NEW_LEVEL", lang)).toBe("New level");
+    expect(observationTypeLabel("NEW_TYPE", lang)).toBe("New type");
+  });
+
+  it.each(["en", "fr"])("shows a dash for a missing value in %s", (lang) => {
+    expect(authorityLevelLabel(null, lang)).toBe("—");
+    expect(observationTypeLabel(undefined, lang)).toBe("—");
+  });
+
+  it("formats a scheme as before", () => {
+    expect(formatEnum("EMI3_PARTY_ID")).toBe("Emi3 party id");
+    expect(formatEnum("")).toBe("—");
   });
 });

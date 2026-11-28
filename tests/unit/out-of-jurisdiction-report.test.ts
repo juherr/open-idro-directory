@@ -111,6 +111,25 @@ describe("out-of-jurisdiction report", () => {
     });
   });
 
+  it("lists an identifier once when its roles spell it differently", async () => {
+    const sources = await loadSourceDefinitions();
+    const cpo = await listing("pl-eipa", "NL*TNM", "CPO");
+    const emsp = await listing("pl-eipa", "NL*TNM", "EMSP");
+    emsp.source.sourceValue = "NLTNM";
+    emsp.source.firstSeenAt = "2026-07-01T00:00:00.000Z";
+
+    const forward = buildOutOfJurisdictionReport([cpo, emsp], sources, RUN);
+    const reversed = buildOutOfJurisdictionReport([emsp, cpo], sources, RUN);
+
+    expect(forward.totalIdentifiers).toBe(1);
+    expect(forward).toEqual(reversed);
+    expect(forward.registers[0]?.identifiers[0]).toMatchObject({
+      sourceValue: "NL*TNM",
+      firstDetectedAt: "2026-07-01T00:00:00.000Z",
+      lastDetectedAt: RUN,
+    });
+  });
+
   it("orders registers and identifiers whatever the record order", async () => {
     const sources = await loadSourceDefinitions();
     const records = [

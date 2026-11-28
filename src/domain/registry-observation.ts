@@ -63,6 +63,10 @@ export function withPublishedObservations(
 /** One identifier a register lists for a country it does not cover. */
 export interface CrossRegisterListing {
   registryId: string;
+  /**
+   * The identifier as the register wrote it. When its records spell it
+   * differently (`NL*TNM` as CPO, `NLTNM` as EMSP), the smallest spelling.
+   */
   sourceValue: string;
   countryCode: string;
   /** Earliest `firstSeenAt` among the identifier's records in that register. */
@@ -73,8 +77,9 @@ export interface CrossRegisterListing {
 
 /**
  * The cross-register listings among published records, once per register and
- * identifier: a register listing the same identifier as CPO and EMSP lists one
- * identifier. Records of a register no source describes are left out. Sorted
+ * identifier (country code and party ID): a register listing the same
+ * identifier as CPO and EMSP lists one identifier, however it spells it in
+ * each role. Records of a register no source describes are left out. Sorted
  * by register, then value, then country, so the result does not depend on the
  * order the connectors ran in.
  */
@@ -87,11 +92,11 @@ export function crossRegisterListings(
   for (const record of records) {
     const source = sourceById.get(record.source.registryId);
     if (!source || observationOf(record, source).kind !== "CROSS_REGISTER_LISTING") continue;
-    const key = `${source.id}:${record.countryCode}:${record.source.sourceValue}`;
+    const key = `${source.id}:${record.countryCode}:${record.partyId}`;
     const existing = listings.get(key);
     listings.set(key, {
       registryId: source.id,
-      sourceValue: record.source.sourceValue,
+      sourceValue: smallest(existing?.sourceValue, record.source.sourceValue),
       countryCode: record.countryCode,
       firstSeenAt: earliest(existing?.firstSeenAt, record.source.firstSeenAt),
       lastSeenAt: latest(existing?.lastSeenAt, record.source.lastSeenAt),
@@ -117,6 +122,10 @@ function latest(current: string | undefined, candidate: string) {
   return current !== undefined && Date.parse(current) >= Date.parse(candidate)
     ? current
     : candidate;
+}
+
+function smallest(current: string | undefined, candidate: string) {
+  return current !== undefined && compare(current, candidate) <= 0 ? current : candidate;
 }
 
 function compare(left: string, right: string) {

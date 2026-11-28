@@ -27,8 +27,12 @@ export function parseCrossRegisterIdentifier(
   value: string,
 ): CrossRegisterIdentifier | null {
   const match = ANY_IDENTIFIER.exec(value.trim());
-  const countryCode = foreignCountryOf(source, value);
-  if (!match || !countryCode) return null;
+  const countryCode = match?.[1]?.toUpperCase();
+  // A prefix naming no country, such as `ZZ`, is not another register's
+  // identifier: it is a value nobody can resolve, and the rejection report is
+  // where it belongs.
+  if (!match || !countryCode || !isAssignedCountryCode(countryCode)) return null;
+  if (coversJurisdiction(source, countryCode)) return null;
   return {
     countryCode,
     partyId: (match[3] ?? "").toUpperCase(),
@@ -67,14 +71,4 @@ export function rejectedIdentifierWarning(
     message: `Unexpected ${rejection.subject} syntax: ${rejection.value}`,
     rejectedIdentifier: rejection.reported ?? rejection.value,
   };
-}
-
-function foreignCountryOf(source: SourceDefinition, value: string) {
-  const countryCode = ANY_IDENTIFIER.exec(value.trim())?.[1]?.toUpperCase();
-  // A prefix naming no country, such as `ZZ`, is not another register's
-  // identifier: it is a value nobody can resolve, and the rejection report is
-  // where it belongs.
-  if (!countryCode || !isAssignedCountryCode(countryCode)) return null;
-  if (coversJurisdiction(source, countryCode)) return null;
-  return countryCode;
 }

@@ -11,3 +11,4 @@ data/raw/*/
 !data/raw/fr-afirev/current/body.json
 !data/raw/fr-afirev/current/metadata.json
 data/raw/*/previous/
+apps/web/.astro/

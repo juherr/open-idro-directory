@@ -109,7 +109,8 @@ export class EvroamConnector implements RegistryConnector<EvroamRegisterItem> {
           partyId: parsed.partyId,
           eMobilityId: `${parsed.countryCode}${parsed.partyId}`,
           role: identifier.role,
-          status: "ACTIVE",
+          // EV Roam vouches only for the status of what it assigns.
+          status: observation.kind === "ASSIGNMENT" ? "ACTIVE" : "UNKNOWN",
           organization: {
             name:
               clean(sourceRecord.title) ??

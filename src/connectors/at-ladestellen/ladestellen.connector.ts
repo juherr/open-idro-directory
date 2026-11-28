@@ -101,7 +101,12 @@ export class LadestellenConnector implements RegistryConnector<LadestellenOperat
           official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
           sourceRecordId: `${countryCode}${partyId}`,
           sourceUrl: input.source.authority.homepageUrl,
-          sourceValue: `${countryCode}*${partyId}`,
+          // Ladestellen.at serves bare Austrian party IDs, so an assignment's
+          // value is rebuilt; a listing keeps the full identifier it served.
+          sourceValue:
+            observation.kind === "ASSIGNMENT"
+              ? `${countryCode}*${partyId}`
+              : sourceRecord.operatorId,
           firstSeenAt: input.retrievedAt,
           lastSeenAt: input.retrievedAt,
           retrievedAt: input.retrievedAt,

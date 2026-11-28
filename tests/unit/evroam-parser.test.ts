@@ -61,15 +61,47 @@ describe("EV Roam parser", () => {
       false,
       true,
     ]);
-    // Irish rows take the upstream status like GB rows; the official-status
-    // policy downgrades them once TII, the Irish registrar, is in the build.
+    // EV Roam only vouches for the status of what it assigns: a listing's
+    // status is the issuing register's to say.
     expect(result.records.map((record) => record.status)).toEqual([
       "ACTIVE",
       "ACTIVE",
-      "ACTIVE",
-      "ACTIVE",
+      "UNKNOWN",
+      "UNKNOWN",
       "ACTIVE",
     ]);
+    // The Irish listing is what the published dataset already holds, plus
+    // the observation block.
+    expect(result.records[2]).toEqual({
+      key: "gb-evroam:IE:505:CPO",
+      countryCode: "IE",
+      partyId: "505",
+      eMobilityId: "IE505",
+      role: "CPO",
+      status: "UNKNOWN",
+      organization: {
+        name: "50FIVE CHARGING SOLUTIONS UK LTD",
+        legalName: "50FIVE CHARGING SOLUTIONS UK LTD",
+        website: "https://www.50five.com",
+      },
+      source: {
+        registryId: "gb-evroam",
+        official: false,
+        sourceRecordId: "IE505",
+        sourceUrl: source.registry.url,
+        sourceValue: "IE*505",
+        firstSeenAt: "2026-06-15T00:00:00.000Z",
+        lastSeenAt: "2026-06-15T00:00:00.000Z",
+        retrievedAt: "2026-06-15T00:00:00.000Z",
+        observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "GB" },
+      },
+      metadata: {
+        evroamField: "operatorIdIE",
+        evroamTitle: "50FIVE CHARGING SOLUTIONS UK LTD",
+        evroamWebsite: "https://www.50five.com",
+        evroamAuthority: "cross-register",
+      },
+    });
     expect(result.records[0]?.source.observation).toEqual({
       kind: "ASSIGNMENT",
       observingJurisdiction: "GB",
@@ -162,9 +194,6 @@ describe("EV Roam parser", () => {
       "UNKNOWN",
       "UNKNOWN",
     ]);
-    expect(published[2]?.metadata.statusPolicy).toBe(
-      "unknown-non-official-country-with-official-idro",
-    );
     expect(validateRegistry(published, [tiiSource, evroamSource])).toHaveLength(0);
   });
 });

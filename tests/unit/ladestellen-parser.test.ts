@@ -54,6 +54,37 @@ describe("Ladestellen.at parser", () => {
     expect(result.records[1]?.organization.name).toBe("Manfred Unger");
   });
 
+  it("keeps the upstream value of a cross-register listing as its source value", async () => {
+    const source = await loadSourceDefinition("at-ladestellen");
+    const result = await new LadestellenConnector().normalize({
+      source,
+      retrievedAt: "2026-06-14T00:00:00.000Z",
+      records: [
+        {
+          operatorId: "DE-ABC",
+          type: "ORGANIZATION",
+          organization: "Foreign",
+          firstName: null,
+          lastName: null,
+        },
+        {
+          operatorId: "sma",
+          type: "ORGANIZATION",
+          organization: "Local",
+          firstName: null,
+          lastName: null,
+        },
+      ],
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.records.map((record) => [record.key, record.source.sourceValue])).toEqual([
+      ["at-ladestellen:DE:ABC:CPO", "DE-ABC"],
+      ["at-ladestellen:AT:SMA:CPO", "AT*SMA"],
+    ]);
+    expect(result.records[0]?.source.observation?.kind).toBe("CROSS_REGISTER_LISTING");
+  });
+
   it("warns and skips malformed identifiers", async () => {
     const source = await loadSourceDefinition("at-ladestellen");
     const connector = new LadestellenConnector();

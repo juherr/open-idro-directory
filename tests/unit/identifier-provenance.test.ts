@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   classifyIdentifierProvenance,
+  effectiveHealthState,
   identifierRoleKey,
+  isInLatestRetrieval,
+  isIssuingAssignment,
   issuingProvenanceSchema,
   withIssuingProvenance,
   type IssuingProvenance,
@@ -356,6 +359,49 @@ describe("issuing provenance on records", () => {
         issuing: { ...classified.issuing, confirmation: "PROBABLY" },
       }).success,
     ).toBe(false);
+  });
+});
+
+describe("issuing predicates", () => {
+  const plCovering = [plEipa];
+
+  it("counts an assignment of an issuing register, tombstone included", () => {
+    expect(isIssuingAssignment(record("pl-eipa", "PL", "XYZ"), plEipa, plCovering)).toBe(true);
+    expect(
+      isIssuingAssignment(record("pl-eipa", "PL", "XYZ", "CPO", { tombstone: true }), plEipa, [
+        plEipa,
+      ]),
+    ).toBe(true);
+  });
+
+  it("does not count a source outside the country, a role it does not publish, or a listing", () => {
+    expect(isIssuingAssignment(record("benelux-idro", "PL", "XYZ"), benelux, plCovering)).toBe(
+      false,
+    );
+    expect(
+      isIssuingAssignment(record("at-ladestellen", "AT", "XYZ", "EMSP"), atLadestellen, [
+        atLadestellen,
+      ]),
+    ).toBe(false);
+    const listing = record("pl-eipa", "PL", "XYZ", "CPO", {
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "PL" },
+    });
+    expect(isIssuingAssignment(listing, plEipa, plCovering)).toBe(false);
+  });
+
+  it("reads presence from the latest retrieval", () => {
+    expect(isInLatestRetrieval(record("pl-eipa", "PL", "XYZ"))).toBe(true);
+    expect(isInLatestRetrieval(record("pl-eipa", "PL", "XYZ", "CPO", { tombstone: true }))).toBe(
+      false,
+    );
+  });
+
+  it("counts an unknown, disabled or unreported source as UNAVAILABLE", () => {
+    expect(effectiveHealthState(plEipa, "STALE")).toBe("STALE");
+    expect(effectiveHealthState(plEipa, "CURRENT")).toBe("CURRENT");
+    expect(effectiveHealthState(undefined, "CURRENT")).toBe("UNAVAILABLE");
+    expect(effectiveHealthState(cyDisabled, "CURRENT")).toBe("UNAVAILABLE");
+    expect(effectiveHealthState(plEipa, undefined)).toBe("UNAVAILABLE");
   });
 });
 

@@ -1,5 +1,8 @@
 import {
+  effectiveHealthState,
   identifierRoleKey,
+  isInLatestRetrieval,
+  isIssuingAssignment,
   type IssuingConfirmation,
   type SourceHealthState,
 } from "../domain/identifier-provenance.js";
@@ -9,7 +12,6 @@ import type {
   RegistryRole,
   RegistryStatus,
 } from "../domain/registry-record.js";
-import { observationOf } from "../domain/registry-observation.js";
 import {
   isAuthoritative,
   sourceJurisdictions,
@@ -152,9 +154,10 @@ type Draft = Omit<DiscrepancyFinding, "severity" | "confidence"> &
 export function buildDiscrepancyReport(input: DiscrepancyReportInput): DiscrepancyReport {
   const sourceById = new Map(input.sources.map((source) => [source.id, source]));
   const healthOf = (id: string): SourceHealthState =>
-    sourceById.get(id)?.publication.enabled && Object.hasOwn(input.health, id)
-      ? (input.health[id] as DiscrepancySourceHealth).state
-      : "UNAVAILABLE";
+    effectiveHealthState(
+      sourceById.get(id),
+      Object.hasOwn(input.health, id) ? input.health[id]?.state : undefined,
+    );
   const registerEvidence = (id: string): DiscrepancyEvidence => ({
     recordKey: null,
     registryId: id,
@@ -162,29 +165,52 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
     lastSeenAt: null,
     healthState: healthOf(id),
   });
-  // Mirrors the classifier: the authoritative sources covering the country,
-  // narrowed to those publishing the role when `role` is given.
-  const covering = (country: string, role?: RegistryRole) =>
-    input.sources
-      .filter(
-        (source) =>
-          isAuthoritative(source) &&
-          sourceJurisdictions(source).includes(country) &&
-          (role === undefined || source.registry.supportedRoles.includes(role)),
-      )
-      .map((source) => source.id)
-      .sort(compare);
-  const isIssuing = (record: NormalizedRegistryRecord) =>
-    covering(record.countryCode, record.role).includes(record.source.registryId) &&
-    observationOf(record, sourceById.get(record.source.registryId) as SourceDefinition).kind ===
-      "ASSIGNMENT";
+  // The authoritative sources covering the country, as the classifier reads
+  // them.
+  const coveringByCountry = new Map<string, SourceDefinition[]>();
+  const coveringSources = (country: string) => {
+    let sources = coveringByCountry.get(country);
+    if (!sources) {
+      sources = input.sources.filter(
+        (source) => isAuthoritative(source) && sourceJurisdictions(source).includes(country),
+      );
+      coveringByCountry.set(country, sources);
+    }
+    return sources;
+  };
+  // Their ids, narrowed to those publishing the role when `role` is given.
+  const coveringIds = new Map<string, string[]>();
+  const covering = (country: string, role?: RegistryRole) => {
+    const key = `${country}|${role ?? ""}`;
+    let ids = coveringIds.get(key);
+    if (!ids) {
+      ids = coveringSources(country)
+        .filter((source) => role === undefined || source.registry.supportedRoles.includes(role))
+        .map((source) => source.id)
+        .sort(compare);
+      coveringIds.set(key, ids);
+    }
+    return ids;
+  };
 
   const drafts: Draft[] = [];
   const known = input.records
     .filter((record) => sourceById.has(record.source.registryId))
     .sort((left, right) => compare(left.key, right.key));
+  // Presence-free: a tombstone of an issuing register still counts, which is
+  // what yields removals.
+  const issuingRecords = new Set(
+    known.filter((record) => {
+      const source = sourceById.get(record.source.registryId);
+      return (
+        source !== undefined &&
+        isIssuingAssignment(record, source, coveringSources(record.countryCode))
+      );
+    }),
+  );
+  const isIssuing = (record: NormalizedRegistryRecord) => issuingRecords.has(record);
   const presentIssuing = Map.groupBy(
-    known.filter((record) => isPresent(record) && isIssuing(record)),
+    [...issuingRecords].filter(isInLatestRetrieval),
     (record) => `${record.countryCode}:${record.partyId}`,
   );
   const roleConflicts = new Map<string, Draft>();
@@ -206,7 +232,7 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
       // looks new there was not listed by a retrieval of this build.
       if (
         state === "CURRENT" &&
-        isPresent(record) &&
+        isInLatestRetrieval(record) &&
         record.source.firstSeenAt === record.source.retrievedAt
       ) {
         drafts.push({
@@ -217,7 +243,7 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
         });
       }
       if (
-        isPresent(record) ||
+        isInLatestRetrieval(record) ||
         record.metadata.inactiveReason !== REMOVAL_REASON ||
         confirmation === "CONFIRMED"
       ) {
@@ -241,7 +267,7 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
       );
     }
 
-    const listings = group.filter((record) => isPresent(record) && !isIssuing(record));
+    const listings = group.filter((record) => isInLatestRetrieval(record) && !isIssuing(record));
     for (const listing of listings) {
       const observed = listing.source.registryId;
       const confidence = healthOf(observed) === "CURRENT" ? "high" : "medium";
@@ -306,14 +332,14 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
       }
     }
 
-    const present = group.filter(isPresent);
+    const present = group.filter(isInLatestRetrieval);
     drafts.push(
-      ...conflicts(present, isIssuing, sameName, (left, right) => ({
+      ...conflicts(present, issuingRecords, sameName, (left, right) => ({
         ...base(left),
         category: "CONFLICTING_NAME",
         summary: `${label(left)} is published under different organisation names by ${left.source.registryId} and ${right.source.registryId}.`,
       })),
-      ...conflicts(present, isIssuing, sameStatus, (left, right) => ({
+      ...conflicts(present, issuingRecords, sameStatus, (left, right) => ({
         ...base(left),
         category: "CONFLICTING_STATUS",
         summary: `${label(left)} is published with different statuses by ${left.source.registryId} and ${right.source.registryId}.`,
@@ -501,20 +527,19 @@ function assemble(
 // others.
 function conflicts(
   present: NormalizedRegistryRecord[],
-  isIssuing: (record: NormalizedRegistryRecord) => boolean,
+  issuingRecords: ReadonlySet<NormalizedRegistryRecord>,
   same: (left: NormalizedRegistryRecord, right: NormalizedRegistryRecord) => boolean,
   describe: (
     left: NormalizedRegistryRecord,
     right: NormalizedRegistryRecord,
   ) => Pick<Draft, "category" | "summary" | "countryCode" | "identifier" | "issuingConfirmation">,
 ): Draft[] {
-  const issuing = present.filter(isIssuing);
+  const issuing = present.filter((record) => issuingRecords.has(record));
+  const others = present.filter((record) => !issuingRecords.has(record));
   const [reference, ...rest] = present;
   const pairs =
     issuing.length > 0
-      ? issuing.flatMap((left) =>
-          present.filter((right) => !isIssuing(right)).map((right) => [left, right, true] as const),
-        )
+      ? issuing.flatMap((left) => others.map((right) => [left, right, true] as const))
       : reference
         ? rest.map((right) => [reference, right, false] as const)
         : [];
@@ -544,11 +569,6 @@ function normalizeName(name: string) {
 // Cross-register listings are all published `UNKNOWN`, which says nothing.
 function sameStatus(left: NormalizedRegistryRecord, right: NormalizedRegistryRecord) {
   return left.status === right.status || left.status === "UNKNOWN" || right.status === "UNKNOWN";
-}
-
-// Present in the source's latest retrieval, as the classifier reads it.
-function isPresent(record: NormalizedRegistryRecord) {
-  return record.source.lastSeenAt === record.source.retrievedAt;
 }
 
 function identifierOf(record: NormalizedRegistryRecord) {

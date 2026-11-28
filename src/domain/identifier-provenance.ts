@@ -123,6 +123,41 @@ export function withoutIssuingProvenance(
   return rest;
 }
 
+/**
+ * Whether `record`, published by `source`, comes from an issuing register for
+ * its country and role and stands for an assignment. `covering` holds the
+ * authoritative sources whose effective jurisdictions include the record's
+ * country. Presence is not checked: a tombstone of an issuing register still
+ * counts.
+ */
+export function isIssuingAssignment(
+  record: NormalizedRegistryRecord,
+  source: SourceDefinition,
+  covering: readonly SourceDefinition[],
+): boolean {
+  return (
+    covering.includes(source) &&
+    source.registry.supportedRoles.includes(record.role) &&
+    observationOf(record, source).kind === "ASSIGNMENT"
+  );
+}
+
+/** Whether the record was listed by its source's latest retrieval. */
+export function isInLatestRetrieval(record: NormalizedRegistryRecord): boolean {
+  return record.source.lastSeenAt === record.source.retrievedAt;
+}
+
+/**
+ * The health a source counts with: `UNAVAILABLE` when the source is unknown,
+ * disabled, or has no known state, else `state`.
+ */
+export function effectiveHealthState(
+  source: SourceDefinition | undefined,
+  state: SourceHealthState | undefined,
+): SourceHealthState {
+  return source?.publication.enabled && state !== undefined ? state : "UNAVAILABLE";
+}
+
 // A record confirms when it comes from an issuing register, stands for an
 // assignment, and was present in that register's latest retrieval: a
 // tombstone kept after the identifier vanished upstream has an older
@@ -132,12 +167,7 @@ function confirms(
   source: SourceDefinition,
   covering: readonly SourceDefinition[],
 ) {
-  return (
-    covering.includes(source) &&
-    source.registry.supportedRoles.includes(record.role) &&
-    observationOf(record, source).kind === "ASSIGNMENT" &&
-    record.source.lastSeenAt === record.source.retrievedAt
-  );
+  return isIssuingAssignment(record, source, covering) && isInLatestRetrieval(record);
 }
 
 function unconfirmed(
@@ -148,9 +178,10 @@ function unconfirmed(
   if (!covered) return "NO_ISSUING_SOURCE";
   if (issuing.length === 0) return "UNSUPPORTED_ROLE";
   const states = issuing.map((source) =>
-    source.publication.enabled && Object.hasOwn(healthBySourceId, source.id)
-      ? healthBySourceId[source.id]
-      : "UNAVAILABLE",
+    effectiveHealthState(
+      source,
+      Object.hasOwn(healthBySourceId, source.id) ? healthBySourceId[source.id] : undefined,
+    ),
   );
   if (states.includes("UNAVAILABLE")) return "SOURCE_UNAVAILABLE";
   if (states.includes("STALE")) return "SOURCE_STALE";

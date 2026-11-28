@@ -280,6 +280,48 @@ const rows: Row[] = [
     expected: ["CONFLICTING_STATUS pl-eipa>benelux-idro PLXYZ medium/high"],
   },
   {
+    name: "a name conflict with a stale source lowers its confidence",
+    records: [
+      record("pl-eipa", "PL", "XYZ", "CPO", { name: "Acme Energy" }),
+      record("benelux-idro", "PL", "XYZ", "CPO", { name: "Acme Mobility" }),
+    ],
+    health: { ...allCurrent, "benelux-idro": "STALE" },
+    expected: [
+      "CONFLICTING_NAME pl-eipa>benelux-idro PLXYZ low/low",
+      "SOURCE_STALE benelux-idro>benelux-idro - medium/high",
+      "SOURCE_STALE benelux-idro>benelux-idro - medium/high",
+      "SOURCE_STALE benelux-idro>benelux-idro - medium/high",
+    ],
+  },
+  {
+    name: "a status conflict with a stale source lowers its confidence",
+    records: [
+      record("pl-eipa", "PL", "XYZ"),
+      record("benelux-idro", "PL", "XYZ", "CPO", { status: "REVOKED" }),
+    ],
+    health: { ...allCurrent, "benelux-idro": "STALE" },
+    expected: [
+      "CONFLICTING_STATUS pl-eipa>benelux-idro PLXYZ medium/medium",
+      "SOURCE_STALE benelux-idro>benelux-idro - medium/high",
+      "SOURCE_STALE benelux-idro>benelux-idro - medium/high",
+      "SOURCE_STALE benelux-idro>benelux-idro - medium/high",
+    ],
+  },
+  {
+    name: "a status conflict with an unavailable source lowers its confidence",
+    records: [
+      record("pl-eipa", "PL", "XYZ"),
+      record("benelux-idro", "PL", "XYZ", "CPO", { status: "REVOKED" }),
+    ],
+    health: { ...allCurrent, "benelux-idro": "UNAVAILABLE" },
+    expected: [
+      "CONFLICTING_STATUS pl-eipa>benelux-idro PLXYZ medium/medium",
+      "SOURCE_UNAVAILABLE benelux-idro>benelux-idro - medium/high",
+      "SOURCE_UNAVAILABLE benelux-idro>benelux-idro - medium/high",
+      "SOURCE_UNAVAILABLE benelux-idro>benelux-idro - medium/high",
+    ],
+  },
+  {
     name: "an UNKNOWN status never conflicts",
     records: [
       record("pl-eipa", "PL", "XYZ"),
@@ -321,6 +363,33 @@ describe("buildDiscrepancyReport", () => {
         { recordKey: null, registryId: "pl-eipa", retrievedAt: RETRIEVED_AT, lastSeenAt: null },
       ],
     });
+  });
+
+  it("lowers a conflict's confidence when the issuing side is not current", () => {
+    const report = build({
+      records: [
+        record("pl-eipa", "PL", "XYZ"),
+        record("benelux-idro", "PL", "XYZ", "CPO", { status: "REVOKED" }),
+      ],
+      health: { ...allCurrent, "pl-eipa": "STALE" },
+    });
+    const conflict = findings(report).find((finding) => finding.category === "CONFLICTING_STATUS");
+    expect(conflict).toMatchObject({ severity: "medium", confidence: "medium" });
+  });
+
+  it("gives each conflicting record the effective health of its source", () => {
+    const report = build({
+      records: [
+        record("pl-eipa", "PL", "XYZ", "CPO", { name: "Acme Energy" }),
+        record("benelux-idro", "PL", "XYZ", "CPO", { name: "Acme Mobility" }),
+      ],
+      health: { ...allCurrent, "benelux-idro": "STALE" },
+    });
+    const conflict = findings(report).find((finding) => finding.category === "CONFLICTING_NAME");
+    expect(conflict?.evidence).toEqual([
+      expect.objectContaining({ registryId: "benelux-idro", healthState: "STALE" }),
+      expect.objectContaining({ registryId: "pl-eipa", healthState: "CURRENT" }),
+    ]);
   });
 
   it("keeps the identifier's confirmation on a removal another issuing register contradicts", () => {

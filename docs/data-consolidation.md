@@ -31,7 +31,8 @@ authority confirms it.
 
 Findings are grouped by country, then by pair of issuing register and observed
 source. Each carries its evidence: the records involved, or the source-level
-observation, with their retrieval timestamps. The report is deterministic: it
+observation, with their retrieval timestamps; a record's or a register's
+evidence also carries the effective health of its source (`healthState`). The report is deterministic: it
 depends neither on the clock nor on the order of its inputs, only on the build's
 records, the source descriptors, their health, the exclusion history, and the
 duplicate warnings the connectors raised.
@@ -42,8 +43,8 @@ duplicate warnings the connectors raised.
 | `CONFLICTING_ROLE`               | medium                                      | high (medium when the observing source is not current) | another source lists the identifier, and an issuing register that publishes the listed role lists it under another role                                       |
 | `REMOVED_FROM_ISSUING_REGISTER`  | medium                                      | high                                                   | a current issuing register stopped listing an identifier it assigned                                                                                          |
 | `ADDED_TO_ISSUING_REGISTER`      | info                                        | high                                                   | a current issuing register lists an identifier for the first time                                                                                             |
-| `CONFLICTING_NAME`               | low                                         | medium                                                 | two sources publish the identifier under different organisation names                                                                                         |
-| `CONFLICTING_STATUS`             | medium                                      | high                                                   | two sources publish the identifier with different statuses                                                                                                    |
+| `CONFLICTING_NAME`               | low                                         | medium (low when either source is not current)         | two sources publish the identifier under different organisation names                                                                                         |
+| `CONFLICTING_STATUS`             | medium                                      | high (medium when either source is not current)        | two sources publish the identifier with different statuses                                                                                                    |
 | `ISSUING_REGISTER_UNVERIFIABLE`  | info                                        | low                                                    | the issuing register is stale or unavailable, so a listing or a removal cannot be checked                                                                     |
 | `OUTSIDE_ISSUING_REGISTER_SCOPE` | info                                        | high                                                   | no issuing register is tracked for the country, or none publishes the role                                                                                    |
 | `DUPLICATE_IDENTIFIER`           | low                                         | high                                                   | a source publishes the same identifier more than once                                                                                                         |

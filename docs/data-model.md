@@ -364,7 +364,8 @@ other sources disagree on; how each finding is derived is in
                   "recordKey": "se-energimyndigheten:DK:MON:CPO",
                   "registryId": "se-energimyndigheten",
                   "retrievedAt": "2026-06-15T00:00:00.000Z",
-                  "lastSeenAt": "2026-06-15T00:00:00.000Z"
+                  "lastSeenAt": "2026-06-15T00:00:00.000Z",
+                  "healthState": "CURRENT"
                 },
                 {
                   "recordKey": null,

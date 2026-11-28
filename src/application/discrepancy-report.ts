@@ -165,6 +165,32 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
     lastSeenAt: null,
     healthState: healthOf(id),
   });
+  const recordEvidence = (record: NormalizedRegistryRecord): DiscrepancyEvidence => ({
+    recordKey: record.key,
+    registryId: record.source.registryId,
+    retrievedAt: record.source.retrievedAt,
+    lastSeenAt: record.source.lastSeenAt,
+    firstSeenAt: record.source.firstSeenAt,
+    role: record.role,
+    status: record.status,
+    organizationName: record.organization.name,
+    sourceValue: record.source.sourceValue,
+    healthState: healthOf(record.source.registryId),
+  });
+  // A conflict with a source that is not current is a difference with its
+  // last successful retrieval, not between two current registers: one
+  // confidence level down.
+  const conflictConfidence = (
+    category: "CONFLICTING_NAME" | "CONFLICTING_STATUS",
+    left: NormalizedRegistryRecord,
+    right: NormalizedRegistryRecord,
+  ): DiscrepancyConfidence => {
+    const confidence = RATING[category][1];
+    const current = [left, right].every(
+      (record) => healthOf(record.source.registryId) === "CURRENT",
+    );
+    return current ? confidence : lowerConfidence(confidence);
+  };
   // The authoritative sources covering the country, as the classifier reads
   // them.
   const coveringByCountry = new Map<string, SourceDefinition[]>();
@@ -332,14 +358,16 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
 
     const present = group.filter(isInLatestRetrieval);
     drafts.push(
-      ...conflicts(present, issuingRecords, sameName, (left, right) => ({
+      ...conflicts(present, issuingRecords, sameName, recordEvidence, (left, right) => ({
         ...base(left),
         category: "CONFLICTING_NAME",
+        confidence: conflictConfidence("CONFLICTING_NAME", left, right),
         summary: `${label(left)} is published under different organisation names by ${left.source.registryId} and ${right.source.registryId}.`,
       })),
-      ...conflicts(present, issuingRecords, sameStatus, (left, right) => ({
+      ...conflicts(present, issuingRecords, sameStatus, recordEvidence, (left, right) => ({
         ...base(left),
         category: "CONFLICTING_STATUS",
+        confidence: conflictConfidence("CONFLICTING_STATUS", left, right),
         summary: `${label(left)} is published with different statuses by ${left.source.registryId} and ${right.source.registryId}.`,
       })),
     );
@@ -527,10 +555,14 @@ function conflicts(
   present: NormalizedRegistryRecord[],
   issuingRecords: ReadonlySet<NormalizedRegistryRecord>,
   same: (left: NormalizedRegistryRecord, right: NormalizedRegistryRecord) => boolean,
+  recordEvidence: (record: NormalizedRegistryRecord) => DiscrepancyEvidence,
   describe: (
     left: NormalizedRegistryRecord,
     right: NormalizedRegistryRecord,
-  ) => Pick<Draft, "category" | "summary" | "countryCode" | "identifier" | "issuingConfirmation">,
+  ) => Pick<
+    Draft,
+    "category" | "confidence" | "summary" | "countryCode" | "identifier" | "issuingConfirmation"
+  >,
 ): Draft[] {
   const issuing = present.filter((record) => issuingRecords.has(record));
   const others = present.filter((record) => !issuingRecords.has(record));
@@ -549,6 +581,10 @@ function conflicts(
       observedRegistryId: right.source.registryId,
       evidence: [recordEvidence(left), recordEvidence(right)],
     }));
+}
+
+function lowerConfidence(confidence: DiscrepancyConfidence): DiscrepancyConfidence {
+  return confidence === "high" ? "medium" : "low";
 }
 
 function sameName(left: NormalizedRegistryRecord, right: NormalizedRegistryRecord) {
@@ -580,20 +616,6 @@ function identifierOf(record: NormalizedRegistryRecord) {
 
 function label(record: NormalizedRegistryRecord) {
   return `${record.eMobilityId} (${record.role})`;
-}
-
-function recordEvidence(record: NormalizedRegistryRecord): DiscrepancyEvidence {
-  return {
-    recordKey: record.key,
-    registryId: record.source.registryId,
-    retrievedAt: record.source.retrievedAt,
-    lastSeenAt: record.source.lastSeenAt,
-    firstSeenAt: record.source.firstSeenAt,
-    role: record.role,
-    status: record.status,
-    organizationName: record.organization.name,
-    sourceValue: record.source.sourceValue,
-  };
 }
 
 function uniqueEvidence(evidence: DiscrepancyEvidence[]) {

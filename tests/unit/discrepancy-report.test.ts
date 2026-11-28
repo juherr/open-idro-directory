@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { z } from "zod";
+import { discrepanciesSchema } from "../../src/application/discrepancy-report-schema.js";
 import {
   buildDiscrepancyReport,
   DISCREPANCY_CATEGORIES,
@@ -319,6 +321,11 @@ describe("buildDiscrepancyReport", () => {
       expect(report.summary.byCategory[category], category).toBeGreaterThan(0);
     }
     expect(JSON.stringify(report)).not.toMatch(/invalid|error/i);
+  });
+
+  it("matches the published JSON schema, every category included", () => {
+    const validator = z.fromJSONSchema(discrepanciesSchema as never);
+    expect(validator.safeParse(everyCategoryReport()).error).toBeUndefined();
   });
 
   it("does not depend on the order of its inputs", () => {

@@ -33,9 +33,10 @@ export const DISCREPANCY_CATEGORIES = [
 ] as const;
 export type DiscrepancyCategory = (typeof DISCREPANCY_CATEGORIES)[number];
 
-const SEVERITIES = ["high", "medium", "low", "info"] as const;
-export type DiscrepancySeverity = (typeof SEVERITIES)[number];
-export type DiscrepancyConfidence = "high" | "medium" | "low";
+export const DISCREPANCY_SEVERITIES = ["high", "medium", "low", "info"] as const;
+export type DiscrepancySeverity = (typeof DISCREPANCY_SEVERITIES)[number];
+export const DISCREPANCY_CONFIDENCES = ["high", "medium", "low"] as const;
+export type DiscrepancyConfidence = (typeof DISCREPANCY_CONFIDENCES)[number];
 
 // Severity and confidence by category; the categories whose value depends on
 // the sources involved override it where they are built.
@@ -456,7 +457,7 @@ function assemble(
     DiscrepancyCategory,
     number
   >;
-  const bySeverity = Object.fromEntries(SEVERITIES.map((key) => [key, 0])) as Record<
+  const bySeverity = Object.fromEntries(DISCREPANCY_SEVERITIES.map((key) => [key, 0])) as Record<
     DiscrepancySeverity,
     number
   >;

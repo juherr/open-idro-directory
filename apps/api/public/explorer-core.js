@@ -142,3 +142,54 @@ export function createSearchScope({
     planQuery,
   };
 }
+
+// French labels of the detail panel, worded as the server-rendered country
+// page words them (COUNTRY_PAGE_COPY.fr in country-page-copy.ts).
+const FRENCH_AUTHORITY_LEVELS = {
+  AUTHORITATIVE: "Faisant autorité",
+  SUPRANATIONAL_DIRECTORY: "Annuaire supranational",
+  SECONDARY: "Secondaire",
+  SELF_ASSERTED: "Auto-déclaré",
+  UNVERIFIED: "Non vérifié",
+};
+
+const FRENCH_OBSERVATION_TYPES = {
+  OFFICIAL_ASSIGNMENT: "Attribution officielle",
+  OFFICIAL_DIRECTORY_ENTRY: "Entrée d'annuaire officiel",
+  LEGACY_ASSIGNMENT: "Attribution historique",
+  NETWORK_REGISTRATION: "Enregistrement réseau",
+  INFRASTRUCTURE_OBSERVATION: "Observation d'infrastructure",
+  SELF_DECLARATION: "Auto-déclaration",
+  COMMUNITY_OBSERVATION: "Observation communautaire",
+};
+
+function capitalize(value) {
+  return value.toLowerCase().replace(/^./, (char) => char.toUpperCase());
+}
+
+/** An enum value in sentence case, underscores as spaces; `—` when empty. */
+export function formatEnum(value) {
+  return capitalize((value || "—").replaceAll("_", " "));
+}
+
+/**
+ * The highest authority level of an identifier in `lang`. English, and an
+ * unknown value in any language, keep the sentence-cased raw value.
+ */
+export function authorityLevelLabel(value, lang) {
+  if (lang === "fr" && Object.hasOwn(FRENCH_AUTHORITY_LEVELS, value)) {
+    return FRENCH_AUTHORITY_LEVELS[value];
+  }
+  return capitalize(value || "—");
+}
+
+/**
+ * The type of an observation in `lang`. English, and an unknown value in
+ * any language, fall back to `formatEnum`.
+ */
+export function observationTypeLabel(value, lang) {
+  if (lang === "fr" && Object.hasOwn(FRENCH_OBSERVATION_TYPES, value)) {
+    return FRENCH_OBSERVATION_TYPES[value];
+  }
+  return formatEnum(value);
+}

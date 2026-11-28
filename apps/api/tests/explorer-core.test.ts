@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
+  authorityLevelLabel,
   countryPagePath,
   createSearchScope,
   existingCountryPagePath,
+  formatEnum,
   normalizeIdentifierInput,
+  observationTypeLabel,
   pageLanguage,
 } from "../public/explorer-core.js";
+import { COUNTRY_PAGE_COPY } from "../src/http/pages/country-page-copy.js";
 
 const emptyState = { q: "", country: "", role: "", status: "" };
 
@@ -367,5 +371,76 @@ describe("planQuery search path", () => {
     expect(plan.kind).toBe("search");
     if (plan.kind !== "search") return;
     expect(plan.searchPath).toBe(scope.buildApiPath(state, null));
+  });
+});
+
+describe("enum labels of the detail panel", () => {
+  // What /explore/ rendered in English before the labels were localized.
+  const englishAuthority = {
+    AUTHORITATIVE: "Authoritative",
+    SUPRANATIONAL_DIRECTORY: "Supranational_directory",
+    SECONDARY: "Secondary",
+    SELF_ASSERTED: "Self_asserted",
+    UNVERIFIED: "Unverified",
+  };
+  const englishObservationType = {
+    OFFICIAL_ASSIGNMENT: "Official assignment",
+    OFFICIAL_DIRECTORY_ENTRY: "Official directory entry",
+    LEGACY_ASSIGNMENT: "Legacy assignment",
+    NETWORK_REGISTRATION: "Network registration",
+    INFRASTRUCTURE_OBSERVATION: "Infrastructure observation",
+    SELF_DECLARATION: "Self declaration",
+    COMMUNITY_OBSERVATION: "Community observation",
+  };
+  const fr = COUNTRY_PAGE_COPY.fr;
+
+  it.each(Object.entries(englishAuthority))(
+    "keeps the English authority level %s",
+    (value, label) => {
+      expect(authorityLevelLabel(value, "en")).toBe(label);
+    },
+  );
+
+  it.each(Object.entries(fr.authorityLevel))(
+    "words the French authority level %s as the country page does",
+    (value, label) => {
+      expect(authorityLevelLabel(value, "fr")).toBe(label);
+    },
+  );
+
+  it.each(Object.entries(englishObservationType))(
+    "keeps the English observation type %s",
+    (value, label) => {
+      expect(observationTypeLabel(value, "en")).toBe(label);
+    },
+  );
+
+  it.each(Object.entries(fr.observationType))(
+    "words the French observation type %s as the country page does",
+    (value, label) => {
+      expect(observationTypeLabel(value, "fr")).toBe(label);
+    },
+  );
+
+  it("covers every value the country page translates", () => {
+    expect(Object.keys(englishAuthority).sort()).toEqual(Object.keys(fr.authorityLevel).sort());
+    expect(Object.keys(englishObservationType).sort()).toEqual(
+      Object.keys(fr.observationType).sort(),
+    );
+  });
+
+  it.each(["en", "fr"])("title-cases an unknown value in %s", (lang) => {
+    expect(authorityLevelLabel("NEW_LEVEL", lang)).toBe("New_level");
+    expect(observationTypeLabel("NEW_TYPE", lang)).toBe("New type");
+  });
+
+  it.each(["en", "fr"])("shows a dash for a missing value in %s", (lang) => {
+    expect(authorityLevelLabel(null, lang)).toBe("—");
+    expect(observationTypeLabel(undefined, lang)).toBe("—");
+  });
+
+  it("formats a scheme as before", () => {
+    expect(formatEnum("EMI3_PARTY_ID")).toBe("Emi3 party id");
+    expect(formatEnum("")).toBe("—");
   });
 });

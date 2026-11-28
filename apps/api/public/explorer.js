@@ -1,9 +1,12 @@
 // ES module: the helpers of the classic shared.js script, loaded before it,
 // stay reachable as globals.
 import {
+  authorityLevelLabel,
   countryPagePath,
   createSearchScope,
   existingCountryPagePath,
+  formatEnum,
+  observationTypeLabel,
   pageLanguage,
 } from "/explorer-core.js";
 
@@ -485,10 +488,7 @@ function renderDetail(detail, observations) {
   renderDetailCountry();
   document.querySelector("#detail-conflict").hidden = !detail.hasConflict;
   setText("#detail-legal-name", detail.legalName || "—");
-  setText(
-    "#detail-authority",
-    (detail.highestAuthorityLevel || "—").toLowerCase().replace(/^./, (char) => char.toUpperCase()),
-  );
+  setText("#detail-authority", authorityLevelLabel(detail.highestAuthorityLevel, lang));
   setText(
     "#detail-roles",
     detail.roles?.length
@@ -534,7 +534,7 @@ function renderDetail(detail, observations) {
               <span class="source-id">${escapeHtml(observation.sourceId)}</span>
             </div>
             <div class="observation-grid">
-              <div><span>${escapeHtml(copy.obType)}</span><div>${escapeHtml(formatEnum(observation.observationType))}</div></div>
+              <div><span>${escapeHtml(copy.obType)}</span><div>${escapeHtml(observationTypeLabel(observation.observationType, lang))}</div></div>
               <div><span>${escapeHtml(copy.scheme)}</span><div>${escapeHtml(formatEnum(observation.scheme))}</div></div>
               <div><span>${escapeHtml(copy.sourceValue)}</span><div>${escapeHtml(observation.sourceValue || observation.sourceRecordId || "—")}</div></div>
               <div><span>${escapeHtml(copy.retrieved)}</span><div>${escapeHtml(relativeTime(observation.retrievedAt || observation.lastSeenAt, lang))}</div></div>
@@ -552,13 +552,6 @@ function renderDetail(detail, observations) {
 function renderDetailCountry() {
   if (state.detailCountry)
     setHtml("#detail-country", countryLink(state.detailCountry, currentLanguage()));
-}
-
-function formatEnum(value) {
-  return (value || "—")
-    .replaceAll("_", " ")
-    .toLowerCase()
-    .replace(/^./, (char) => char.toUpperCase());
 }
 
 function safeExternalUrl(value) {

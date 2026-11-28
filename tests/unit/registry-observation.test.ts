@@ -4,6 +4,7 @@ import {
   type NormalizedRegistryRecord,
 } from "../../src/domain/registry-record.js";
 import {
+  knownObservationOf,
   observationOf,
   observationScope,
   observedSource,
@@ -86,6 +87,23 @@ describe("observation scope", () => {
       kind: "CROSS_REGISTER_LISTING",
       observingJurisdiction: "PL",
     });
+  });
+
+  it("knows a record's observation when its block or its source tells it", async () => {
+    const source = await loadSourceDefinition("pl-eipa");
+    const block = { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "PL" } as const;
+
+    expect(knownObservationOf(record("pl-eipa", "PL", { observation: block }), source)).toEqual(
+      block,
+    );
+    expect(knownObservationOf(record("pl-eipa", "PL"), source)).toEqual({
+      kind: "ASSIGNMENT",
+      observingJurisdiction: "PL",
+    });
+    expect(knownObservationOf(record("xx-gone", "PL", { observation: block }), undefined)).toEqual(
+      block,
+    );
+    expect(knownObservationOf(record("xx-gone", "PL"), undefined)).toBeNull();
   });
 
   it("fills the block a published record lacks and keeps the one it carries", async () => {

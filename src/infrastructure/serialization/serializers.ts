@@ -2,7 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { currentDetections } from "../../application/invalid-record-history.js";
 import { fromRoot } from "../filesystem/paths.js";
 import { isValidEmi3Identifier } from "../../domain/emi3-identifier.js";
-import { crossRegisterListings, observationOf } from "../../domain/registry-observation.js";
+import { crossRegisterListings, knownObservationOf } from "../../domain/registry-observation.js";
 import type {
   InvalidRegistryHistory,
   NormalizedRegistryRecord,
@@ -145,7 +145,7 @@ function toCsv(records: NormalizedRegistryRecord[], sources: SourceDefinition[])
       record.source.retrievedAt,
       record.issuing?.country ?? "",
       record.issuing?.confirmation ?? "",
-      source ? observationOf(record, source).kind : (record.source.observation?.kind ?? ""),
+      knownObservationOf(record, source)?.kind ?? "",
     ].map(csvCell);
   });
   return [columns.join(","), ...rows.map((row) => row.join(","))].join("\n") + "\n";

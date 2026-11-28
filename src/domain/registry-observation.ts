@@ -51,6 +51,18 @@ export function observationOf(
 }
 
 /**
+ * `observationOf` for a record whose register may be unknown: the block the
+ * record carries, else the one derived from its source, else `null` for a
+ * register no source describes.
+ */
+export function knownObservationOf(
+  record: NormalizedRegistryRecord,
+  source: SourceJurisdictionScope | undefined,
+): RegistryObservation | null {
+  return source ? observationOf(record, source) : (record.source.observation ?? null);
+}
+
+/**
  * The record with its observation block, derived when it was published
  * without one. Comparing a published record with fresh connector output
  * otherwise counts the missing block as a change on every record.

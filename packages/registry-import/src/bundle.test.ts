@@ -385,6 +385,31 @@ describe("issuing confirmation and observation kinds", () => {
     ]);
   });
 
+  it("keeps the block a record of a register sources.json does not describe carries", () => {
+    const rows = toRegistryRows(
+      [
+        record("retired-register", "FI", "OLD", {
+          official: true,
+          observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "SE" },
+        }),
+      ],
+      sources,
+      "release-1",
+    );
+
+    expect(
+      rows.observations.map((row) => [
+        row.party_key,
+        row.observation_kind,
+        row.observing_jurisdiction,
+        row.authority_level,
+        row.observation_type,
+      ]),
+    ).toEqual([
+      ["FI:OLD", "CROSS_REGISTER_LISTING", "SE", "SECONDARY", "OFFICIAL_DIRECTORY_ENTRY"],
+    ]);
+  });
+
   it("ignores an authority level the schema does not know when ranking", () => {
     const legacy = {
       ...(summary("legacy-register", ["FI"]) as object),

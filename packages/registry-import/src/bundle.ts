@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
   authorityLevelSchema,
   normalizedRegistryRecordSchema,
-  observationOf,
+  knownObservationOf,
   type AuthorityLevel,
   type NormalizedRegistryRecord,
   type ObservationType,
@@ -219,10 +219,9 @@ export function toRegistryRows(
   datasetReleaseId: string,
 ) {
   const observations = toObservations(records, sources, datasetReleaseId);
-  const kindByKey = new Map(observations.map((row) => [row.key, row.observation_kind]));
   return {
     observations,
-    parties: toParties(records, observations, kindByKey, datasetReleaseId),
+    parties: toParties(records, observations, datasetReleaseId),
     partyRoles: toPartyRoles(records, observations, datasetReleaseId),
   };
 }
@@ -241,8 +240,7 @@ export function toObservations(
       // whatever the source claims for itself. A record of a register
       // `sources.json` does not describe has no kind to derive, so it falls
       // back on its own `official` flag.
-      const observation =
-        record.source.observation ?? (source ? observationOf(record, source) : null);
+      const observation = knownObservationOf(record, source);
       const assignment = observation ? observation.kind === "ASSIGNMENT" : record.source.official;
       const authorityLevel: AuthorityLevel = assignment
         ? (source?.authority.level ?? "AUTHORITATIVE")
@@ -287,9 +285,9 @@ export function toObservations(
 function toParties(
   records: NormalizedRegistryRecord[],
   observations: ObservationRow[],
-  kindByKey: Map<string, ObservationRow["observation_kind"]>,
   datasetReleaseId: string,
 ) {
+  const kindByKey = new Map(observations.map((row) => [row.key, row.observation_kind]));
   const recordsByParty = groupBy(records, (record) => partyKey(record.countryCode, record.partyId));
   const observationsByParty = groupBy(observations, (observation) => observation.party_key);
   return [...recordsByParty.entries()]

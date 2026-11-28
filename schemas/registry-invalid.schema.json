@@ -229,37 +229,6 @@
               },
               "metadata": {
                 "type": "object"
-              },
-              "issuing": {
-                "type": "object",
-                "required": [
-                  "country",
-                  "confirmation",
-                  "confirmedBy"
-                ],
-                "properties": {
-                  "country": {
-                    "type": "string",
-                    "pattern": "^[A-Z]{2}$"
-                  },
-                  "confirmation": {
-                    "enum": [
-                      "CONFIRMED",
-                      "NOT_FOUND",
-                      "SOURCE_STALE",
-                      "SOURCE_UNAVAILABLE",
-                      "UNSUPPORTED_ROLE",
-                      "NO_ISSUING_SOURCE"
-                    ]
-                  },
-                  "confirmedBy": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  }
-                }
               }
             }
           }

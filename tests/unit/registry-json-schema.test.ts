@@ -37,6 +37,14 @@ describe("registry JSON schemas", () => {
     expect(record.properties.source.properties.observation).toEqual(OBSERVATION);
   });
 
+  it("does not describe an issuing block on the records excluded from the datasets", () => {
+    // Invalid records are never classified, so they never carry one.
+    const record = registryInvalidSchema.properties.records.items.properties.record;
+
+    expect(record.properties).not.toHaveProperty("issuing");
+    expect(registrySchema.items.properties).toHaveProperty("issuing");
+  });
+
   it("describes the optional issuing block of a record", () => {
     const record = registrySchema.items;
 

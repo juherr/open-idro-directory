@@ -133,6 +133,9 @@ const rowFields = {
   },
 };
 
+// Invalid records are never classified, so they carry no issuing block.
+const { issuing: _issuing, ...invalidRecordProperties } = registryRecordSchema.properties;
+
 export const registryInvalidSchema = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   title: "InvalidRegistryDataset",
@@ -175,7 +178,7 @@ export const registryInvalidSchema = {
           record: {
             ...registryRecordSchema,
             properties: {
-              ...registryRecordSchema.properties,
+              ...invalidRecordProperties,
               countryCode: { type: "string" },
               partyId: { type: "string" },
               eMobilityId: { type: "string" },

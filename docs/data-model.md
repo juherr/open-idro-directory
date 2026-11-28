@@ -275,8 +275,10 @@ source:
 - not stale: current;
 - stale, and its last successful retrieval is not the latest attempt: the fetch
   or the build failed, so unavailable;
-- stale otherwise: the register answered, but the run was not ingested (a
-  safety threshold tripped, for example), so stale.
+- stale otherwise: the register answered, but the run reported an error, so
+  stale. A source is stale as soon as its run has any error, so a parse,
+  normalisation or safety-threshold error on a register that answered all give
+  `SOURCE_STALE`.
 
 A source a partial update (`directory update --source <id>`) does not rebuild
 keeps the health published in `data/sources.json`, so the update classifies its

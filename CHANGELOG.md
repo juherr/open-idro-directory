@@ -9,9 +9,26 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
-- Issuing confirmation in the datasets and the API: whether the register of
-  the identifier's own country lists it, and whether an observation is that
-  register's assignment or another register's listing. `data/registry.csv`
+- Cross-register listings: a national register that lists an identifier
+  another country issued, such as `DK*MON` in the Swedish register or `NL*TNM`
+  in the Polish one, is now published instead of being refused. `countryCode`
+  stays the issuing country, taken from the identifier prefix; the listing
+  register shows only in `source.registryId` and in a new optional
+  `source.observation { kind, observingJurisdiction }` block, whose `kind` is
+  `ASSIGNMENT` or `CROSS_REGISTER_LISTING`. Listings are published with
+  `official: false`: being listed in Sweden does not make Sweden the issuer.
+  `schemas/registry.schema.json` describes the block.
+- Issuing confirmation: every record carries an `issuing { country,
+confirmation, confirmedBy }` block saying what the registers of the
+  identifier's own country say about it for that role. `confirmation` is
+  `CONFIRMED` (the confirming registers in `confirmedBy`), `NOT_FOUND`,
+  `SOURCE_UNAVAILABLE`, `SOURCE_STALE`, `UNSUPPORTED_ROLE`, or
+  `NO_ISSUING_SOURCE`. A listing by another country's register never confirms,
+  nor does a tombstone, and a register that failed or went stale is never read
+  as proof of absence. The block is derived from the raw provenance, identical
+  on every record of an identifier and role, and the same after a partial
+  update as after a full build. It never counts as a record change, so its
+  arrival does not trip the safety thresholds. `data/registry.csv`
   gains `issuingCountry`, `issuingConfirmation`, and `observationKind`,
   appended after `retrievedAt`, and `data/stats.json` gains
   `recordsByIssuingConfirmation`. API parties carry `issuingCountry` and
@@ -104,6 +121,22 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Changed
 
+- **Breaking:** `data/registry.json` and `data/registry.csv` gain the
+  cross-register listings connectors used to refuse, so a consumer filtering by
+  `countryCode` now also sees what other registers list for that country. Keep
+  `source.official` or `source.observation.kind === "ASSIGNMENT"` to leave them
+  out; the two filters differ, as `docs/data-model.md` explains. Records
+  published before the block carry no `source.observation`: derive it from the
+  source's jurisdictions in `data/sources.json`. `outOfJurisdiction` in
+  `data/registry-invalid.json` no longer grows; its existing entries stay.
+  `data/reports/out-of-jurisdiction.json` and the out-of-jurisdiction counters
+  of `data/stats.json` keep their shape but now count the published listings,
+  which takes them from about 5 to about 75 entries.
+- `gb-evroam` now covers `GB` only, while its authority keeps `GB` and `IE`:
+  its Irish entries, once a special case in the connector, are ordinary
+  listings of identifiers Ireland issues. A listing its register stops
+  publishing is dropped rather than kept as an `INACTIVE` tombstone, which
+  removes the few Irish EV Roam entries kept that way.
 - A party's `highestAuthorityLevel` is now computed from its observations: a
   party only listed by registers outside its country is `SECONDARY`, which
   changes the results of `?authority=` and the authority grouping of `/stats`.

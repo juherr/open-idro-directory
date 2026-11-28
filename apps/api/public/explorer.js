@@ -1,6 +1,6 @@
 // ES module: the helpers of the classic shared.js script, loaded before it,
 // stay reachable as globals.
-import { countryPagePath, createSearchScope } from "/explorer-core.js";
+import { countryPagePath, createSearchScope, existingCountryPagePath } from "/explorer-core.js";
 
 // A country page hosts this search in a section pinned to its country; the
 // explorer page has no such section.
@@ -323,9 +323,14 @@ function renderForeignNotice() {
   if (!state.foreign) return;
   const lang = currentLanguage();
   const [before, after] = EXPLORER_COPY[lang].belongsTo.split("{country}");
+  // Linked only once the stats show the country has a page: before they
+  // load, or when they fail, the name stays plain text.
+  const code = state.foreign.countryCode;
+  const name = escapeHtml(countryName(code, lang));
+  const path = existingCountryPagePath(code, state.countsByCountry);
   notice.innerHTML =
     escapeHtml(before.replace("{id}", state.foreign.emobilityId)) +
-    countryLink(state.foreign.countryCode, lang) +
+    (path ? `<a class="text-link" href="${escapeHtml(path)}">${name}</a>` : name) +
     escapeHtml(after);
 }
 
@@ -562,8 +567,9 @@ function submitSearch() {
 }
 
 async function loadContext() {
-  // The stats only feed the country select and the context label.
-  if (!fixedRoot) await loadStats();
+  // The stats feed the country select and the context label of the
+  // explorer, and the country link of a country page's foreign notice.
+  await loadStats();
   try {
     const sources = await apiGet("/api/v1/sources");
     state.sourceNames = Object.fromEntries(
@@ -581,6 +587,9 @@ async function loadStats() {
       stats.data?.countsByIdentifierCountry || stats.data?.countsByCountry || {};
     renderOptions();
     renderContextLabel();
+    // Writes the notice of the current query only: state.foreign is reset
+    // by every new query.
+    renderForeignNotice();
   } catch {
     state.countsByCountry = {};
     renderContextLabel();

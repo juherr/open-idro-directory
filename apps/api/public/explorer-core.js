@@ -26,6 +26,16 @@ export function countryPagePath(code) {
   return `/countries/${code.toLowerCase()}/`;
 }
 
+/**
+ * The country page path of `code` when the stats count identifiers for it,
+ * else `null`: a country without identifiers has no page.
+ */
+export function existingCountryPagePath(code, counts) {
+  const path = countryPagePath(code);
+  if (!path || !counts) return null;
+  return Number(counts[code.toUpperCase()]) > 0 ? path : null;
+}
+
 export function createSearchScope({ fixedCountry, basePath = "/explore/", knownCountries } = {}) {
   const forced = fixedCountry ? fixedCountry.toUpperCase() : null;
   const known = new Set(knownCountries ?? []);

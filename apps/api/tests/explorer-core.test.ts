@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   countryPagePath,
   createSearchScope,
+  existingCountryPagePath,
   isIdentifierLike,
   normalizeIdentifierInput,
 } from "../public/explorer-core.js";
@@ -233,4 +234,32 @@ describe("countryPagePath", () => {
       expect(countryPagePath(code as string)).toBeNull();
     },
   );
+});
+
+describe("existingCountryPagePath", () => {
+  const counts = { DE: 3349, FR: 769, BG: 0 };
+
+  it.each([
+    ["DE", "/countries/de/"],
+    ["de", "/countries/de/"],
+    ["Fr", "/countries/fr/"],
+  ])("links %j, counted in the stats, to its country page", (code, expected) => {
+    expect(existingCountryPagePath(code, counts)).toBe(expected);
+  });
+
+  it.each(["IT", "it", "BG", "bg"])(
+    "returns null for %j, which has no identifier and so no country page",
+    (code) => {
+      expect(existingCountryPagePath(code, counts)).toBeNull();
+    },
+  );
+
+  it("returns null when the counts are unknown", () => {
+    expect(existingCountryPagePath("DE", null)).toBeNull();
+    expect(existingCountryPagePath("DE", {})).toBeNull();
+  });
+
+  it("returns null for a value that is not a country code", () => {
+    expect(existingCountryPagePath("../", { "../": 1 })).toBeNull();
+  });
 });

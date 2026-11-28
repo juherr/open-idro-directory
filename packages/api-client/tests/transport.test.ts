@@ -53,6 +53,25 @@ const hangingBodyFetcher: ApiFetcher = async (_input, init) => {
   return new Response(body, { status: 200 });
 };
 
+/** Answers 200 at once with a body that never closes and ignores the signal. */
+const deafBodyFetcher: ApiFetcher = async () => {
+  const body = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(new TextEncoder().encode('{"data":'));
+    },
+  });
+  return new Response(body, { status: 200 });
+};
+
+/** Counts the abort listeners added to and removed from `signal`. */
+function abortListenerBalance(signal: AbortSignal) {
+  const added = vi.spyOn(signal, "addEventListener");
+  const removed = vi.spyOn(signal, "removeEventListener");
+  const count = (spy: typeof added | typeof removed) =>
+    spy.mock.calls.filter(([type]) => type === "abort").length;
+  return () => count(added) - count(removed);
+}
+
 async function captureError(promise: Promise<unknown>): Promise<ApiError> {
   try {
     await promise;
@@ -368,6 +387,37 @@ describe("createApiClient timeout and abort", () => {
 
     expect((await pending).kind).toBe("timeout");
     expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("times out a body read the fetcher does not wire to the signal", async () => {
+    vi.useFakeTimers();
+    const client = createApiClient({ fetch: deafBodyFetcher, baseUrl: BASE_URL, timeoutMs: 500 });
+    const caller = new AbortController();
+    const listenersLeft = abortListenerBalance(caller.signal);
+
+    const pending = captureError(client.request("/api/v1/stats", { signal: caller.signal }));
+    await vi.advanceTimersByTimeAsync(500);
+    const error = await pending;
+
+    expect(error.kind).toBe("timeout");
+    expect(vi.getTimerCount()).toBe(0);
+    expect(listenersLeft()).toBe(0);
+  });
+
+  it("reports a caller abort during a deaf body read as aborted", async () => {
+    vi.useFakeTimers();
+    const client = createApiClient({ fetch: deafBodyFetcher, baseUrl: BASE_URL });
+    const caller = new AbortController();
+    const listenersLeft = abortListenerBalance(caller.signal);
+
+    const pending = captureError(client.request("/api/v1/stats", { signal: caller.signal }));
+    await vi.advanceTimersByTimeAsync(100);
+    caller.abort();
+    const error = await pending;
+
+    expect(error.kind).toBe("aborted");
+    expect(vi.getTimerCount()).toBe(0);
+    expect(listenersLeft()).toBe(0);
   });
 
   it("reports a caller abort as aborted, not as a timeout", async () => {

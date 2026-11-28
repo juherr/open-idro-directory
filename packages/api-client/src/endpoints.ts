@@ -64,6 +64,7 @@ export interface PartyListQuery {
 
 export type EndpointOptions = Pick<RequestOptions, "ifNoneMatch" | "signal">;
 
+/** Each method throws a `TypeError` on a path value that is empty, `.` or `..` (`endpointPath`). */
 export interface DirectoryApi {
   index(options?: EndpointOptions): Promise<ApiResult<ApiIndex>>;
   stats(options?: EndpointOptions): Promise<ApiResult<Stats>>;
@@ -83,12 +84,22 @@ export interface DirectoryApi {
   resolve(emobilityId: string, options?: EndpointOptions): Promise<ApiResult<Resolution>>;
 }
 
-/** Fills each `{name}` of the template with its encoded value. */
+/**
+ * Fills each `{name}` of the template with its encoded value.
+ *
+ * Throws a `TypeError` naming the parameter when a value is missing, empty, `.` or `..`:
+ * encoding keeps dot segments, and the URL parser would fold them into another path.
+ */
 export function endpointPath(endpoint: EndpointDefinition, params: Record<string, string> = {}) {
   return endpoint.path.replaceAll(/\{([^}]+)\}/g, (_match, name: string) => {
     const value = params[name];
     if (value === undefined) {
       throw new TypeError(`Missing path parameter "${name}" for ${endpoint.path}.`);
+    }
+    if (value === "" || value === "." || value === "..") {
+      throw new TypeError(
+        `Path parameter "${name}" for ${endpoint.path} must not be ${JSON.stringify(value)}.`,
+      );
     }
     return encodeURIComponent(value);
   });

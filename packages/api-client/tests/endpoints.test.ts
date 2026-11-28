@@ -91,6 +91,16 @@ describe("directory api", () => {
     ]);
   });
 
+  it.each(["", ".", ".."])("refuses %j as a path segment, naming the parameter", (value) => {
+    const { api, calls } = recordingApi();
+
+    expect(() => api.party(value, "ABC")).toThrow(TypeError);
+    expect(() => api.party(value, "ABC")).toThrow(/countryCode/);
+    expect(() => api.party("FR", value)).toThrow(/partyId/);
+    expect(() => api.resolve(value)).toThrow(/emobilityId/);
+    expect(calls).toHaveLength(0);
+  });
+
   it("sends the party filters the site uses, sorted, and drops the undefined ones", async () => {
     const { api, calls } = recordingApi();
 

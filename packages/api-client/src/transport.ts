@@ -122,6 +122,7 @@ async function send<T>(
   const headers: Record<string, string> = { Accept: "application/json" };
   if (ifNoneMatch !== undefined) headers["If-None-Match"] = ifNoneMatch;
 
+  const aborted = rejectOnAbort(controller.signal);
   try {
     let response: Response;
     let text: string;
@@ -129,7 +130,8 @@ async function send<T>(
       response = await fetcher(url, { method: "GET", headers, signal: controller.signal });
       const responseHeaders = readHeaders(response.headers);
       if (response.status === 304) return { notModified: true, headers: responseHeaders };
-      text = await response.text();
+      // A fetcher may not wire the signal into the body stream: race the read against it.
+      text = await Promise.race([response.text(), aborted.promise]);
     } catch (error) {
       throw transportError(error, timedOut, timeoutMs, signal);
     }
@@ -137,7 +139,20 @@ async function send<T>(
   } finally {
     clearTimeout(timer);
     signal?.removeEventListener("abort", forwardAbort);
+    aborted.dispose();
   }
+}
+
+/** A promise that rejects with the signal's reason once it aborts, and its cleanup. */
+function rejectOnAbort(signal: AbortSignal) {
+  let onAbort: () => void = () => {};
+  const promise = new Promise<never>((_resolve, reject) => {
+    onAbort = () => reject(signal.reason);
+  });
+  // Only ever awaited through Promise.race; never leave the rejection unhandled.
+  promise.catch(() => {});
+  signal.addEventListener("abort", onAbort, { once: true });
+  return { promise, dispose: () => signal.removeEventListener("abort", onAbort) };
 }
 
 function parseBody<T>(response: Response, text: string): FreshResult<T> {

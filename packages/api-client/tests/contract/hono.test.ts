@@ -9,6 +9,7 @@ import {
   createDirectoryApi,
   type ApiFetcher,
   type ApiResult,
+  type PartyListQuery,
 } from "../../src/index.js";
 
 // The real Hono app in process, on the API suite's D1 fake: one French party, FR*ABC.
@@ -85,6 +86,23 @@ describe("api client against the Hono app", () => {
   it("lists parties by e-mobility identifier", async () => {
     const data = fresh(await api.parties({ emobilityId: "FR*ABC", limit: 25 }));
     expect(data.items.map((party) => party.partyId)).toEqual(["ABC"]);
+  });
+
+  // The D1 fake answers any party query: only the API's validation proves each filter is sent.
+  it.each<[string, PartyListQuery, number]>([
+    ["country", { country: "FRA" }, 400],
+    ["role", { role: "DRIVER" as PartyListQuery["role"] }, 400],
+    ["status", { status: "GONE" as PartyListQuery["status"] }, 400],
+    ["q", { q: "x" }, 400],
+    ["emobilityId", { emobilityId: "x" }, 400],
+    ["limit", { limit: 500 }, 400],
+    // parseQuery answers 422 instead of 400 once a cursor is present.
+    ["cursor", { cursor: "c".repeat(501) }, 422],
+  ])("sends the %s filter to the API's validation", async (_name, query, status) => {
+    const error: unknown = await api.parties(query).catch((caught: unknown) => caught);
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect(error).toMatchObject({ kind: "http", status, envelope: { code: "INVALID_QUERY" } });
   });
 
   it("reads a party with its roles' issuing confirmation", async () => {

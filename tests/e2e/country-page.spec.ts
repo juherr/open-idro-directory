@@ -10,9 +10,19 @@ async function followLanguageLink(page: Page, name: string) {
   await page.goto(target.pathname + target.search);
 }
 
+// The value of one fact of a source card: the description that follows its
+// term in the card's description list, whatever the markup classes.
+function sourceFact(page: Page, sourceName: string, term: string) {
+  return page
+    .getByRole("article")
+    .filter({ has: page.getByRole("heading", { name: sourceName, exact: true }) })
+    .locator(`xpath=.//dt[normalize-space()="${term}"]/following-sibling::dd[1]`);
+}
+
 test("country search on /countries/fr/ stays in France", async ({ page }) => {
   await page.goto("/countries/fr/");
   await expect(page.getByRole("heading", { name: "Search identifiers" })).toBeVisible();
+  await expect(sourceFact(page, "AFIREV", "Freshness")).toHaveText("Current");
   await expect(resultRows(page, "FR")).toHaveCount(25);
 
   await search(page, E2E_FIXTURE.sharedName);
@@ -38,6 +48,7 @@ test("country page language switch keeps French across a reload and a search", a
   await page.reload();
   await expect(searchTitle).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+  await expect(sourceFact(page, "AFIREV", "Fraîcheur")).toHaveText("À jour");
 
   await search(page, E2E_FIXTURE.sharedName);
   await expect(resultRow(page, "Shared Mobility France")).toBeVisible();

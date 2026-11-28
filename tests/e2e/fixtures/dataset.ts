@@ -137,7 +137,7 @@ function source(id: string, name: string, country: string, recordCount: number, 
       lastAttemptedRetrieval: enabled ? SEEN_AT : null,
       lastSuccessfulRetrieval: enabled ? SEEN_AT : null,
       checksum: null,
-      freshness: enabled ? "fresh" : "disabled",
+      freshness: enabled ? "current" : "disabled",
       latestErrorSummary: null,
     },
   };

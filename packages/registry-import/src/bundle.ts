@@ -27,6 +27,7 @@ import {
 } from "./types.js";
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
+const defaultDataDir = resolve(rootDir, "data");
 const outputDir = resolve(rootDir, "build/cloudflare");
 const deterministicImportTimestamp = "1970-01-01T00:00:00.000Z";
 
@@ -101,13 +102,18 @@ export interface ImportBundle {
   manifest: ImportManifest;
 }
 
-export async function buildImportBundle() {
-  const records = await readRegistryRecords();
-  const sources = (await readJson("data/sources.json")) as SourceSummary[];
-  const stats = (await readJson("data/stats.json")) as StatsSummary;
-  const conflictsReport = (await readOptionalJson("data/reports/non-idrr-conflicts.json", {
-    conflicts: [],
-  })) as ConflictReport;
+/**
+ * Builds the bundle from the generated datasets in `dataDir` (the
+ * repository's `data/` by default; the browser suite passes its fixture).
+ */
+export async function buildImportBundle({ dataDir = defaultDataDir }: { dataDir?: string } = {}) {
+  const records = await readRegistryRecords(dataDir);
+  const sources = (await readJson(resolve(dataDir, "sources.json"))) as SourceSummary[];
+  const stats = (await readJson(resolve(dataDir, "stats.json"))) as StatsSummary;
+  const conflictsReport = (await readOptionalJson(
+    resolve(dataDir, "reports/non-idrr-conflicts.json"),
+    { conflicts: [] },
+  )) as ConflictReport;
   const gitCommitSha = git(["rev-parse", "HEAD"]);
   const gitRef = git(["rev-parse", "--abbrev-ref", "HEAD"]);
   const generatedAt = stats.generatedAt;
@@ -167,9 +173,13 @@ export async function buildImportBundle() {
   };
 }
 
-export async function writeImportBundle(bundle?: ImportBundle) {
+/** Writes the bundle to `outputDir`, `build/cloudflare` by default. */
+export async function writeImportBundle(
+  bundle?: ImportBundle,
+  { outputDir: targetDir = outputDir }: { outputDir?: string } = {},
+) {
   bundle ??= await buildImportBundle();
-  await mkdir(outputDir, { recursive: true });
+  await mkdir(targetDir, { recursive: true });
   const files = new Map<string, string>([
     ["release.json", JSON.stringify(bundle.release, null, 2) + "\n"],
     ["authorities.ndjson", toNdjson(bundle.authorities)],
@@ -187,7 +197,7 @@ export async function writeImportBundle(bundle?: ImportBundle) {
   files.set("checksums.sha256", `${checksums}\n`);
   files.set("import.sql", toImportSql(bundle));
   await Promise.all(
-    [...files.entries()].map(([fileName, body]) => writeFile(resolve(outputDir, fileName), body)),
+    [...files.entries()].map(([fileName, body]) => writeFile(resolve(targetDir, fileName), body)),
   );
   return bundle.manifest;
 }
@@ -203,8 +213,8 @@ export async function verifyImportBundle() {
   return manifest;
 }
 
-async function readRegistryRecords() {
-  const rawRecords = (await readJson("data/registry.json")) as unknown[];
+async function readRegistryRecords(dataDir: string) {
+  const rawRecords = (await readJson(resolve(dataDir, "registry.json"))) as unknown[];
   return rawRecords.map((record) => normalizedRegistryRecordSchema.parse(record));
 }
 

@@ -20,7 +20,8 @@
     "packages/**/*.ts",
     "scripts/**/*.ts",
     "vitest.config.ts",
-    "vite.config.ts"
+    "vite.config.ts",
+    "playwright.config.ts"
   ],
   "exclude": ["dist", "node_modules"]
 }

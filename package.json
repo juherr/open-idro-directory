@@ -33,6 +33,7 @@
     "api:import:local": "bun run --cwd apps/api import:local",
     "api:smoke:local": "bun run --cwd apps/api smoke:local",
     "api:build-import": "bun run --cwd packages/registry-import build-bundle",
+    "web:e2e": "playwright test",
     "audit": "bun audit"
   },
   "dependencies": {

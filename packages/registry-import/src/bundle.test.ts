@@ -1,7 +1,9 @@
-import { readFile, readdir } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { describe, expect, it } from "vitest";
+import { E2E_FIXTURE, writeE2eDataset } from "../../../tests/e2e/fixtures/dataset.js";
 import {
   buildImportBundle,
   toImportSql,
@@ -195,6 +197,38 @@ describe("Cloudflare import bundle", () => {
       .prepare("SELECT DISTINCT observation_kind AS kind FROM observations ORDER BY kind")
       .all() as Array<{ kind: string | null }>;
     expect(kinds.map((row) => row.kind)).not.toContain(null);
+  });
+
+  it("builds a bundle from another data directory into another output directory", async () => {
+    const workDir = await mkdtemp(resolve(tmpdir(), "registry-import-"));
+    try {
+      const dataDir = resolve(workDir, "data");
+      const outputDir = resolve(workDir, "bundle");
+      const records = await writeE2eDataset(dataDir);
+
+      const bundle = await buildImportBundle({ dataDir });
+      await writeImportBundle(bundle, { outputDir });
+
+      expect(bundle.observations).toHaveLength(records.length);
+      expect(bundle.sources.map((source) => source.id).sort()).toEqual([
+        "cy-ems",
+        "de-bdew",
+        "fr-afirev",
+      ]);
+      const sql = await readFile(resolve(outputDir, "import.sql"), "utf8");
+      expect(sql).toContain("Shared Mobility Germany");
+      const db = await migratedDatabase();
+      db.exec(sql);
+      const parties = db
+        .prepare("SELECT country_code AS country, COUNT(*) AS count FROM parties GROUP BY 1")
+        .all() as Array<{ country: string; count: number }>;
+      expect(Object.fromEntries(parties.map((row) => [row.country, row.count]))).toEqual({
+        DE: 2,
+        FR: E2E_FIXTURE.voltlineCount + 3,
+      });
+    } finally {
+      await rm(workDir, { recursive: true, force: true });
+    }
   });
 });
 

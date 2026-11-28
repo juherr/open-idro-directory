@@ -52,8 +52,9 @@ duplicate warnings the connectors raised.
 | `SOURCE_STALE`                   | medium (low for a non-authoritative source) | high                                                   | the source answered but its latest run was not ingested                                                                                                             |
 | `SOURCE_UNAVAILABLE`             | medium (low for a non-authoritative source) | high                                                   | the source could not be retrieved, or was never retrieved                                                                                                           |
 
-Conflicts compare the issuing register's record with every other source's;
-without an issuing record, they compare the other sources with each other.
+Conflicts compare each issuing register's record with every other issuing
+register's, once per pair, and with every other source's; without an issuing
+record, they compare the first source with the others.
 A removal is reported per issuing register: another issuing register that still
 lists the identifier does not hide it, and the finding keeps the identifier's
 `CONFIRMED` confirmation. A listing is checked against each issuing register

@@ -555,8 +555,9 @@ function assemble(
 }
 
 // One finding per pair whose values differ: each issuing record against every
-// other record or, with no issuing record, the first register against the
-// others.
+// later issuing record and every other record or, with no issuing record, the
+// first register against the others. `present` is sorted by key, so each pair
+// of issuing registers is compared once, in the same direction.
 function conflicts(
   present: NormalizedRegistryRecord[],
   issuingRecords: ReadonlySet<NormalizedRegistryRecord>,
@@ -575,7 +576,9 @@ function conflicts(
   const [reference, ...rest] = present;
   const pairs =
     issuing.length > 0
-      ? issuing.flatMap((left) => others.map((right) => [left, right, true] as const))
+      ? issuing.flatMap((left, index) =>
+          [...issuing.slice(index + 1), ...others].map((right) => [left, right, true] as const),
+        )
       : reference
         ? rest.map((right) => [reference, right, false] as const)
         : [];

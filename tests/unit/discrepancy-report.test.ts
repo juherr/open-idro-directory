@@ -277,6 +277,46 @@ const rows: Row[] = [
     expected: ["CONFLICTING_NAME pl-eipa>benelux-idro PLXYZ low/medium"],
   },
   {
+    name: "two issuing registers publishing different names conflict once",
+    records: [
+      record("de-first", "DE", "XYZ", "CPO", { name: "Acme Energy" }),
+      record("de-second", "DE", "XYZ", "CPO", { name: "Acme Mobility" }),
+    ],
+    expected: ["CONFLICTING_NAME de-first>de-second DEXYZ low/medium"],
+  },
+  {
+    name: "issuing registers are compared with each other and with the other sources, each pair once",
+    records: [
+      record("de-first", "DE", "XYZ", "CPO", { name: "Acme Energy" }),
+      record("de-second", "DE", "XYZ", "CPO", { name: "Acme Mobility" }),
+      record("benelux-idro", "DE", "XYZ", "CPO", { name: "Acme Mobility" }),
+    ],
+    expected: [
+      "CONFLICTING_NAME de-first>benelux-idro DEXYZ low/medium",
+      "CONFLICTING_NAME de-first>de-second DEXYZ low/medium",
+    ],
+  },
+  {
+    name: "two issuing registers publishing different statuses conflict once",
+    records: [
+      record("de-first", "DE", "XYZ"),
+      record("de-second", "DE", "XYZ", "CPO", { status: "REVOKED" }),
+    ],
+    expected: ["CONFLICTING_STATUS de-first>de-second DEXYZ medium/high"],
+  },
+  {
+    name: "a conflict between issuing registers loses confidence when one is stale",
+    records: [
+      record("de-first", "DE", "XYZ"),
+      record("de-second", "DE", "XYZ", "CPO", { status: "REVOKED" }),
+    ],
+    health: { ...allCurrent, "de-second": "STALE" },
+    expected: [
+      "CONFLICTING_STATUS de-first>de-second DEXYZ medium/medium",
+      "SOURCE_STALE de-second>de-second - medium/high",
+    ],
+  },
+  {
     name: "names differing only by case, spacing or punctuation do not conflict",
     records: [
       record("pl-eipa", "PL", "XYZ", "CPO", { name: "Acme  Energy, S.A." }),

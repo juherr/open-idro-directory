@@ -13,3 +13,32 @@ export {
   type ResponseHeaders,
   type ResponseMeta,
 } from "./transport.js";
+export {
+  ENDPOINTS,
+  createDirectoryApi,
+  endpointPath,
+  type DirectoryApi,
+  type EndpointDefinition,
+  type EndpointOptions,
+  type PartyListQuery,
+  type PartyRoleFilter,
+  type PartyStatusFilter,
+} from "./endpoints.js";
+export type {
+  ApiIndex,
+  CountrySource,
+  CountrySummary,
+  Dataset,
+  IssuingConfirmationPayload,
+  Observation,
+  Page,
+  Party,
+  PartyDetail,
+  PartyRole,
+  Resolution,
+  Source,
+  SourceAuthority,
+  SourceList,
+  SourceReference,
+  Stats,
+} from "./types.js";

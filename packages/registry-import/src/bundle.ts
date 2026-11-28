@@ -531,10 +531,13 @@ function selectPreferredRecord(
 
 // The strongest level among the observations, in `authorityLevelSchema`
 // order (AUTHORITATIVE first). Every party and role has at least one.
+// `sources.json` is read without validation, so a level the schema does not
+// know is skipped rather than ranked above every known one; with no known
+// level left, the party is UNVERIFIED.
 function highestAuthorityLevel(observations: ObservationRow[]): AuthorityLevel {
-  const ranks = observations.map((row) =>
-    authorityLevelSchema.options.indexOf(row.authority_level),
-  );
+  const ranks = observations
+    .map((row) => authorityLevelSchema.options.indexOf(row.authority_level))
+    .filter((rank) => rank >= 0);
   return authorityLevelSchema.options[Math.min(...ranks)] ?? "UNVERIFIED";
 }
 

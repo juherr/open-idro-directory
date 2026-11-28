@@ -361,6 +361,58 @@ describe("issuing confirmation and observation kinds", () => {
     ]);
   });
 
+  it("falls back on the official flag for a register sources.json does not describe", () => {
+    const rows = toRegistryRows(
+      [
+        record("retired-register", "FI", "OLD", { official: true }),
+        record("retired-register", "FI", "LST", { official: false }),
+      ],
+      sources,
+      "release-1",
+    );
+
+    expect(
+      rows.observations.map((row) => [
+        row.party_key,
+        row.observation_kind,
+        row.observing_jurisdiction,
+        row.authority_level,
+        row.observation_type,
+      ]),
+    ).toEqual([
+      ["FI:LST", null, null, "SECONDARY", "OFFICIAL_DIRECTORY_ENTRY"],
+      ["FI:OLD", null, null, "AUTHORITATIVE", "OFFICIAL_ASSIGNMENT"],
+    ]);
+  });
+
+  it("ignores an authority level the schema does not know when ranking", () => {
+    const legacy = {
+      ...(summary("legacy-register", ["FI"]) as object),
+      authority: { id: "legacy-register", level: "LEGACY_LEVEL", jurisdictions: ["FI"] },
+    } as never;
+    const rows = toRegistryRows(
+      [
+        record("fi-traficom", "FI", "ABC", {
+          official: true,
+          observation: { kind: "ASSIGNMENT", observingJurisdiction: "FI" },
+        }),
+        record("legacy-register", "FI", "ABC", {
+          official: true,
+          observation: { kind: "ASSIGNMENT", observingJurisdiction: "FI" },
+        }),
+      ],
+      [...sources, legacy],
+      "release-1",
+    );
+
+    expect(rows.observations.map((row) => row.authority_level).sort()).toEqual([
+      "AUTHORITATIVE",
+      "LEGACY_LEVEL",
+    ]);
+    expect(rows.partyRoles[0]?.highest_authority_level).toBe("AUTHORITATIVE");
+    expect(rows.parties[0]?.highest_authority_level).toBe("AUTHORITATIVE");
+  });
+
   it("round-trips the new columns through the migrated schema", async () => {
     const bundle = await buildImportBundle();
     const rows = toRegistryRows(dkMon, sources, bundle.release.id);

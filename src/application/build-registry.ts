@@ -313,7 +313,11 @@ async function duplicateObservations(
   const isIngested = (result: SourceBuildResult) =>
     selectedIds.has(result.sourceId) && !result.errors.some((issue) => issue.severity === "error");
   const ingested = results.filter(isIngested);
-  const ingestedIds = new Set(ingested.map((result) => result.sourceId));
+  // Only a source still in this run is carried: a disabled source, or one whose
+  // descriptor was removed, has no result and loses its findings with its data.
+  const carriedIds = new Set(
+    results.filter((result) => !isIngested(result)).map((result) => result.sourceId),
+  );
   return [
     ...ingested.flatMap((result) =>
       result.warnings
@@ -325,8 +329,8 @@ async function duplicateObservations(
           retrievedAt: result.retrievedAt,
         })),
     ),
-    ...(await readPreviousDuplicateFindings(dataDir)).filter(
-      (duplicate) => !ingestedIds.has(duplicate.sourceId),
+    ...(await readPreviousDuplicateFindings(dataDir)).filter((duplicate) =>
+      carriedIds.has(duplicate.sourceId),
     ),
   ];
 }

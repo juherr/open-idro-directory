@@ -66,7 +66,8 @@ Rules that keep a temporary failure from reading as a discrepancy:
   are read back from the previously published report. A source that failed and
   republishes its previous records keeps its previous duplicate findings too;
   a source ingested in the run reports only the duplicates its connector raised
-  in that run.
+  in that run. A disabled source, or one whose descriptor was removed, loses its
+  duplicate findings with its records.
 
 Two categories reach beyond the current retrieval:
 

@@ -458,6 +458,95 @@ describe("buildRegistry discrepancy report", () => {
     );
   });
 
+  // Disabling a source, or removing its descriptor, removes its data: its
+  // duplicate findings must not be read back from the previous report forever.
+  it.each([
+    {
+      case: "disabled",
+      sourcesOf: (sources: SourceDefinition[]) =>
+        sources.map((source) =>
+          source.id === "dk-fstyr"
+            ? { ...source, publication: { ...source.publication, enabled: false } }
+            : source,
+        ),
+    },
+    {
+      case: "removed",
+      sourcesOf: (sources: SourceDefinition[]) =>
+        sources.filter((source) => source.id !== "dk-fstyr"),
+    },
+  ])("drops the duplicate findings of a source $case since", async ({ sourcesOf }) => {
+    const createConnector = await nordicConnectors({
+      dk: [duplicateWarning("FSTYR_DUPLICATE_IDENTIFIER", "DK*BBB")],
+      se: [duplicateWarning("ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER", "SE*AAA")],
+    });
+    await withWorkspace(
+      async ({ build, outputDir, publishOutput, sources }) => {
+        await build({ createConnector });
+        expect(duplicatesOf(await readDiscrepancies(outputDir))).toContainEqual([
+          "dk-fstyr",
+          "FSTYR_DUPLICATE_IDENTIFIER",
+        ]);
+        await publishOutput();
+        await build({ createConnector, sources: sourcesOf(sources) });
+
+        expect(duplicatesOf(await readDiscrepancies(outputDir))).toEqual([
+          ["se-energimyndigheten", "ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER"],
+        ]);
+      },
+      { sourceIds: NORDIC, published: [] },
+    );
+  });
+
+  // #31 reference scenario 4, stale variant: the issuing register answered but
+  // its run was not ingested, so a tombstone or an absence proves nothing.
+  it("reports an issuing register answering but not ingested as unverifiable only", async () => {
+    const removed: NormalizedRegistryRecord = {
+      ...sampleRecord("dk-fstyr", "DK", "OLD"),
+      status: "INACTIVE",
+      metadata: {
+        inactiveSince: PREVIOUS_RETRIEVAL,
+        inactiveReason: "missing-from-official-source",
+      },
+    };
+    removed.source = { ...removed.source, lastSeenAt: "2026-06-01T00:00:00.000Z" };
+    const swedish = await swedishListings("SE*AAA", "SE*BBB", "SE*CCC", "DK*BBB", "DK*MON");
+    const connectors: Record<string, () => RegistryConnector> = {
+      "dk-fstyr": connectorReturning(
+        [assignedThisRun("dk-fstyr", "DK", "BBB")],
+        [{ severity: "error", code: "MASS_CHANGE", message: "1 of 1 changed." }],
+      ),
+      "se-energimyndigheten": connectorReturning(swedish),
+    };
+    await withWorkspace(
+      async ({ build, outputDir }) => {
+        const { results } = await build({
+          createConnector: (source) => connectors[source.id]!(),
+        });
+
+        const dk = results.find((result) => result.sourceId === "dk-fstyr");
+        expect(dk?.stale).toBe(true);
+        expect(dk?.lastSuccessfulRetrieval).toBe(dk?.retrievedAt);
+        const findings = findingsOf(await readDiscrepancies(outputDir)).filter(
+          (finding) => finding.issuingRegistryId === "dk-fstyr",
+        );
+        expect(new Set(findings.map((finding) => finding.category))).toEqual(
+          new Set(["ISSUING_REGISTER_UNVERIFIABLE", "SOURCE_STALE"]),
+        );
+        const unverifiable = findings.filter(
+          (finding) => finding.category === "ISSUING_REGISTER_UNVERIFIABLE",
+        );
+        expect(unverifiable.map((finding) => finding.reason)).toEqual(
+          unverifiable.map(() => "SOURCE_STALE"),
+        );
+        expect(
+          unverifiable.map((finding) => finding.identifier?.eMobilityId ?? "").toSorted(),
+        ).toEqual(["DKMON", "DKOLD"]);
+      },
+      { sourceIds: NORDIC, published: [sampleRecord("dk-fstyr", "DK", "BBB"), removed] },
+    );
+  });
+
   // #31 reference scenario 4: an unreachable issuing register must not yield a
   // removal or a not-found.
   it("reports a failing issuing register as unverifiable only", async () => {

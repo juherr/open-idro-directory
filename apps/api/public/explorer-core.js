@@ -32,8 +32,11 @@ export function existingCountryPagePath(code, counts) {
   return Number(counts[code.toUpperCase()]) > 0 ? path : null;
 }
 
-export function createSearchScope({ fixedCountry, basePath = "/explore/", knownCountries } = {}) {
+export function createSearchScope({ fixedCountry, basePath: givenBasePath, knownCountries } = {}) {
   const forced = fixedCountry ? fixedCountry.toUpperCase() : null;
+  // A country page hosts the search at its own path; an invalid code has no
+  // page, so it falls back to the explorer rather than to `null`.
+  const basePath = givenBasePath ?? (forced ? countryPagePath(forced) : null) ?? "/explore/";
   const known = new Set(knownCountries ?? []);
 
   // In fixed-country mode, a compact input (no `-`/`*` after the prefix)

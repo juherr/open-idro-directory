@@ -89,7 +89,6 @@ function searchSection(code: string, name: string) {
       class="section country-section country-search"
       aria-labelledby="search-title"
       data-fixed-country="${code}"
-      data-base-path="/countries/${code.toLowerCase()}/"
       hidden
     >
       <div class="section-heading">

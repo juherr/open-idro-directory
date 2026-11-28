@@ -146,7 +146,7 @@ describe("country page", () => {
 
     expect(scriptTags(page)).toEqual(SEARCH_SCRIPTS);
     expect(page).toMatch(
-      /<section\s+class="[^"]*country-search[^"]*"[^>]*data-fixed-country="IE"[^>]*data-base-path="\/countries\/ie\/"[^>]*hidden\s*>/,
+      /<section\s+class="[^"]*country-search[^"]*"[^>]*data-fixed-country="IE"[^>]*hidden\s*>/,
     );
     for (const id of ["explore-form", "query", "role", "status", "results", "detail-panel"]) {
       expect(page).toContain(`id="${id}"`);

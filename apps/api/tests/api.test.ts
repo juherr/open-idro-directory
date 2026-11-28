@@ -430,7 +430,6 @@ describe("Cloudflare API", () => {
     expect(page).toContain("https://api.afirev.fr/public/prefixes");
     expect(page).toContain('href="/explore/?country=FR"');
     expect(page).toContain('data-fixed-country="FR"');
-    expect(page).toContain('data-base-path="/countries/fr/"');
     expect(page).toContain('<script type="module" src="/explorer.js"></script>');
   });
 

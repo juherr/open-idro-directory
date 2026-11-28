@@ -8,10 +8,9 @@ const fixedRoot = document.querySelector("[data-fixed-country]");
 const scope = fixedRoot
   ? createSearchScope({
       fixedCountry: fixedRoot.dataset.fixedCountry,
-      basePath: fixedRoot.dataset.basePath,
       knownCountries: Object.keys(COUNTRY_NAMES.en),
     })
-  : createSearchScope({ basePath: "/explore/" });
+  : createSearchScope();
 
 // The country page is server-rendered in the language of <html lang>.
 function currentLanguage() {

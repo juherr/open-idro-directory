@@ -101,6 +101,21 @@ describe("explorer scope (characterization of /explore/)", () => {
 describe("fixed-country scope", () => {
   const scope = createSearchScope({ fixedCountry: "fr", basePath: "/countries/fr/" });
 
+  it("derives the country page as base path when none is given", () => {
+    const derived = createSearchScope({ fixedCountry: "fr" });
+    expect(derived.basePath).toBe("/countries/fr/");
+    expect(derived.buildPageUrl(emptyState)).toBe("/countries/fr/");
+    expect(derived.buildPageUrl({ ...emptyState, q: "x", role: "CPO" })).toBe(
+      "/countries/fr/?q=x&role=CPO",
+    );
+  });
+
+  it("falls back to the explorer path for an invalid fixed country", () => {
+    const invalid = createSearchScope({ fixedCountry: "f1" });
+    expect(invalid.basePath).toBe("/explore/");
+    expect(invalid.buildPageUrl({ ...emptyState, q: "x" })).toBe("/explore/?q=x");
+  });
+
   it("normalizes the fixed country to upper case", () => {
     expect(scope.fixedCountry).toBe("FR");
     expect(createSearchScope().fixedCountry).toBeNull();

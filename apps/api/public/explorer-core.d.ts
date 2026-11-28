@@ -41,7 +41,10 @@ export interface SearchScopeOptions {
    * neither read from nor written to the page URL. Omit it for the explorer.
    */
   fixedCountry?: string;
-  /** Path of the page that hosts the search. Defaults to `/explore/`. */
+  /**
+   * Path of the page that hosts the search. Defaults to the fixed country's
+   * page (`/countries/{lc}/`), or to `/explore/` without a valid one.
+   */
   basePath?: string;
   /**
    * Upper-case country codes, read in fixed-country mode only. A compact

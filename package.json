@@ -13,7 +13,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "check": "vp check && bun run test && bun run api:typecheck && bun run api:test && bun run directory:validate && bun run api:build-import && bun run web:typecheck && bun run web:test && bun run web:build",
+    "check": "vp check && bun run test && bun run api:typecheck && bun run api:test && bun run api-client:typecheck && bun run api-client:test && bun run directory:validate && bun run api:build-import && bun run web:typecheck && bun run web:test && bun run web:build",
     "format": "vp fmt --write",
     "format:check": "vp fmt --check",
     "lint": "vp lint",
@@ -32,6 +32,8 @@
     "api:migrate:local": "bun run --cwd apps/api migrate:local",
     "api:import:local": "bun run --cwd apps/api import:local",
     "api:smoke:local": "bun run --cwd apps/api smoke:local",
+    "api-client:test": "bun run --cwd packages/api-client test",
+    "api-client:typecheck": "bun run --cwd packages/api-client typecheck",
     "api:build-import": "bun run --cwd packages/registry-import build-bundle",
     "web:dev": "bun run --cwd apps/web dev",
     "web:build": "bun run --cwd apps/web build",

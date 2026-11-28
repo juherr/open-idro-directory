@@ -151,16 +151,35 @@ Country page head (`src/http/pages/country-page.ts:113-125`):
 
 ## API endpoints consumed per page
 
-| Page                | Endpoint                                                             | Source                                                    |
-| ------------------- | -------------------------------------------------------------------- | --------------------------------------------------------- |
-| Landing             | `/api/v1/stats?view=landing`, `/api/v1`                              | `public/landing.js:317-330`                               |
-| Explorer            | `/api/v1/parties?country&role&status&q\|emobilityId&limit=25&cursor` | `public/explorer-core.js:90-103`, `explorer.js:282`       |
-| Explorer            | `/api/v1/resolve/{id}`                                               | `public/explorer-core.js:117-121`, `explorer.js:364`      |
-| Explorer            | `/api/v1/parties/{cc}/{id}` (roles of each row)                      | `public/explorer.js:300-306`                              |
-| Explorer            | `/api/v1/parties/{cc}/{id}` and `…/observations` (detail)            | `public/explorer.js:459-470`                              |
-| Explorer            | `/api/v1/sources`, `/api/v1/stats`                                   | `public/explorer.js:589`, `explorer.js:600`               |
-| Country page (SSR)  | D1 directly, the same summary as `/api/v1/countries/:code`           | `src/http/app.ts:247-251`, `app.ts:270`, `app.ts:357-375` |
-| Country page search | the explorer's calls, with `country` forced to the page              | `public/explorer-core.js:94-95`                           |
+| Page                | Endpoint                                                             | Client method (`createDirectoryApi`) | Source                                                    |
+| ------------------- | -------------------------------------------------------------------- | ------------------------------------ | --------------------------------------------------------- |
+| Landing             | `/api/v1/stats?view=landing`, `/api/v1`                              | `stats()`, `index()`                 | `public/landing.js:317-330`                               |
+| Explorer            | `/api/v1/parties?country&role&status&q\|emobilityId&limit=25&cursor` | `parties(query)`                     | `public/explorer-core.js:90-103`, `explorer.js:282`       |
+| Explorer            | `/api/v1/resolve/{id}`                                               | `resolve(emobilityId)`               | `public/explorer-core.js:117-121`, `explorer.js:364`      |
+| Explorer            | `/api/v1/parties/{cc}/{id}` (roles of each row)                      | `party(countryCode, partyId)`        | `public/explorer.js:300-306`                              |
+| Explorer            | `/api/v1/parties/{cc}/{id}` and `…/observations` (detail)            | `party()`, `partyObservations()`     | `public/explorer.js:459-470`                              |
+| Explorer            | `/api/v1/sources`, `/api/v1/stats`                                   | `sources()`, `stats()`               | `public/explorer.js:589`, `explorer.js:600`               |
+| Country page (SSR)  | D1 directly, the same summary as `/api/v1/countries/:code`           | `country(countryCode)`               | `src/http/app.ts:247-251`, `app.ts:270`, `app.ts:357-375` |
+| Country page search | the explorer's calls, with `country` forced to the page              | `parties(query)`, `resolve()`        | `public/explorer-core.js:94-95`                           |
+
+The client methods come from one table, `ENDPOINTS` in
+`packages/api-client/src/endpoints.ts`. Two contract tests check it: one
+against `openApiDocument()`, the other against the Hono app in process
+(`packages/api-client/tests/contract/`). Gaps found:
+
+- The OpenAPI document declares no query parameter. The seven `/parties`
+  filters the site sends (`country`, `role`, `status`, `q`, `emobilityId`,
+  `limit`, `cursor`) are accepted by `partyListQuerySchema` but undocumented.
+  The contract test lists them as known gaps and goes red once the document
+  declares one.
+- The document gives `/api/v1/sources` the `Source` schema, but the endpoint
+  answers `{ items: Source[] }`.
+- `GET /api/v1`, `/stats`, the summaries of the party detail and `/resolve`
+  are built inline in `src/http/app.ts`, with no mapper type to check the
+  client DTOs against. Only the in-process contract test covers them.
+- No missing field: the client types every field these endpoints return.
+- `stats()` sends no `view` parameter: its URL, and so its ETag, differs from
+  the landing page's `?view=landing`.
 
 - The API base is `window.OPEN_IDRO_API_BASE` or the page origin
   (`public/shared.js:3`); every call sends `accept: application/json` and

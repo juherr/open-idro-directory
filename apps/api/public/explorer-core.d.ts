@@ -114,12 +114,12 @@ export function createSearchScope(options?: SearchScopeOptions): SearchScope;
 /** An enum value in sentence case, underscores as spaces; `—` when empty. */
 export function formatEnum(value: string | null | undefined): string;
 /**
- * The highest authority level in `lang`, worded in French as the country
- * page does. English and unknown values keep the sentence-cased raw value.
+ * The highest authority level in `lang`, worded as the country page does.
+ * An unknown value falls back to `formatEnum`.
  */
 export function authorityLevelLabel(value: string | null | undefined, lang: string): string;
 /**
- * The observation type in `lang`, worded in French as the country page
- * does. English and unknown values fall back to `formatEnum`.
+ * The observation type in `lang`, worded as the country page does. An
+ * unknown value falls back to `formatEnum`.
  */
 export function observationTypeLabel(value: string | null | undefined, lang: string): string;

@@ -375,27 +375,10 @@ describe("planQuery search path", () => {
 });
 
 describe("enum labels of the detail panel", () => {
-  // What /explore/ rendered in English before the labels were localized.
-  const englishAuthority = {
-    AUTHORITATIVE: "Authoritative",
-    SUPRANATIONAL_DIRECTORY: "Supranational_directory",
-    SECONDARY: "Secondary",
-    SELF_ASSERTED: "Self_asserted",
-    UNVERIFIED: "Unverified",
-  };
-  const englishObservationType = {
-    OFFICIAL_ASSIGNMENT: "Official assignment",
-    OFFICIAL_DIRECTORY_ENTRY: "Official directory entry",
-    LEGACY_ASSIGNMENT: "Legacy assignment",
-    NETWORK_REGISTRATION: "Network registration",
-    INFRASTRUCTURE_OBSERVATION: "Infrastructure observation",
-    SELF_DECLARATION: "Self declaration",
-    COMMUNITY_OBSERVATION: "Community observation",
-  };
-  const fr = COUNTRY_PAGE_COPY.fr;
+  const { en, fr } = COUNTRY_PAGE_COPY;
 
-  it.each(Object.entries(englishAuthority))(
-    "keeps the English authority level %s",
+  it.each(Object.entries(en.authorityLevel))(
+    "words the English authority level %s as the country page does",
     (value, label) => {
       expect(authorityLevelLabel(value, "en")).toBe(label);
     },
@@ -408,8 +391,8 @@ describe("enum labels of the detail panel", () => {
     },
   );
 
-  it.each(Object.entries(englishObservationType))(
-    "keeps the English observation type %s",
+  it.each(Object.entries(en.observationType))(
+    "words the English observation type %s as the country page does",
     (value, label) => {
       expect(observationTypeLabel(value, "en")).toBe(label);
     },
@@ -422,15 +405,13 @@ describe("enum labels of the detail panel", () => {
     },
   );
 
-  it("covers every value the country page translates", () => {
-    expect(Object.keys(englishAuthority).sort()).toEqual(Object.keys(fr.authorityLevel).sort());
-    expect(Object.keys(englishObservationType).sort()).toEqual(
-      Object.keys(fr.observationType).sort(),
-    );
+  it("translates the same values in both languages", () => {
+    expect(Object.keys(en.authorityLevel).sort()).toEqual(Object.keys(fr.authorityLevel).sort());
+    expect(Object.keys(en.observationType).sort()).toEqual(Object.keys(fr.observationType).sort());
   });
 
-  it.each(["en", "fr"])("title-cases an unknown value in %s", (lang) => {
-    expect(authorityLevelLabel("NEW_LEVEL", lang)).toBe("New_level");
+  it.each(["en", "fr"])("falls back to formatEnum for an unknown value in %s", (lang) => {
+    expect(authorityLevelLabel("NEW_LEVEL", lang)).toBe("New level");
     expect(observationTypeLabel("NEW_TYPE", lang)).toBe("New type");
   });
 

@@ -143,53 +143,75 @@ export function createSearchScope({
   };
 }
 
-// French labels of the detail panel, worded as the server-rendered country
-// page words them (COUNTRY_PAGE_COPY.fr in country-page-copy.ts).
-const FRENCH_AUTHORITY_LEVELS = {
-  AUTHORITATIVE: "Faisant autorité",
-  SUPRANATIONAL_DIRECTORY: "Annuaire supranational",
-  SECONDARY: "Secondaire",
-  SELF_ASSERTED: "Auto-déclaré",
-  UNVERIFIED: "Non vérifié",
+// Labels of the detail panel, worded as the server-rendered country page
+// words them (COUNTRY_PAGE_COPY in country-page-copy.ts). Static browser
+// scripts cannot import that module, so the wording is copied here.
+const ENUM_LABELS = {
+  en: {
+    authorityLevel: {
+      AUTHORITATIVE: "Authoritative",
+      SUPRANATIONAL_DIRECTORY: "Supranational directory",
+      SECONDARY: "Secondary",
+      SELF_ASSERTED: "Self-asserted",
+      UNVERIFIED: "Unverified",
+    },
+    observationType: {
+      OFFICIAL_ASSIGNMENT: "Official assignment",
+      OFFICIAL_DIRECTORY_ENTRY: "Official directory entry",
+      LEGACY_ASSIGNMENT: "Legacy assignment",
+      NETWORK_REGISTRATION: "Network registration",
+      INFRASTRUCTURE_OBSERVATION: "Infrastructure observation",
+      SELF_DECLARATION: "Self-declaration",
+      COMMUNITY_OBSERVATION: "Community observation",
+    },
+  },
+  fr: {
+    authorityLevel: {
+      AUTHORITATIVE: "Faisant autorité",
+      SUPRANATIONAL_DIRECTORY: "Annuaire supranational",
+      SECONDARY: "Secondaire",
+      SELF_ASSERTED: "Auto-déclaré",
+      UNVERIFIED: "Non vérifié",
+    },
+    observationType: {
+      OFFICIAL_ASSIGNMENT: "Attribution officielle",
+      OFFICIAL_DIRECTORY_ENTRY: "Entrée d'annuaire officiel",
+      LEGACY_ASSIGNMENT: "Attribution historique",
+      NETWORK_REGISTRATION: "Enregistrement réseau",
+      INFRASTRUCTURE_OBSERVATION: "Observation d'infrastructure",
+      SELF_DECLARATION: "Auto-déclaration",
+      COMMUNITY_OBSERVATION: "Observation communautaire",
+    },
+  },
 };
-
-const FRENCH_OBSERVATION_TYPES = {
-  OFFICIAL_ASSIGNMENT: "Attribution officielle",
-  OFFICIAL_DIRECTORY_ENTRY: "Entrée d'annuaire officiel",
-  LEGACY_ASSIGNMENT: "Attribution historique",
-  NETWORK_REGISTRATION: "Enregistrement réseau",
-  INFRASTRUCTURE_OBSERVATION: "Observation d'infrastructure",
-  SELF_DECLARATION: "Auto-déclaration",
-  COMMUNITY_OBSERVATION: "Observation communautaire",
-};
-
-function capitalize(value) {
-  return value.toLowerCase().replace(/^./, (char) => char.toUpperCase());
-}
 
 /** An enum value in sentence case, underscores as spaces; `—` when empty. */
 export function formatEnum(value) {
-  return capitalize((value || "—").replaceAll("_", " "));
+  return (value || "—")
+    .replaceAll("_", " ")
+    .toLowerCase()
+    .replace(/^./, (char) => char.toUpperCase());
+}
+
+// The label of `value` in the `kind` dictionary of `lang` (French for "fr",
+// English otherwise); an unknown value falls back to `formatEnum`.
+function enumLabel(kind, value, lang) {
+  const labels = ENUM_LABELS[lang === "fr" ? "fr" : "en"][kind];
+  return Object.hasOwn(labels, value) ? labels[value] : formatEnum(value);
 }
 
 /**
- * The highest authority level of an identifier in `lang`. English, and an
- * unknown value in any language, keep the sentence-cased raw value.
+ * The highest authority level of an identifier in `lang`, worded as the
+ * country page does. An unknown value falls back to `formatEnum`.
  */
 export function authorityLevelLabel(value, lang) {
-  if (lang === "fr" && Object.hasOwn(FRENCH_AUTHORITY_LEVELS, value)) {
-    return FRENCH_AUTHORITY_LEVELS[value];
-  }
-  return capitalize(value || "—");
+  return enumLabel("authorityLevel", value, lang);
 }
 
 /**
- * The type of an observation in `lang`. English, and an unknown value in
- * any language, fall back to `formatEnum`.
+ * The type of an observation in `lang`, worded as the country page does.
+ * An unknown value falls back to `formatEnum`.
  */
 export function observationTypeLabel(value, lang) {
-  if (lang === "fr" && Object.hasOwn(FRENCH_OBSERVATION_TYPES, value)) {
-    return FRENCH_OBSERVATION_TYPES[value];
-  }
-  return formatEnum(value);
+  return enumLabel("observationType", value, lang);
 }

@@ -98,4 +98,16 @@ describe("discrepancies JSON schema", () => {
 
     expect(published).toEqual(discrepanciesSchema);
   });
+
+  it("accepts the example of the data model documentation", async () => {
+    const doc = await readFile(fromRoot("docs", "data-model.md"), "utf8");
+    const section = doc.slice(doc.indexOf("## Discrepancy Report"));
+    const example = /```json\n([\s\S]*?)\n```/.exec(section)?.[1];
+    expect(example).toBeDefined();
+    const payload = JSON.parse(example ?? "") as DiscrepancyReport;
+
+    expect(validator.safeParse(payload).error).toBeUndefined();
+    expect(Object.keys(payload.summary.byCategory)).toEqual(DISCREPANCY_CATEGORIES);
+    expect(Object.keys(payload.summary.bySeverity)).toEqual(DISCREPANCY_SEVERITIES);
+  });
 });

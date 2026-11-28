@@ -332,7 +332,20 @@ other sources disagree on; how each finding is derived is in
   "generatedAt": "2026-06-15T00:00:00.000Z",
   "summary": {
     "totalFindings": 1,
-    "byCategory": { "NOT_FOUND_IN_ISSUING_REGISTER": 1, "CONFLICTING_ROLE": 0 },
+    "byCategory": {
+      "NOT_FOUND_IN_ISSUING_REGISTER": 1,
+      "CONFLICTING_ROLE": 0,
+      "REMOVED_FROM_ISSUING_REGISTER": 0,
+      "ADDED_TO_ISSUING_REGISTER": 0,
+      "CONFLICTING_NAME": 0,
+      "CONFLICTING_STATUS": 0,
+      "ISSUING_REGISTER_UNVERIFIABLE": 0,
+      "OUTSIDE_ISSUING_REGISTER_SCOPE": 0,
+      "DUPLICATE_IDENTIFIER": 0,
+      "MALFORMED_IDENTIFIER": 0,
+      "SOURCE_STALE": 0,
+      "SOURCE_UNAVAILABLE": 0
+    },
     "bySeverity": { "high": 1, "medium": 0, "low": 0, "info": 0 }
   },
   "countries": [

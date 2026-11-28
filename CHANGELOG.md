@@ -16,7 +16,21 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   uppercase codes, a missing trailing slash, or a redundant `country` query
   parameter redirect to it, and a `country` parameter naming another country
   returns `400`. Unknown countries and paths return `404`. Error pages are sent
-  with `Cache-Control: no-store`. Pages are in English for now. The generic explorer `/explore/` is unchanged.
+  with `Cache-Control: no-store`. The generic explorer `/explore/` is unchanged.
+- Identifier search on country pages, reusing the explorer and scoped to the
+  page's country: the country is forced into every API call and is never read
+  from or written to the URL. An identifier whose prefix belongs to another
+  country, such as `DE*ABC` on `/countries/fr/`, runs no search and shows a
+  notice naming that country, linked to its page when one exists. Without
+  JavaScript the page keeps all its content.
+- Country pages in French and English: `?lang=fr` serves French, English is
+  the default, and any other value falls back to it. The page language, a meta
+  description, a canonical URL per language, `hreflang` links (`en`, `fr`, and
+  an `x-default` pointing to English), Open Graph tags, and a JSON-LD
+  `BreadcrumbList` are all in the server-rendered HTML, built from the path
+  country only. The redirect from an uppercase code keeps `?lang`, and a page
+  in one language never answers `304` to a request for the other. Error pages
+  stay in English.
 - `GET /api/v1/countries/{countryCode}`: one summary per country, gathering
   every authority whose remit includes it, every source that declares it or
   publishes identifiers for it, role coverage, freshness, counts, and the dataset
@@ -82,6 +96,15 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - The landing page's country cards open the country page instead of the
   explorer. The Cyprus card opens its country page, which links to the
   ministry, instead of the ministry's site.
+- The landing page's country chips open the country page too, and the
+  explorer's detail panel and context label link the country to its page. When the
+  active language is French, the explorer's country links and the landing's
+  country cards carry `?lang=fr`.
+- The `/explore/` detail panel takes its authority level and observation type
+  labels from the country page's wording. They are now translated in French,
+  and three English labels change: `Supranational_directory` becomes
+  `Supranational directory`, `Self_asserted` becomes `Self-asserted`, and
+  `Self declaration` becomes `Self-declaration`.
 - The Slovenian NAP connector reads its workbook with `read-excel-file`, the
   library the pipeline already uses for the Swedish registers, instead of
   matching the sheet XML by hand.
@@ -163,6 +186,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Fixed
 
+- The explorer ignores a search response that arrives after a newer query,
+  instead of letting it overwrite the newer results.
 - Conditional requests answered `200` instead of `304` when `If-None-Match`
   listed several entity tags, was `*`, or held the weak form `W/"…"` of the
   current ETag. The header is now evaluated as a list with weak comparison.

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.9",
+    "@open-idro-directory/api-client": "workspace:*",
     "astro": "^7.4.13"
   }
 }

@@ -4,7 +4,13 @@
 // frontend (apps/api) on a dedicated port.
 import { defineConfig, devices } from "@playwright/test";
 import { resolve } from "node:path";
-import { E2E_BUILD_DIR, E2E_D1_STATE_DIR, E2E_LOCAL_PORT } from "./tests/e2e/support/paths.js";
+import {
+  API_DIR,
+  E2E_BUILD_DIR,
+  E2E_D1_STATE_DIR,
+  E2E_LOCAL_PORT,
+  WRANGLER_BIN,
+} from "./tests/e2e/support/paths.js";
 
 const externalBaseUrl = process.env.E2E_BASE_URL;
 const localBaseUrl = `http://127.0.0.1:${E2E_LOCAL_PORT}`;
@@ -24,16 +30,16 @@ export default defineConfig({
     locale: "en-US",
     trace: "retain-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"], locale: "en-US" } }],
+  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   ...(externalBaseUrl
     ? {}
     : {
         webServer: {
           command: [
             "node --import tsx ../../tests/e2e/support/prepare-legacy.ts",
-            `../../node_modules/.bin/wrangler dev --ip 127.0.0.1 --port ${E2E_LOCAL_PORT} --persist-to ${E2E_D1_STATE_DIR}`,
+            `${WRANGLER_BIN} dev --ip 127.0.0.1 --port ${E2E_LOCAL_PORT} --persist-to ${E2E_D1_STATE_DIR}`,
           ].join(" && "),
-          cwd: "apps/api",
+          cwd: API_DIR,
           url: `${localBaseUrl}/api/v1/health`,
           // A server already on the port is not the suite's: fail rather than
           // run the scenarios against unknown data.

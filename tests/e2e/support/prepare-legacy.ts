@@ -3,23 +3,20 @@
 // Playwright webServer runs this, then `wrangler dev` on the same state.
 import { execFileSync } from "node:child_process";
 import { rm } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 import {
   buildImportBundle,
   writeImportBundle,
 } from "../../../packages/registry-import/src/bundle.js";
 import { writeE2eDataset } from "../fixtures/dataset.js";
-import { E2E_D1_STATE_DIR, E2E_FIXTURE_DIR } from "./paths.js";
+import { API_DIR, E2E_D1_STATE_DIR, E2E_FIXTURE_DIR, WRANGLER_BIN } from "./paths.js";
 
-const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
-const apiDir = resolve(rootDir, "apps/api");
 const dataDir = resolve(E2E_FIXTURE_DIR, "data");
 const bundleDir = resolve(E2E_FIXTURE_DIR, "bundle");
 
 function wrangler(...args: string[]) {
-  execFileSync(resolve(rootDir, "node_modules/.bin/wrangler"), args, {
-    cwd: apiDir,
+  execFileSync(WRANGLER_BIN, args, {
+    cwd: API_DIR,
     stdio: "inherit",
     env: { ...process.env, WRANGLER_SEND_METRICS: "false" },
   });

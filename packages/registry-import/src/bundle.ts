@@ -28,7 +28,7 @@ import {
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const defaultDataDir = resolve(rootDir, "data");
-const outputDir = resolve(rootDir, "build/cloudflare");
+const defaultOutputDir = resolve(rootDir, "build/cloudflare");
 const deterministicImportTimestamp = "1970-01-01T00:00:00.000Z";
 
 interface SourceSummary {
@@ -176,10 +176,10 @@ export async function buildImportBundle({ dataDir = defaultDataDir }: { dataDir?
 /** Writes the bundle to `outputDir`, `build/cloudflare` by default. */
 export async function writeImportBundle(
   bundle?: ImportBundle,
-  { outputDir: targetDir = outputDir }: { outputDir?: string } = {},
+  { outputDir = defaultOutputDir }: { outputDir?: string } = {},
 ) {
   bundle ??= await buildImportBundle();
-  await mkdir(targetDir, { recursive: true });
+  await mkdir(outputDir, { recursive: true });
   const files = new Map<string, string>([
     ["release.json", JSON.stringify(bundle.release, null, 2) + "\n"],
     ["authorities.ndjson", toNdjson(bundle.authorities)],
@@ -197,7 +197,7 @@ export async function writeImportBundle(
   files.set("checksums.sha256", `${checksums}\n`);
   files.set("import.sql", toImportSql(bundle));
   await Promise.all(
-    [...files.entries()].map(([fileName, body]) => writeFile(resolve(targetDir, fileName), body)),
+    [...files.entries()].map(([fileName, body]) => writeFile(resolve(outputDir, fileName), body)),
   );
   return bundle.manifest;
 }
@@ -205,7 +205,7 @@ export async function writeImportBundle(
 export async function verifyImportBundle() {
   const manifest = (await readJson("build/cloudflare/manifest.json")) as ImportManifest;
   for (const [fileName, descriptor] of Object.entries(manifest.files)) {
-    const body = await readFile(resolve(outputDir, fileName), "utf8");
+    const body = await readFile(resolve(defaultOutputDir, fileName), "utf8");
     if (sha256(body) !== descriptor.sha256) throw new Error(`Checksum mismatch for ${fileName}`);
     if (countRows(fileName, body) !== descriptor.rows)
       throw new Error(`Row count mismatch for ${fileName}`);

@@ -2,7 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { currentDetections } from "../../application/invalid-record-history.js";
 import { fromRoot } from "../filesystem/paths.js";
 import { isValidEmi3Identifier } from "../../domain/emi3-identifier.js";
-import { crossRegisterListings } from "../../domain/registry-observation.js";
+import { crossRegisterListings, knownObservationOf } from "../../domain/registry-observation.js";
 import type {
   InvalidRegistryHistory,
   NormalizedRegistryRecord,
@@ -38,6 +38,7 @@ export interface GeneratedStats {
   recordsByRole: Record<string, number>;
   recordsByStatus: Record<string, number>;
   recordsByRegistry: Record<string, number>;
+  recordsByIssuingConfirmation: Record<string, number>;
   invalidRecordsByReason: Record<string, number>;
   invalidRecordsByRegistry: Record<string, number>;
   rejectedRowsByRegistry: Record<string, number>;
@@ -69,7 +70,7 @@ export async function writeDatasets(
     `${outputDir}/registry.ndjson`,
     sorted.map((record) => JSON.stringify(record)).join("\n") + "\n",
   );
-  await writeFile(`${outputDir}/registry.csv`, toCsv(sorted));
+  await writeFile(`${outputDir}/registry.csv`, toCsv(sorted, sources));
   await writeFile(`${outputDir}/registry-invalid.json`, `${JSON.stringify(invalid, null, 2)}\n`);
   await writeFile(
     `${outputDir}/sources.json`,
@@ -94,7 +95,8 @@ function compareRecords(a: NormalizedRegistryRecord, b: NormalizedRegistryRecord
   );
 }
 
-function toCsv(records: NormalizedRegistryRecord[]) {
+function toCsv(records: NormalizedRegistryRecord[], sources: SourceDefinition[]) {
+  const sourceById = new Map(sources.map((source) => [source.id, source]));
   const columns = [
     "key",
     "countryCode",
@@ -113,9 +115,17 @@ function toCsv(records: NormalizedRegistryRecord[]) {
     "firstSeenAt",
     "lastSeenAt",
     "retrievedAt",
+    // Appended so that positional consumers keep reading the columns above.
+    // The issuing cells are empty for records published before the block
+    // existed; the observation kind is derived from the source for those, and
+    // left empty for a register no source describes.
+    "issuingCountry",
+    "issuingConfirmation",
+    "observationKind",
   ];
-  const rows = records.map((record) =>
-    [
+  const rows = records.map((record) => {
+    const source = sourceById.get(record.source.registryId);
+    return [
       record.key,
       record.countryCode,
       record.partyId,
@@ -133,8 +143,11 @@ function toCsv(records: NormalizedRegistryRecord[]) {
       record.source.firstSeenAt,
       record.source.lastSeenAt,
       record.source.retrievedAt,
-    ].map(csvCell),
-  );
+      record.issuing?.country ?? "",
+      record.issuing?.confirmation ?? "",
+      knownObservationOf(record, source)?.kind ?? "",
+    ].map(csvCell);
+  });
   return [columns.join(","), ...rows.map((row) => row.join(","))].join("\n") + "\n";
 }
 
@@ -209,6 +222,12 @@ function toStats(
     recordsByRole: countBy(records, (record) => record.role),
     recordsByStatus: countBy(records, (record) => record.status),
     recordsByRegistry: countBy(records, (record) => record.source.registryId),
+    // One per record, like the other record counters. Records published
+    // before the issuing block existed carry none and are not counted.
+    recordsByIssuingConfirmation: countBy(
+      records.flatMap((record) => (record.issuing ? [record.issuing.confirmation] : [])),
+      (confirmation) => confirmation,
+    ),
     invalidRecordsByReason: countBy(
       currentRecords.flatMap((entry) => entry.reasons),
       (reason) => reason,

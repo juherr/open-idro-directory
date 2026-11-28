@@ -59,6 +59,8 @@ const role: PartyRoleRow = {
   highest_authority_level: "AUTHORITATIVE",
   observation_count: 1,
   has_conflict: 0,
+  issuing_confirmation: "CONFIRMED",
+  issuing_confirmed_by_json: '["fr-afirev"]',
   dataset_release_id: release.id,
 };
 
@@ -121,6 +123,8 @@ const observation: ObservationRow = {
   retrieved_at: "2026-01-01T00:00:00.000Z",
   metadata_json: "{}",
   raw_record_checksum: null,
+  observation_kind: "ASSIGNMENT",
+  observing_jurisdiction: "FR",
   dataset_release_id: release.id,
 };
 

@@ -3,6 +3,7 @@ import {
   isAuthoritative,
   sourceJurisdictions,
   type SourceDefinition,
+  type SourceJurisdictionScope,
 } from "./source-definition.js";
 
 /**
@@ -11,7 +12,7 @@ import {
  * `registryObservationSchema` for the `observingJurisdiction` rule.
  */
 export function observationScope(
-  source: SourceDefinition,
+  source: SourceJurisdictionScope,
   countryCode: string,
 ): RegistryObservation {
   const country = countryCode.toUpperCase();
@@ -44,9 +45,21 @@ export function observedSource(
  */
 export function observationOf(
   record: NormalizedRegistryRecord,
-  source: SourceDefinition,
+  source: SourceJurisdictionScope,
 ): RegistryObservation {
   return record.source.observation ?? observationScope(source, record.countryCode);
+}
+
+/**
+ * `observationOf` for a record whose register may be unknown: the block the
+ * record carries, else the one derived from its source, else `null` for a
+ * register no source describes.
+ */
+export function knownObservationOf(
+  record: NormalizedRegistryRecord,
+  source: SourceJurisdictionScope | undefined,
+): RegistryObservation | null {
+  return source ? observationOf(record, source) : (record.source.observation ?? null);
 }
 
 /**

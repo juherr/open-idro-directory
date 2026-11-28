@@ -24,7 +24,11 @@ export {
   type RegistryRole,
   type RegistryStatus,
 } from "../../../src/domain/registry-record.js";
-export { observationOf, observationScope } from "../../../src/domain/registry-observation.js";
+export {
+  knownObservationOf,
+  observationOf,
+  observationScope,
+} from "../../../src/domain/registry-observation.js";
 export {
   classifyIdentifierProvenance,
   identifierRoleKey,

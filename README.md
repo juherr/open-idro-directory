@@ -52,7 +52,8 @@ registry.
 - `data/registry.json`: pretty JSON array.
 - `data/registry.min.json`: minified JSON array.
 - `data/registry.ndjson`: one normalized record per line.
-- `data/registry.csv`: stable tabular export.
+- `data/registry.csv`: stable tabular export; new columns are appended at the
+  end (see [CSV And Statistics](docs/data-model.md#csv-and-statistics)).
 - `data/registry-invalid.json`: append-only history of everything excluded from
   the published lists -- `records` whose eMI3 identifier is invalid, and `rows` a
   connector could not read as an identifier at all -- each with its reason, when

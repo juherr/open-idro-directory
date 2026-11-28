@@ -4,7 +4,9 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  authorityLevelSchema,
   normalizedRegistryRecordSchema,
+  knownObservationOf,
   type AuthorityLevel,
   type NormalizedRegistryRecord,
   type ObservationType,
@@ -111,9 +113,7 @@ export async function buildImportBundle() {
   const generatedAt = stats.generatedAt;
   const datasetChecksum = sha256(JSON.stringify(records));
   const datasetReleaseId = `${generatedAt.replace(/[-:.TZ]/g, "").slice(0, 14)}-${gitCommitSha.slice(0, 12)}`;
-  const observations = toOfficialObservations(records, sources, datasetReleaseId);
-  const parties = toParties(records, observations, datasetReleaseId);
-  const partyRoles = toPartyRoles(records, observations, datasetReleaseId);
+  const { observations, parties, partyRoles } = toRegistryRows(records, sources, datasetReleaseId);
   const authorityRows = toAuthorities(sources, datasetReleaseId);
   const sourceRows = toSources(sources, datasetReleaseId);
   const conflicts = toConflicts(conflictsReport, records, datasetReleaseId);
@@ -208,7 +208,25 @@ async function readRegistryRecords() {
   return rawRecords.map((record) => normalizedRegistryRecordSchema.parse(record));
 }
 
-export function toOfficialObservations(
+/**
+ * The observation, party and party-role rows of `records`. Records published
+ * before the observation and issuing blocks existed are accepted: the kind is
+ * derived from the source, the confirmation stays NULL.
+ */
+export function toRegistryRows(
+  records: NormalizedRegistryRecord[],
+  sources: SourceSummary[],
+  datasetReleaseId: string,
+) {
+  const observations = toObservations(records, sources, datasetReleaseId);
+  return {
+    observations,
+    parties: toParties(records, observations, datasetReleaseId),
+    partyRoles: toPartyRoles(records, observations, datasetReleaseId),
+  };
+}
+
+export function toObservations(
   records: NormalizedRegistryRecord[],
   sources: SourceSummary[],
   datasetReleaseId: string,
@@ -217,17 +235,17 @@ export function toOfficialObservations(
   return records
     .map<ObservationRow>((record) => {
       const source = byId.get(record.source.registryId);
-      // `record.source.official` is per-record, not per-source: a register may be
-      // authoritative for its own country while only cross-registering another's
-      // identifiers. When the record is covered by its source's authority we take the
-      // declared level and observation type; otherwise the observation is secondary
-      // whatever the source claims for itself. This boolean gate is provisional --
-      // it cannot express SELF_ASSERTED or UNVERIFIED for an off-remit record.
-      // Issue #49 replaces it by carrying the level on the record itself.
-      const authorityLevel: AuthorityLevel = record.source.official
+      // An assignment carries the level and observation type its source
+      // declares; a listing of another country's identifier is secondary
+      // whatever the source claims for itself. A record of a register
+      // `sources.json` does not describe has no kind to derive, so it falls
+      // back on its own `official` flag.
+      const observation = knownObservationOf(record, source);
+      const assignment = observation ? observation.kind === "ASSIGNMENT" : record.source.official;
+      const authorityLevel: AuthorityLevel = assignment
         ? (source?.authority.level ?? "AUTHORITATIVE")
         : "SECONDARY";
-      const observationType: ObservationType = record.source.official
+      const observationType: ObservationType = assignment
         ? (source?.registry.observationType ?? "OFFICIAL_ASSIGNMENT")
         : "OFFICIAL_DIRECTORY_ENTRY";
       return {
@@ -256,6 +274,8 @@ export function toOfficialObservations(
           typeof record.metadata.rawSnapshotChecksum === "string"
             ? record.metadata.rawSnapshotChecksum
             : null,
+        observation_kind: observation?.kind ?? null,
+        observing_jurisdiction: observation?.observingJurisdiction ?? null,
         dataset_release_id: datasetReleaseId,
       };
     })
@@ -267,11 +287,12 @@ function toParties(
   observations: ObservationRow[],
   datasetReleaseId: string,
 ) {
+  const kindByKey = new Map(observations.map((row) => [row.key, row.observation_kind]));
   const recordsByParty = groupBy(records, (record) => partyKey(record.countryCode, record.partyId));
   const observationsByParty = groupBy(observations, (observation) => observation.party_key);
   return [...recordsByParty.entries()]
     .map<PartyRow>(([key, partyRecords]) => {
-      const selected = selectPreferredRecord(partyRecords);
+      const selected = selectPreferredRecord(partyRecords, kindByKey);
       const partyObservations = observationsByParty.get(key) ?? [];
       return {
         key,
@@ -282,7 +303,7 @@ function toParties(
         legal_name: selected.organization.legalName,
         website: selected.organization.website,
         consolidated_status: derivePartyStatus(partyRecords),
-        highest_authority_level: "AUTHORITATIVE",
+        highest_authority_level: highestAuthorityLevel(partyObservations),
         role_count: new Set(partyRecords.map((record) => record.role)).size,
         observation_count: partyObservations.length,
         has_conflict: 0,
@@ -315,13 +336,20 @@ function toPartyRoles(
   return [...recordsByRole.entries()]
     .map<PartyRoleRow>(([key, roleRecords]) => {
       const [role] = key.split(":").slice(-1) as [RegistryRole];
+      // Every record of an identifier and role carries the same issuing block,
+      // so any of them answers; none does in a dataset published before it.
+      const issuing = roleRecords.find((record) => record.issuing)?.issuing;
       return {
         party_key: key.slice(0, -role.length - 1),
         role,
         consolidated_status: derivePartyStatus(roleRecords),
-        highest_authority_level: "AUTHORITATIVE",
+        highest_authority_level: highestAuthorityLevel(observationsByRole.get(key) ?? []),
         observation_count: observationsByRole.get(key)?.length ?? 0,
+        // The issuing confirmation says nothing about conflicts between
+        // registers: #31 owns them, so the flag keeps its former value.
         has_conflict: 0,
+        issuing_confirmation: issuing?.confirmation ?? null,
+        issuing_confirmed_by_json: issuing ? stableJson(issuing.confirmedBy) : null,
         dataset_release_id: datasetReleaseId,
       };
     })
@@ -421,7 +449,7 @@ function toConflicts(
     .sort((a, b) => a.key.localeCompare(b.key));
 }
 
-function toImportSql(bundle: ImportBundle) {
+export function toImportSql(bundle: ImportBundle) {
   const statements = [
     "DELETE FROM active_dataset;",
     "DELETE FROM conflicts;",
@@ -481,14 +509,34 @@ function toSqlPrimitive(value: unknown): string | number | boolean | null {
   throw new Error(`Unsupported SQL value: ${JSON.stringify(value)}`);
 }
 
-function selectPreferredRecord(records: NormalizedRegistryRecord[]) {
+// An assignment by the issuing register names the party before any listing by
+// another register, however recent the listing is.
+function selectPreferredRecord(
+  records: NormalizedRegistryRecord[],
+  kindByKey: Map<string, ObservationRow["observation_kind"]>,
+) {
+  const assignmentRank = (record: NormalizedRegistryRecord) =>
+    kindByKey.get(record.key) === "ASSIGNMENT" ? 1 : 0;
   return [...records].sort(
     (a, b) =>
+      assignmentRank(b) - assignmentRank(a) ||
       statusRank(b.status) - statusRank(a.status) ||
       b.source.retrievedAt.localeCompare(a.source.retrievedAt) ||
       a.source.registryId.localeCompare(b.source.registryId) ||
       a.role.localeCompare(b.role),
   )[0] as NormalizedRegistryRecord;
+}
+
+// The strongest level among the observations, in `authorityLevelSchema`
+// order (AUTHORITATIVE first). Every party and role has at least one.
+// `sources.json` is read without validation, so a level the schema does not
+// know is skipped rather than ranked above every known one; with no known
+// level left, the party is UNVERIFIED.
+function highestAuthorityLevel(observations: ObservationRow[]): AuthorityLevel {
+  const ranks = observations
+    .map((row) => authorityLevelSchema.options.indexOf(row.authority_level))
+    .filter((rank) => rank >= 0);
+  return authorityLevelSchema.options[Math.min(...ranks)] ?? "UNVERIFIED";
 }
 
 function derivePartyStatus(records: NormalizedRegistryRecord[]): RegistryStatus {

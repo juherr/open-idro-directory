@@ -286,11 +286,36 @@ identifiers as the last full build did. Updating `se-energimyndigheten` alone
 gives `DK*MON` the same block as a full build. A source with no published
 health is unavailable, not current.
 
+### CSV And Statistics
+
+`data/registry.csv` carries the block and the observation kind in three
+columns appended after `retrievedAt`:
+
+- `issuingCountry`: `issuing.country`;
+- `issuingConfirmation`: `issuing.confirmation`;
+- `observationKind`: `source.observation.kind`, derived from the source's
+  jurisdictions for a record that carries no observation block (see
+  [Backward Compatibility](#backward-compatibility)), and empty for a record of
+  a register no source describes.
+
+`DK*MON` listed by `se-energimyndigheten` reads `DK`, `CONFIRMED`,
+`CROSS_REGISTER_LISTING`. `confirmedBy` stays in the JSON exports only.
+
+`data/stats.json` counts the records per state in
+`recordsByIssuingConfirmation`, one per record like `recordsByStatus`, so an
+identifier listed by two registers counts twice. A record without an `issuing`
+block is not counted, and a state no record carries has no key.
+
 ### Compatibility
 
 - `issuing` is optional in `schemas/registry.schema.json`. Records committed
   before it existed carry none, and every record gains it at the next scheduled
   run.
+- The CSV columns are appended after the existing ones, so a consumer that
+  reads columns by position keeps working. Their header names are snake_case,
+  unlike the camelCase columns before them. The columns and
+  `recordsByIssuingConfirmation` appear with the next scheduled run; the
+  issuing cells stay empty for any record that carries no `issuing` block.
 - The block is derived again on every build from every source. Its arrival or a
   change of state is not a record change: the safety thresholds and the change
   report leave it out of their comparisons, and a build drops the published

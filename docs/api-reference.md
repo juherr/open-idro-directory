@@ -31,6 +31,72 @@ Endpoints:
 
 Pagination uses cursors only. Default `limit` is 50; maximum is 200.
 
+## Issuing Country, Observations, and Issuing Confirmation
+
+A party response keeps three facts apart, and none of them is a claim of legal
+validity:
+
+- `issuingCountry`: the identifier's prefix country, which issues it. A listing
+  by another country's register never changes it.
+- Observations (`/parties/{countryCode}/{partyId}/observations`): every source
+  that published the identifier, with its provenance. Several national or
+  complementary observations can coexist for one identifier. Each carries
+  `observationKind` and `observingJurisdiction`:
+  - `ASSIGNMENT`: the register covers the identifier's country;
+  - `CROSS_REGISTER_LISTING`: the register lists another country's identifier.
+    That neither makes it the issuer nor says anything about the identifier's
+    standing with its issuer. Its `authorityLevel` is `SECONDARY`.
+  - `observingJurisdiction` is the country of the register that published the
+    observation, or `null` for a listing by a register covering several
+    countries (Benelux).
+- `roles[].issuing`: what the issuing country's register says about the
+  identifier and role, evaluated independently of any listing elsewhere.
+  `confirmation` is one of:
+  - `CONFIRMED`: an issuing register lists it (`confirmedBy` names them);
+  - `NOT_FOUND`: not found in the issuing register, every issuing register
+    being current;
+  - `SOURCE_STALE` / `SOURCE_UNAVAILABLE`: an issuing register is stale, or
+    failed or disabled, so its silence proves nothing;
+  - `UNSUPPORTED_ROLE`: the country's registers do not publish this role;
+  - `NO_ISSUING_SOURCE`: no authoritative register covers the country.
+
+  `confirmedBy` is empty unless the confirmation is `CONFIRMED`.
+
+For example, `DK*MON` is published by the Danish register and by the Swedish
+national dataset. `GET /api/v1/parties/DK/MON` answers `issuingCountry: "DK"`,
+a `preferredName` taken from `dk-fstyr`, and for each role
+`issuing: { confirmation: "CONFIRMED", confirmedBy: ["dk-fstyr"] }`. Its
+observations list both the `dk-fstyr` `ASSIGNMENT` and the
+`se-energimyndigheten` `CROSS_REGISTER_LISTING` with
+`observingJurisdiction: "SE"`: the Swedish listing does not imply a Swedish
+assignment.
+
+`status`, `highestAuthorityLevel` and `hasConflict`, on the party and on each
+role, are derived convenience values computed from the observations. They never
+replace the observations or the issuing confirmation:
+
+- `highestAuthorityLevel` is the strongest `authorityLevel` among the
+  observations, so a party only listed outside its country is `SECONDARY`;
+- `preferredName` comes from an assignment by the issuing register before any
+  cross-register listing.
+
+### Backward Compatibility (schema 1.4.0)
+
+- The fields are additive: `issuingCountry`, `roles[].issuing`,
+  `observationKind` and `observingJurisdiction` are new, and no field was
+  removed or renamed. The OpenAPI document now describes the `Party`,
+  `PartyRole`, `IssuingConfirmation` and `Observation` components.
+- `observationKind` and `observingJurisdiction` are `null` until the first
+  import after migration `0006`. `roles[].issuing.confirmation` and
+  `roles[].issuing.confirmedBy` are `null` until the first import after it of a
+  dataset carrying the issuing block. `null` means unknown, not unconfirmed.
+- `highestAuthorityLevel` used to be `AUTHORITATIVE` for every party. It is now
+  computed from the observations, so a party only listed outside its country is
+  `SECONDARY`. This changes the results of the `?authority=` filter on
+  `/parties` and the grouping by authority level in `/stats`.
+- `preferredName` now prefers an assignment over a cross-register listing, so a
+  party may change name where a listing was more recent than the assignment.
+
 ## Country Summary
 
 `GET /api/v1/countries/{countryCode}` gathers what the directory knows about one

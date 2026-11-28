@@ -1,7 +1,23 @@
 import { API_PREFIX, DISCLAIMER, SCHEMA_VERSION } from "../domain/constants.js";
 
+/** `dataSchema` names a component; a `[]` suffix makes it a page of that component. */
 function successResponse(dataSchema?: string) {
   if (!dataSchema) return { description: "Success" };
+  const item = { $ref: `#/components/schemas/${dataSchema.replace(/\[\]$/, "")}` };
+  const data = dataSchema.endsWith("[]")
+    ? {
+        type: "object",
+        required: ["items", "pagination"],
+        properties: {
+          items: { type: "array", items: item },
+          pagination: {
+            type: "object",
+            required: ["nextCursor"],
+            properties: { nextCursor: { type: ["string", "null"] } },
+          },
+        },
+      }
+    : item;
   return {
     description: "Success",
     content: {
@@ -9,16 +25,36 @@ function successResponse(dataSchema?: string) {
         schema: {
           allOf: [
             { $ref: "#/components/schemas/SuccessResponse" },
-            {
-              type: "object",
-              properties: { data: { $ref: `#/components/schemas/${dataSchema}` } },
-            },
+            { type: "object", properties: { data } },
           ],
         },
       },
     },
   };
 }
+
+const AUTHORITY_LEVELS = [
+  "AUTHORITATIVE",
+  "SUPRANATIONAL_DIRECTORY",
+  "SECONDARY",
+  "SELF_ASSERTED",
+  "UNVERIFIED",
+];
+
+const OBSERVATION_TYPES = [
+  "OFFICIAL_ASSIGNMENT",
+  "OFFICIAL_DIRECTORY_ENTRY",
+  "LEGACY_ASSIGNMENT",
+  "NETWORK_REGISTRATION",
+  "INFRASTRUCTURE_OBSERVATION",
+  "SELF_DECLARATION",
+  "COMMUNITY_OBSERVATION",
+];
+
+const NULL_UNTIL_0006 = "Null until the first import after migration 0006.";
+
+const nullableString = { type: ["string", "null"] };
+const dateTime = { type: "string", format: "date-time" };
 
 function errorResponse(description: string) {
   return {
@@ -62,13 +98,17 @@ export function openApiDocument(origin = "http://localhost:8787") {
         [API_PREFIX, "API root and dataset links"],
         [`${API_PREFIX}/health`, "Service health"],
         [`${API_PREFIX}/dataset`, "Active dataset metadata"],
-        [`${API_PREFIX}/parties`, "List parties with filters and cursor pagination"],
-        [`${API_PREFIX}/parties/{countryCode}/{partyId}`, "Get a consolidated party"],
-        [`${API_PREFIX}/parties/{countryCode}/{partyId}/observations`, "List party observations"],
+        [`${API_PREFIX}/parties`, "List parties with filters and cursor pagination", "Party[]"],
+        [`${API_PREFIX}/parties/{countryCode}/{partyId}`, "Get a consolidated party", "Party"],
+        [
+          `${API_PREFIX}/parties/{countryCode}/{partyId}/observations`,
+          "List party observations",
+          "Observation[]",
+        ],
         [`${API_PREFIX}/parties/{countryCode}/{partyId}/conflicts`, "List party conflicts"],
         [`${API_PREFIX}/sources`, "List sources", "Source"],
         [`${API_PREFIX}/sources/{sourceId}`, "Get a source", "Source"],
-        [`${API_PREFIX}/sources/{sourceId}/parties`, "List parties from a source"],
+        [`${API_PREFIX}/sources/{sourceId}/parties`, "List parties from a source", "Party[]"],
         [`${API_PREFIX}/sources/{sourceId}/health`, "Get source health"],
         [`${API_PREFIX}/conflicts`, "List conflicts"],
         [`${API_PREFIX}/stats`, "Dataset statistics"],
@@ -189,16 +229,7 @@ export function openApiDocument(origin = "http://localhost:8787") {
           properties: {
             id: { type: ["string", "null"] },
             name: { type: ["string", "null"] },
-            level: {
-              type: "string",
-              enum: [
-                "AUTHORITATIVE",
-                "SUPRANATIONAL_DIRECTORY",
-                "SECONDARY",
-                "SELF_ASSERTED",
-                "UNVERIFIED",
-              ],
-            },
+            level: { type: "string", enum: AUTHORITY_LEVELS },
             jurisdictions: { type: "array", items: { type: "string" } },
             homepageUrl: { type: ["string", "null"], format: "uri" },
             notes: { type: ["string", "null"] },
@@ -210,18 +241,7 @@ export function openApiDocument(origin = "http://localhost:8787") {
           required: ["url", "observationType", "jurisdictions", "supportedRoles"],
           properties: {
             url: { type: ["string", "null"], format: "uri" },
-            observationType: {
-              type: "string",
-              enum: [
-                "OFFICIAL_ASSIGNMENT",
-                "OFFICIAL_DIRECTORY_ENTRY",
-                "LEGACY_ASSIGNMENT",
-                "NETWORK_REGISTRATION",
-                "INFRASTRUCTURE_OBSERVATION",
-                "SELF_DECLARATION",
-                "COMMUNITY_OBSERVATION",
-              ],
-            },
+            observationType: { type: "string", enum: OBSERVATION_TYPES },
             jurisdictions: { type: "array", items: { type: "string" } },
             supportedRoles: {
               type: ["array", "null"],
@@ -344,6 +364,185 @@ export function openApiDocument(origin = "http://localhost:8787") {
               },
             },
           ],
+        },
+        Party: {
+          type: "object",
+          description:
+            "A consolidated party. The issuing country, the observations (`/observations`) and each role's `issuing` confirmation are distinct facts. `status`, `highestAuthorityLevel` and `hasConflict` are derived from the observations for convenience and never replace them. The party detail adds `alternativeNames`, `sourceSummary`, `conflictSummary`, `freshnessSummary` and `links`; party lists return `roles` empty.",
+          required: [
+            "key",
+            "countryCode",
+            "issuingCountry",
+            "partyId",
+            "eMobilityId",
+            "preferredName",
+            "legalName",
+            "website",
+            "status",
+            "highestAuthorityLevel",
+            "roleCount",
+            "observationCount",
+            "hasConflict",
+            "firstSeenAt",
+            "lastSeenAt",
+            "roles",
+          ],
+          properties: {
+            key: { type: "string" },
+            countryCode: { type: "string", pattern: "^[A-Z]{2}$" },
+            issuingCountry: {
+              type: "string",
+              pattern: "^[A-Z]{2}$",
+              description:
+                "The identifier's prefix country, which issues it. A listing by another country's register never changes it.",
+            },
+            partyId: { type: "string" },
+            eMobilityId: { type: "string" },
+            preferredName: {
+              ...nullableString,
+              description:
+                "Name from the preferred observation: an assignment by the issuing register comes before any cross-register listing.",
+            },
+            legalName: nullableString,
+            website: nullableString,
+            status: {
+              type: "string",
+              description: "Derived from the statuses of the observations.",
+            },
+            highestAuthorityLevel: {
+              type: "string",
+              enum: AUTHORITY_LEVELS,
+              description:
+                "Derived: the strongest authority level among the observations. A party only listed outside its country is SECONDARY.",
+            },
+            roleCount: { type: "integer" },
+            observationCount: { type: "integer" },
+            hasConflict: {
+              type: "boolean",
+              description: "Derived from the conflict diagnostics.",
+            },
+            firstSeenAt: dateTime,
+            lastSeenAt: dateTime,
+            roles: { type: "array", items: { $ref: "#/components/schemas/PartyRole" } },
+          },
+        },
+        PartyRole: {
+          type: "object",
+          required: [
+            "role",
+            "status",
+            "highestAuthorityLevel",
+            "observationCount",
+            "hasConflict",
+            "issuing",
+          ],
+          properties: {
+            role: { type: "string", enum: ["CPO", "EMSP"] },
+            status: { type: "string", description: "Derived from the role's observations." },
+            highestAuthorityLevel: {
+              type: "string",
+              enum: AUTHORITY_LEVELS,
+              description: "Derived: the strongest authority level among the role's observations.",
+            },
+            observationCount: { type: "integer" },
+            hasConflict: { type: "boolean", description: "Derived from the conflict diagnostics." },
+            issuing: { $ref: "#/components/schemas/IssuingConfirmation" },
+          },
+        },
+        IssuingConfirmation: {
+          type: "object",
+          description:
+            "What the issuing country's register says about this identifier and role, evaluated independently of any listing by another register. It states whether the identifier was found in the issuing register, not whether it is legally valid.",
+          required: ["confirmation", "confirmedBy"],
+          properties: {
+            confirmation: {
+              type: ["string", "null"],
+              enum: [
+                "CONFIRMED",
+                "NOT_FOUND",
+                "SOURCE_STALE",
+                "SOURCE_UNAVAILABLE",
+                "UNSUPPORTED_ROLE",
+                "NO_ISSUING_SOURCE",
+                null,
+              ],
+              description: `CONFIRMED: an issuing register lists it. NOT_FOUND: not found in the issuing register, every issuing register being current. SOURCE_STALE / SOURCE_UNAVAILABLE: an issuing register is stale, or failed or disabled, so its silence proves nothing. UNSUPPORTED_ROLE: the country's registers do not publish this role. NO_ISSUING_SOURCE: no authoritative register covers the country. ${NULL_UNTIL_0006}`,
+            },
+            confirmedBy: {
+              type: ["array", "null"],
+              items: { type: "string" },
+              description: `Ids of the issuing registers that list it; empty unless CONFIRMED. ${NULL_UNTIL_0006}`,
+            },
+          },
+        },
+        Observation: {
+          type: "object",
+          description:
+            "One source's claim about an identifier and role, with its provenance. Several registers may observe the same identifier; a listing by another country's register does not make that country the issuer.",
+          required: [
+            "key",
+            "partyKey",
+            "sourceId",
+            "scheme",
+            "countryCode",
+            "partyId",
+            "eMobilityId",
+            "role",
+            "status",
+            "organizationName",
+            "legalName",
+            "website",
+            "sourceRecordId",
+            "sourceValue",
+            "sourceUrl",
+            "authorityLevel",
+            "observationType",
+            "observationKind",
+            "observingJurisdiction",
+            "firstSeenAt",
+            "lastSeenAt",
+            "retrievedAt",
+            "metadata",
+            "rawRecordChecksum",
+          ],
+          properties: {
+            key: { type: "string" },
+            partyKey: { type: "string" },
+            sourceId: { type: "string" },
+            scheme: { type: "string" },
+            countryCode: { type: "string", pattern: "^[A-Z]{2}$" },
+            partyId: { type: "string" },
+            eMobilityId: { type: "string" },
+            role: { type: "string", enum: ["CPO", "EMSP"] },
+            status: { type: "string" },
+            organizationName: nullableString,
+            legalName: nullableString,
+            website: nullableString,
+            sourceRecordId: nullableString,
+            sourceValue: { type: "string" },
+            sourceUrl: { type: "string" },
+            authorityLevel: {
+              type: "string",
+              enum: AUTHORITY_LEVELS,
+              description:
+                "The source's level for an assignment; SECONDARY for a cross-register listing.",
+            },
+            observationType: { type: "string", enum: OBSERVATION_TYPES },
+            observationKind: {
+              type: ["string", "null"],
+              enum: ["ASSIGNMENT", "CROSS_REGISTER_LISTING", null],
+              description: `ASSIGNMENT: the register covers the identifier's country. CROSS_REGISTER_LISTING: the register lists another country's identifier, which neither makes it the issuer nor says anything about the identifier's standing with its issuer. ${NULL_UNTIL_0006}`,
+            },
+            observingJurisdiction: {
+              ...nullableString,
+              description: `Country of the register that published the observation. Also null for a listing by a register covering several countries. ${NULL_UNTIL_0006}`,
+            },
+            firstSeenAt: dateTime,
+            lastSeenAt: dateTime,
+            retrievedAt: dateTime,
+            metadata: { type: "object" },
+            rawRecordChecksum: nullableString,
+          },
         },
         SourcePublication: {
           type: "object",

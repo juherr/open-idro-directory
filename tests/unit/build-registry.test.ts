@@ -7,6 +7,7 @@ import { EvroamConnector } from "../../src/connectors/gb-evroam/evroam.connector
 import type { RegistryConnector } from "../../src/connectors/connector.js";
 import { EnergimyndighetenConnector } from "../../src/connectors/se-energimyndigheten/energimyndigheten.connector.js";
 import type {
+  InvalidRegistryHistory,
   NormalizedRegistryRecord,
   RegistryObservation,
 } from "../../src/domain/registry-record.js";
@@ -498,6 +499,124 @@ describe("buildRegistry discrepancy report", () => {
         expect(duplicatesOf(await readDiscrepancies(outputDir))).toEqual([
           ["se-energimyndigheten", "ENERGIMYNDIGHETEN_DUPLICATE_IDENTIFIER"],
         ]);
+      },
+      { sourceIds: NORDIC, published: [] },
+    );
+  });
+
+  // dk-fstyr publishes DK*X!X, which is not an eMI3 identifier, and a row its
+  // connector could not read at all.
+  const MALFORMED_RECORD = "dk-fstyr:DK:X!X:CPO";
+  const UNREADABLE_ROW = "DK-??";
+  async function malformedConnectors(options: { dkMalformed: boolean }) {
+    const swedish = await swedishListings("SE*AAA", "SE*BBB", "SE*CCC", "DK*BBB", "DK*MON");
+    const dk = [assignedThisRun("dk-fstyr", "DK", "BBB")];
+    const connectors: Record<string, () => RegistryConnector> = {
+      "dk-fstyr": options.dkMalformed
+        ? connectorReturning(
+            [...dk, assignedThisRun("dk-fstyr", "DK", "X!X")],
+            [],
+            [
+              {
+                severity: "warning",
+                code: "FSTYR_INVALID_IDENTIFIER",
+                message: `Unreadable identifier ${UNREADABLE_ROW}.`,
+                rejectedIdentifier: UNREADABLE_ROW,
+              },
+            ],
+          )
+        : connectorReturning(dk),
+      "se-energimyndigheten": connectorReturning(swedish),
+    };
+    return (source: SourceDefinition) => connectors[source.id]!();
+  }
+  const malformedOf = (report: DiscrepancyReport) =>
+    findingsOf(report)
+      .filter((finding) => finding.category === "MALFORMED_IDENTIFIER")
+      .map((finding) => finding.evidence[0]?.recordKey ?? finding.evidence[0]?.sourceValue ?? "")
+      .toSorted();
+  // Each history entry as `<record key or row value> <last detected at>`.
+  const historyOf = async (outputDir: string) => {
+    const history = JSON.parse(
+      await readFile(join(outputDir, "registry-invalid.json"), "utf8"),
+    ) as InvalidRegistryHistory;
+    return [
+      ...history.records.map((entry) => `${entry.record.key} ${entry.lastDetectedAt}`),
+      ...history.rows.map((entry) => `${entry.sourceValue} ${entry.lastDetectedAt}`),
+    ].toSorted();
+  };
+
+  it("reports only the malformed identifiers a source still publishes, the history keeping the others", async () => {
+    await withWorkspace(
+      async ({ build, outputDir, publishOutput }) => {
+        await build({ createConnector: await malformedConnectors({ dkMalformed: true }) });
+        expect(malformedOf(await readDiscrepancies(outputDir))).toEqual(
+          [MALFORMED_RECORD, UNREADABLE_ROW].toSorted(),
+        );
+        await publishOutput();
+        await build({
+          createConnector: await malformedConnectors({ dkMalformed: false }),
+          generatedAt: LATER,
+        });
+
+        expect(malformedOf(await readDiscrepancies(outputDir))).toEqual([]);
+        expect(await historyOf(outputDir)).toEqual(
+          [`${MALFORMED_RECORD} ${GENERATED_AT}`, `${UNREADABLE_ROW} ${GENERATED_AT}`].toSorted(),
+        );
+      },
+      { sourceIds: NORDIC, published: [] },
+    );
+  });
+
+  it("gives a partial build the malformed findings of a full build", async () => {
+    const LATEST = "2026-06-17T00:00:00.000Z";
+    const NEXT = "2026-06-18T00:00:00.000Z";
+    await withWorkspace(
+      async ({ build, outputDir, publishOutput }) => {
+        const malformed = await malformedConnectors({ dkMalformed: true });
+        const corrected = await malformedConnectors({ dkMalformed: false });
+        await build({ createConnector: malformed });
+        const full = malformedOf(await readDiscrepancies(outputDir));
+        await publishOutput();
+        // dk-fstyr is carried: it keeps what it was last published with.
+        await build({
+          createConnector: malformed,
+          sourceId: "se-energimyndigheten",
+          generatedAt: LATER,
+        });
+        expect(malformedOf(await readDiscrepancies(outputDir))).toEqual(full);
+        await publishOutput();
+        // dk-fstyr corrects both values, then is carried again.
+        await build({ createConnector: corrected, generatedAt: LATEST });
+        expect(malformedOf(await readDiscrepancies(outputDir))).toEqual([]);
+        await publishOutput();
+        await build({
+          createConnector: corrected,
+          sourceId: "se-energimyndigheten",
+          generatedAt: NEXT,
+        });
+
+        expect(full).toEqual([MALFORMED_RECORD, UNREADABLE_ROW].toSorted());
+        expect(malformedOf(await readDiscrepancies(outputDir))).toEqual([]);
+      },
+      { sourceIds: NORDIC, published: [] },
+    );
+  });
+
+  it("keeps the malformed findings of a source that failed", async () => {
+    await withWorkspace(
+      async ({ build, outputDir, publishOutput }) => {
+        await build({ createConnector: await malformedConnectors({ dkMalformed: true }) });
+        await publishOutput();
+        await build({
+          createConnector: await malformedConnectors({ dkMalformed: false }),
+          fetchErrors: { "dk-fstyr": "HTTP 503 while fetching https://example.test/" },
+          generatedAt: LATER,
+        });
+
+        expect(malformedOf(await readDiscrepancies(outputDir))).toEqual(
+          [MALFORMED_RECORD, UNREADABLE_ROW].toSorted(),
+        );
       },
       { sourceIds: NORDIC, published: [] },
     );

@@ -134,6 +134,10 @@ export interface DiscrepancyReportInput {
   sources: readonly SourceDefinition[];
   /** Health by source id; a source missing from it counts as `UNAVAILABLE`. */
   health: Readonly<Record<string, DiscrepancySourceHealth>>;
+  /**
+   * The exclusion-history entries to report as malformed: the caller passes
+   * only those still current, not the whole history.
+   */
   invalidHistory: Pick<InvalidRegistryHistory, "records" | "rows">;
   duplicates: readonly DuplicateObservation[];
   generatedAt: string;
@@ -492,6 +496,25 @@ export function readDuplicateFindings(report: DiscrepancyReport): DuplicateObser
         code: evidence.code ?? "",
         message: evidence.message ?? "",
         retrievedAt: evidence.retrievedAt,
+      })),
+    );
+}
+
+/**
+ * What the malformed findings of a report point at: the excluded record's key,
+ * or, for an unreadable row, `null` and the value the source published.
+ */
+export function readMalformedFindings(
+  report: DiscrepancyReport,
+): Array<{ registryId: string; recordKey: string | null; sourceValue: string | null }> {
+  return report.countries
+    .flatMap((country) => country.pairs.flatMap((pair) => pair.findings))
+    .filter((finding) => finding.category === "MALFORMED_IDENTIFIER")
+    .flatMap((finding) =>
+      finding.evidence.map((evidence) => ({
+        registryId: evidence.registryId,
+        recordKey: evidence.recordKey,
+        sourceValue: evidence.sourceValue ?? null,
       })),
     );
 }

@@ -71,23 +71,25 @@ Rules that keep a temporary failure from reading as a discrepancy:
   next to a `SOURCE_STALE` or `SOURCE_UNAVAILABLE` finding. Health is read as for
   the issuing confirmation (see the data model).
 - A partial build (`--source <id>`) reports what a full build would: the sources
-  it does not rebuild keep their published health, and their duplicate findings
-  are read back from the previously published report. A source that failed and
-  republishes its previous records keeps its previous duplicate findings too;
-  a source ingested in the run reports only the duplicates its connector raised
-  in that run. A disabled source, or one whose descriptor was removed, loses its
-  duplicate findings with its records.
+  it does not rebuild keep their published health, and their duplicate and
+  malformed findings are read back from the previously published report. A
+  source that failed and republishes its previous records keeps its previous
+  duplicate and malformed findings too; a source ingested in the run reports
+  only the duplicates its connector raised and the malformed values it
+  published in that run. A disabled source, or one whose descriptor was
+  removed, loses these findings with its records. Without a previously
+  published report, a source the run does not ingest has none until a run
+  ingests it.
 
-Two categories reach beyond the current retrieval:
+`MALFORMED_IDENTIFIER` reports the values a source still publishes, records and
+rows alike, with the dates the exclusion history (`data/registry-invalid.json`)
+first and last detected them. A value the source has since corrected or dropped
+leaves the report; its entry stays in the history, which keeps every value ever
+excluded.
 
-- `MALFORMED_IDENTIFIER` takes every entry of the exclusion history
-  (`data/registry-invalid.json`, records and rows alike), so an entry stays in
-  the report after the source stopped publishing it, with the dates it was
-  first and last detected.
-- `ADDED_TO_ISSUING_REGISTER` flags every record of a current issuing register
-  whose first retrieval is the current one; a stale or unavailable register's
-  carried records are never added. On a register's first retrieval, that is
-  every record it
-  publishes.
+`ADDED_TO_ISSUING_REGISTER` flags every record of a current issuing register
+whose first retrieval is the current one; a stale or unavailable register's
+carried records are never added. On a register's first retrieval, that is every
+record it publishes.
 
 The payload is described by `schemas/discrepancies.schema.json`.

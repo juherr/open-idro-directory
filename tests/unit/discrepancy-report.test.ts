@@ -254,6 +254,16 @@ const rows: Row[] = [
     ],
   },
   {
+    name: "a current issuing register lacking a listing gives a not-found while another is stale",
+    records: [record("benelux-idro", "DE", "XYZ")],
+    health: { ...allCurrent, "de-second": "STALE" },
+    expected: [
+      "NOT_FOUND_IN_ISSUING_REGISTER de-first>benelux-idro DEXYZ high/high",
+      "ISSUING_REGISTER_UNVERIFIABLE de-second>benelux-idro DEXYZ info/low SOURCE_STALE",
+      "SOURCE_STALE de-second>de-second - medium/high",
+    ],
+  },
+  {
     name: "a current issuing register's role conflict is reported while another is stale",
     records: [record("benelux-idro", "DE", "XYZ", "CPO"), record("de-first", "DE", "XYZ", "EMSP")],
     health: { ...allCurrent, "de-second": "STALE" },

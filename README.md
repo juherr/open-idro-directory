@@ -63,6 +63,14 @@ registry.
   listings, and the bucket no longer grows.
 - `data/sources.json`: source configuration and health.
 - `data/stats.json`: aggregate counts.
+- `data/reports/discrepancies.json`: what the issuing registers and the other
+  sources disagree on, per country and source pair, for the issuing authorities
+  to review: identifiers listed elsewhere and not found in the issuing register,
+  removals and additions, conflicting names, roles or statuses, duplicates,
+  unreadable values, and stale or unavailable sources, each with its severity,
+  confidence and timestamped evidence. Rules are in
+  `docs/data-consolidation.md`; the shape is in
+  `schemas/discrepancies.schema.json`.
 - `data/reports/non-idrr-additions.json`: complementary observations absent from the
   official dataset.
 - `data/reports/non-idrr-conflicts.json`: conflicts between complementary

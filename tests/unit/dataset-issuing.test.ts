@@ -60,9 +60,9 @@ describe("issuing confirmation in the published datasets", () => {
     const header = (await readFile(join(outputDir, "registry.csv"), "utf8")).split("\n")[0];
     expect(header?.split(",").slice(-4)).toEqual([
       "retrievedAt",
-      "issuing_country",
-      "issuing_confirmation",
-      "observation_kind",
+      "issuingCountry",
+      "issuingConfirmation",
+      "observationKind",
     ]);
   });
 
@@ -73,14 +73,14 @@ describe("issuing confirmation in the published datasets", () => {
     expect(rows.find((row) => row.key === listedDkMon.key)).toMatchObject({
       countryCode: "DK",
       registryId: "se-energimyndigheten",
-      issuing_country: "DK",
-      issuing_confirmation: "CONFIRMED",
-      observation_kind: "CROSS_REGISTER_LISTING",
+      issuingCountry: "DK",
+      issuingConfirmation: "CONFIRMED",
+      observationKind: "CROSS_REGISTER_LISTING",
     });
     expect(rows.find((row) => row.key === assigned.key)).toMatchObject({
-      issuing_country: "SE",
-      issuing_confirmation: "CONFIRMED",
-      observation_kind: "ASSIGNMENT",
+      issuingCountry: "SE",
+      issuingConfirmation: "CONFIRMED",
+      observationKind: "ASSIGNMENT",
     });
   });
 
@@ -89,14 +89,14 @@ describe("issuing confirmation in the published datasets", () => {
 
     const rows = await csvRows();
     expect(rows.find((row) => row.key === legacyAssignment.key)).toMatchObject({
-      issuing_country: "",
-      issuing_confirmation: "",
-      observation_kind: "ASSIGNMENT",
+      issuingCountry: "",
+      issuingConfirmation: "",
+      observationKind: "ASSIGNMENT",
     });
     expect(rows.find((row) => row.key === legacyListing.key)).toMatchObject({
-      issuing_country: "",
-      issuing_confirmation: "",
-      observation_kind: "CROSS_REGISTER_LISTING",
+      issuingCountry: "",
+      issuingConfirmation: "",
+      observationKind: "CROSS_REGISTER_LISTING",
     });
   });
 
@@ -105,7 +105,7 @@ describe("issuing confirmation in the published datasets", () => {
     await write([{ ...orphan, source: { ...orphan.source, registryId: "retired-register" } }]);
 
     const [row] = await csvRows();
-    expect(row?.observation_kind).toBe("");
+    expect(row?.observationKind).toBe("");
   });
 
   it("counts records per issuing confirmation, leaving out records without the block", async () => {

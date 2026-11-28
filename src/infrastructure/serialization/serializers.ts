@@ -119,9 +119,9 @@ function toCsv(records: NormalizedRegistryRecord[], sources: SourceDefinition[])
     // The issuing cells are empty for records published before the block
     // existed; the observation kind is derived from the source for those, and
     // left empty for a register no source describes.
-    "issuing_country",
-    "issuing_confirmation",
-    "observation_kind",
+    "issuingCountry",
+    "issuingConfirmation",
+    "observationKind",
   ];
   const rows = records.map((record) => {
     const source = sourceById.get(record.source.registryId);

@@ -12,7 +12,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Issuing confirmation in the datasets and the API: whether the register of
   the identifier's own country lists it, and whether an observation is that
   register's assignment or another register's listing. `data/registry.csv`
-  gains `issuing_country`, `issuing_confirmation`, and `observation_kind`,
+  gains `issuingCountry`, `issuingConfirmation`, and `observationKind`,
   appended after `retrievedAt`, and `data/stats.json` gains
   `recordsByIssuingConfirmation`. API parties carry `issuingCountry` and
   `roles[].issuing { confirmation, confirmedBy }`; observations carry

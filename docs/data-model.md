@@ -291,9 +291,9 @@ health is unavailable, not current.
 `data/registry.csv` carries the block and the observation kind in three
 columns appended after `retrievedAt`:
 
-- `issuing_country`: `issuing.country`;
-- `issuing_confirmation`: `issuing.confirmation`;
-- `observation_kind`: `source.observation.kind`, derived from the source's
+- `issuingCountry`: `issuing.country`;
+- `issuingConfirmation`: `issuing.confirmation`;
+- `observationKind`: `source.observation.kind`, derived from the source's
   jurisdictions for a record that carries no observation block (see
   [Backward Compatibility](#backward-compatibility)), and empty for a record of
   a register no source describes.

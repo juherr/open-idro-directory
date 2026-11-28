@@ -54,6 +54,14 @@ behaviour or the SEO tags, and with a tested rollback.
   forwards `/api/*`, `/docs` and `/openapi.json` to the `API` binding unchanged
   and returns the API response unchanged (`apps/web/src/proxy/api-proxy.ts`).
   A binding failure answers `502` with `Cache-Control: no-store` and no ETag.
+- One exception: Astro's `security.checkOrigin` defaults to `true`
+  (`astro/dist/core/config/schemas/defaults.js:45`) and its origin check runs
+  before on-demand endpoints (`astro/dist/core/app/origin-check.js:72-79`), so
+  a cross-origin `POST`, `PUT`, `PATCH` or `DELETE` with a form content type
+  gets Astro's `403` instead of the API's answer. We keep the default: the API
+  registers only `GET` routes and allows only `GET`, `HEAD` and `OPTIONS`
+  (`apps/api/src/http/app.ts:50`), and the proxy only serves `web:dev` and the
+  `workers.dev` preview.
 - The proxy runs from on-demand catch-all endpoints
   (`apps/web/src/pages/api/[...path].ts`, `docs.ts`, `openapi.json.ts`), not
   from middleware: with prerendered routes only, the adapter builds an

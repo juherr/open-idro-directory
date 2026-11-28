@@ -195,7 +195,7 @@ Country page head (`src/http/pages/country-page.ts:113-125`):
   (`explorer.js:276-283`); API request line with copy and open JSON
   (`public/explore/index.html:96-102`); detail panel with observations
   (`explorer.js:458-470`); the context label links the selected country to its
-  page (`explorer.js:251-255`); the foreign-identifier notice links a country
+  page (`explorer.js:241-255`); the foreign-identifier notice links a country
   only once the stats count identifiers for it (`explorer.js:344-348`,
   `explorer-core.js:45-54`).
 

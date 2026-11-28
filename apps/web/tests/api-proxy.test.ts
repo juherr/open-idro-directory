@@ -6,11 +6,11 @@ const origin = "https://web.example.test";
 
 /** A service binding stub that records the request it receives. */
 function apiStub(respond: (request: Request) => Response | Promise<Response>) {
-  const calls: { request: Request; init: RequestInit | undefined }[] = [];
+  const calls: { request: Request }[] = [];
   const api = {
     fetch: vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const request = input instanceof Request ? input : new Request(input, init);
-      calls.push({ request, init });
+      calls.push({ request });
       return respond(request);
     }),
     connect: vi.fn(),

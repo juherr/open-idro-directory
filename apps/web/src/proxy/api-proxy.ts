@@ -36,9 +36,9 @@ export async function proxyToApi(request: Request, api: Fetcher): Promise<Respon
  * Entry point of the proxy routes. Their patterns also match a few paths the
  * API does not serve (`/api`, `/docs/`), which get an uncacheable 404.
  */
-export function handleApiProxyRoute(request: Request, api: Fetcher): Promise<Response> {
+export async function handleApiProxyRoute(request: Request, api: Fetcher): Promise<Response> {
   if (!isApiProxyPath(new URL(request.url).pathname)) {
-    return Promise.resolve(errorResponse(404, "ROUTE_NOT_FOUND", "Route not found."));
+    return errorResponse(404, "ROUTE_NOT_FOUND", "Route not found.");
   }
   return proxyToApi(request, api);
 }

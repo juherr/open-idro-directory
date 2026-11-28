@@ -1,4 +1,4 @@
-import { isAuthoritative, type SourceDefinition } from "../../domain/source-definition.js";
+import type { SourceDefinition } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -15,7 +15,7 @@ import {
   type RegistryStatus,
 } from "../../domain/registry-record.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { observationScope } from "../../domain/registry-observation.js";
+import { observedSource } from "../../domain/registry-observation.js";
 import {
   coversJurisdiction,
   parseCrossRegisterIdentifier,
@@ -98,7 +98,7 @@ export class AfirevConnector implements RegistryConnector<AfirevRecord> {
         continue;
       }
       const { countryCode, partyId } = parsed;
-      const observation = observationScope(input.source, countryCode);
+      const { official, observation } = observedSource(input.source, countryCode);
       const roles = TYPE_TO_ROLES[sourceRecord.type] ?? ["OTHER"];
       if (!TYPE_TO_ROLES[sourceRecord.type]) {
         warnings.push({
@@ -134,7 +134,7 @@ export class AfirevConnector implements RegistryConnector<AfirevRecord> {
           },
           source: {
             registryId: input.source.id,
-            official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
+            official,
             sourceRecordId: prefix,
             sourceUrl: input.source.authority.homepageUrl,
             sourceValue: sourceRecord.prefixId,

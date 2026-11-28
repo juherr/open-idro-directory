@@ -1,4 +1,3 @@
-import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -15,7 +14,7 @@ import {
 } from "../../domain/registry-record.js";
 import { getBinary, sha256 } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { observationScope } from "../../domain/registry-observation.js";
+import { observedSource } from "../../domain/registry-observation.js";
 import {
   parseCrossRegisterIdentifier,
   rejectedIdentifierWarning,
@@ -116,7 +115,7 @@ export class MobieConnector implements RegistryConnector<MobieRow> {
         if (seen.has(key)) continue;
         seen.add(key);
 
-        const observation = observationScope(input.source, parsed.countryCode);
+        const { official, observation } = observedSource(input.source, parsed.countryCode);
 
         records.push({
           key,
@@ -132,7 +131,7 @@ export class MobieConnector implements RegistryConnector<MobieRow> {
           },
           source: {
             registryId: input.source.id,
-            official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
+            official,
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
             sourceUrl: input.source.registry.url,
             sourceValue: identifier.sourceValue,

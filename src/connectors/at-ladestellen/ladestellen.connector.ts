@@ -1,4 +1,3 @@
-import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -11,7 +10,7 @@ import type {
 import { makeRegistryKey } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { observationScope } from "../../domain/registry-observation.js";
+import { observedSource } from "../../domain/registry-observation.js";
 import {
   parseCrossRegisterIdentifier,
   rejectedIdentifierWarning,
@@ -83,7 +82,7 @@ export class LadestellenConnector implements RegistryConnector<LadestellenOperat
         continue;
       }
       const { countryCode, partyId } = parsed;
-      const observation = observationScope(input.source, countryCode);
+      const { official, observation } = observedSource(input.source, countryCode);
       records.push({
         key: makeRegistryKey(input.source.id, countryCode, partyId, "CPO"),
         countryCode,
@@ -98,7 +97,7 @@ export class LadestellenConnector implements RegistryConnector<LadestellenOperat
         },
         source: {
           registryId: input.source.id,
-          official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
+          official,
           sourceRecordId: `${countryCode}${partyId}`,
           sourceUrl: input.source.authority.homepageUrl,
           // Ladestellen.at serves bare Austrian party IDs, so an assignment's

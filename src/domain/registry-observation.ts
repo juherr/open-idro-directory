@@ -1,5 +1,9 @@
 import type { NormalizedRegistryRecord, RegistryObservation } from "./registry-record.js";
-import { sourceJurisdictions, type SourceDefinition } from "./source-definition.js";
+import {
+  isAuthoritative,
+  sourceJurisdictions,
+  type SourceDefinition,
+} from "./source-definition.js";
 
 /**
  * What a source's record of `countryCode` is: an assignment when the source
@@ -19,6 +23,19 @@ export function observationScope(
     kind: "CROSS_REGISTER_LISTING",
     observingJurisdiction: jurisdictions.length === 1 ? (jurisdictions[0] ?? null) : null,
   };
+}
+
+/**
+ * What a connector writes in a record's source block for `countryCode`: the
+ * observation scope, and whether the record is official, which takes an
+ * authoritative source and an assignment.
+ */
+export function observedSource(
+  source: SourceDefinition,
+  countryCode: string,
+): { official: boolean; observation: RegistryObservation } {
+  const observation = observationScope(source, countryCode);
+  return { official: isAuthoritative(source) && observation.kind === "ASSIGNMENT", observation };
 }
 
 /**

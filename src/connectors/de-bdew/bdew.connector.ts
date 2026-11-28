@@ -1,4 +1,3 @@
-import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -15,7 +14,7 @@ import {
 } from "../../domain/registry-record.js";
 import { getText, sha256 } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { observationScope } from "../../domain/registry-observation.js";
+import { observedSource } from "../../domain/registry-observation.js";
 import {
   parseCrossRegisterIdentifier,
   rejectedIdentifierWarning,
@@ -155,7 +154,7 @@ function normalizeCode(
   seen.add(key);
 
   const organizationName = cleanCompany(sourceRecord.Company) ?? "Unspecified BDEW organization";
-  const observation = observationScope(input.source, parsed.countryCode);
+  const { official, observation } = observedSource(input.source, parsed.countryCode);
   records.push({
     key,
     countryCode: parsed.countryCode,
@@ -170,7 +169,7 @@ function normalizeCode(
     },
     source: {
       registryId: input.source.id,
-      official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
+      official,
       sourceRecordId: String(sourceRecord.Id),
       sourceUrl: bdewSourceUrl(input.source.registry.url, role),
       sourceValue: sourceRecord.Code,

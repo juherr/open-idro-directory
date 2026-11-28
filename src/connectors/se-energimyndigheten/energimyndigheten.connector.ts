@@ -1,4 +1,4 @@
-import { isAuthoritative, type SourceDefinition } from "../../domain/source-definition.js";
+import type { SourceDefinition } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -11,7 +11,7 @@ import type {
 import { makeRegistryKey, type NormalizedRegistryRecord } from "../../domain/registry-record.js";
 import { getBinary, getText, sha256 } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { observationScope } from "../../domain/registry-observation.js";
+import { observedSource } from "../../domain/registry-observation.js";
 import {
   parseCrossRegisterIdentifier,
   rejectedIdentifierWarning,
@@ -155,7 +155,7 @@ export class EnergimyndighetenConnector implements RegistryConnector<Energimyndi
         sourceRecord.organizationName ?? "Unspecified Swedish Energy Agency organization";
       // The agency publishes the OCPI parties active in Sweden, so a foreign
       // identifier is observed there, not assigned.
-      const observation = observationScope(input.source, parsed.countryCode);
+      const { official, observation } = observedSource(input.source, parsed.countryCode);
       records.push({
         key,
         countryCode: parsed.countryCode,
@@ -170,7 +170,7 @@ export class EnergimyndighetenConnector implements RegistryConnector<Energimyndi
         },
         source: {
           registryId: input.source.id,
-          official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
+          official,
           sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
           sourceUrl: sourceRecord.sourceUrl,
           sourceValue: sourceRecord.sourceValue,

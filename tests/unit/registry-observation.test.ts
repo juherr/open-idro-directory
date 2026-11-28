@@ -6,6 +6,7 @@ import {
 import {
   observationOf,
   observationScope,
+  observedSource,
   withObservation,
   withPublishedObservations,
 } from "../../src/domain/registry-observation.js";
@@ -40,6 +41,37 @@ describe("observation scope", () => {
     expect(observationScope(source, "FR")).toEqual({
       kind: "CROSS_REGISTER_LISTING",
       observingJurisdiction: null,
+    });
+  });
+
+  it("calls an assignment of an authoritative register official", async () => {
+    const source = await loadSourceDefinition("pl-eipa");
+
+    expect(observedSource(source, "PL")).toEqual({
+      official: true,
+      observation: { kind: "ASSIGNMENT", observingJurisdiction: "PL" },
+    });
+  });
+
+  it("does not call an authoritative register's cross-register listing official", async () => {
+    const source = await loadSourceDefinition("pl-eipa");
+
+    expect(observedSource(source, "NL")).toEqual({
+      official: false,
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "PL" },
+    });
+  });
+
+  it("does not call an assignment of a non-authoritative register official", async () => {
+    const loaded = await loadSourceDefinition("pl-eipa");
+    const source: SourceDefinition = {
+      ...loaded,
+      authority: { ...loaded.authority, level: "SECONDARY" },
+    };
+
+    expect(observedSource(source, "PL")).toEqual({
+      official: false,
+      observation: { kind: "ASSIGNMENT", observingJurisdiction: "PL" },
     });
   });
 

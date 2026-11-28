@@ -1,4 +1,3 @@
-import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -11,7 +10,7 @@ import type {
 import { makeRegistryKey, type NormalizedRegistryRecord } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { observationScope } from "../../domain/registry-observation.js";
+import { observedSource } from "../../domain/registry-observation.js";
 import {
   parseCrossRegisterIdentifier,
   rejectedIdentifierWarning,
@@ -108,7 +107,7 @@ export class VialietuvaConnector implements RegistryConnector<VialietuvaLocation
         sourceRecord.operator?.name ??
         sourceRecord.owner?.name ??
         "Unspecified Via Lietuva operator";
-      const observation = observationScope(input.source, parsed.countryCode);
+      const { official, observation } = observedSource(input.source, parsed.countryCode);
       byKey.set(key, {
         key,
         countryCode: parsed.countryCode,
@@ -123,7 +122,7 @@ export class VialietuvaConnector implements RegistryConnector<VialietuvaLocation
         },
         source: {
           registryId: input.source.id,
-          official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
+          official,
           sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
           sourceUrl: input.source.authority.homepageUrl,
           sourceValue,

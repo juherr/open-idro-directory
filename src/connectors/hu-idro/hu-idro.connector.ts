@@ -1,4 +1,3 @@
-import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -11,7 +10,7 @@ import type {
 import { makeRegistryKey, type NormalizedRegistryRecord } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { observationScope } from "../../domain/registry-observation.js";
+import { observedSource } from "../../domain/registry-observation.js";
 import {
   parseCrossRegisterIdentifier,
   rejectedIdentifierWarning,
@@ -113,7 +112,7 @@ export class HuIdroConnector implements RegistryConnector<HuIdroHtmlRow> {
       }
       seen.add(key);
 
-      const observation = observationScope(input.source, parsed.countryCode);
+      const { official, observation } = observedSource(input.source, parsed.countryCode);
 
       records.push({
         key,
@@ -129,7 +128,7 @@ export class HuIdroConnector implements RegistryConnector<HuIdroHtmlRow> {
         },
         source: {
           registryId: input.source.id,
-          official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
+          official,
           sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
           sourceUrl: input.source.registry.url,
           sourceValue: sourceRecord.sourceValue,

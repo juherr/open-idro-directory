@@ -1,4 +1,3 @@
-import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -15,7 +14,7 @@ import {
 } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { observationScope } from "../../domain/registry-observation.js";
+import { observedSource } from "../../domain/registry-observation.js";
 import {
   parseCrossRegisterIdentifier,
   rejectedIdentifierWarning,
@@ -113,7 +112,7 @@ export class EipaConnector implements RegistryConnector<EipaCsvRow> {
         // EIPA records the foreign identifiers operators submit without
         // checking them with the issuing register: they are listings, not
         // Polish assignments.
-        const observation = observationScope(input.source, parsed.countryCode);
+        const { official, observation } = observedSource(input.source, parsed.countryCode);
         records.push({
           key,
           countryCode: parsed.countryCode,
@@ -128,7 +127,7 @@ export class EipaConnector implements RegistryConnector<EipaCsvRow> {
           },
           source: {
             registryId: input.source.id,
-            official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
+            official,
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
             sourceUrl: input.source.registry.url,
             sourceValue: identifier.sourceValue,

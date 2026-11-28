@@ -1,4 +1,3 @@
-import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -14,7 +13,7 @@ import {
   type RegistryRole,
 } from "../../domain/registry-record.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { observationScope } from "../../domain/registry-observation.js";
+import { observedSource } from "../../domain/registry-observation.js";
 import {
   parseCrossRegisterIdentifier,
   rejectedIdentifierWarning,
@@ -102,7 +101,7 @@ export class EvroamConnector implements RegistryConnector<EvroamRegisterItem> {
         // EV Roam assigns GB identifiers; the IE ones it lists are issued by
         // TII, and any other country by its own register, so they are
         // cross-register listings and never official here.
-        const observation = observationScope(input.source, parsed.countryCode);
+        const { official, observation } = observedSource(input.source, parsed.countryCode);
         records.push({
           key,
           countryCode: parsed.countryCode,
@@ -120,7 +119,7 @@ export class EvroamConnector implements RegistryConnector<EvroamRegisterItem> {
           },
           source: {
             registryId: input.source.id,
-            official: isAuthoritative(input.source) && observation.kind === "ASSIGNMENT",
+            official,
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
             sourceUrl: input.source.registry.url,
             sourceValue: identifier.sourceValue,

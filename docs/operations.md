@@ -26,6 +26,42 @@ Design implications:
 - Avoid runtime scraping and dynamic export generation.
 - Cache public GET responses with dataset-versioned ETags.
 
+## Browser Suite
+
+`bun run web:e2e` runs the Playwright scenarios of `tests/e2e/` in headless
+Chromium. Playwright runs under Node, not Bun. Install the browser once per
+machine with `npx playwright install chromium`.
+
+Without `E2E_BASE_URL`, the Playwright `webServer` builds the site under test
+itself, then stops it at the end of the run:
+
+1. It deletes `build/e2e/fixture/` and writes the fixture of
+   `tests/e2e/fixtures/dataset.ts` there.
+2. It builds the D1 import bundle of that fixture with
+   `packages/registry-import`.
+3. It applies the migrations and the import to a local D1 persisted in
+   `build/e2e/fixture/d1`.
+4. It starts `wrangler dev` on `http://127.0.0.1:8788` against that state.
+
+The run never reads `data/` and never writes to `build/cloudflare` or to the
+`.wrangler/state` that `api:dev` uses. The port must be free: the suite
+refuses to reuse a server it did not start.
+
+```bash
+bun run web:e2e                                  # whole suite
+bun run web:e2e -- tests/e2e/explorer.spec.ts    # one file
+bun run web:e2e -- -g "stays in France"          # one scenario
+npx playwright show-report build/e2e/report      # last HTML report
+```
+
+`E2E_BASE_URL=<origin> bun run web:e2e` runs the same scenarios against a site
+that is already running, for instance another frontend. The scenarios assert
+fixture names and counts, so that site must serve the same fixture.
+
+CI runs the suite in the `e2e` job of `.github/workflows/ci.yml`. When it
+fails, the job uploads the HTML report and the traces as the
+`playwright-report` artifact.
+
 ## Partial Source Failures
 
 A registry that cannot be fetched or parsed no longer stops the run. The failing

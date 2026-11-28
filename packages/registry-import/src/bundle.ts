@@ -27,7 +27,8 @@ import {
 } from "./types.js";
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
-const outputDir = resolve(rootDir, "build/cloudflare");
+const defaultDataDir = resolve(rootDir, "data");
+const defaultOutputDir = resolve(rootDir, "build/cloudflare");
 const deterministicImportTimestamp = "1970-01-01T00:00:00.000Z";
 
 interface SourceSummary {
@@ -101,13 +102,18 @@ export interface ImportBundle {
   manifest: ImportManifest;
 }
 
-export async function buildImportBundle() {
-  const records = await readRegistryRecords();
-  const sources = (await readJson("data/sources.json")) as SourceSummary[];
-  const stats = (await readJson("data/stats.json")) as StatsSummary;
-  const conflictsReport = (await readOptionalJson("data/reports/non-idrr-conflicts.json", {
-    conflicts: [],
-  })) as ConflictReport;
+/**
+ * Builds the bundle from the generated datasets in `dataDir` (the
+ * repository's `data/` by default; the browser suite passes its fixture).
+ */
+export async function buildImportBundle({ dataDir = defaultDataDir }: { dataDir?: string } = {}) {
+  const records = await readRegistryRecords(dataDir);
+  const sources = (await readJson(resolve(dataDir, "sources.json"))) as SourceSummary[];
+  const stats = (await readJson(resolve(dataDir, "stats.json"))) as StatsSummary;
+  const conflictsReport = (await readOptionalJson(
+    resolve(dataDir, "reports/non-idrr-conflicts.json"),
+    { conflicts: [] },
+  )) as ConflictReport;
   const gitCommitSha = git(["rev-parse", "HEAD"]);
   const gitRef = git(["rev-parse", "--abbrev-ref", "HEAD"]);
   const generatedAt = stats.generatedAt;
@@ -167,7 +173,11 @@ export async function buildImportBundle() {
   };
 }
 
-export async function writeImportBundle(bundle?: ImportBundle) {
+/** Writes the bundle to `outputDir`, `build/cloudflare` by default. */
+export async function writeImportBundle(
+  bundle?: ImportBundle,
+  { outputDir = defaultOutputDir }: { outputDir?: string } = {},
+) {
   bundle ??= await buildImportBundle();
   await mkdir(outputDir, { recursive: true });
   const files = new Map<string, string>([
@@ -195,7 +205,7 @@ export async function writeImportBundle(bundle?: ImportBundle) {
 export async function verifyImportBundle() {
   const manifest = (await readJson("build/cloudflare/manifest.json")) as ImportManifest;
   for (const [fileName, descriptor] of Object.entries(manifest.files)) {
-    const body = await readFile(resolve(outputDir, fileName), "utf8");
+    const body = await readFile(resolve(defaultOutputDir, fileName), "utf8");
     if (sha256(body) !== descriptor.sha256) throw new Error(`Checksum mismatch for ${fileName}`);
     if (countRows(fileName, body) !== descriptor.rows)
       throw new Error(`Row count mismatch for ${fileName}`);
@@ -203,8 +213,8 @@ export async function verifyImportBundle() {
   return manifest;
 }
 
-async function readRegistryRecords() {
-  const rawRecords = (await readJson("data/registry.json")) as unknown[];
+async function readRegistryRecords(dataDir: string) {
+  const rawRecords = (await readJson(resolve(dataDir, "registry.json"))) as unknown[];
   return rawRecords.map((record) => normalizedRegistryRecordSchema.parse(record));
 }
 

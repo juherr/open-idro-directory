@@ -11,3 +11,6 @@ data/raw/*/
 !data/raw/fr-afirev/current/body.json
 !data/raw/fr-afirev/current/metadata.json
 data/raw/*/previous/
+
+# Browser suite: fixture D1 state, test results and HTML report.
+build/e2e/

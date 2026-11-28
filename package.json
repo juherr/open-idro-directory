@@ -33,6 +33,7 @@
     "api:import:local": "bun run --cwd apps/api import:local",
     "api:smoke:local": "bun run --cwd apps/api smoke:local",
     "api:build-import": "bun run --cwd packages/registry-import build-bundle",
+    "web:e2e": "playwright test",
     "audit": "bun audit"
   },
   "dependencies": {
@@ -47,6 +48,7 @@
     "@cloudflare/workers-types": "^5.20260706.1",
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
+    "@playwright/test": "^1.65.1",
     "@types/node": "^26.0.0",
     "fflate": "^0.8.3",
     "tsx": "^4.22.4",

@@ -54,7 +54,35 @@
         "type": "object"
       },
       "source": {
-        "type": "object"
+        "type": "object",
+        "properties": {
+          "observation": {
+            "type": "object",
+            "required": [
+              "kind",
+              "observingJurisdiction"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "ASSIGNMENT",
+                  "CROSS_REGISTER_LISTING"
+                ]
+              },
+              "observingJurisdiction": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[A-Z]{2}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        }
       },
       "metadata": {
         "type": "object"

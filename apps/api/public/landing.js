@@ -221,13 +221,13 @@ function renderCountries() {
     .map((code) => ({
       code,
       count: countries[code],
-      href: countryPageHref(code),
+      href: countryPageHref(code, lang),
       status: COMING_SOON_COUNTRIES.includes(code) ? "coming-soon" : "supported",
     }));
   const knownUnpublished = KNOWN_UNPUBLISHED_COUNTRIES.map((country) => ({
     ...country,
     count: 0,
-    href: countryPageHref(country.code),
+    href: countryPageHref(country.code, lang),
     status: "known-unpublished",
   }));
   const comingSoon = COMING_SOON_COUNTRIES.filter((code) => !countries[code]).map((code) => ({
@@ -269,8 +269,10 @@ function countryCardHtml(country, lang) {
   return `<a class="${className}" href="${escapeHtml(country.href)}"${target}>${content}</a>`;
 }
 
-function countryPageHref(code) {
-  return `/countries/${encodeURIComponent(code.toLowerCase())}/`;
+/** The country page of `code`, with `?lang=fr` when the landing is in French. */
+function countryPageHref(code, lang) {
+  const query = lang === "fr" ? "?lang=fr" : "";
+  return `/countries/${encodeURIComponent(code.toLowerCase())}/${query}`;
 }
 
 function countryStatusCaption(country, lang) {
@@ -291,18 +293,18 @@ function renderChips(lang) {
   const chips =
     lang === "fr"
       ? [
-          ["Allemagne", countryPageHref("DE")],
+          ["Allemagne", countryPageHref("DE", lang)],
           ["AFIREV", "/explore/?q=AFIREV"],
           ["FR026", "/explore/?q=FR026"],
           ["CPO", "/explore/?role=CPO"],
-          ["Belgique", countryPageHref("BE")],
+          ["Belgique", countryPageHref("BE", lang)],
         ]
       : [
-          ["Germany", countryPageHref("DE")],
+          ["Germany", countryPageHref("DE", lang)],
           ["AFIREV", "/explore/?q=AFIREV"],
           ["FR026", "/explore/?q=FR026"],
           ["CPO", "/explore/?role=CPO"],
-          ["Belgium", countryPageHref("BE")],
+          ["Belgium", countryPageHref("BE", lang)],
         ];
   setHtml(
     "#popular-chips",

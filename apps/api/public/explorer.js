@@ -1,8 +1,23 @@
 // ES module: the helpers of the classic shared.js script, loaded before it,
 // stay reachable as globals.
-import { createSearchScope, isIdentifierLike } from "/explorer-core.js";
+import { countryPagePath, createSearchScope } from "/explorer-core.js";
 
-const scope = createSearchScope({ basePath: "/explore/" });
+// A country page hosts this search in a section pinned to its country; the
+// explorer page has no such section.
+const fixedRoot = document.querySelector("[data-fixed-country]");
+const scope = fixedRoot
+  ? createSearchScope({
+      fixedCountry: fixedRoot.dataset.fixedCountry,
+      basePath: fixedRoot.dataset.basePath,
+    })
+  : createSearchScope({ basePath: "/explore/" });
+if (fixedRoot) fixedRoot.hidden = false;
+
+// The country page is server-rendered in the language of <html lang>.
+function currentLanguage() {
+  if (!fixedRoot) return getLanguage();
+  return document.documentElement.lang === "fr" ? "fr" : "en";
+}
 
 const EXPLORER_COPY = {
   fr: {
@@ -52,6 +67,7 @@ const EXPLORER_COPY = {
     byAuthor: "Un projet de",
     disclaimer:
       "Projet d'agrégation indépendant. Open IDRO Directory n'émet pas d'identifiants et ne fait pas autorité — référez-vous à l'IDRO d'origine pour toute vérification légale ou opérationnelle.",
+    belongsTo: "{id} relève d'un autre pays : {country}.",
   },
   en: {
     home: "Home",
@@ -100,6 +116,7 @@ const EXPLORER_COPY = {
     byAuthor: "A project by",
     disclaimer:
       "Independent aggregation project. Open IDRO Directory does not issue identifiers and is not authoritative — refer to the originating IDRO for any legal or operational verification.",
+    belongsTo: "{id} belongs to {country}.",
   },
 };
 
@@ -120,25 +137,30 @@ const state = {
   copied: false,
   selectedParty: null,
   detailPath: "",
+  foreign: null,
 };
+
+// Absent on a country page, whose country is fixed.
+const countrySelect = document.querySelector("#country");
 
 function initFromUrl() {
   Object.assign(state, scope.readState(window.location.search));
   document.querySelector("#query").value = state.q;
-  document.querySelector("#country").value = state.country;
+  if (countrySelect) countrySelect.value = state.country;
   document.querySelector("#role").value = state.role;
   document.querySelector("#status").value = state.status;
 }
 
 function translateExplorer() {
-  const lang = getLanguage();
+  const lang = currentLanguage();
   document.documentElement.lang = lang;
   updateLanguageButtons(lang);
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     const key = element.dataset.i18n;
     if (EXPLORER_COPY[lang][key]) element.textContent = EXPLORER_COPY[lang][key];
   });
-  document.querySelector("#query").placeholder = EXPLORER_COPY[lang].searchPlaceholder;
+  if (!fixedRoot)
+    document.querySelector("#query").placeholder = EXPLORER_COPY[lang].searchPlaceholder;
   document.querySelector("#toggle-api span").textContent = state.showApi
     ? EXPLORER_COPY[lang].hideApiLabel
     : EXPLORER_COPY[lang].showApiLabel;
@@ -157,7 +179,7 @@ function renderExplorer() {
 }
 
 function renderOptions() {
-  const lang = getLanguage();
+  const lang = currentLanguage();
   const copy = EXPLORER_COPY[lang];
   const codes = availableCountryCodes().sort((left, right) =>
     countryName(left, lang).localeCompare(countryName(right, lang), lang),
@@ -194,11 +216,20 @@ function renderOptions() {
 }
 
 function renderContextLabel() {
-  const lang = getLanguage();
+  const lang = currentLanguage();
   const count = availableCountryCodes().length;
   const suffix =
     lang === "fr" ? `${count} pays` : `${count} ${count === 1 ? "country" : "countries"}`;
-  setText("[data-i18n='context']", `${EXPLORER_COPY[lang].context} · ${suffix}`);
+  const label = escapeHtml(`${EXPLORER_COPY[lang].context} · ${suffix}`);
+  const country = state.country ? ` · ${countryLink(state.country, lang)}` : "";
+  setHtml("[data-i18n='context']", label + country);
+}
+
+/** The country name, linked to its country page when the code is valid. */
+function countryLink(code, lang) {
+  const name = escapeHtml(countryName(code, lang));
+  const path = countryPagePath(code);
+  return path ? `<a class="text-link" href="${escapeHtml(path)}">${name}</a>` : name;
 }
 
 function availableCountryCodes() {
@@ -249,8 +280,37 @@ async function enrichRoles(items) {
   renderRows();
 }
 
-async function resolveIdentifier(value) {
-  const path = value ? scope.resolvePath(value) : null;
+/** Runs the plan of the current state: a search, or the foreign-ID notice. */
+function startQuery() {
+  const plan = scope.planQuery(state);
+  state.foreign = plan.kind === "foreign-identifier" ? plan : null;
+  renderForeignNotice();
+  if (state.foreign) {
+    state.resolve = null;
+    state.items = [];
+    state.cursor = null;
+    renderResolve();
+    renderRows();
+    return;
+  }
+  void resolveIdentifier(plan.resolvePath);
+  void runQuery(false);
+}
+
+function renderForeignNotice() {
+  const notice = document.querySelector("#foreign-notice");
+  if (!notice) return;
+  notice.hidden = !state.foreign;
+  if (!state.foreign) return;
+  const lang = currentLanguage();
+  const [before, after] = EXPLORER_COPY[lang].belongsTo.split("{country}");
+  notice.innerHTML =
+    escapeHtml(before.replace("{id}", state.foreign.emobilityId)) +
+    countryLink(state.foreign.countryCode, lang) +
+    escapeHtml(after);
+}
+
+async function resolveIdentifier(path) {
   if (!path) {
     state.resolve = null;
     renderResolve();
@@ -270,8 +330,8 @@ function renderApiLine() {
   setText("#request-path", `GET ${state.lastPath}`);
   setHref("#open-json", `${API_BASE}${state.lastPath}`);
   document.querySelector("#toggle-api span").textContent = state.showApi
-    ? EXPLORER_COPY[getLanguage()].hideApiLabel
-    : EXPLORER_COPY[getLanguage()].showApiLabel;
+    ? EXPLORER_COPY[currentLanguage()].hideApiLabel
+    : EXPLORER_COPY[currentLanguage()].showApiLabel;
 }
 
 function renderResolve() {
@@ -280,7 +340,7 @@ function renderResolve() {
     banner.hidden = true;
     return;
   }
-  const lang = getLanguage();
+  const lang = currentLanguage();
   const party = state.resolve.party;
   banner.hidden = false;
   setText("#resolve-input", state.resolve.input);
@@ -294,12 +354,16 @@ function renderResolve() {
 }
 
 function renderRows() {
-  const lang = getLanguage();
+  const lang = currentLanguage();
   const copy = EXPLORER_COPY[lang];
   document.querySelector("#loading").hidden = !state.loading;
-  document.querySelector("#empty").hidden = state.loading || state.items.length > 0;
+  document.querySelector("#empty").hidden =
+    state.loading || state.items.length > 0 || Boolean(state.foreign);
   document.querySelector("#load-more-wrap").hidden = !state.cursor || state.loading;
-  setText("#result-label", state.loading ? "" : `${state.items.length} ${copy.results}`);
+  setText(
+    "#result-label",
+    state.loading || state.foreign ? "" : `${state.items.length} ${copy.results}`,
+  );
 
   if (state.loading) {
     setHtml("#results", "");
@@ -366,14 +430,14 @@ async function openDetail(countryCode, partyId) {
 }
 
 function renderDetail(detail, observations) {
-  const lang = getLanguage();
+  const lang = currentLanguage();
   const copy = EXPLORER_COPY[lang];
   document.querySelector("#detail-loading").hidden = true;
   document.querySelector("#detail-body").hidden = false;
   setText("#detail-emid", formatIdentifier(detail.countryCode, detail.partyId));
   setText("#detail-name", detail.preferredName || detail.legalName || detail.eMobilityId);
   setHtml("#detail-status", statusBadge(detail.status, lang));
-  setText("#detail-country", countryName(detail.countryCode, lang));
+  setHtml("#detail-country", countryLink(detail.countryCode, lang));
   document.querySelector("#detail-conflict").hidden = !detail.hasConflict;
   setText("#detail-legal-name", detail.legalName || "—");
   setText(
@@ -465,29 +529,17 @@ function closeDetail() {
 
 function submitSearch() {
   state.q = document.querySelector("#query").value.trim();
-  state.country = document.querySelector("#country").value;
+  if (countrySelect) state.country = countrySelect.value;
   state.role = document.querySelector("#role").value;
   state.status = document.querySelector("#status").value;
   syncUrl();
-  if (state.q && isIdentifierLike(state.q)) void resolveIdentifier(state.q);
-  else {
-    state.resolve = null;
-    renderResolve();
-  }
-  void runQuery(false);
+  renderContextLabel();
+  startQuery();
 }
 
 async function loadContext() {
-  try {
-    const stats = await apiGet("/api/v1/stats");
-    state.countsByCountry =
-      stats.data?.countsByIdentifierCountry || stats.data?.countsByCountry || {};
-    renderOptions();
-    renderContextLabel();
-  } catch {
-    state.countsByCountry = {};
-    renderContextLabel();
-  }
+  // The stats only feed the country select and the context label.
+  if (!fixedRoot) await loadStats();
   try {
     const sources = await apiGet("/api/v1/sources");
     state.sourceNames = Object.fromEntries(
@@ -498,12 +550,25 @@ async function loadContext() {
   }
 }
 
+async function loadStats() {
+  try {
+    const stats = await apiGet("/api/v1/stats");
+    state.countsByCountry =
+      stats.data?.countsByIdentifierCountry || stats.data?.countsByCountry || {};
+    renderOptions();
+    renderContextLabel();
+  } catch {
+    state.countsByCountry = {};
+    renderContextLabel();
+  }
+}
+
 document.querySelector("#explore-form").addEventListener("submit", (event) => {
   event.preventDefault();
   submitSearch();
 });
 
-document.querySelector("#country").addEventListener("change", submitSearch);
+countrySelect?.addEventListener("change", submitSearch);
 document.querySelector("#role").addEventListener("change", submitSearch);
 document.querySelector("#status").addEventListener("change", submitSearch);
 document.querySelector("#toggle-api").addEventListener("click", () => {
@@ -539,5 +604,4 @@ renderOptions();
 initFromUrl();
 renderExplorer();
 void loadContext();
-if (state.q && isIdentifierLike(state.q)) void resolveIdentifier(state.q);
-void runQuery(false);
+startQuery();

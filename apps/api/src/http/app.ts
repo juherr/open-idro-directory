@@ -325,7 +325,7 @@ export function createApp() {
 }
 
 /** Bumped whenever the country page markup changes, so cached pages revalidate. */
-const COUNTRY_PAGE_VERSION = "2";
+const COUNTRY_PAGE_VERSION = "3";
 
 type ApiContext = Context<{ Bindings: Env; Variables: { requestId: string } }>;
 type ActiveRelease = NonNullable<Awaited<ReturnType<RegistryRepository["activeRelease"]>>>;

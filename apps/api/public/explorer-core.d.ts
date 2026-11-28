@@ -63,4 +63,6 @@ export interface SearchScope {
 
 export function normalizeIdentifierInput(value: string): IdentifierInput | null;
 export function isIdentifierLike(value: string): boolean;
+/** `/countries/{lc}/` for a two-letter country code, else `null`. */
+export function countryPagePath(code: string): string | null;
 export function createSearchScope(options?: SearchScopeOptions): SearchScope;

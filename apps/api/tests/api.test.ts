@@ -429,6 +429,9 @@ describe("Cloudflare API", () => {
     expect(page).toContain("AFIREV");
     expect(page).toContain("https://api.afirev.fr/public/prefixes");
     expect(page).toContain('href="/explore/?country=FR"');
+    expect(page).toContain('data-fixed-country="FR"');
+    expect(page).toContain('data-base-path="/countries/fr/"');
+    expect(page).toContain('<script type="module" src="/explorer.js"></script>');
   });
 
   it("revalidates country pages with an ETag distinct from the JSON summary", async () => {

@@ -20,6 +20,12 @@ export function isIdentifierLike(value) {
   return normalizeIdentifierInput(value) !== null;
 }
 
+/** `/countries/{lc}/` for a two-letter country code, else `null`. */
+export function countryPagePath(code) {
+  if (typeof code !== "string" || !/^[A-Za-z]{2}$/.test(code)) return null;
+  return `/countries/${code.toLowerCase()}/`;
+}
+
 export function createSearchScope({ fixedCountry, basePath = "/explore/" } = {}) {
   const forced = fixedCountry ? fixedCountry.toUpperCase() : null;
 

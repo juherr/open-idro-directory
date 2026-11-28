@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  countryPagePath,
   createSearchScope,
   isIdentifierLike,
   normalizeIdentifierInput,
@@ -155,4 +156,20 @@ describe("fixed-country scope", () => {
       resolvePath: null,
     });
   });
+});
+
+describe("countryPagePath", () => {
+  it.each([
+    ["FR", "/countries/fr/"],
+    ["de", "/countries/de/"],
+  ])("links %j to its country page", (code, expected) => {
+    expect(countryPagePath(code)).toBe(expected);
+  });
+
+  it.each(["", "F", "FRA", "F1", "../", '"x', null, undefined])(
+    "returns null for %j, which is not a country code",
+    (code) => {
+      expect(countryPagePath(code as string)).toBeNull();
+    },
+  );
 });

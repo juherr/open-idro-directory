@@ -8,6 +8,7 @@ import {
   release,
   sourceRow,
   sources,
+  tii,
 } from "./support/country-fixtures.js";
 
 function summaryFor(countryCode: string, rows = sources, stats = noStats): CountrySummary {
@@ -17,6 +18,13 @@ function summaryFor(countryCode: string, rows = sources, stats = noStats): Count
 }
 
 const origin = "https://directory.example";
+
+const SEARCH_SCRIPTS = ['<script src="/shared.js">', '<script type="module" src="/explorer.js">'];
+
+/** Every opening script tag of the page, in document order. */
+function scriptTags(page: string) {
+  return page.match(/<script\b[^>]*>/gi) ?? [];
+}
 
 describe("country page", () => {
   it("renders a known IDRO without published identifiers as an explained empty state", async () => {
@@ -133,18 +141,46 @@ describe("country page", () => {
     expect(page).toContain('<link rel="canonical" href="https://directory.example/countries/ie/"');
   });
 
-  it("renders without any script so it works with JavaScript disabled", async () => {
+  it("loads only the explorer scripts, for a search section hidden without JavaScript", async () => {
     const page = await renderCountryPage(summaryFor("IE", sources, irishStats), origin);
 
-    expect(page).not.toContain("<script");
+    expect(scriptTags(page)).toEqual(SEARCH_SCRIPTS);
+    expect(page).toMatch(
+      /<section\s+class="[^"]*country-search[^"]*"[^>]*data-fixed-country="IE"[^>]*data-base-path="\/countries\/ie\/"[^>]*hidden\s*>/,
+    );
+    for (const id of ["explore-form", "query", "role", "status", "results", "detail-panel"]) {
+      expect(page).toContain(`id="${id}"`);
+    }
+    expect(page).toContain('id="foreign-notice"');
+    // The country is fixed text, never a control.
+    expect(page).not.toContain('id="country"');
+    // The explorer stays one link away for a search across countries.
+    expect(page).toContain('href="/explore/?country=IE"');
+  });
+
+  it("renders no search section and no script for a country with nothing to search", async () => {
+    const page = await renderCountryPage(summaryFor("CY"), origin);
+
+    expect(scriptTags(page)).toEqual([]);
+    expect(page).not.toContain("data-fixed-country");
+    expect(page).not.toContain('id="explore-form"');
   });
 
   it("escapes upstream text", async () => {
     const hostile = { ...cyEms, name: '<script>alert("x")</script>' };
     const page = await renderCountryPage(summaryFor("CY", [sourceRow("cy-ems", hostile)]), origin);
 
-    expect(page).not.toContain("<script");
+    expect(scriptTags(page)).toEqual([]);
     expect(page).toContain("&lt;script&gt;");
+  });
+
+  it("escapes upstream text on a page that loads the search scripts", async () => {
+    const hostile = { ...tii, name: '<script>alert("x")</script>' };
+    const rows = sources.map((row) => (row.id === "ie-tii" ? sourceRow("ie-tii", hostile) : row));
+    const page = await renderCountryPage(summaryFor("IE", rows, irishStats), origin);
+
+    expect(scriptTags(page)).toEqual(SEARCH_SCRIPTS);
+    expect(page).toContain("&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;");
   });
 
   it("does not link upstream URLs whose scheme is not http(s)", async () => {

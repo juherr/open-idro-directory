@@ -147,8 +147,10 @@ type Draft = Omit<DiscrepancyFinding, "severity" | "confidence"> &
  * observe, for the issuing authorities to review. Findings are grouped by
  * country and by (issuing register, observed source) pair, and say what was
  * observed where: a difference is not a claim about the identifier's
- * standing. An issuing register that is stale or unavailable never yields a
- * removal or a not-found, only an unverifiable finding. Pure: the result
+ * standing. Each issuing register is checked on its own: the identifier's
+ * issuing confirmation is context and gates no finding. An issuing register
+ * that is stale or unavailable never yields a removal or a not-found, only an
+ * unverifiable finding. Pure: the result
  * depends neither on the clock nor on the order of the inputs.
  */
 export function buildDiscrepancyReport(input: DiscrepancyReportInput): DiscrepancyReport {
@@ -301,15 +303,29 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
         observedRegistryId: observed,
       });
       const issuers = covering(listing.countryCode, listing.role);
-      if (confirmation === "NOT_FOUND") {
-        // Per issuing register publishing the listing's role: a role conflict
-        // when it lists the identifier under another role, else a not-found.
+      if (issuers.length > 0) {
+        // Each issuing register publishing the listing's role on its own, the
+        // identifier's confirmation aside: nothing when it lists the identifier
+        // and role, an unverifiable finding when it is not current, else a role
+        // conflict when it lists the identifier under another role, else a
+        // not-found.
         const identifierKey = `${listing.countryCode}:${listing.partyId}`;
         for (const issuing of issuers) {
-          const otherRoles = (presentIssuing.get(identifierKey) ?? []).filter(
-            (record) => record.source.registryId === issuing && record.role !== listing.role,
+          const listed = (presentIssuing.get(identifierKey) ?? []).filter(
+            (record) => record.source.registryId === issuing,
           );
-          if (otherRoles.length > 0) {
+          if (listed.some((record) => record.role === listing.role)) continue;
+          if (healthOf(issuing) !== "CURRENT") {
+            drafts.push({
+              ...toIssuer(issuing),
+              category: "ISSUING_REGISTER_UNVERIFIABLE",
+              reason: `SOURCE_${healthOf(issuing)}`,
+              summary: `${label(listing)} is listed by ${observed}; the issuing register ${issuing} could not be checked in its latest retrieval.`,
+              evidence: [recordEvidence(listing), registerEvidence(issuing)],
+            });
+            continue;
+          }
+          if (listed.length > 0) {
             const key = `${identifierKey}|${observed}|${issuing}`;
             const draft = roleConflicts.get(key) ?? {
               ...toIssuer(issuing),
@@ -318,7 +334,7 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
               summary: `${listing.eMobilityId} is listed by ${observed} as ${listing.role}; the issuing register ${issuing} lists it under another role.`,
               evidence: [],
             };
-            draft.evidence.push(recordEvidence(listing), ...otherRoles.map(recordEvidence));
+            draft.evidence.push(recordEvidence(listing), ...listed.map(recordEvidence));
             roleConflicts.set(key, draft);
             continue;
           }
@@ -330,17 +346,7 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
             evidence: [recordEvidence(listing), registerEvidence(issuing)],
           });
         }
-      } else if (confirmation === "SOURCE_STALE" || confirmation === "SOURCE_UNAVAILABLE") {
-        for (const issuing of issuers.filter((id) => healthOf(id) !== "CURRENT")) {
-          drafts.push({
-            ...toIssuer(issuing),
-            category: "ISSUING_REGISTER_UNVERIFIABLE",
-            reason: `SOURCE_${healthOf(issuing)}`,
-            summary: `${label(listing)} is listed by ${observed}; the issuing register ${issuing} could not be checked in its latest retrieval.`,
-            evidence: [recordEvidence(listing), registerEvidence(issuing)],
-          });
-        }
-      } else if (confirmation === "UNSUPPORTED_ROLE" || confirmation === "NO_ISSUING_SOURCE") {
+      } else {
         const outside = (issuing: string | null) => ({
           ...toIssuer(issuing),
           category: "OUTSIDE_ISSUING_REGISTER_SCOPE" as const,

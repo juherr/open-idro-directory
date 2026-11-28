@@ -77,6 +77,9 @@ export interface PartyRoleRow {
   highest_authority_level: string;
   observation_count: number;
   has_conflict: number;
+  /** NULL until the first import after migration 0006, or without an issuing block. */
+  issuing_confirmation: string | null;
+  issuing_confirmed_by_json: string | null;
   dataset_release_id: string;
 }
 
@@ -103,6 +106,9 @@ export interface ObservationRow {
   retrieved_at: string;
   metadata_json: string;
   raw_record_checksum: string | null;
+  /** NULL until the first import after migration 0006. */
+  observation_kind: string | null;
+  observing_jurisdiction: string | null;
   dataset_release_id: string;
 }
 

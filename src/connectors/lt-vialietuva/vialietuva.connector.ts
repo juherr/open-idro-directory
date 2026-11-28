@@ -1,4 +1,3 @@
-import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -11,7 +10,11 @@ import type {
 import { makeRegistryKey, type NormalizedRegistryRecord } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
+import { observedSource } from "../../domain/registry-observation.js";
+import {
+  parseCrossRegisterIdentifier,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { parseVialietuvaLocations } from "./vialietuva.parser.js";
 import type { VialietuvaLocation } from "./vialietuva.types.js";
 
@@ -77,13 +80,16 @@ export class VialietuvaConnector implements RegistryConnector<VialietuvaLocation
     >();
 
     for (const sourceRecord of input.records) {
-      const parsed = parseLithuanianIdentifier(sourceRecord.country_code, sourceRecord.party_id);
+      const sourceValue = `${sourceRecord.country_code}-${sourceRecord.party_id}`;
+      const parsed =
+        parseLithuanianIdentifier(sourceRecord.country_code, sourceRecord.party_id) ??
+        parseCrossRegisterIdentifier(input.source, sourceValue);
       if (!parsed) {
         warnings.push(
           rejectedIdentifierWarning(input.source, {
             codePrefix: "VIALIETUVA",
             subject: "Via Lietuva identifier",
-            value: `${sourceRecord.country_code}-${sourceRecord.party_id}`,
+            value: sourceValue,
           }),
         );
         continue;
@@ -101,6 +107,7 @@ export class VialietuvaConnector implements RegistryConnector<VialietuvaLocation
         sourceRecord.operator?.name ??
         sourceRecord.owner?.name ??
         "Unspecified Via Lietuva operator";
+      const { official, observation } = observedSource(input.source, parsed.countryCode);
       byKey.set(key, {
         key,
         countryCode: parsed.countryCode,
@@ -115,13 +122,14 @@ export class VialietuvaConnector implements RegistryConnector<VialietuvaLocation
         },
         source: {
           registryId: input.source.id,
-          official: isAuthoritative(input.source),
+          official,
           sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
           sourceUrl: input.source.authority.homepageUrl,
-          sourceValue: `${sourceRecord.country_code}-${sourceRecord.party_id}`,
+          sourceValue,
           firstSeenAt: input.retrievedAt,
           lastSeenAt: input.retrievedAt,
           retrievedAt: input.retrievedAt,
+          observation,
         },
         metadata: {
           vialietuvaLocationCount: 1,

@@ -3,10 +3,16 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { describe, expect, it } from "vitest";
 import { buildRegistry, type BuildOptions } from "../../src/application/build-registry.js";
+import { EvroamConnector } from "../../src/connectors/gb-evroam/evroam.connector.js";
 import type { RegistryConnector } from "../../src/connectors/connector.js";
-import type { NormalizedRegistryRecord } from "../../src/domain/registry-record.js";
+import { EnergimyndighetenConnector } from "../../src/connectors/se-energimyndigheten/energimyndigheten.connector.js";
+import type {
+  NormalizedRegistryRecord,
+  RegistryObservation,
+} from "../../src/domain/registry-record.js";
 import type { SourceDefinition } from "../../src/domain/source-definition.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
+import { validateRegistry } from "../../src/validation/registry-validator.js";
 
 describe("buildRegistry", () => {
   it("keeps the records of the sources a filtered run did not rebuild", async () => {
@@ -88,6 +94,116 @@ describe("buildRegistry", () => {
     });
   });
 
+  // #91 reference scenario 6: the issuing register being unreachable says
+  // nothing about the identifiers another register lists.
+  it("keeps a cross-register listing when the issuing source failed", async () => {
+    const evroam = await loadSourceDefinition("gb-evroam");
+    const listing = await new EvroamConnector().normalize({
+      source: evroam,
+      retrievedAt: GENERATED_AT,
+      records: [{ title: "Blink Charge UK Ltd", operatorIdIE: "IE*BLK" }],
+    });
+    const official = sampleRecord("ie-tii", "IE", "BLK");
+    await withWorkspace(
+      async ({ build, outputDir }) => {
+        const result = await build({
+          createConnector: connectorReturning(listing.records),
+          fetchErrors: { "ie-tii": "HTTP 503 while fetching https://example.test/" },
+        });
+
+        expect(result.records.map((record) => record.key).toSorted()).toEqual([
+          "gb-evroam:IE:BLK:CPO",
+          "ie-tii:IE:BLK:CPO",
+        ]);
+        const observed = result.records.find((record) => record.key === "gb-evroam:IE:BLK:CPO");
+        expect(observed?.source).toMatchObject({
+          official: false,
+          observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "GB" },
+        });
+        expect(await readHealth(outputDir, "ie-tii")).toMatchObject({ freshness: "stale" });
+      },
+      { sourceIds: ["ie-tii", "gb-evroam"], published: [official] },
+    );
+  });
+
+  // Issue #91, scenarios 4 and 5: absence from the issuing register is not
+  // invalidity, and the issuing register is left as it is.
+  it("publishes a PL identifier another register lists while the Polish register does not", async () => {
+    const sweden = await loadSourceDefinition("se-energimyndigheten");
+    const swedishRecords = await new EnergimyndighetenConnector().normalize({
+      source: sweden,
+      retrievedAt: GENERATED_AT,
+      records: [
+        {
+          sourceValue: "PL*ABC",
+          organizationName: "Example Polska",
+          role: "CPO",
+          sourceUrl: "https://example.test/",
+        },
+      ],
+    });
+    const polish = withObservationBlock(sampleRecord("pl-eipa", "PL", "XYZ"), {
+      kind: "ASSIGNMENT",
+      observingJurisdiction: "PL",
+    });
+    const connectors: Record<string, NormalizedRegistryRecord[]> = {
+      "pl-eipa": [polish],
+      "se-energimyndigheten": swedishRecords.records,
+    };
+    await withWorkspace(
+      async ({ build, outputDir, sources }) => {
+        const result = await build({
+          createConnector: (source) => connectorReturning(connectors[source.id] ?? [])(),
+        });
+
+        const listing = result.records.find(
+          (record) => record.key === "se-energimyndigheten:PL:ABC:CPO",
+        );
+        expect(listing?.source).toMatchObject({
+          official: false,
+          observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "SE" },
+        });
+        expect(
+          result.records
+            .filter((record) => record.source.registryId === "pl-eipa")
+            .map((record) => record.key),
+        ).toEqual(["pl-eipa:PL:XYZ:CPO"]);
+        // Only the retrieval time of this run differs from what pl-eipa published.
+        expect(result.records.find((record) => record.key === polish.key)).toEqual({
+          ...polish,
+          source: { ...polish.source, retrievedAt: GENERATED_AT },
+        });
+        expect(validateRegistry(result.records, sources)).toEqual([]);
+        const invalid = JSON.parse(
+          await readFile(join(outputDir, "registry-invalid.json"), "utf8"),
+        ) as { records: unknown[]; rows: unknown[]; outOfJurisdiction: unknown[] };
+        expect(invalid).toMatchObject({ records: [], rows: [], outOfJurisdiction: [] });
+      },
+      { sourceIds: ["pl-eipa", "se-energimyndigheten"], published: [polish] },
+    );
+  });
+
+  // Records published before the observation block existed carry none: the
+  // first rebuild that adds it must not read as every record having changed.
+  it("does not count the observation block a published record lacks as a change", async () => {
+    const current = withObservationBlock(sampleRecord("fr-afirev", "FR", "AAA"), {
+      kind: "ASSIGNMENT",
+      observingJurisdiction: "FR",
+    });
+    await withWorkspace(async ({ build }) => {
+      const result = await build({
+        sourceId: "fr-afirev",
+        createConnector: connectorReturning([current]),
+      });
+
+      const afirev = result.results.find((entry) => entry.sourceId === "fr-afirev");
+      expect(afirev?.errors).toEqual([]);
+      expect(result.records.find((record) => record.key === current.key)?.source).toMatchObject({
+        observation: { kind: "ASSIGNMENT", observingJurisdiction: "FR" },
+      });
+    });
+  });
+
   it("throws when every selected source failed", async () => {
     await withWorkspace(async ({ build }) => {
       await expect(
@@ -117,15 +233,22 @@ async function withWorkspace(
       overrides?: BuildOptions & { sources?: SourceDefinition[] },
     ) => ReturnType<typeof buildRegistry>;
   }) => Promise<void>,
+  setup: { sourceIds?: string[]; published?: NormalizedRegistryRecord[] } = {},
 ) {
   const dataDir = await mkdtemp(join(tmpdir(), "open-idro-build-data-"));
   const outputDir = await mkdtemp(join(tmpdir(), "open-idro-build-out-"));
   try {
-    const sources = [
-      await loadSourceDefinition("fr-afirev"),
-      await loadSourceDefinition("dk-fstyr"),
-    ];
-    await writeWorkspace(dataDir, sources);
+    const sources = await Promise.all(
+      (setup.sourceIds ?? ["fr-afirev", "dk-fstyr"]).map((id) => loadSourceDefinition(id)),
+    );
+    await writeWorkspace(
+      dataDir,
+      sources,
+      setup.published ?? [
+        sampleRecord("fr-afirev", "FR", "AAA"),
+        sampleRecord("dk-fstyr", "DK", "BBB"),
+      ],
+    );
     const build = ({
       sources: override,
       ...options
@@ -134,7 +257,13 @@ async function withWorkspace(
         dataDir,
         outputDir,
         generatedAt: GENERATED_AT,
-        createConnector: connectorReturning([sampleRecord("fr-afirev", "FR", "AAA")]),
+        // Connectors set the observation block; the published records predate it.
+        createConnector: connectorReturning([
+          withObservationBlock(sampleRecord("fr-afirev", "FR", "AAA"), {
+            kind: "ASSIGNMENT",
+            observingJurisdiction: "FR",
+          }),
+        ]),
         ...options,
       });
     await assertions({ sources, outputDir, build });
@@ -144,11 +273,12 @@ async function withWorkspace(
   }
 }
 
-async function writeWorkspace(dataDir: string, sources: SourceDefinition[]) {
-  await writeFile(
-    join(dataDir, "registry.json"),
-    JSON.stringify([sampleRecord("fr-afirev", "FR", "AAA"), sampleRecord("dk-fstyr", "DK", "BBB")]),
-  );
+async function writeWorkspace(
+  dataDir: string,
+  sources: SourceDefinition[],
+  published: NormalizedRegistryRecord[],
+) {
+  await writeFile(join(dataDir, "registry.json"), JSON.stringify(published));
   await writeFile(
     join(dataDir, "sources.json"),
     JSON.stringify(
@@ -203,6 +333,13 @@ function connectorReturning(records: NormalizedRegistryRecord[]): () => Registry
     parse: async () => ({ records: [], warnings: [], errors: [] }),
     normalize: async () => ({ records, warnings: [], errors: [] }),
   });
+}
+
+function withObservationBlock(
+  record: NormalizedRegistryRecord,
+  observation: RegistryObservation,
+): NormalizedRegistryRecord {
+  return { ...record, source: { ...record.source, observation } };
 }
 
 function sampleRecord(

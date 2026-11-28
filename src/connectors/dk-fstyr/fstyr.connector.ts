@@ -1,4 +1,3 @@
-import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -15,7 +14,11 @@ import {
 } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
+import { observedSource } from "../../domain/registry-observation.js";
+import {
+  parseCrossRegisterIdentifier,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { parseFstyrHtml } from "./fstyr.parser.js";
 import type { FstyrHtmlRow } from "./fstyr.types.js";
 
@@ -90,7 +93,9 @@ export class FstyrConnector implements RegistryConnector<FstyrHtmlRow> {
       ];
 
       for (const identifier of identifiers) {
-        const parsed = parseFstyrIdentifier(identifier.sourceValue);
+        const parsed =
+          parseFstyrIdentifier(identifier.sourceValue) ??
+          parseCrossRegisterIdentifier(input.source, identifier.sourceValue);
         if (!parsed) {
           warnings.push(
             rejectedIdentifierWarning(input.source, {
@@ -119,6 +124,8 @@ export class FstyrConnector implements RegistryConnector<FstyrHtmlRow> {
         }
         seen.add(key);
 
+        const { official, observation } = observedSource(input.source, parsed.countryCode);
+
         records.push({
           key,
           countryCode: parsed.countryCode,
@@ -133,13 +140,14 @@ export class FstyrConnector implements RegistryConnector<FstyrHtmlRow> {
           },
           source: {
             registryId: input.source.id,
-            official: isAuthoritative(input.source),
+            official,
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
             sourceUrl: input.source.registry.url,
             sourceValue: identifier.sourceValue,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,
             retrievedAt: input.retrievedAt,
+            observation,
           },
           metadata: {
             fstyrCompanyName: organizationName,

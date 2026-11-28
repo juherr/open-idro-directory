@@ -4,7 +4,7 @@ import {
   EMI3_IDENTIFIER_PATTERN,
   EMI3_PARTY_ID_PATTERN,
 } from "../domain/emi3-identifier.js";
-import type { NormalizedRegistryRecord } from "../domain/registry-record.js";
+import { observationKindSchema, type NormalizedRegistryRecord } from "../domain/registry-record.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
 import { fromRoot } from "../infrastructure/filesystem/paths.js";
 import { validateRegistry } from "../validation/registry-validator.js";
@@ -44,6 +44,18 @@ export async function writeSchemas() {
   );
 }
 
+// Optional: records published before issue #91 carry no observation block.
+const observationSchema = {
+  type: "object",
+  required: ["kind", "observingJurisdiction"],
+  properties: {
+    kind: { enum: observationKindSchema.options },
+    observingJurisdiction: {
+      anyOf: [{ type: "string", pattern: EMI3_COUNTRY_CODE_PATTERN.source }, { type: "null" }],
+    },
+  },
+};
+
 const registryRecordSchema = {
   type: "object",
   required: [
@@ -65,12 +77,12 @@ const registryRecordSchema = {
     role: { enum: ["CPO", "CSO", "EMSP", "NSP", "HUB", "OTHER"] },
     status: { enum: ["ACTIVE", "INACTIVE", "RESERVED", "REVOKED", "UNKNOWN"] },
     organization: { type: "object" },
-    source: { type: "object" },
+    source: { type: "object", properties: { observation: observationSchema } },
     metadata: { type: "object" },
   },
 };
 
-const registrySchema = {
+export const registrySchema = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   title: "RegistryDataset",
   type: "array",
@@ -104,7 +116,7 @@ const rowFields = {
   },
 };
 
-const registryInvalidSchema = {
+export const registryInvalidSchema = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   title: "InvalidRegistryDataset",
   type: "object",

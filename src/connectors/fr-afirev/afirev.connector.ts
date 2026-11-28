@@ -1,4 +1,4 @@
-import { isAuthoritative } from "../../domain/source-definition.js";
+import type { SourceDefinition } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -15,9 +15,10 @@ import {
   type RegistryStatus,
 } from "../../domain/registry-record.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
+import { observedSource } from "../../domain/registry-observation.js";
 import {
   coversJurisdiction,
-  outOfJurisdictionWarning,
+  parseCrossRegisterIdentifier,
   rejectedIdentifierWarning,
 } from "../../validation/identifier-scope.js";
 import { parseAfirevJson } from "./afirev.parser.js";
@@ -82,7 +83,8 @@ export class AfirevConnector implements RegistryConnector<AfirevRecord> {
 
     for (const sourceRecord of input.records) {
       const prefix = sourceRecord.prefixId.trim();
-      if (!/^[A-Za-z]{2}[A-Za-z0-9]{3}$/.test(prefix)) {
+      const parsed = parseAfirevPrefix(input.source, prefix);
+      if (!parsed) {
         warnings.push(
           rejectedIdentifierWarning(input.source, {
             codePrefix: "AFIREV",
@@ -95,20 +97,8 @@ export class AfirevConnector implements RegistryConnector<AfirevRecord> {
         );
         continue;
       }
-      const countryCode = prefix.slice(0, 2).toUpperCase();
-      const partyId = prefix.slice(2).toUpperCase();
-      // The register may list prefixes it does not administer. Publishing them
-      // would attribute another country's identifier to this source.
-      if (!coversJurisdiction(input.source, countryCode)) {
-        warnings.push(
-          outOfJurisdictionWarning(
-            input.source,
-            { codePrefix: "AFIREV", subject: "AFIREV prefix", value: prefix },
-            countryCode,
-          ),
-        );
-        continue;
-      }
+      const { countryCode, partyId } = parsed;
+      const { official, observation } = observedSource(input.source, countryCode);
       const roles = TYPE_TO_ROLES[sourceRecord.type] ?? ["OTHER"];
       if (!TYPE_TO_ROLES[sourceRecord.type]) {
         warnings.push({
@@ -144,13 +134,14 @@ export class AfirevConnector implements RegistryConnector<AfirevRecord> {
           },
           source: {
             registryId: input.source.id,
-            official: isAuthoritative(input.source),
+            official,
             sourceRecordId: prefix,
             sourceUrl: input.source.authority.homepageUrl,
             sourceValue: sourceRecord.prefixId,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,
             retrievedAt: input.retrievedAt,
+            observation,
           },
           metadata: {
             afirevType: sourceRecord.type,
@@ -163,6 +154,19 @@ export class AfirevConnector implements RegistryConnector<AfirevRecord> {
     }
     return { records, warnings, errors };
   }
+}
+
+/**
+ * The register may list prefixes it does not administer: those are
+ * cross-register listings, and a prefix naming no country stays malformed.
+ */
+function parseAfirevPrefix(source: SourceDefinition, prefix: string) {
+  if (!/^[A-Za-z]{2}[A-Za-z0-9]{3}$/.test(prefix)) return null;
+  const countryCode = prefix.slice(0, 2).toUpperCase();
+  if (!coversJurisdiction(source, countryCode)) {
+    return parseCrossRegisterIdentifier(source, prefix);
+  }
+  return { countryCode, partyId: prefix.slice(2).toUpperCase() };
 }
 
 function clean(value: string | null | undefined) {

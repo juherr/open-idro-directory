@@ -18,6 +18,28 @@ export const registryStatusSchema = z.enum([
 ]);
 export type RegistryStatus = z.infer<typeof registryStatusSchema>;
 
+/**
+ * How a register came to publish an identifier. `ASSIGNMENT`: the identifier
+ * belongs to a country the register covers. `CROSS_REGISTER_LISTING`: the
+ * register lists another country's identifier, which neither makes it the
+ * issuer nor says anything about the identifier's standing with its issuer.
+ */
+export const observationKindSchema = z.enum(["ASSIGNMENT", "CROSS_REGISTER_LISTING"]);
+export type ObservationKind = z.infer<typeof observationKindSchema>;
+
+/**
+ * `observingJurisdiction` is the country whose register published the record:
+ * the record's own `countryCode` for an `ASSIGNMENT`; for a
+ * `CROSS_REGISTER_LISTING`, the source's jurisdiction when it declares exactly
+ * one, and `null` when it covers several (a Benelux register cannot say which
+ * of its countries observed the identifier).
+ */
+export const registryObservationSchema = z.object({
+  kind: observationKindSchema,
+  observingJurisdiction: emi3CountryCodeSchema.nullable(),
+});
+export type RegistryObservation = z.infer<typeof registryObservationSchema>;
+
 export const normalizedRegistryRecordSchema = z.object({
   key: z.string().min(1),
   countryCode: emi3CountryCodeSchema,
@@ -39,6 +61,9 @@ export const normalizedRegistryRecordSchema = z.object({
     firstSeenAt: z.iso.datetime(),
     lastSeenAt: z.iso.datetime(),
     retrievedAt: z.iso.datetime(),
+    // Optional so that datasets published before the block existed stay
+    // valid; read it through `observationOf`, which derives it when absent.
+    observation: registryObservationSchema.optional(),
   }),
   metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])),
 });
@@ -64,9 +89,10 @@ export interface RejectedSourceRowDetection {
 }
 
 /**
- * A well-formed identifier a register publishes for a country it does not
- * administer. Kept so that the registers concerned can be told about it, and so
- * that a correction -- or the lack of one -- stays visible across builds.
+ * A well-formed identifier a register published for a country it does not
+ * administer, as builds recorded it before such identifiers were published as
+ * cross-register listings. No build adds one any more; the entries already in
+ * `data/registry-invalid.json` are kept readable.
  */
 export interface OutOfJurisdictionDetection {
   registryId: string;

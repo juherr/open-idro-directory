@@ -176,27 +176,40 @@ describe("Swedish Energy Agency parser", () => {
     expect(result.warnings[0]?.rejectedIdentifier).toBe("SEWXYZ");
   });
 
-  it("warns and skips non-Swedish identifiers", async () => {
+  // #91 reference scenario 3: Sweden publishes the OCPI parties active in
+  // Sweden, so a Danish identifier is observed there, not assigned.
+  it("publishes a foreign identifier as a listing observed in Sweden", async () => {
     const source = await loadSourceDefinition("se-energimyndigheten");
     const connector = new EnergimyndighetenConnector();
     const result = await connector.normalize({
       source,
       retrievedAt: "2026-06-15T00:00:00.000Z",
       records: [
-        {
-          sourceValue: "SR*ABC",
-          organizationName: "Example Operator",
-          role: "CPO",
-          sourceUrl: CPO_URL,
-        },
+        { sourceValue: "SE*AIM", organizationName: "Aimo Charge", role: "CPO", sourceUrl: CPO_URL },
+        { sourceValue: "DK*MON", organizationName: "Monta", role: "CPO", sourceUrl: CPO_URL },
+        { sourceValue: "ZZ*ABC", organizationName: "Nobody", role: "CPO", sourceUrl: CPO_URL },
       ],
     });
 
-    expect(result.records).toHaveLength(0);
-    // Well formed, but another country's register administers it: reporting it
-    // as unreadable would send a maintainer after a parser bug that is not there.
-    expect(result.warnings[0]?.code).toBe("ENERGIMYNDIGHETEN_OUT_OF_JURISDICTION_IDENTIFIER");
-    expect(result.warnings[0]?.rejectedIdentifier).toBeUndefined();
+    expect(result.records.map((record) => record.key)).toEqual([
+      "se-energimyndigheten:SE:AIM:CPO",
+      "se-energimyndigheten:DK:MON:CPO",
+    ]);
+    expect(result.records[0]?.source.observation).toEqual({
+      kind: "ASSIGNMENT",
+      observingJurisdiction: "SE",
+    });
+    expect(result.records[1]).toMatchObject({
+      countryCode: "DK",
+      partyId: "MON",
+      source: {
+        official: false,
+        observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "SE" },
+      },
+    });
+    expect(result.warnings.map((warning) => warning.code)).toEqual([
+      "ENERGIMYNDIGHETEN_MALFORMED_IDENTIFIER",
+    ]);
   });
 });
 

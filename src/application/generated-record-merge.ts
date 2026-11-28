@@ -1,3 +1,4 @@
+import { observationOf } from "../domain/registry-observation.js";
 import type { NormalizedRegistryRecord } from "../domain/registry-record.js";
 import { isAuthoritative, type SourceDefinition } from "../domain/source-definition.js";
 
@@ -38,6 +39,9 @@ export function mergeGeneratedRecords(
 
   for (const previousRecord of previous) {
     if (currentKeys.has(previousRecord.key)) continue;
+    // The register never assigned a listing, so one it stopped listing is
+    // gone, not missing from the official source.
+    if (observationOf(previousRecord, source).kind === "CROSS_REGISTER_LISTING") continue;
 
     records.push({
       ...previousRecord,

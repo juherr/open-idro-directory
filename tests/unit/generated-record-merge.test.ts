@@ -121,7 +121,61 @@ describe("generated record merge", () => {
 
     expect(records[0]?.status).toBe("RESERVED");
   });
+
+  it("drops a cross-register listing that vanished instead of tombstoning it", () => {
+    const assignment = sampleRecord({ partyId: "2BB" });
+    const listing = listingRecord({
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "PL" },
+    });
+
+    const records = mergeGeneratedRecords(plEipaSource(), [assignment, listing], [], vanishedAt);
+
+    // EIPA never assigned NL*TNM: calling it missing from the official
+    // source would claim a removal the issuing register never made.
+    expect(records.map((record) => [record.key, record.status])).toEqual([
+      ["pl-eipa:PL:2BB:CPO", "INACTIVE"],
+    ]);
+    expect(records[0]?.metadata.inactiveReason).toBe("missing-from-official-source");
+  });
+
+  it("derives the observation of a listing published before the block existed", () => {
+    const legacyListing = listingRecord();
+
+    expect(mergeGeneratedRecords(plEipaSource(), [legacyListing], [], vanishedAt)).toEqual([]);
+  });
+
+  it("keeps the current run's observation block for a record still listed", () => {
+    const previous = sampleRecord();
+    const current = {
+      ...sampleRecord(),
+      source: {
+        ...sampleRecord().source,
+        observation: { kind: "ASSIGNMENT" as const, observingJurisdiction: "PL" },
+      },
+    };
+
+    const records = mergeGeneratedRecords(plEipaSource(), [previous], [current], vanishedAt);
+
+    expect(records[0]?.source.observation).toEqual({
+      kind: "ASSIGNMENT",
+      observingJurisdiction: "PL",
+    });
+  });
 });
+
+function listingRecord(
+  extra: Partial<NormalizedRegistryRecord["source"]> = {},
+): NormalizedRegistryRecord {
+  const base = sampleRecord();
+  return {
+    ...base,
+    key: "pl-eipa:NL:TNM:CPO",
+    countryCode: "NL",
+    partyId: "TNM",
+    eMobilityId: "NLTNM",
+    source: { ...base.source, official: false, sourceValue: "NL*TNM", ...extra },
+  };
+}
 
 function sampleRecord(
   overrides: Partial<NormalizedRegistryRecord> & {

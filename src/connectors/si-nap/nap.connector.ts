@@ -1,4 +1,3 @@
-import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -15,7 +14,11 @@ import {
 } from "../../domain/registry-record.js";
 import { getBinary, sha256 } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
+import { observedSource } from "../../domain/registry-observation.js";
+import {
+  parseCrossRegisterIdentifier,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { parseNapSnapshot } from "./nap.parser.js";
 import type { NapRow } from "./nap.types.js";
 
@@ -87,7 +90,9 @@ export class NapConnector implements RegistryConnector<NapRow> {
       ];
 
       for (const identifier of identifiers) {
-        const parsed = parseNapIdentifier(identifier.sourceValue);
+        const parsed =
+          parseNapIdentifier(identifier.sourceValue) ??
+          parseCrossRegisterIdentifier(input.source, identifier.sourceValue);
         if (!parsed) {
           warnings.push(
             rejectedIdentifierWarning(input.source, {
@@ -108,6 +113,8 @@ export class NapConnector implements RegistryConnector<NapRow> {
         if (seen.has(key)) continue;
         seen.add(key);
 
+        const { official, observation } = observedSource(input.source, parsed.countryCode);
+
         records.push({
           key,
           countryCode: parsed.countryCode,
@@ -122,13 +129,14 @@ export class NapConnector implements RegistryConnector<NapRow> {
           },
           source: {
             registryId: input.source.id,
-            official: isAuthoritative(input.source),
+            official,
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
             sourceUrl: input.source.registry.url,
             sourceValue: identifier.sourceValue,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,
             retrievedAt: input.retrievedAt,
+            observation,
           },
           metadata: {
             napAddress: sourceRecord.address,

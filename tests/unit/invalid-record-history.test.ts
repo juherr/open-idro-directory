@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  currentDetections,
   mergeInvalidRecordHistory,
   type InvalidDetections,
 } from "../../src/application/invalid-record-history.js";
@@ -146,32 +147,42 @@ describe("invalid record history", () => {
 
     expect(history.rows).toHaveLength(1);
   });
-  it("keeps an out-of-jurisdiction observation across runs", () => {
-    const observation = {
-      registryId: "pl-eipa",
-      code: "EIPA_OUT_OF_JURISDICTION_IDENTIFIER",
-      sourceValue: "NL*TNM",
-      countryCode: "NL",
-      message: "EIPA identifier NL*TNM belongs to NL, outside ...",
+  it("carries the out-of-jurisdiction entries of earlier runs unchanged", () => {
+    // Published before foreign identifiers became cross-register listings: no
+    // build adds to this bucket any more, but its entries stay readable.
+    const previous = {
+      generatedAt: FIRST_RUN,
+      records: [],
+      rows: [],
+      outOfJurisdiction: [
+        {
+          registryId: "pl-eipa",
+          code: "EIPA_OUT_OF_JURISDICTION_IDENTIFIER",
+          sourceValue: "NL*TNM",
+          countryCode: "NL",
+          message: "EIPA identifier NL*TNM belongs to NL, outside ...",
+          firstDetectedAt: FIRST_RUN,
+          lastDetectedAt: FIRST_RUN,
+          supersededBy: null,
+        },
+      ],
     };
 
-    const first = mergeInvalidRecordHistory(
-      null,
-      detections({ outOfJurisdiction: [observation] }),
-      FIRST_RUN,
-    );
-    // The register stopped publishing it, and the entry stays on record.
-    const second = mergeInvalidRecordHistory(first, detections({}), SECOND_RUN);
+    const next = mergeInvalidRecordHistory(previous, detections({}), SECOND_RUN);
 
-    expect(first.outOfJurisdiction).toEqual([
-      { ...observation, firstDetectedAt: FIRST_RUN, lastDetectedAt: FIRST_RUN, supersededBy: null },
-    ]);
-    expect(second.outOfJurisdiction[0]?.lastDetectedAt).toBe(FIRST_RUN);
+    expect(next.outOfJurisdiction).toEqual(previous.outOfJurisdiction);
+    expect(currentDetections(next).outOfJurisdiction).toEqual([]);
+  });
+
+  it("starts an empty out-of-jurisdiction bucket for a file that predates it", () => {
+    expect(mergeInvalidRecordHistory(null, detections({}), FIRST_RUN).outOfJurisdiction).toEqual(
+      [],
+    );
   });
 });
 
 function detections(partial: Partial<InvalidDetections> = {}): InvalidDetections {
-  return { records: [], rows: [], outOfJurisdiction: [], ...partial };
+  return { records: [], rows: [], ...partial };
 }
 
 function detection(partyId: string) {

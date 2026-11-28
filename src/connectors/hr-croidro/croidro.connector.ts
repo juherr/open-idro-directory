@@ -1,4 +1,3 @@
-import { isAuthoritative } from "../../domain/source-definition.js";
 import type {
   FetchContext,
   FetchResult,
@@ -15,7 +14,11 @@ import {
 } from "../../domain/registry-record.js";
 import { getText } from "../../infrastructure/http/http-client.js";
 import type { ValidationIssue } from "../../domain/validation-issue.js";
-import { rejectedIdentifierWarning } from "../../validation/identifier-scope.js";
+import { observedSource } from "../../domain/registry-observation.js";
+import {
+  parseCrossRegisterIdentifier,
+  rejectedIdentifierWarning,
+} from "../../validation/identifier-scope.js";
 import { parseCroIdroHtml } from "./croidro.parser.js";
 import type { CroIdroHtmlRow } from "./croidro.types.js";
 
@@ -91,7 +94,9 @@ export class CroIdroConnector implements RegistryConnector<CroIdroHtmlRow> {
       ];
 
       for (const identifier of identifiers) {
-        const parsed = parseCroIdroIdentifier(identifier.sourceValue);
+        const parsed =
+          parseCroIdroIdentifier(identifier.sourceValue) ??
+          parseCrossRegisterIdentifier(input.source, identifier.sourceValue);
         if (!parsed) {
           warnings.push(
             rejectedIdentifierWarning(input.source, {
@@ -120,6 +125,8 @@ export class CroIdroConnector implements RegistryConnector<CroIdroHtmlRow> {
         }
         seen.add(key);
 
+        const { official, observation } = observedSource(input.source, parsed.countryCode);
+
         records.push({
           key,
           countryCode: parsed.countryCode,
@@ -134,13 +141,14 @@ export class CroIdroConnector implements RegistryConnector<CroIdroHtmlRow> {
           },
           source: {
             registryId: input.source.id,
-            official: isAuthoritative(input.source),
+            official,
             sourceRecordId: `${parsed.countryCode}${parsed.partyId}`,
             sourceUrl: input.source.registry.url,
             sourceValue: identifier.sourceValue,
             firstSeenAt: input.retrievedAt,
             lastSeenAt: input.retrievedAt,
             retrievedAt: input.retrievedAt,
+            observation,
           },
           metadata: {
             croIdroCompanyName: organizationName,

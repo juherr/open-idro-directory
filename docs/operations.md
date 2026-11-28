@@ -44,27 +44,39 @@ keep their previous retrieval timestamps and grow older with every run.
 ## Reading The Change Summary
 
 `build/change-summary.md` reports, per source, what the run changed and what it
-refused: `Unreadable values` counts the raw values no connector could read, and
-`Out-of-jurisdiction identifiers` counts the well-formed identifiers the register
-publishes for a country it does not administer. Both are zero for a healthy
-source. The values themselves are listed in the per-source details block; the
-pull-request body keeps the counts only, so it stays within GitHub's size limit.
+found: `Unreadable values` counts the raw values no connector could read, and
+`Cross-register listings` counts the identifiers the register publishes for a
+country it does not cover, which are published as listings. Unreadable values
+are zero for a healthy source; listings are a normal part of some registers. The
+values themselves are listed in the per-source details block; the pull-request
+body keeps the counts only, so it stays within GitHub's size limit.
 
 A refused value never becomes a record, so nothing in the added/updated/removed
 counts would otherwise mention it -- a register could start publishing unreadable
-rows and the summary would report no change at all.
+rows and the summary would report no change at all. Listings are records, but
+the diff lines only show the ones that changed.
 
-## Out-Of-Jurisdiction Findings
+## Cross-Register Listings
 
-`data/reports/out-of-jurisdiction.json` lists the identifiers each register
-publishes for a country it does not administer, grouped by the register to
-contact. Every group carries the appointed organisation and its landing page,
-and every identifier names the registry appointed for that country, so a finding
-can be verified from both ends before it is raised.
+`data/reports/out-of-jurisdiction.json` lists the cross-register listings the
+published records hold: the identifiers each register publishes for a country
+it does not cover, grouped by that register. Every group carries the
+organisation behind the register and its landing page, and every identifier
+names the registry appointed for its country, so a listing can be compared from
+both ends. `firstDetectedAt` and `lastDetectedAt` are the earliest
+`source.firstSeenAt` and the latest `source.lastSeenAt` of the identifier's
+records in that register; an identifier listed under several roles appears
+once.
 
-The report describes the current run only. A register that corrects its export
-drops out of it, while `data/registry-invalid.json` keeps the entry with an
-older `lastDetectedAt` -- which is how a correction stays visible.
+The report follows the published records. A register that stops listing an
+identifier drops it from `data/registry.*` and from the report. Only a full
+build writes the report; a run restricted with `--source` leaves it as it was.
+Entries recorded before foreign identifiers became listings stay in the
+`outOfJurisdiction` bucket of `data/registry-invalid.json`, which no build adds
+to any more.
+
+A listing is not a finding against the identifier: the observing register does
+not issue it, and the report says nothing about its standing with its issuer.
 
 When raising one of these with a registry operator, describe the identifier and
 the registers concerned, not the quality of the organisation's work.

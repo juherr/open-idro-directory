@@ -49,3 +49,39 @@ describe("TII parser", () => {
     ]);
   });
 });
+
+describe("TII cross-register listings", () => {
+  it("publishes a foreign identifier as a listing observed in Ireland", async () => {
+    const source = await loadSourceDefinition("ie-tii");
+    const result = await new TiiConnector().normalize({
+      source,
+      retrievedAt: "2026-06-15T00:00:00.000Z",
+      records: [tiiRow("IEBLK"), tiiRow("GBEVR")],
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.records.map((record) => record.key)).toEqual([
+      "ie-tii:IE:BLK:CPO",
+      "ie-tii:GB:EVR:CPO",
+    ]);
+    expect(result.records[0]?.source).toMatchObject({
+      official: true,
+      observation: { kind: "ASSIGNMENT", observingJurisdiction: "IE" },
+    });
+    expect(result.records[1]?.source).toMatchObject({
+      official: false,
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "IE" },
+    });
+  });
+});
+
+function tiiRow(idroIssuedPartyId: string) {
+  return {
+    legalEntityName: "Example Ltd",
+    tradingName: "Example",
+    idroIssuedPartyId,
+    ocpiPartyIds: [],
+    isCpo: true,
+    isEmsp: false,
+  };
+}

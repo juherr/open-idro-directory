@@ -1,39 +1,28 @@
 import { describe, expect, it } from "vitest";
-import { BeneluxIdroConnector } from "../../src/connectors/benelux-idro/benelux.connector.js";
 import { EvroamConnector } from "../../src/connectors/gb-evroam/evroam.connector.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
 import {
   coversJurisdiction,
-  outOfJurisdictionWarning,
   rejectedIdentifierWarning,
 } from "../../src/validation/identifier-scope.js";
-import {
-  toOutOfJurisdictionRows,
-  toRejectedSourceRows,
-} from "../../src/validation/identifier-validator.js";
 
 const REJECTION = { codePrefix: "EIPA", subject: "EIPA identifier" };
 
 describe("identifier scope", () => {
   it("reads the covered jurisdictions from the source descriptor", async () => {
-    // EV Roam publishes the Irish identifiers it cross-registers, which is why
-    // its descriptor declares both.
+    // EV Roam's authority spans GB and IE, but its register only assigns GB
+    // identifiers: TII is the Irish registrar.
     const evroam = await loadSourceDefinition("gb-evroam");
+    const tii = await loadSourceDefinition("ie-tii");
 
-    expect(coversJurisdiction(evroam, "IE")).toBe(true);
-    expect(coversJurisdiction(evroam, "ie")).toBe(true);
-    expect(coversJurisdiction(evroam, "FR")).toBe(false);
+    expect(coversJurisdiction(evroam, "GB")).toBe(true);
+    expect(coversJurisdiction(evroam, "gb")).toBe(true);
+    expect(coversJurisdiction(evroam, "IE")).toBe(false);
+    expect(coversJurisdiction(tii, "ie")).toBe(true);
   });
 
-  it("separates an identifier of another country from an unreadable one", async () => {
+  it("reports a value the connector could not read as malformed", async () => {
     const source = await loadSourceDefinition("pl-eipa");
-
-    const foreign = rejectedIdentifierWarning(source, { ...REJECTION, value: "NL*TNM" });
-    expect(foreign.code).toBe("EIPA_OUT_OF_JURISDICTION_IDENTIFIER");
-    expect(foreign.message).toContain("belongs to NL");
-    // Reported separately, so the rejected-row report keeps describing rows the
-    // pipeline genuinely could not read.
-    expect(foreign.rejectedIdentifier).toBeUndefined();
 
     const malformed = rejectedIdentifierWarning(source, { ...REJECTION, value: "37" });
     expect(malformed.code).toBe("EIPA_MALFORMED_IDENTIFIER");
@@ -89,58 +78,10 @@ describe("identifier scope", () => {
 
     expect(warning.rejectedIdentifier).toBe("raw-prefix-id");
   });
-
-  it("keeps an out-of-jurisdiction identifier with the country it belongs to", async () => {
-    const source = await loadSourceDefinition("pl-eipa");
-    const warnings = [
-      rejectedIdentifierWarning(source, { ...REJECTION, value: "NL*TNM" }),
-      rejectedIdentifierWarning(source, { ...REJECTION, value: "37" }),
-    ];
-
-    // Filterable by register and by country, which is what turns the finding
-    // into something an operator can act on.
-    expect(toOutOfJurisdictionRows("pl-eipa", warnings)).toEqual([
-      {
-        registryId: "pl-eipa",
-        code: "EIPA_OUT_OF_JURISDICTION_IDENTIFIER",
-        sourceValue: "NL*TNM",
-        countryCode: "NL",
-        message: warnings[0]?.message,
-      },
-    ]);
-  });
-
-  it("excludes out-of-jurisdiction warnings from the rejected rows", async () => {
-    const source = await loadSourceDefinition("pl-eipa");
-    const warnings = [
-      rejectedIdentifierWarning(source, { ...REJECTION, value: "NL*TNM" }),
-      rejectedIdentifierWarning(source, { ...REJECTION, value: "37" }),
-      outOfJurisdictionWarning(source, { ...REJECTION, value: "DE-QWC" }, "DE"),
-    ];
-
-    expect(toRejectedSourceRows("pl-eipa", warnings).map((row) => row.sourceValue)).toEqual(["37"]);
-  });
 });
 
-describe("connector jurisdiction guard", () => {
-  it("does not publish an identifier the register does not administer", async () => {
-    const source = await loadSourceDefinition("benelux-idro");
-    const connector = new BeneluxIdroConnector();
-
-    const result = await connector.normalize({
-      source,
-      retrievedAt: "2026-06-15T00:00:00.000Z",
-      records: [
-        { companyName: "Example Operator", cpoIds: ["FR*XYZ"], emspIds: [], website: null },
-      ],
-    });
-
-    expect(result.records).toHaveLength(0);
-    expect(result.warnings[0]?.code).toBe("BENELUX_OUT_OF_JURISDICTION_IDENTIFIER");
-    expect(result.warnings[0]?.message).toContain("BE, NL, LU");
-  });
-
-  it("publishes the countries the register declares, such as EV Roam's Irish entries", async () => {
+describe("connector jurisdiction scope", () => {
+  it("publishes EV Roam's Irish entries as listings observed in GB", async () => {
     const source = await loadSourceDefinition("gb-evroam");
     const connector = new EvroamConnector();
 
@@ -151,6 +92,10 @@ describe("connector jurisdiction guard", () => {
     });
 
     expect(result.records.map((record) => record.countryCode)).toEqual(["IE"]);
+    expect(result.records[0]?.source).toMatchObject({
+      official: false,
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "GB" },
+    });
     expect(result.warnings).toHaveLength(0);
   });
 });

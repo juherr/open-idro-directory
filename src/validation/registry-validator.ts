@@ -3,6 +3,7 @@ import {
   type NormalizedRegistryRecord,
 } from "../domain/registry-record.js";
 import { sourceJurisdictions, type SourceDefinition } from "../domain/source-definition.js";
+import { observationScope } from "../domain/registry-observation.js";
 import type { ValidationIssue } from "../domain/validation-issue.js";
 import { validateRecord } from "./identifier-validator.js";
 
@@ -36,12 +37,13 @@ export function validateRegistry(
       keys.set(record.key, record);
     }
     const source = sourceById.get(record.source.registryId);
-    if (source && !sourceJurisdictions(source).includes(record.countryCode)) {
+    const mismatch = source && jurisdictionMismatch(record, source);
+    if (mismatch) {
       issues.push({
         severity: "error",
         code: "JURISDICTION_MISMATCH",
         recordKey: record.key,
-        message: `${record.countryCode} is not declared for ${source.id}`,
+        message: mismatch,
       });
     }
   }
@@ -60,4 +62,31 @@ export function validateRegistry(
     activeById.set(key, record);
   }
   return issues;
+}
+
+/**
+ * A register may list another country's identifier, as a non-official
+ * cross-register listing. It may not claim it as official, nor carry an
+ * observation block that contradicts its jurisdictions, in its kind or in its
+ * `observingJurisdiction` (see `observationScope`). Records without a block
+ * predate it: only their `official` flag is checked.
+ */
+function jurisdictionMismatch(record: NormalizedRegistryRecord, source: SourceDefinition) {
+  const covered = sourceJurisdictions(source).includes(record.countryCode);
+  const declared = record.source.observation?.kind;
+  if (!covered && record.source.official) {
+    return `${record.countryCode} is not declared for ${source.id}, so its record cannot be official`;
+  }
+  if (!covered && declared === "ASSIGNMENT") {
+    return `${record.countryCode} is not declared for ${source.id}, so it cannot be an assignment`;
+  }
+  if (covered && declared === "CROSS_REGISTER_LISTING") {
+    return `${record.countryCode} is declared for ${source.id}, so it cannot be a cross-register listing`;
+  }
+  const observing = record.source.observation?.observingJurisdiction;
+  const expected = observationScope(source, record.countryCode).observingJurisdiction;
+  if (observing !== undefined && observing !== expected) {
+    return `${source.id} observes ${record.countryCode} records from ${expected ?? "no single country"}, not from observingJurisdiction ${observing}`;
+  }
+  return null;
 }

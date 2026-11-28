@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
+import { applyOfficialStatusPolicy } from "../../src/application/official-status-policy.js";
 import { EvroamConnector } from "../../src/connectors/gb-evroam/evroam.connector.js";
 import { parseEvroamRegister } from "../../src/connectors/gb-evroam/evroam.parser.js";
 import { TiiConnector } from "../../src/connectors/ie-tii/tii.connector.js";
@@ -60,6 +61,8 @@ describe("EV Roam parser", () => {
       false,
       true,
     ]);
+    // EV Roam only vouches for the status of what it assigns: a listing's
+    // status is the issuing register's to say.
     expect(result.records.map((record) => record.status)).toEqual([
       "ACTIVE",
       "ACTIVE",
@@ -67,6 +70,49 @@ describe("EV Roam parser", () => {
       "UNKNOWN",
       "ACTIVE",
     ]);
+    // The Irish listing is what the published dataset already holds, plus
+    // the observation block.
+    expect(result.records[2]).toEqual({
+      key: "gb-evroam:IE:505:CPO",
+      countryCode: "IE",
+      partyId: "505",
+      eMobilityId: "IE505",
+      role: "CPO",
+      status: "UNKNOWN",
+      organization: {
+        name: "50FIVE CHARGING SOLUTIONS UK LTD",
+        legalName: "50FIVE CHARGING SOLUTIONS UK LTD",
+        website: "https://www.50five.com",
+      },
+      source: {
+        registryId: "gb-evroam",
+        official: false,
+        sourceRecordId: "IE505",
+        sourceUrl: source.registry.url,
+        sourceValue: "IE*505",
+        firstSeenAt: "2026-06-15T00:00:00.000Z",
+        lastSeenAt: "2026-06-15T00:00:00.000Z",
+        retrievedAt: "2026-06-15T00:00:00.000Z",
+        observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "GB" },
+      },
+      metadata: {
+        evroamField: "operatorIdIE",
+        evroamTitle: "50FIVE CHARGING SOLUTIONS UK LTD",
+        evroamWebsite: "https://www.50five.com",
+        evroamAuthority: "cross-register",
+      },
+    });
+    expect(result.records[0]?.source.observation).toEqual({
+      kind: "ASSIGNMENT",
+      observingJurisdiction: "GB",
+    });
+    expect(result.records[2]).toMatchObject({
+      countryCode: "IE",
+      source: {
+        official: false,
+        observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "GB" },
+      },
+    });
     expect(result.records[0]).toMatchObject({
       countryCode: "GB",
       partyId: "505",
@@ -141,12 +187,33 @@ describe("EV Roam parser", () => {
       "gb-evroam",
     ]);
     expect(records.map((record) => record.source.official)).toEqual([true, true, false, false]);
-    expect(records.map((record) => record.status)).toEqual([
+    const published = applyOfficialStatusPolicy(records);
+    expect(published.map((record) => record.status)).toEqual([
       "ACTIVE",
       "ACTIVE",
       "UNKNOWN",
       "UNKNOWN",
     ]);
-    expect(validateRegistry(records, [tiiSource, evroamSource])).toHaveLength(0);
+    expect(validateRegistry(published, [tiiSource, evroamSource])).toHaveLength(0);
+  });
+});
+
+describe("EV Roam foreign identifiers", () => {
+  it("publishes a foreign identifier in a GB field as a listing observed in GB", async () => {
+    const source = await loadSourceDefinition("gb-evroam");
+    const result = await new EvroamConnector().normalize({
+      source,
+      retrievedAt: "2026-06-15T00:00:00.000Z",
+      records: [{ title: "Example Operator", operatorId: "FR*ABC", website: null }],
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.records[0]).toMatchObject({
+      key: "gb-evroam:FR:ABC:CPO",
+      source: {
+        official: false,
+        observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "GB" },
+      },
+    });
   });
 });

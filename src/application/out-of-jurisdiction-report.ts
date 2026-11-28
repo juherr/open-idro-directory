@@ -1,17 +1,19 @@
-import type { InvalidRegistryHistory } from "../domain/registry-record.js";
+import type { NormalizedRegistryRecord } from "../domain/registry-record.js";
 import type { AuthorityDefinition } from "../domain/authority-definition.js";
+import { crossRegisterListings } from "../domain/registry-observation.js";
 import {
   isAuthoritative,
   sourceJurisdictions,
   type SourceDefinition,
 } from "../domain/source-definition.js";
 import { coversJurisdiction } from "../validation/identifier-scope.js";
-import { currentDetections } from "./invalid-record-history.js";
 
 interface OutOfJurisdictionFinding {
   sourceValue: string;
   countryCode: string;
+  /** Earliest `source.firstSeenAt` of the identifier's records in that register. */
   firstDetectedAt: string;
+  /** Latest `source.lastSeenAt` of the identifier's records in that register. */
   lastDetectedAt: string;
   /** The register appointed for that country, when this directory tracks one. */
   administeredBy: { registryId: string; authority: AuthorityDefinition } | null;
@@ -33,45 +35,45 @@ interface OutOfJurisdictionReport {
 }
 
 /**
- * Turns the out-of-jurisdiction findings into something an editor can act on:
- * grouped by the register that publishes them, with the organisation to write
- * to and, for each identifier, the register appointed for that country.
+ * Lists the cross-register listings the published records hold: identifiers a
+ * register publishes for a country it does not cover. They are grouped by the
+ * register that lists them, with the organisation behind it and, for each
+ * identifier, the register appointed for its country.
  *
- * Only what the current run still sees is listed. A register that has corrected
- * its export drops out of the report while staying in the history.
+ * A listing says nothing about the identifier's standing with its issuer: the
+ * report is there so the register can be compared with the appointed one, not
+ * to flag the identifier.
  */
 export function buildOutOfJurisdictionReport(
-  invalid: InvalidRegistryHistory,
+  records: NormalizedRegistryRecord[],
   sources: SourceDefinition[],
   generatedAt: string,
 ): OutOfJurisdictionReport {
   const sourceById = new Map(sources.map((source) => [source.id, source]));
-  const current = currentDetections(invalid).outOfJurisdiction.filter((entry) =>
-    sourceById.has(entry.registryId),
-  );
-  const registers = [...Map.groupBy(current, (entry) => entry.registryId)]
-    .map(([registryId, entries]) => {
-      // Present because `current` kept only the entries whose register is known.
+  const listings = crossRegisterListings(records, sources);
+  // `crossRegisterListings` sorts by register then value, which both orders
+  // survive.
+  const registers = [...Map.groupBy(listings, (listing) => listing.registryId)].map(
+    ([registryId, entries]) => {
+      // Present because `crossRegisterListings` keeps only described registers.
       const source = sourceById.get(registryId) as SourceDefinition;
       return {
         registryId,
         registryName: source.name,
         jurisdictions: sourceJurisdictions(source),
         authority: source.authority,
-        identifiers: entries
-          .map((entry) => ({
-            sourceValue: entry.sourceValue,
-            countryCode: entry.countryCode,
-            firstDetectedAt: entry.firstDetectedAt,
-            lastDetectedAt: entry.lastDetectedAt,
-            administeredBy: appointedRegisterFor(entry.countryCode, sources),
-          }))
-          .sort((left, right) => left.sourceValue.localeCompare(right.sourceValue)),
+        identifiers: entries.map((entry) => ({
+          sourceValue: entry.sourceValue,
+          countryCode: entry.countryCode,
+          firstDetectedAt: entry.firstSeenAt,
+          lastDetectedAt: entry.lastSeenAt,
+          administeredBy: appointedRegisterFor(entry.countryCode, sources),
+        })),
       };
-    })
-    .sort((left, right) => left.registryId.localeCompare(right.registryId));
+    },
+  );
 
-  return { generatedAt, totalIdentifiers: current.length, registers };
+  return { generatedAt, totalIdentifiers: listings.length, registers };
 }
 
 function appointedRegisterFor(countryCode: string, sources: SourceDefinition[]) {

@@ -95,3 +95,28 @@ describe("Danish Road Traffic Authority parser", () => {
     expect(result.warnings[0]?.code).toBe("FSTYR_MALFORMED_IDENTIFIER");
   });
 });
+
+describe("Danish Road Traffic Authority cross-register listings", () => {
+  it("publishes a foreign identifier as a listing observed in Denmark", async () => {
+    const source = await loadSourceDefinition("dk-fstyr");
+    const result = await new FstyrConnector().normalize({
+      source,
+      retrievedAt: "2026-06-15T00:00:00.000Z",
+      records: [{ cvr: null, companyName: "Example", cpoIds: ["DK*MON", "SE*VGC"], emspIds: [] }],
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.records.map((record) => record.key)).toEqual([
+      "dk-fstyr:DK:MON:CPO",
+      "dk-fstyr:SE:VGC:CPO",
+    ]);
+    expect(result.records[0]?.source).toMatchObject({
+      official: true,
+      observation: { kind: "ASSIGNMENT", observingJurisdiction: "DK" },
+    });
+    expect(result.records[1]?.source).toMatchObject({
+      official: false,
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "DK" },
+    });
+  });
+});

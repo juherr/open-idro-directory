@@ -1,5 +1,7 @@
 import type {
   AuthorityLevel,
+  IssuingConfirmation,
+  ObservationKind,
   ObservationType,
   RegistryRole,
   RegistryStatus,
@@ -91,6 +93,10 @@ export interface PartyRoleRow {
   highest_authority_level: AuthorityLevel;
   observation_count: number;
   has_conflict: number;
+  /** NULL when no record of the role carries the issuing block. */
+  issuing_confirmation: IssuingConfirmation | null;
+  /** Stable JSON of `issuing.confirmedBy`; NULL with `issuing_confirmation`. */
+  issuing_confirmed_by_json: string | null;
   dataset_release_id: string;
 }
 
@@ -117,6 +123,9 @@ export interface ObservationRow {
   retrieved_at: string;
   metadata_json: string;
   raw_record_checksum: string | null;
+  /** NULL only for a record of a register `sources.json` does not describe. */
+  observation_kind: ObservationKind | null;
+  observing_jurisdiction: string | null;
   dataset_release_id: string;
 }
 

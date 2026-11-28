@@ -1,6 +1,14 @@
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
+import { resolve } from "node:path";
+import { DatabaseSync } from "node:sqlite";
 import { describe, expect, it } from "vitest";
-import { buildImportBundle, toOfficialObservations, writeImportBundle } from "./bundle.js";
+import {
+  buildImportBundle,
+  toImportSql,
+  toObservations,
+  toRegistryRows,
+  writeImportBundle,
+} from "./bundle.js";
 
 describe("Cloudflare import bundle", () => {
   it("builds deterministic active-release rows from generated data", async () => {
@@ -88,8 +96,8 @@ describe("Cloudflare import bundle", () => {
     // reinstating `official ? "AUTHORITATIVE" : "SECONDARY"` fails here.
     const directory = {
       id: "eu-eafo",
-      authority: { id: "eu-eafo", level: "SUPRANATIONAL_DIRECTORY" },
-      registry: { observationType: "OFFICIAL_DIRECTORY_ENTRY" },
+      authority: { id: "eu-eafo", level: "SUPRANATIONAL_DIRECTORY", jurisdictions: ["FR"] },
+      registry: { observationType: "OFFICIAL_DIRECTORY_ENTRY", jurisdictions: ["FR"] },
     } as never;
     const record = {
       key: "eu-eafo:FR:ABC:CPO",
@@ -112,7 +120,7 @@ describe("Cloudflare import bundle", () => {
       metadata: {},
     } as never;
 
-    const [observation] = toOfficialObservations([record], [directory], "release-1");
+    const [observation] = toObservations([record], [directory], "release-1");
 
     expect(observation?.authority_level).toBe("SUPRANATIONAL_DIRECTORY");
     expect(observation?.observation_type).toBe("OFFICIAL_DIRECTORY_ENTRY");
@@ -170,4 +178,276 @@ describe("Cloudflare import bundle", () => {
     expect(sql).toContain("INSERT INTO active_dataset");
     expect(/INSERT INTO sources \([^)]*\bsupported_roles_json\b/.test(sql)).toBe(true);
   });
+
+  it("imports the generated SQL into a database migrated with every migration", async () => {
+    const bundle = await buildImportBundle();
+    const db = await migratedDatabase();
+
+    db.exec(toImportSql(bundle));
+
+    const count = db.prepare("SELECT COUNT(*) AS count FROM observations").get() as {
+      count: number;
+    };
+    expect(count.count).toBe(bundle.observations.length);
+    // The committed dataset predates the observation and issuing blocks: the
+    // kind is derived from the source, the confirmation stays NULL.
+    const kinds = db
+      .prepare("SELECT DISTINCT observation_kind AS kind FROM observations ORDER BY kind")
+      .all() as Array<{ kind: string | null }>;
+    expect(kinds.map((row) => row.kind)).not.toContain(null);
+  });
 });
+
+describe("issuing confirmation and observation kinds", () => {
+  const dkFstyr = summary("dk-fstyr", ["DK"]);
+  const seEnergimyndigheten = summary("se-energimyndigheten", ["SE"]);
+  const beneluxIdro = summary("benelux-idro", ["BE", "NL", "LU"]);
+  const plEipa = summary("pl-eipa", ["PL"]);
+  const gbEvroam = summary("gb-evroam", ["GB"], ["GB", "IE"]);
+  const fiTraficom = summary("fi-traficom", ["FI"]);
+  const sources = [dkFstyr, seEnergimyndigheten, beneluxIdro, plEipa, gbEvroam, fiTraficom];
+
+  const monConfirmed = { country: "DK", confirmation: "CONFIRMED", confirmedBy: ["dk-fstyr"] };
+  const dkMon = [
+    record("dk-fstyr", "DK", "MON", {
+      name: "Monta ApS",
+      official: true,
+      retrievedAt: "2026-01-01T00:00:00.000Z",
+      observation: { kind: "ASSIGNMENT", observingJurisdiction: "DK" },
+      issuing: monConfirmed,
+    }),
+    // Retrieved later than the Danish assignment: a newest-first tie-break
+    // alone would take the Swedish listing's name.
+    record("se-energimyndigheten", "DK", "MON", {
+      name: "Monta AB",
+      official: false,
+      retrievedAt: "2026-02-01T00:00:00.000Z",
+      observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "SE" },
+      issuing: monConfirmed,
+    }),
+  ];
+
+  it("keeps a Swedish listing of DK*MON apart from the Danish assignment", () => {
+    const rows = toRegistryRows(dkMon, sources, "release-1");
+
+    expect(rows.observations).toEqual([
+      expect.objectContaining({
+        source_id: "dk-fstyr",
+        observation_kind: "ASSIGNMENT",
+        observing_jurisdiction: "DK",
+        authority_level: "AUTHORITATIVE",
+        observation_type: "OFFICIAL_ASSIGNMENT",
+      }),
+      expect.objectContaining({
+        source_id: "se-energimyndigheten",
+        observation_kind: "CROSS_REGISTER_LISTING",
+        observing_jurisdiction: "SE",
+        authority_level: "SECONDARY",
+        observation_type: "OFFICIAL_DIRECTORY_ENTRY",
+      }),
+    ]);
+    expect(rows.partyRoles).toEqual([
+      expect.objectContaining({
+        party_key: "DK:MON",
+        role: "CPO",
+        issuing_confirmation: "CONFIRMED",
+        issuing_confirmed_by_json: '["dk-fstyr"]',
+        highest_authority_level: "AUTHORITATIVE",
+        observation_count: 2,
+      }),
+    ]);
+    expect(rows.parties).toEqual([
+      expect.objectContaining({
+        key: "DK:MON",
+        preferred_name: "Monta ApS",
+        highest_authority_level: "AUTHORITATIVE",
+        observation_count: 2,
+      }),
+    ]);
+  });
+
+  it("keeps a Polish listing of NL*TNM apart from the Benelux assignment", () => {
+    const issuing = { country: "NL", confirmation: "CONFIRMED", confirmedBy: ["benelux-idro"] };
+    const rows = toRegistryRows(
+      [
+        record("pl-eipa", "NL", "TNM", {
+          official: false,
+          observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "PL" },
+          issuing,
+        }),
+        record("benelux-idro", "NL", "TNM", {
+          official: true,
+          observation: { kind: "ASSIGNMENT", observingJurisdiction: "NL" },
+          issuing,
+        }),
+      ],
+      sources,
+      "release-1",
+    );
+
+    expect(
+      rows.observations.map((row) => [
+        row.source_id,
+        row.observation_kind,
+        row.observing_jurisdiction,
+        row.authority_level,
+      ]),
+    ).toEqual([
+      ["benelux-idro", "ASSIGNMENT", "NL", "AUTHORITATIVE"],
+      ["pl-eipa", "CROSS_REGISTER_LISTING", "PL", "SECONDARY"],
+    ]);
+    expect(rows.partyRoles[0]).toMatchObject({
+      issuing_confirmation: "CONFIRMED",
+      issuing_confirmed_by_json: '["benelux-idro"]',
+      highest_authority_level: "AUTHORITATIVE",
+    });
+    expect(rows.parties[0]?.highest_authority_level).toBe("AUTHORITATIVE");
+  });
+
+  it("rates an identifier only listed outside its country as secondary", () => {
+    // No source covers Norway: the Swedish listing is the only observation.
+    const rows = toRegistryRows(
+      [
+        record("se-energimyndigheten", "NO", "ABC", {
+          official: false,
+          observation: { kind: "CROSS_REGISTER_LISTING", observingJurisdiction: "SE" },
+          issuing: { country: "NO", confirmation: "NO_ISSUING_SOURCE", confirmedBy: [] },
+        }),
+      ],
+      sources,
+      "release-1",
+    );
+
+    expect(rows.partyRoles).toEqual([
+      expect.objectContaining({
+        party_key: "NO:ABC",
+        issuing_confirmation: "NO_ISSUING_SOURCE",
+        issuing_confirmed_by_json: "[]",
+        highest_authority_level: "SECONDARY",
+      }),
+    ]);
+    expect(rows.parties[0]?.highest_authority_level).toBe("SECONDARY");
+  });
+
+  it("derives the kind of a record published without the blocks", () => {
+    const rows = toRegistryRows(
+      [
+        record("fi-traficom", "FI", "ABC", { official: true }),
+        record("gb-evroam", "IE", "XYZ", { official: false }),
+      ],
+      sources,
+      "release-1",
+    );
+
+    expect(
+      rows.observations.map((row) => [
+        row.source_id,
+        row.observation_kind,
+        row.observing_jurisdiction,
+        row.authority_level,
+      ]),
+    ).toEqual([
+      ["fi-traficom", "ASSIGNMENT", "FI", "AUTHORITATIVE"],
+      ["gb-evroam", "CROSS_REGISTER_LISTING", "GB", "SECONDARY"],
+    ]);
+    expect(rows.partyRoles.map((row) => [row.party_key, row.issuing_confirmation])).toEqual([
+      ["FI:ABC", null],
+      ["IE:XYZ", null],
+    ]);
+    expect(rows.partyRoles.every((row) => row.issuing_confirmed_by_json === null)).toBe(true);
+    expect(rows.parties.map((row) => [row.key, row.highest_authority_level])).toEqual([
+      ["FI:ABC", "AUTHORITATIVE"],
+      ["IE:XYZ", "SECONDARY"],
+    ]);
+  });
+
+  it("round-trips the new columns through the migrated schema", async () => {
+    const bundle = await buildImportBundle();
+    const rows = toRegistryRows(dkMon, sources, bundle.release.id);
+    const db = await migratedDatabase();
+
+    db.exec(toImportSql({ ...bundle, ...rows, conflicts: [] }));
+
+    expect(
+      db
+        .prepare(
+          "SELECT issuing_confirmation, issuing_confirmed_by_json, highest_authority_level FROM party_roles WHERE party_key = 'DK:MON'",
+        )
+        .get(),
+    ).toEqual({
+      issuing_confirmation: "CONFIRMED",
+      issuing_confirmed_by_json: '["dk-fstyr"]',
+      highest_authority_level: "AUTHORITATIVE",
+    });
+    expect(
+      db
+        .prepare(
+          "SELECT source_id, observation_kind, observing_jurisdiction FROM observations WHERE party_key = 'DK:MON' ORDER BY source_id",
+        )
+        .all(),
+    ).toEqual([
+      { source_id: "dk-fstyr", observation_kind: "ASSIGNMENT", observing_jurisdiction: "DK" },
+      {
+        source_id: "se-energimyndigheten",
+        observation_kind: "CROSS_REGISTER_LISTING",
+        observing_jurisdiction: "SE",
+      },
+    ]);
+  });
+});
+
+async function migratedDatabase() {
+  const migrationsDir = resolve(import.meta.dirname, "../../../apps/api/migrations");
+  const db = new DatabaseSync(":memory:");
+  for (const file of (await readdir(migrationsDir))
+    .filter((name) => name.endsWith(".sql"))
+    .sort()) {
+    db.exec(await readFile(resolve(migrationsDir, file), "utf8"));
+  }
+  return db;
+}
+
+function summary(id: string, jurisdictions: string[], authorityJurisdictions = jurisdictions) {
+  return {
+    id,
+    authority: { id, level: "AUTHORITATIVE", jurisdictions: authorityJurisdictions },
+    registry: { observationType: "OFFICIAL_ASSIGNMENT", jurisdictions },
+  } as never;
+}
+
+function record(
+  registryId: string,
+  countryCode: string,
+  partyId: string,
+  options: {
+    official: boolean;
+    name?: string;
+    retrievedAt?: string;
+    observation?: { kind: string; observingJurisdiction: string | null };
+    issuing?: { country: string; confirmation: string; confirmedBy: string[] };
+  },
+) {
+  const retrievedAt = options.retrievedAt ?? "2026-01-01T00:00:00.000Z";
+  return {
+    key: `${registryId}:${countryCode}:${partyId}:CPO`,
+    countryCode,
+    partyId,
+    eMobilityId: `${countryCode}${partyId}`,
+    role: "CPO",
+    status: "ACTIVE",
+    organization: { name: options.name ?? `${partyId} Ltd`, legalName: null, website: null },
+    source: {
+      registryId,
+      official: options.official,
+      sourceRecordId: null,
+      sourceUrl: "https://example.org/register",
+      sourceValue: `${countryCode}*${partyId}`,
+      firstSeenAt: retrievedAt,
+      lastSeenAt: retrievedAt,
+      retrievedAt,
+      ...(options.observation ? { observation: options.observation } : {}),
+    },
+    metadata: {},
+    ...(options.issuing ? { issuing: options.issuing } : {}),
+  } as never;
+}

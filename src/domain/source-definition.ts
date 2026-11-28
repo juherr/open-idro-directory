@@ -175,8 +175,18 @@ export function resolveSourceDefinitions(
   });
 }
 
+/**
+ * The part of a source its territorial scope is read from. Structural so that
+ * a published `sources.json` entry, whose registry jurisdictions are already
+ * the effective ones, fits as well as a parsed descriptor.
+ */
+export interface SourceJurisdictionScope {
+  authority: { jurisdictions: string[] };
+  registry: { jurisdictions?: string[] | undefined };
+}
+
 /** Effective territorial scope: the registry narrows the authority, never widens it. */
-export function sourceJurisdictions(source: SourceDefinition): string[] {
+export function sourceJurisdictions(source: SourceJurisdictionScope): string[] {
   return source.registry.jurisdictions ?? source.authority.jurisdictions;
 }
 

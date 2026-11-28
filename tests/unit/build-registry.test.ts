@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { describe, expect, it } from "vitest";
@@ -11,7 +11,12 @@ import type {
   RegistryObservation,
 } from "../../src/domain/registry-record.js";
 import type { SourceDefinition } from "../../src/domain/source-definition.js";
+import type { ValidationIssue } from "../../src/domain/validation-issue.js";
+import { diffRecords } from "../../src/application/change-report.js";
+import { identifierRoleKey } from "../../src/domain/identifier-provenance.js";
+import { withPublishedObservations } from "../../src/domain/registry-observation.js";
 import { loadSourceDefinition } from "../../src/infrastructure/filesystem/source-loader.js";
+import type { PublishedSourceHealth } from "../../src/infrastructure/serialization/serializers.js";
 import { validateRegistry } from "../../src/validation/registry-validator.js";
 
 describe("buildRegistry", () => {
@@ -168,10 +173,12 @@ describe("buildRegistry", () => {
             .filter((record) => record.source.registryId === "pl-eipa")
             .map((record) => record.key),
         ).toEqual(["pl-eipa:PL:XYZ:CPO"]);
-        // Only the retrieval time of this run differs from what pl-eipa published.
+        // Only the retrieval time of this run and the derived issuing block
+        // differ from what pl-eipa published.
         expect(result.records.find((record) => record.key === polish.key)).toEqual({
           ...polish,
           source: { ...polish.source, retrievedAt: GENERATED_AT },
+          issuing: expect.objectContaining({ country: "PL" }),
         });
         expect(validateRegistry(result.records, sources)).toEqual([]);
         const invalid = JSON.parse(
@@ -218,6 +225,142 @@ describe("buildRegistry", () => {
   });
 });
 
+describe("buildRegistry issuing confirmation", () => {
+  const NORDIC = ["dk-fstyr", "se-energimyndigheten"];
+
+  // dk-fstyr assigns DK*BBB; the Swedish register lists DK*BBB and DK*MON
+  // besides its own. The status policy marks published foreign listings
+  // UNKNOWN, which a rebuild compares with the connector's ACTIVE: the Swedish
+  // assignments keep that below the mass-change threshold, as upstream.
+  async function nordicConnectors(dkErrors: ValidationIssue[] = []) {
+    const swedish = await swedishListings("SE*AAA", "SE*BBB", "SE*CCC", "DK*BBB", "DK*MON");
+    const connectors: Record<string, () => RegistryConnector> = {
+      "dk-fstyr": connectorReturning([assignedThisRun("dk-fstyr", "DK", "BBB")], dkErrors),
+      "se-energimyndigheten": connectorReturning(swedish),
+    };
+    return (source: SourceDefinition) => connectors[source.id]!();
+  }
+
+  it("gives every record of an identifier and role the same issuing block", async () => {
+    const createConnector = await nordicConnectors();
+    await withWorkspace(
+      async ({ build }) => {
+        const { records } = await build({ createConnector });
+
+        expect(records.every((record) => record.issuing !== undefined)).toBe(true);
+        for (const group of Map.groupBy(records, identifierRoleKey).values()) {
+          expect(new Set(group.map((record) => JSON.stringify(record.issuing))).size).toBe(1);
+        }
+        expect(records.filter((record) => identifierRoleKey(record) === "DK:BBB:CPO")).toHaveLength(
+          2,
+        );
+        expect(issuingOf(records, "DK:BBB:CPO")).toEqual({
+          country: "DK",
+          confirmation: "CONFIRMED",
+          confirmedBy: ["dk-fstyr"],
+        });
+        expect(issuingOf(records, "DK:MON:CPO")).toEqual({
+          country: "DK",
+          confirmation: "NOT_FOUND",
+          confirmedBy: [],
+        });
+      },
+      { sourceIds: NORDIC, published: [] },
+    );
+  });
+
+  // Plan decision 3d: a partial update reads the health of the sources it did
+  // not rebuild from the published sources.json, and classifies every record,
+  // carried ones included: dk-fstyr's published DK*BBB keeps confirming it,
+  // even when dk-fstyr failed and its records were republished.
+  it.each([
+    { case: "current", fetchErrors: {}, dkErrors: [], expected: "NOT_FOUND" },
+    {
+      case: "unreachable",
+      fetchErrors: { "dk-fstyr": "HTTP 503 while fetching https://example.test/" },
+      dkErrors: [],
+      expected: "SOURCE_UNAVAILABLE",
+    },
+    {
+      case: "answering but not ingested",
+      fetchErrors: {},
+      dkErrors: [{ severity: "error" as const, code: "MASS_CHANGE", message: "1 of 1 changed." }],
+      expected: "SOURCE_STALE",
+    },
+  ])(
+    "classifies a Swedish-only update as the full build, carried confirmations included, with DK*MON $expected when dk-fstyr was $case",
+    async ({ fetchErrors, dkErrors, expected }) => {
+      const createConnector = await nordicConnectors(dkErrors);
+      await withWorkspace(
+        async ({ build, publishOutput }) => {
+          const full = await build({ createConnector, fetchErrors });
+          await publishOutput();
+          const partial = await build({ createConnector, sourceId: "se-energimyndigheten" });
+
+          expect(issuingOf(full.records, "DK:MON:CPO")?.confirmation).toBe(expected);
+          expect(issuingOf(full.records, "DK:BBB:CPO")).toEqual({
+            country: "DK",
+            confirmation: "CONFIRMED",
+            confirmedBy: ["dk-fstyr"],
+          });
+          expect(issuingByIdentifier(partial.records)).toEqual(issuingByIdentifier(full.records));
+        },
+        { sourceIds: NORDIC, published: [sampleRecord("dk-fstyr", "DK", "BBB")] },
+      );
+    },
+  );
+
+  // A carried source published without health falls back to `stale: false`:
+  // it must not read as a current register that does not list the identifier.
+  it("reads a carried issuing source without published health as unavailable", async () => {
+    const createConnector = await nordicConnectors();
+    await withWorkspace(
+      async ({ build }) => {
+        const { records } = await build({ createConnector, sourceId: "se-energimyndigheten" });
+
+        expect(issuingOf(records, "DK:MON:CPO")?.confirmation).toBe("SOURCE_UNAVAILABLE");
+      },
+      { sourceIds: NORDIC, published: [], health: { "dk-fstyr": null } },
+    );
+  });
+
+  it("does not count the issuing block as a change when rebuilding the same snapshots", async () => {
+    const createConnector = await nordicConnectors();
+    await withWorkspace(
+      async ({ build, publishOutput, sources }) => {
+        const first = await build({ createConnector });
+        await publishOutput();
+        const second = await build({ createConnector });
+
+        expect(first.records.every((record) => record.issuing !== undefined)).toBe(true);
+        expect(second.results.flatMap((result) => result.errors)).toEqual([]);
+        expect(diffRecords(first.records, second.records)).toMatchObject({ updated: [] });
+        // Committed datasets predate the block: deriving it is not an update.
+        const blockless = first.records.map(({ issuing: _issuing, ...record }) => record);
+        expect(
+          diffRecords(withPublishedObservations(blockless, sources), second.records),
+        ).toMatchObject({ updated: [] });
+      },
+      { sourceIds: NORDIC, published: [] },
+    );
+  });
+
+  it("does not trip the safety thresholds over published records carrying issuing blocks", async () => {
+    const published = {
+      ...sampleRecord("fr-afirev", "FR", "AAA"),
+      issuing: { country: "FR", confirmation: "NOT_FOUND" as const, confirmedBy: [] },
+    };
+    await withWorkspace(
+      async ({ build }) => {
+        const result = await build({ sourceId: "fr-afirev" });
+
+        expect(result.results.find((entry) => entry.sourceId === "fr-afirev")?.errors).toEqual([]);
+      },
+      { published: [published, sampleRecord("dk-fstyr", "DK", "BBB")] },
+    );
+  });
+});
+
 const GENERATED_AT = "2026-06-15T00:00:00.000Z";
 const PREVIOUS_RETRIEVAL = "2026-06-14T00:00:00.000Z";
 
@@ -232,8 +375,15 @@ async function withWorkspace(
     build: (
       overrides?: BuildOptions & { sources?: SourceDefinition[] },
     ) => ReturnType<typeof buildRegistry>;
+    /** Makes the last build's datasets the published ones the next build reads. */
+    publishOutput: () => Promise<void>;
   }) => Promise<void>,
-  setup: { sourceIds?: string[]; published?: NormalizedRegistryRecord[] } = {},
+  setup: {
+    sourceIds?: string[];
+    published?: NormalizedRegistryRecord[];
+    /** Published health per source, over the current default; `null` publishes none. */
+    health?: Record<string, Partial<PublishedSourceHealth> | null>;
+  } = {},
 ) {
   const dataDir = await mkdtemp(join(tmpdir(), "open-idro-build-data-"));
   const outputDir = await mkdtemp(join(tmpdir(), "open-idro-build-out-"));
@@ -248,7 +398,13 @@ async function withWorkspace(
         sampleRecord("fr-afirev", "FR", "AAA"),
         sampleRecord("dk-fstyr", "DK", "BBB"),
       ],
+      setup.health,
     );
+    const publishOutput = async () => {
+      for (const file of ["registry.json", "sources.json"]) {
+        await copyFile(join(outputDir, file), join(dataDir, file));
+      }
+    };
     const build = ({
       sources: override,
       ...options
@@ -266,7 +422,7 @@ async function withWorkspace(
         ]),
         ...options,
       });
-    await assertions({ sources, outputDir, build });
+    await assertions({ sources, outputDir, build, publishOutput });
   } finally {
     await rm(dataDir, { recursive: true, force: true });
     await rm(outputDir, { recursive: true, force: true });
@@ -277,23 +433,27 @@ async function writeWorkspace(
   dataDir: string,
   sources: SourceDefinition[],
   published: NormalizedRegistryRecord[],
+  health: Record<string, Partial<PublishedSourceHealth> | null> = {},
 ) {
   await writeFile(join(dataDir, "registry.json"), JSON.stringify(published));
   await writeFile(
     join(dataDir, "sources.json"),
     JSON.stringify(
-      sources.map((source) => ({
-        id: source.id,
-        health: {
-          stale: false,
-          recordCount: 1,
-          lastAttemptedRetrieval: PREVIOUS_RETRIEVAL,
-          lastSuccessfulRetrieval: PREVIOUS_RETRIEVAL,
-          checksum: "previous-checksum",
-          freshness: "current",
-          latestErrorSummary: null,
-        },
-      })),
+      sources
+        .filter((source) => health[source.id] !== null)
+        .map((source) => ({
+          id: source.id,
+          health: {
+            stale: false,
+            recordCount: 1,
+            lastAttemptedRetrieval: PREVIOUS_RETRIEVAL,
+            lastSuccessfulRetrieval: PREVIOUS_RETRIEVAL,
+            checksum: "previous-checksum",
+            freshness: "current",
+            latestErrorSummary: null,
+            ...health[source.id],
+          },
+        })),
     ),
   );
   for (const source of sources) {
@@ -324,15 +484,53 @@ async function readHealth(outputDir: string, sourceId: string) {
   return summaries.find((summary) => summary.id === sourceId)?.health;
 }
 
-function connectorReturning(records: NormalizedRegistryRecord[]): () => RegistryConnector {
+function connectorReturning(
+  records: NormalizedRegistryRecord[],
+  errors: ValidationIssue[] = [],
+): () => RegistryConnector {
   return () => ({
     sourceId: "stub",
     fetch: async () => {
       throw new Error("not used by the build");
     },
     parse: async () => ({ records: [], warnings: [], errors: [] }),
-    normalize: async () => ({ records, warnings: [], errors: [] }),
+    normalize: async () => ({ records, warnings: [], errors }),
   });
+}
+
+/** An assignment the issuing register listed in this run's retrieval. */
+function assignedThisRun(registryId: string, countryCode: string, partyId: string) {
+  const record = withObservationBlock(sampleRecord(registryId, countryCode, partyId), {
+    kind: "ASSIGNMENT",
+    observingJurisdiction: countryCode,
+  });
+  return {
+    ...record,
+    source: { ...record.source, lastSeenAt: GENERATED_AT, retrievedAt: GENERATED_AT },
+  };
+}
+
+async function swedishListings(...sourceValues: string[]) {
+  const sweden = await loadSourceDefinition("se-energimyndigheten");
+  const normalized = await new EnergimyndighetenConnector().normalize({
+    source: sweden,
+    retrievedAt: GENERATED_AT,
+    records: sourceValues.map((sourceValue) => ({
+      sourceValue,
+      organizationName: "Example",
+      role: "CPO",
+      sourceUrl: "https://example.test/",
+    })),
+  });
+  return normalized.records;
+}
+
+function issuingOf(records: NormalizedRegistryRecord[], key: string) {
+  return records.find((record) => identifierRoleKey(record) === key)?.issuing;
+}
+
+function issuingByIdentifier(records: NormalizedRegistryRecord[]) {
+  return Object.fromEntries(records.map((record) => [identifierRoleKey(record), record.issuing]));
 }
 
 function withObservationBlock(

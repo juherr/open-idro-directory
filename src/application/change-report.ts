@@ -266,9 +266,12 @@ function filter(records: NormalizedRegistryRecord[], sourceId?: string) {
   return sourceId ? records.filter((record) => record.source.registryId === sourceId) : records;
 }
 
+// The `issuing` block is derived on every build, and committed records may
+// predate it: neither its arrival nor its recomputation is a record update.
 function stableRecord(record: NormalizedRegistryRecord) {
   return {
     ...record,
+    issuing: undefined,
     source: {
       ...record.source,
       firstSeenAt: "",

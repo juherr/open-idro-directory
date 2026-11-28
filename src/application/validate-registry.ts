@@ -4,7 +4,11 @@ import {
   EMI3_IDENTIFIER_PATTERN,
   EMI3_PARTY_ID_PATTERN,
 } from "../domain/emi3-identifier.js";
-import { observationKindSchema, type NormalizedRegistryRecord } from "../domain/registry-record.js";
+import {
+  issuingConfirmationSchema,
+  observationKindSchema,
+  type NormalizedRegistryRecord,
+} from "../domain/registry-record.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
 import { fromRoot } from "../infrastructure/filesystem/paths.js";
 import { validateRegistry } from "../validation/registry-validator.js";
@@ -56,6 +60,18 @@ const observationSchema = {
   },
 };
 
+// Optional: derived on every build, records published before #49 carry none.
+// `confirmedBy` is empty unless `confirmation` is CONFIRMED.
+const issuingSchema = {
+  type: "object",
+  required: ["country", "confirmation", "confirmedBy"],
+  properties: {
+    country: { type: "string", pattern: EMI3_COUNTRY_CODE_PATTERN.source },
+    confirmation: { enum: issuingConfirmationSchema.options },
+    confirmedBy: { type: "array", items: { type: "string", minLength: 1 } },
+  },
+};
+
 const registryRecordSchema = {
   type: "object",
   required: [
@@ -79,6 +95,7 @@ const registryRecordSchema = {
     organization: { type: "object" },
     source: { type: "object", properties: { observation: observationSchema } },
     metadata: { type: "object" },
+    issuing: issuingSchema,
   },
 };
 
@@ -115,6 +132,9 @@ const rowFields = {
     message: { type: "string" },
   },
 };
+
+// Invalid records are never classified, so they carry no issuing block.
+const { issuing: _issuing, ...invalidRecordProperties } = registryRecordSchema.properties;
 
 export const registryInvalidSchema = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
@@ -158,7 +178,7 @@ export const registryInvalidSchema = {
           record: {
             ...registryRecordSchema,
             properties: {
-              ...registryRecordSchema.properties,
+              ...invalidRecordProperties,
               countryCode: { type: "string" },
               partyId: { type: "string" },
               eMobilityId: { type: "string" },

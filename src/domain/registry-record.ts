@@ -40,6 +40,37 @@ export const registryObservationSchema = z.object({
 });
 export type RegistryObservation = z.infer<typeof registryObservationSchema>;
 
+/**
+ * What the register that issues an identifier's country says about one
+ * identifier and role. `CONFIRMED`: an issuing register lists it. `NOT_FOUND`:
+ * every issuing register is current and none lists it. `SOURCE_STALE` /
+ * `SOURCE_UNAVAILABLE`: an issuing register is stale, or failed or disabled,
+ * so its silence proves nothing. `UNSUPPORTED_ROLE`: the country's registers
+ * do not publish that role. `NO_ISSUING_SOURCE`: no authoritative register
+ * covers the country. Computed by `classifyIdentifierProvenance`.
+ */
+export const issuingConfirmationSchema = z.enum([
+  "CONFIRMED",
+  "NOT_FOUND",
+  "SOURCE_STALE",
+  "SOURCE_UNAVAILABLE",
+  "UNSUPPORTED_ROLE",
+  "NO_ISSUING_SOURCE",
+]);
+export type IssuingConfirmation = z.infer<typeof issuingConfirmationSchema>;
+
+/**
+ * `country` is the identifier's own country code. `confirmedBy` lists, sorted
+ * and once each, the issuing registers that confirm it; it is empty whenever
+ * `confirmation` is not `CONFIRMED`.
+ */
+export const issuingProvenanceSchema = z.object({
+  country: emi3CountryCodeSchema,
+  confirmation: issuingConfirmationSchema,
+  confirmedBy: z.array(z.string().min(1)),
+});
+export type IssuingProvenance = z.infer<typeof issuingProvenanceSchema>;
+
 export const normalizedRegistryRecordSchema = z.object({
   key: z.string().min(1),
   countryCode: emi3CountryCodeSchema,
@@ -66,6 +97,9 @@ export const normalizedRegistryRecordSchema = z.object({
     observation: registryObservationSchema.optional(),
   }),
   metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])),
+  // Optional so that datasets published before the block existed stay
+  // valid; it is the same on every record of an identifier and role.
+  issuing: issuingProvenanceSchema.optional(),
 });
 
 export type NormalizedRegistryRecord = z.infer<typeof normalizedRegistryRecordSchema>;

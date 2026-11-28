@@ -26,6 +26,16 @@ export {
 } from "../../../src/domain/registry-record.js";
 export { observationOf, observationScope } from "../../../src/domain/registry-observation.js";
 export {
+  classifyIdentifierProvenance,
+  identifierRoleKey,
+  issuingConfirmationSchema,
+  issuingProvenanceSchema,
+  withIssuingProvenance,
+  type IssuingConfirmation,
+  type IssuingProvenance,
+  type SourceHealthState,
+} from "../../../src/domain/identifier-provenance.js";
+export {
   authorityDefinitionSchema,
   type AuthorityDefinition,
 } from "../../../src/domain/authority-definition.js";

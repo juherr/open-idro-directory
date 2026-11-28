@@ -8,6 +8,11 @@ import type {
   NormalizedRegistryRecord,
   RejectedSourceRowDetection,
 } from "../domain/registry-record.js";
+import {
+  classifyIdentifierProvenance,
+  withIssuingProvenance,
+  withoutIssuingProvenance,
+} from "../domain/identifier-provenance.js";
 import { withPublishedObservations } from "../domain/registry-observation.js";
 import type { SourceBuildResult } from "../domain/source-result.js";
 import type { SourceDefinition } from "../domain/source-definition.js";
@@ -26,6 +31,7 @@ import { checkSafetyThresholds } from "../validation/safety-thresholds.js";
 import { mergeGeneratedRecords } from "./generated-record-merge.js";
 import { buildOutOfJurisdictionReport } from "./out-of-jurisdiction-report.js";
 import { mergeInvalidRecordHistory } from "./invalid-record-history.js";
+import { issuingHealthBySourceId } from "./issuing-source-health.js";
 import { applyOfficialStatusPolicy } from "./official-status-policy.js";
 
 export interface BuildOptions {
@@ -72,9 +78,12 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   // `registry.json` is several megabytes: read, parse, and group it once for the
   // whole build rather than once per source. Records published before the
   // observation block existed get it here, so the safety thresholds and the
-  // merge compare like with like.
+  // merge compare like with like. The issuing block is dropped: this build
+  // derives it again from every source.
   const publishedBySource = Map.groupBy(
-    withPublishedObservations(await readGeneratedRecords(dataDir), sources),
+    withPublishedObservations(await readGeneratedRecords(dataDir), sources).map(
+      withoutIssuingProvenance,
+    ),
     (record) => record.source.registryId,
   );
   const previousRecordsOf = (sourceId: string) => publishedBySource.get(sourceId) ?? [];
@@ -188,20 +197,26 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     });
   }
 
+  // Carried sources' results come from their published health, so a partial
+  // update classifies against the same health a full build published.
   const policyRecords = applyOfficialStatusPolicy(records);
-  const policyRecordByKey = new Map(policyRecords.map((record) => [record.key, record]));
+  const classifiedRecords = withIssuingProvenance(
+    policyRecords,
+    classifyIdentifierProvenance(policyRecords, sources, issuingHealthBySourceId(results)),
+  );
+  const classifiedRecordByKey = new Map(classifiedRecords.map((record) => [record.key, record]));
   const policyResults = results.map((result) => ({
     ...result,
-    records: result.records.map((record) => policyRecordByKey.get(record.key) ?? record),
+    records: result.records.map((record) => classifiedRecordByKey.get(record.key) ?? record),
   }));
-  const registryIssues = validateRegistry(policyRecords, sources);
+  const registryIssues = validateRegistry(classifiedRecords, sources);
   const invalidHistory = mergeInvalidRecordHistory(
     await readPreviousInvalidHistory(dataDir),
     { records: invalidRecords, rows: rejectedRows },
     generatedAt,
   );
   await writeDatasets(
-    policyRecords,
+    classifiedRecords,
     sources,
     policyResults,
     generatedAt,
@@ -211,7 +226,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
   // Only a full run writes the report, as before listings replaced the
   // rejection history it was read from.
   if (!options.sourceId) {
-    await writeOutOfJurisdictionReport(outputDir, policyRecords, sources, generatedAt);
+    await writeOutOfJurisdictionReport(outputDir, classifiedRecords, sources, generatedAt);
   }
   if (registryIssues.some((issue) => issue.severity === "error")) {
     throw new Error(
@@ -232,7 +247,7 @@ export async function buildRegistry(sources: SourceDefinition[], options: BuildO
     );
   }
   return {
-    records: policyRecords,
+    records: classifiedRecords,
     invalidHistory,
     results: policyResults,
     issues: registryIssues,

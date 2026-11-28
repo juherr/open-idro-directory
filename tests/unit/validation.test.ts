@@ -96,6 +96,20 @@ describe("validation", () => {
     expect(issues.some((issue) => issue.code === "MASS_CHANGE")).toBe(false);
   });
 
+  // The issuing block is recomputed on every build from every source, so a
+  // published record carrying one says nothing about the upstream register.
+  it("ignores the issuing block in change safety comparisons", async () => {
+    const source = await loadSourceDefinition("fr-afirev");
+    const current = ["A", "B", "C", "D"].map((partyId) => sampleRecord(partyId));
+    const previous = current.map((record) => ({
+      ...record,
+      issuing: { country: "FR", confirmation: "CONFIRMED" as const, confirmedBy: ["fr-afirev"] },
+    }));
+    const issues = checkSafetyThresholds(source, previous, current, 0, '{"data":[]}');
+
+    expect(issues.some((issue) => issue.code === "MASS_CHANGE")).toBe(false);
+  });
+
   it("still detects mass changes in upstream data", async () => {
     const source = await loadSourceDefinition("fr-afirev");
     const previous = ["A", "B", "C", "D"].map((partyId) => sampleRecord(partyId));

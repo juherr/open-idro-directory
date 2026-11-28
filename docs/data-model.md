@@ -167,8 +167,10 @@ The scenarios of issue #91, and how each is represented:
 4. A `PL*...` identifier another public source lists while the Polish register
    does not: that source's listing record exists on its own. Nothing is added
    to or removed from the `pl-eipa` records, and the listing is not refused.
-5. Absence from the issuing register is not represented as invalidity: no field
-   says "not found", and the listing stays published.
+5. Absence from the issuing register is not represented as invalidity: the
+   listing stays published, and its `issuing.confirmation` says `NOT_FOUND`
+   (not found in the issuing register) only when every issuing register is
+   current.
 6. A stale, unavailable, unsupported, or failed issuing source changes nothing
    about the listings other registers publish. A failed source republishes its
    own previous records; another register's observation is never removed or
@@ -176,7 +178,8 @@ The scenarios of issue #91, and how each is represented:
 
 Whether the issuing register confirms an identifier is a separate fact, derived
 from these records by the classification rules of #49; it is not stored on the
-observation.
+observation but in the record's `issuing` block (see
+[Issuing Confirmation](#issuing-confirmation)).
 
 ### Backward Compatibility
 
@@ -211,6 +214,87 @@ missing-from-official-source`. This also applies to listings an earlier build
   (see `docs/operations.md`).
 - The out-of-jurisdiction counters of `data/stats.json` keep their names but
   now count those listings, not the `outOfJurisdiction` bucket.
+
+## Issuing Confirmation
+
+Every published record carries an `issuing` block saying what the registers
+that issue its identifier report about it:
+
+```json
+"issuing": { "country": "DK", "confirmation": "NOT_FOUND", "confirmedBy": [] }
+```
+
+- `country` is the identifier's own country, the record's `countryCode`.
+- `confirmation` is one of the six states below.
+- `confirmedBy` lists, sorted and once each, the ids of the issuing registers
+  that confirm the identifier. It is empty unless `confirmation` is
+  `CONFIRMED`.
+
+The block is computed per identifier and role (`CC:PID:ROLE`) over all the
+records of the build, so every record of the same identifier and role carries
+the same block, whichever register published it. `DK*MON` listed by
+`se-energimyndigheten` carries the answer of `dk-fstyr`, not of Sweden.
+
+### Issuing Registers
+
+The issuing registers of `CC:PID:ROLE` are the authoritative sources, enabled
+or not, whose jurisdictions (the registry's, or the authority's when the
+registry does not narrow them) include `CC` and whose `registry.supportedRoles`
+include `ROLE`. A register limited to some roles is read through
+`supportedRoles` alone: `at-ladestellen` publishes CPOs only, so it is no
+issuing register of an Austrian EMSP identifier.
+
+### States And Precedence
+
+The first rule that matches gives the state:
+
+1. `CONFIRMED`: an issuing register holds an `ASSIGNMENT` record of the
+   identifier and role that its latest retrieval still listed
+   (`source.lastSeenAt` equals `source.retrievedAt`), whatever the record's
+   `status` and whatever that register's health. Cross-register listings and
+   tombstones of identifiers the register stopped listing never confirm.
+2. `NO_ISSUING_SOURCE`: no authoritative source covers the country.
+3. `UNSUPPORTED_ROLE`: sources cover the country, but none publishes the
+   role.
+4. `SOURCE_UNAVAILABLE`: an issuing register is disabled, failed, or of
+   unknown health. It outranks a stale one.
+5. `SOURCE_STALE`: an issuing register is stale.
+6. `NOT_FOUND`: every issuing register is current and none lists the
+   identifier.
+
+`NOT_FOUND` reads "not found in the issuing register". It never means the
+identifier is invalid: the registers may lag, and the record stays published
+whatever its state. None of the states is a statement about legal validity.
+
+### Source Health
+
+The health of an issuing register is read from the build's result for that
+source:
+
+- never retrieved (no `lastSuccessfulRetrieval`): unavailable;
+- not stale: current;
+- stale, and its last successful retrieval is not the latest attempt: the fetch
+  or the build failed, so unavailable;
+- stale otherwise: the register answered, but the run reported an error, so
+  stale. A source is stale as soon as its run has any error, so a parse,
+  normalisation or safety-threshold error on a register that answered all give
+  `SOURCE_STALE`.
+
+A source a partial update (`directory update --source <id>`) does not rebuild
+keeps the health published in `data/sources.json`, so the update classifies its
+identifiers as the last full build did. Updating `se-energimyndigheten` alone
+gives `DK*MON` the same block as a full build. A source with no published
+health is unavailable, not current.
+
+### Compatibility
+
+- `issuing` is optional in `schemas/registry.schema.json`. Records committed
+  before it existed carry none, and every record gains it at the next scheduled
+  run.
+- The block is derived again on every build from every source. Its arrival or a
+  change of state is not a record change: the safety thresholds and the change
+  report leave it out of their comparisons, and a build drops the published
+  block before it derives the new one.
 
 ## Source Provenance And Reuse
 

@@ -39,8 +39,13 @@
       "version": "0.1.0",
       "dependencies": {
         "@astrojs/cloudflare": "^14.4.9",
+        "@open-idro-directory/api-client": "workspace:*",
         "astro": "^7.4.13",
       },
+    },
+    "packages/api-client": {
+      "name": "@open-idro-directory/api-client",
+      "version": "0.1.0",
     },
     "packages/registry-import": {
       "name": "@open-idro-directory/registry-import",
@@ -318,6 +323,8 @@
     "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@1.1.5", "", { "dependencies": { "@tybys/wasm-util": "^0.10.2" }, "peerDependencies": { "@emnapi/core": "^1.7.1", "@emnapi/runtime": "^1.7.1" } }, "sha512-AWPoBRJ9tsnVhor4sjO7rkni+7p+2IAEFj6cx06UgP10jkQHqay/36uRV/bFkgrh18D9vb4cr8Q0Pthskgzy+Q=="],
 
     "@open-idro-directory/api": ["@open-idro-directory/api@workspace:apps/api"],
+
+    "@open-idro-directory/api-client": ["@open-idro-directory/api-client@workspace:packages/api-client"],
 
     "@open-idro-directory/registry-import": ["@open-idro-directory/registry-import@workspace:packages/registry-import"],
 

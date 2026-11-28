@@ -196,6 +196,42 @@ const rows: Row[] = [
     expected: ["ADDED_TO_ISSUING_REGISTER pl-eipa>pl-eipa PLNEW info/high"],
   },
   {
+    name: "records a non-current issuing register carries over are never added",
+    records: [record("pl-eipa", "PL", "NEW", "CPO", { firstSeenAt: RETRIEVED_AT })],
+    health: { ...allCurrent, "pl-eipa": "STALE" },
+    expected: ["SOURCE_STALE pl-eipa>pl-eipa - medium/high"],
+  },
+  {
+    name: "each non-current issuing register gives its own state as the reason",
+    records: [record("benelux-idro", "DE", "XYZ")],
+    health: { ...allCurrent, "de-first": "STALE", "de-second": "UNAVAILABLE" },
+    expected: [
+      "ISSUING_REGISTER_UNVERIFIABLE de-first>benelux-idro DEXYZ info/low SOURCE_STALE",
+      "ISSUING_REGISTER_UNVERIFIABLE de-second>benelux-idro DEXYZ info/low SOURCE_UNAVAILABLE",
+      "SOURCE_STALE de-first>de-first - medium/high",
+      "SOURCE_UNAVAILABLE de-second>de-second - medium/high",
+    ],
+  },
+  {
+    name: "a second issuing register that does not list the identifier still gives a not-found",
+    records: [record("benelux-idro", "DE", "XYZ", "CPO"), record("de-first", "DE", "XYZ", "EMSP")],
+    expected: [
+      "CONFLICTING_ROLE de-first>benelux-idro DEXYZ medium/high",
+      "NOT_FOUND_IN_ISSUING_REGISTER de-second>benelux-idro DEXYZ high/high",
+    ],
+  },
+  {
+    name: "a register that does not publish the listing's role is not cited in a role conflict",
+    sources: [
+      benelux,
+      source("de-first", { jurisdictions: ["DE"], roles: ["CPO"] }),
+      source("de-second", { jurisdictions: ["DE"], roles: ["CPO", "EMSP"] }),
+    ],
+    health: { "benelux-idro": "CURRENT", "de-first": "CURRENT", "de-second": "CURRENT" },
+    records: [record("benelux-idro", "DE", "XYZ", "EMSP"), record("de-first", "DE", "XYZ", "CPO")],
+    expected: ["NOT_FOUND_IN_ISSUING_REGISTER de-second>benelux-idro DEXYZ high/high"],
+  },
+  {
     name: "organisation names that differ after normalisation conflict",
     records: [
       record("pl-eipa", "PL", "XYZ", "CPO", { name: "Acme Energy" }),
@@ -273,6 +309,20 @@ describe("buildDiscrepancyReport", () => {
         { recordKey: null, registryId: "pl-eipa", retrievedAt: RETRIEVED_AT, lastSeenAt: null },
       ],
     });
+  });
+
+  it("words a removal it cannot confirm as an absence from the last successful retrieval", () => {
+    const report = build({
+      records: [record("benelux-idro", "BE", "CVT", "CPO", { tombstone: true })],
+      health: { ...allCurrent, "benelux-idro": "STALE" },
+    });
+    const unverifiable = findings(report).find(
+      (finding) => finding.category === "ISSUING_REGISTER_UNVERIFIABLE",
+    );
+    expect(unverifiable?.summary).toBe(
+      "BECVT (CPO) was missing from the last successful retrieval of benelux-idro, " +
+        "which is not current now, so the absence cannot be confirmed.",
+    );
   });
 
   it("reports each duplicate warning once, under the source's single jurisdiction", () => {

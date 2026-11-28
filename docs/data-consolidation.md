@@ -36,20 +36,20 @@ depends neither on the clock nor on the order of its inputs, only on the build's
 records, the source descriptors, their health, the exclusion history, and the
 duplicate warnings the connectors raised.
 
-| Category                         | Severity                                    | Confidence                                             | Raised when                                                                                    |
-| -------------------------------- | ------------------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| `NOT_FOUND_IN_ISSUING_REGISTER`  | high                                        | high (medium when the observing source is not current) | another source lists the identifier and every issuing register is current and does not list it |
-| `CONFLICTING_ROLE`               | medium                                      | high (medium when the observing source is not current) | another source lists the identifier under a role the issuing register does not list it under   |
-| `REMOVED_FROM_ISSUING_REGISTER`  | medium                                      | high                                                   | a current issuing register stopped listing an identifier it assigned                           |
-| `ADDED_TO_ISSUING_REGISTER`      | info                                        | high                                                   | the issuing register lists an identifier for the first time                                    |
-| `CONFLICTING_NAME`               | low                                         | medium                                                 | two sources publish the identifier under different organisation names                          |
-| `CONFLICTING_STATUS`             | medium                                      | high                                                   | two sources publish the identifier with different statuses                                     |
-| `ISSUING_REGISTER_UNVERIFIABLE`  | info                                        | low                                                    | the issuing register is stale or unavailable, so a listing or a removal cannot be checked      |
-| `OUTSIDE_ISSUING_REGISTER_SCOPE` | info                                        | high                                                   | no issuing register is tracked for the country, or none publishes the role                     |
-| `DUPLICATE_IDENTIFIER`           | low                                         | high                                                   | a source publishes the same identifier more than once                                          |
-| `MALFORMED_IDENTIFIER`           | low                                         | high                                                   | a source publishes a value that does not read as an eMI3 identifier                            |
-| `SOURCE_STALE`                   | medium (low for a non-authoritative source) | high                                                   | the source answered but its latest run was not ingested                                        |
-| `SOURCE_UNAVAILABLE`             | medium (low for a non-authoritative source) | high                                                   | the source could not be retrieved, or was never retrieved                                      |
+| Category                         | Severity                                    | Confidence                                             | Raised when                                                                                                                                                   |
+| -------------------------------- | ------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NOT_FOUND_IN_ISSUING_REGISTER`  | high                                        | high (medium when the observing source is not current) | another source lists the identifier and every issuing register is current and does not list it; one per issuing register that does not list it under any role |
+| `CONFLICTING_ROLE`               | medium                                      | high (medium when the observing source is not current) | another source lists the identifier, and an issuing register that publishes the listed role lists it under another role                                       |
+| `REMOVED_FROM_ISSUING_REGISTER`  | medium                                      | high                                                   | a current issuing register stopped listing an identifier it assigned                                                                                          |
+| `ADDED_TO_ISSUING_REGISTER`      | info                                        | high                                                   | a current issuing register lists an identifier for the first time                                                                                             |
+| `CONFLICTING_NAME`               | low                                         | medium                                                 | two sources publish the identifier under different organisation names                                                                                         |
+| `CONFLICTING_STATUS`             | medium                                      | high                                                   | two sources publish the identifier with different statuses                                                                                                    |
+| `ISSUING_REGISTER_UNVERIFIABLE`  | info                                        | low                                                    | the issuing register is stale or unavailable, so a listing or a removal cannot be checked                                                                     |
+| `OUTSIDE_ISSUING_REGISTER_SCOPE` | info                                        | high                                                   | no issuing register is tracked for the country, or none publishes the role                                                                                    |
+| `DUPLICATE_IDENTIFIER`           | low                                         | high                                                   | a source publishes the same identifier more than once                                                                                                         |
+| `MALFORMED_IDENTIFIER`           | low                                         | high                                                   | a source publishes a value that does not read as an eMI3 identifier                                                                                           |
+| `SOURCE_STALE`                   | medium (low for a non-authoritative source) | high                                                   | the source answered but its latest run was not ingested                                                                                                       |
+| `SOURCE_UNAVAILABLE`             | medium (low for a non-authoritative source) | high                                                   | the source could not be retrieved, or was never retrieved                                                                                                     |
 
 Conflicts compare the issuing register's record with every other source's;
 without an issuing record, they compare the other sources with each other.
@@ -74,8 +74,10 @@ Two categories reach beyond the current retrieval:
   (`data/registry-invalid.json`, records and rows alike), so an entry stays in
   the report after the source stopped publishing it, with the dates it was
   first and last detected.
-- `ADDED_TO_ISSUING_REGISTER` flags every record whose first retrieval is the
-  current one. On a register's first retrieval, that is every record it
+- `ADDED_TO_ISSUING_REGISTER` flags every record of a current issuing register
+  whose first retrieval is the current one; a stale or unavailable register's
+  carried records are never added. On a register's first retrieval, that is
+  every record it
   publishes.
 
 The payload is described by `schemas/discrepancies.schema.json`.

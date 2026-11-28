@@ -201,7 +201,14 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
     for (const record of group.filter(isIssuing)) {
       const id = record.source.registryId;
       const pair = { ...base(record), issuingRegistryId: id, observedRegistryId: id };
-      if (isPresent(record) && record.source.firstSeenAt === record.source.retrievedAt) {
+      const state = healthOf(id);
+      // A register that is not current carries its previous records over: what
+      // looks new there was not listed by a retrieval of this build.
+      if (
+        state === "CURRENT" &&
+        isPresent(record) &&
+        record.source.firstSeenAt === record.source.retrievedAt
+      ) {
         drafts.push({
           ...pair,
           category: "ADDED_TO_ISSUING_REGISTER",
@@ -216,7 +223,6 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
       ) {
         continue;
       }
-      const state = healthOf(id);
       drafts.push(
         state === "CURRENT"
           ? {
@@ -229,7 +235,7 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
               ...pair,
               category: "ISSUING_REGISTER_UNVERIFIABLE",
               reason: `SOURCE_${state}`,
-              summary: `${label(record)} no longer appears in ${id}, whose latest retrieval is not current.`,
+              summary: `${label(record)} was missing from the last successful retrieval of ${id}, which is not current now, so the absence cannot be confirmed.`,
               evidence: [recordEvidence(record), registerEvidence(id)],
             },
       );
@@ -246,25 +252,26 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
       });
       const issuers = covering(listing.countryCode, listing.role);
       if (confirmation === "NOT_FOUND") {
+        // Per issuing register publishing the listing's role: a role conflict
+        // when it lists the identifier under another role, else a not-found.
         const identifierKey = `${listing.countryCode}:${listing.partyId}`;
-        const otherRoles = (presentIssuing.get(identifierKey) ?? []).filter(
-          (record) => record.role !== listing.role,
-        );
-        for (const issuerRecord of otherRoles) {
-          const issuing = issuerRecord.source.registryId;
-          const key = `${identifierKey}|${observed}|${issuing}`;
-          const draft = roleConflicts.get(key) ?? {
-            ...toIssuer(issuing),
-            category: "CONFLICTING_ROLE",
-            confidence,
-            summary: `${listing.eMobilityId} is listed by ${observed} as ${listing.role}; the issuing register ${issuing} lists it under another role.`,
-            evidence: [],
-          };
-          draft.evidence.push(recordEvidence(listing), recordEvidence(issuerRecord));
-          roleConflicts.set(key, draft);
-        }
-        if (otherRoles.length > 0) continue;
         for (const issuing of issuers) {
+          const otherRoles = (presentIssuing.get(identifierKey) ?? []).filter(
+            (record) => record.source.registryId === issuing && record.role !== listing.role,
+          );
+          if (otherRoles.length > 0) {
+            const key = `${identifierKey}|${observed}|${issuing}`;
+            const draft = roleConflicts.get(key) ?? {
+              ...toIssuer(issuing),
+              category: "CONFLICTING_ROLE",
+              confidence,
+              summary: `${listing.eMobilityId} is listed by ${observed} as ${listing.role}; the issuing register ${issuing} lists it under another role.`,
+              evidence: [],
+            };
+            draft.evidence.push(recordEvidence(listing), ...otherRoles.map(recordEvidence));
+            roleConflicts.set(key, draft);
+            continue;
+          }
           drafts.push({
             ...toIssuer(issuing),
             category: "NOT_FOUND_IN_ISSUING_REGISTER",
@@ -278,7 +285,7 @@ export function buildDiscrepancyReport(input: DiscrepancyReportInput): Discrepan
           drafts.push({
             ...toIssuer(issuing),
             category: "ISSUING_REGISTER_UNVERIFIABLE",
-            reason: confirmation,
+            reason: `SOURCE_${healthOf(issuing)}`,
             summary: `${label(listing)} is listed by ${observed}; the issuing register ${issuing} could not be checked in its latest retrieval.`,
             evidence: [recordEvidence(listing), registerEvidence(issuing)],
           });

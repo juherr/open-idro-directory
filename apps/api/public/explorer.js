@@ -5,18 +5,21 @@ import { countryPagePath, createSearchScope, existingCountryPagePath } from "/ex
 // A country page hosts this search in a section pinned to its country; the
 // explorer page has no such section.
 const fixedRoot = document.querySelector("[data-fixed-country]");
-const scope = fixedRoot
-  ? createSearchScope({
-      fixedCountry: fixedRoot.dataset.fixedCountry,
-      knownCountries: Object.keys(COUNTRY_NAMES.en),
-    })
-  : createSearchScope();
 
-// The country page is server-rendered in the language of <html lang>.
+// The country page is server-rendered in the language of <html lang>, which
+// wins over the stored `oid-lang` and is never overwritten.
 function currentLanguage() {
   if (!fixedRoot) return getLanguage();
   return document.documentElement.lang === "fr" ? "fr" : "en";
 }
+
+const scope = fixedRoot
+  ? createSearchScope({
+      fixedCountry: fixedRoot.dataset.fixedCountry,
+      knownCountries: Object.keys(COUNTRY_NAMES.en),
+      lang: currentLanguage(),
+    })
+  : createSearchScope();
 
 const EXPLORER_COPY = {
   fr: {
@@ -136,6 +139,7 @@ const state = {
   copied: false,
   selectedParty: null,
   detailPath: "",
+  detailCountry: "",
   foreign: null,
 };
 
@@ -160,7 +164,7 @@ function initFromUrl() {
 
 function translateExplorer() {
   const lang = currentLanguage();
-  document.documentElement.lang = lang;
+  if (!fixedRoot) document.documentElement.lang = lang;
   updateLanguageButtons(lang);
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     const key = element.dataset.i18n;
@@ -179,6 +183,7 @@ function translateExplorer() {
 
 function renderExplorer() {
   translateExplorer();
+  renderDetailCountry();
   renderOptions();
   renderApiLine();
   renderResolve();
@@ -232,10 +237,10 @@ function renderContextLabel() {
   setHtml("[data-i18n='context']", label + country);
 }
 
-/** The country name, linked to its country page when the code is valid. */
+/** The country name, linked to its country page, in `lang`, when the code is valid. */
 function countryLink(code, lang) {
   const name = escapeHtml(countryName(code, lang));
-  return linkOrName(countryPagePath(code), name);
+  return linkOrName(countryPagePath(code, lang), name);
 }
 
 /** `name` (already escaped) linked to `path`, or plain when `path` is empty. */
@@ -329,7 +334,7 @@ function renderForeignNotice() {
   // load, or when they fail, the name stays plain text.
   const code = state.foreign.countryCode;
   const name = escapeHtml(countryName(code, lang));
-  const path = existingCountryPagePath(code, state.countsByCountry);
+  const path = existingCountryPagePath(code, state.countsByCountry, lang);
   notice.innerHTML =
     escapeHtml(before.replace("{id}", state.foreign.emobilityId)) +
     linkOrName(path, name) +
@@ -468,7 +473,8 @@ function renderDetail(detail, observations) {
   setText("#detail-emid", formatIdentifier(detail.countryCode, detail.partyId));
   setText("#detail-name", detail.preferredName || detail.legalName || detail.eMobilityId);
   setHtml("#detail-status", statusBadge(detail.status, lang));
-  setHtml("#detail-country", countryLink(detail.countryCode, lang));
+  state.detailCountry = detail.countryCode;
+  renderDetailCountry();
   document.querySelector("#detail-conflict").hidden = !detail.hasConflict;
   setText("#detail-legal-name", detail.legalName || "—");
   setText(
@@ -532,6 +538,12 @@ function renderDetail(detail, observations) {
       })
       .join(""),
   );
+}
+
+/** The detail panel's country link, rebuilt in the current language on a toggle. */
+function renderDetailCountry() {
+  if (state.detailCountry)
+    setHtml("#detail-country", countryLink(state.detailCountry, currentLanguage()));
 }
 
 function formatEnum(value) {

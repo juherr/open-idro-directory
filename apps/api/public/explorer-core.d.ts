@@ -53,6 +53,12 @@ export interface SearchScopeOptions {
    * query (`XX*ABC`, `XX-ABC`) stays an identifier whatever its prefix.
    */
   knownCountries?: Iterable<string>;
+  /**
+   * Language of a country page, from its `<html lang>`. `fr` keeps
+   * `lang=fr` in the page URL; any other value adds nothing. Ignored in
+   * explorer mode.
+   */
+  lang?: string | undefined;
 }
 
 export interface SearchScope {
@@ -67,7 +73,10 @@ export interface SearchScope {
    * nothing is to be fetched. Never `null` in explorer mode.
    */
   buildApiPath(state: SearchState, cursor?: string | null): string | null;
-  /** `basePath` plus the state's query string, without `?` when empty. */
+  /**
+   * `basePath` plus the state's query string, without `?` when empty. A
+   * French fixed-country scope puts `lang=fr` first.
+   */
   buildPageUrl(state: SearchState): string;
   /** `/api/v1/resolve/...` for an identifier-looking query of the scope, else `null`. */
   resolvePath(q: string): string | null;
@@ -76,15 +85,19 @@ export interface SearchScope {
 }
 
 export function normalizeIdentifierInput(value: string): IdentifierInput | null;
-/** `/countries/{lc}/` for a two-letter country code, else `null`. */
-export function countryPagePath(code: string): string | null;
 /**
- * `countryPagePath(code)` when `counts` (the stats' identifier counts, keyed
+ * `/countries/{lc}/` for a two-letter country code, else `null`, with
+ * `?lang=fr` when `lang` is `fr`. English, the default, adds nothing.
+ */
+export function countryPagePath(code: string, lang?: string): string | null;
+/**
+ * `countryPagePath(code, lang)` when `counts` (the stats' identifier counts, keyed
  * by upper-case code) is above zero for the code, else `null`: a country
  * without identifiers has no page.
  */
 export function existingCountryPagePath(
   code: string,
   counts: Record<string, number> | null | undefined,
+  lang?: string,
 ): string | null;
 export function createSearchScope(options?: SearchScopeOptions): SearchScope;

@@ -177,6 +177,43 @@ describe("fixed-country scope", () => {
   });
 });
 
+describe("fixed-country scope in a page language", () => {
+  const french = createSearchScope({ fixedCountry: "fr", lang: "fr" });
+
+  it("keeps lang=fr in the page URL of a French country page", () => {
+    expect(french.buildPageUrl(emptyState)).toBe("/countries/fr/?lang=fr");
+    expect(french.buildPageUrl({ q: "x", country: "DE", role: "CPO", status: "ACTIVE" })).toBe(
+      "/countries/fr/?lang=fr&q=x&role=CPO&status=ACTIVE",
+    );
+  });
+
+  it("keeps lang=fr after reading the page URL back", () => {
+    const url = french.buildPageUrl({ ...emptyState, q: "ionity", status: "ACTIVE" });
+    const state = french.readState(new URL(url, "https://example.test").search);
+    expect(state).toEqual({ q: "ionity", country: "FR", role: "", status: "ACTIVE" });
+    expect(french.buildPageUrl(state)).toBe(url);
+  });
+
+  it.each([["en"], [undefined], ["xx"]])(
+    "adds no lang to the page URL for the language %j",
+    (lang) => {
+      const scope = createSearchScope({ fixedCountry: "fr", lang });
+      expect(scope.buildPageUrl(emptyState)).toBe("/countries/fr/");
+      expect(scope.buildPageUrl({ ...emptyState, q: "x", role: "CPO" })).toBe(
+        "/countries/fr/?q=x&role=CPO",
+      );
+    },
+  );
+
+  it("leaves API paths and the explorer URL without lang", () => {
+    expect(french.buildApiPath({ ...emptyState, q: "x" })).toBe(
+      "/api/v1/parties?country=FR&q=x&limit=25",
+    );
+    const explorer = createSearchScope({ lang: "fr" });
+    expect(explorer.buildPageUrl({ ...emptyState, q: "x" })).toBe("/explore/?q=x");
+  });
+});
+
 describe("fixed-country scope with known countries", () => {
   const scope = createSearchScope({
     fixedCountry: "FR",
@@ -246,6 +283,19 @@ describe("countryPagePath", () => {
       expect(countryPagePath(code as string)).toBeNull();
     },
   );
+
+  it.each([
+    ["fr", "/countries/de/?lang=fr"],
+    ["en", "/countries/de/"],
+    [undefined, "/countries/de/"],
+    ["xx", "/countries/de/"],
+  ])("links in the language %j as %j", (lang, expected) => {
+    expect(countryPagePath("DE", lang)).toBe(expected);
+  });
+
+  it("returns null for an invalid code whatever the language", () => {
+    expect(countryPagePath("F1", "fr")).toBeNull();
+  });
 });
 
 describe("existingCountryPagePath", () => {
@@ -273,6 +323,12 @@ describe("existingCountryPagePath", () => {
 
   it("returns null for a value that is not a country code", () => {
     expect(existingCountryPagePath("../", { "../": 1 })).toBeNull();
+  });
+
+  it("links in the page language", () => {
+    expect(existingCountryPagePath("DE", counts, "fr")).toBe("/countries/de/?lang=fr");
+    expect(existingCountryPagePath("DE", counts, "en")).toBe("/countries/de/");
+    expect(existingCountryPagePath("IT", counts, "fr")).toBeNull();
   });
 });
 

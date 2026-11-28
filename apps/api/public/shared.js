@@ -142,6 +142,7 @@ function statusLabel(status, lang = getLanguage()) {
     ACTIVE: "Actif",
     INACTIVE: "Inactif",
     RESERVED: "Réservé",
+    REVOKED: "Révoqué",
     UNKNOWN: "Inconnu",
   };
   if (lang === "fr") return fr[status] || status || "—";
@@ -154,6 +155,7 @@ function statusBadge(status, lang = getLanguage()) {
     ACTIVE: ["#1f7a45", "#e7f6ee"],
     INACTIVE: ["#6b7886", "#eef1f4"],
     RESERVED: ["#0e76c0", "#e6f1fb"],
+    REVOKED: ["#b42318", "#fdecea"],
     UNKNOWN: ["#9a6a16", "#fbf1e0"],
   };
   const [color, background] = map[status] || ["#6b7886", "#eef1f4"];

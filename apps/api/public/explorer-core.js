@@ -16,23 +16,36 @@ export function normalizeIdentifierInput(value) {
   };
 }
 
-/** `/countries/{lc}/` for a two-letter country code, else `null`. */
-export function countryPagePath(code) {
+/** `?lang=fr` for French; English is the default page language, with no query. */
+function languageQuery(lang) {
+  return lang === "fr" ? "?lang=fr" : "";
+}
+
+/**
+ * `/countries/{lc}/` for a two-letter country code, else `null`. The page
+ * language `lang` is passed in, never read from storage here.
+ */
+export function countryPagePath(code, lang) {
   if (typeof code !== "string" || !/^[A-Za-z]{2}$/.test(code)) return null;
-  return `/countries/${code.toLowerCase()}/`;
+  return `/countries/${code.toLowerCase()}/${languageQuery(lang)}`;
 }
 
 /**
  * The country page path of `code` when the stats count identifiers for it,
  * else `null`: a country without identifiers has no page.
  */
-export function existingCountryPagePath(code, counts) {
-  const path = countryPagePath(code);
+export function existingCountryPagePath(code, counts, lang) {
+  const path = countryPagePath(code, lang);
   if (!path || !counts) return null;
   return Number(counts[code.toUpperCase()]) > 0 ? path : null;
 }
 
-export function createSearchScope({ fixedCountry, basePath: givenBasePath, knownCountries } = {}) {
+export function createSearchScope({
+  fixedCountry,
+  basePath: givenBasePath,
+  knownCountries,
+  lang,
+} = {}) {
   const forced = fixedCountry ? fixedCountry.toUpperCase() : null;
   // A country page hosts the search at its own path; an invalid code has no
   // page, so it falls back to the explorer rather than to `null`.
@@ -80,6 +93,8 @@ export function createSearchScope({ fixedCountry, basePath: givenBasePath, known
 
   function buildPageUrl(state) {
     const params = new URLSearchParams();
+    // A French country page keeps its language: a reload must not serve English.
+    if (forced && lang === "fr") params.set("lang", "fr");
     if (state.q) params.set("q", state.q);
     if (!forced && state.country) params.set("country", state.country);
     if (state.role) params.set("role", state.role);

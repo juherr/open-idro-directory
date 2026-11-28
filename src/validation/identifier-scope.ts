@@ -7,7 +7,34 @@ import type { ValidationIssue } from "../domain/validation-issue.js";
  * their own stricter pattern for the format their register publishes; this one
  * only answers "is this a readable identifier at all".
  */
-const ANY_IDENTIFIER = /^([A-Za-z]{2})\s*[*-]?\s*([A-Za-z0-9]{3})$/;
+const ANY_IDENTIFIER = /^([A-Za-z]{2})\s*([*-]?)\s*([A-Za-z0-9]{3})$/;
+
+export interface CrossRegisterIdentifier {
+  countryCode: string;
+  partyId: string;
+  /** The separator the register used, `*`, `-` or none. */
+  separator: string;
+}
+
+/**
+ * Reads an identifier this register lists for another country, so a connector
+ * can publish it as a cross-register listing instead of rejecting it. Returns
+ * `null` for anything else: a covered country (whatever the connector disliked
+ * is a format problem), an unreadable value, or a prefix naming no country.
+ */
+export function parseCrossRegisterIdentifier(
+  source: SourceDefinition,
+  value: string,
+): CrossRegisterIdentifier | null {
+  const match = ANY_IDENTIFIER.exec(value.trim());
+  const countryCode = foreignCountryOf(source, value);
+  if (!match || !countryCode) return null;
+  return {
+    countryCode,
+    partyId: (match[3] ?? "").toUpperCase(),
+    separator: match[2] ?? "",
+  };
+}
 
 export interface RejectedIdentifier {
   /** Connector prefix of the reported code, for example `EIPA`. */

@@ -13,13 +13,18 @@ export {
 } from "../../../src/domain/identifier-observation.js";
 export {
   normalizedRegistryRecordSchema,
+  observationKindSchema,
+  registryObservationSchema,
   registryRoleSchema,
   registryStatusSchema,
   makeRegistryKey,
   type NormalizedRegistryRecord,
+  type ObservationKind,
+  type RegistryObservation,
   type RegistryRole,
   type RegistryStatus,
 } from "../../../src/domain/registry-record.js";
+export { observationOf, observationScope } from "../../../src/domain/registry-observation.js";
 export {
   authorityDefinitionSchema,
   type AuthorityDefinition,

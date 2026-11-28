@@ -111,6 +111,18 @@ export function withIssuingProvenance(
   });
 }
 
+/**
+ * The record without its `issuing` block. The block is derived on every build
+ * from every source, so a published one is dropped before it is compared with,
+ * or carried into, a fresh build.
+ */
+export function withoutIssuingProvenance(
+  record: NormalizedRegistryRecord,
+): NormalizedRegistryRecord {
+  const { issuing: _issuing, ...rest } = record;
+  return rest;
+}
+
 // A record confirms when it comes from an issuing register, stands for an
 // assignment, and was present in that register's latest retrieval: a
 // tombstone kept after the identifier vanished upstream has an older

@@ -38,6 +38,20 @@ describe("change report diff", () => {
     expect(diff.unchanged).toBe(1);
   });
 
+  // Committed records predate the issuing block, and the next build derives it
+  // on every record: that alone is not a record update.
+  it("does not count a derived issuing block as an update", () => {
+    const run = "2026-06-15T00:00:00.000Z";
+    const published = sampleRecord(run);
+    const current = {
+      ...sampleRecord(run),
+      issuing: { country: "FR", confirmation: "CONFIRMED" as const, confirmedBy: ["fr-afirev"] },
+    };
+
+    expect(diffRecords([published], [current])).toMatchObject({ updated: [], unchanged: 1 });
+    expect(diffRecords([current], [published])).toMatchObject({ updated: [], unchanged: 1 });
+  });
+
   it("still counts a switch of observation kind as an update", async () => {
     const sources = await loadSourceDefinitions();
     const run = "2026-06-15T00:00:00.000Z";

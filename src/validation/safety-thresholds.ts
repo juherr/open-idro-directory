@@ -58,10 +58,12 @@ export function checkSafetyThresholds(
 
 // Timestamps move on every run, and `sourceUrl` is copied from our own source
 // descriptor: relocating a registry would otherwise rewrite every record at
-// once and be reported as upstream mass change.
+// once and be reported as upstream mass change. The `issuing` block is derived
+// from every source on every build, so it says nothing about this one.
 function stableRecord(record: NormalizedRegistryRecord) {
   return {
     ...record,
+    issuing: undefined,
     source: {
       ...record.source,
       sourceUrl: "",
